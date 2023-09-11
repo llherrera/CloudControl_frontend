@@ -1,9 +1,10 @@
-import { ButtonComponent } from "../../components"
+import { LoginForm } from "../../components"
 
-export const HomePage = () => {
+export const LoginPage = () => {
     return (
         <div className="container mx-auto border my-4 pb-10">
             <div className="grid grid-cols-12 grid-row-6 gap-6">
+                <LoginForm/>
                 <div className="col-start-4
                                 col-span-6
                                 bg-gray-400">
@@ -17,8 +18,6 @@ export const HomePage = () => {
                                 rounded-b-3xl">
                     Cloud Control
                 </div>
-                <ButtonComponent lado={"izq"} dir={"izq"}/>
-                <ButtonComponent lado={"der"} dir={"der"}/>
             </div>
         </div>
     )
