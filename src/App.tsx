@@ -1,7 +1,7 @@
 import React from 'react';
 import './App.css';
 import { Routes, Route, BrowserRouter } from 'react-router-dom';
-import { HomePage, PingPage, LobbyPage, LoginPage } from './pages';
+import { HomePage, PingPage, LobbyPage, LoginPage, AnadirPDT } from './pages';
 
 const App = () => {
   return (
@@ -13,6 +13,7 @@ const App = () => {
           <Route path="/ping" element={<PingPage/>} />
           <Route path="/login" element={<LoginPage/>} />
           <Route path="/lobby" element={<LobbyPage/>} />
+          <Route path="/anadirPDT" element={<AnadirPDT/>} />
         </Routes>
       </BrowserRouter>
     </div>

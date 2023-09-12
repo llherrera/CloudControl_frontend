@@ -1,15 +1,15 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
+import { doLogin } from '../../services/api'
 
 export const LoginForm = () => {
     const navigate = useNavigate()
 
-    const [user, setuser] = useState("")
+    const [username, setusername] = useState("")
     const [password, setpassword] = useState("")
 
-    const handleUser = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setuser(e.target.value)
+    const handleUsername = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setusername(e.target.value)
     }
 
     const handlePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -19,10 +19,7 @@ export const LoginForm = () => {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         try {
-            const response = await axios.post('/users/login', {
-                user: user,
-                password: password
-            })
+            const res = doLogin(username, password);
             navigate('/lobby')
         } catch (error) {
             console.log(error)
@@ -30,7 +27,7 @@ export const LoginForm = () => {
     }
 
     const handleCancelar = () => {
-        setuser("")
+        setusername("")
         setpassword("")
     }
 
@@ -45,8 +42,8 @@ export const LoginForm = () => {
                     name="user"
                     id="user"
                     className='border rounded'
-                    value={user}
-                    onChange={handleUser}
+                    value={username}
+                    onChange={handleUsername}
                 />
             </div>
             <div>

@@ -1,9 +1,5 @@
 import { useNavigate } from "react-router-dom";
-
-interface ButtonProps {
-    lado : String,
-    dir : String
-}
+import { ButtonProps } from "../../interfaces";
 
 export const ButtonComponent = ( {lado, dir} : ButtonProps ) => {
     const navigate = useNavigate();

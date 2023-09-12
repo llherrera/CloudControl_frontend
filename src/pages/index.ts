@@ -1,11 +1,13 @@
 import HomePage from './Home';
 import PingPage from './Ping';
-import LobbyPage from './Tablero';
-import { LoginPage } from './Login';
+import LobbyPage from './Lobby';
+import LoginPage from './Login';
+import AnadirPDT from './AñadirPDT';
 
 export {
     HomePage,
     PingPage,
     LobbyPage,
-    LoginPage
+    LoginPage,
+    AnadirPDT
 }
