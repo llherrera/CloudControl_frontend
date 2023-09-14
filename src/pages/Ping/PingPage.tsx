@@ -10,5 +10,5 @@ export const PingPage = () => {
             setData(response.data);
         });
     }, []);
-    return <div>{ data!.map(( e:any )=> <div>{e.Plan_Nodo} {e.Descripcion_Nodo} {e.Nodo_Padre}</div>) }</div>;
+    return <div>{ data!.map(( e:any )=> <div>{e.Nombre} {e.Fecha_inicio} {e.Fecha_fin} {e.Descripcion} {e.Alcaldia}</div>) }</div>;
 };

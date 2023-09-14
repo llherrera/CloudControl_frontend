@@ -1,4 +1,9 @@
 import { ButtonComponent } from "./Buttons";
-import { LoginForm } from "./Forms";
+import { LoginForm, PDTForm, NivelForm } from "./Forms";
 
-export { ButtonComponent, LoginForm };
+export { 
+    ButtonComponent, 
+    LoginForm, 
+    PDTForm,
+    NivelForm,
+};

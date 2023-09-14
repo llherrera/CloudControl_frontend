@@ -1,4 +1,4 @@
-import { PDTForm } from "../../components/Forms"
+import { PDTForm } from "../../components"
 
 export const AnadirPDT = () => {
     return (

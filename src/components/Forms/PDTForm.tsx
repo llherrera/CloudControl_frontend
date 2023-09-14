@@ -12,6 +12,7 @@ export const PDTForm = () => {
         municipio: "",
         fechaIni: Date(),
         fechaFin: Date(),
+        descripcion: "",
     });
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -53,6 +54,12 @@ export const PDTForm = () => {
                         id={"municipio"}
                         name={"municipio"}
                         value={planData.municipio}
+                        onChange={handleInputChange}/><br/>
+            <Input  type={"text"}
+                        label="Descripción:"
+                        id={"descripcion"}
+                        name={"descripcion"}
+                        value={planData.descripcion}
                         onChange={handleInputChange}/><br/>
             
             <div className="flex justify-between">
