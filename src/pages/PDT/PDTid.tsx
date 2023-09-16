@@ -1,14 +1,13 @@
 import React, { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { getPDTid } from "../../services/api";
-import { NivelForm } from "../../components";
+import { NivelForm, Tablero } from "../../components";
+import { Nivel } from "../../interfaces";
 
 export const PDTid = () => {
-    const navigate = useNavigate();
-
     const { id } = useParams();
 
-    const [data, setData] = useState([]);
+    const [data, setData] = useState([] as Nivel[]);
 
     React.useEffect(() => {
         getPDTid(id!)
@@ -19,7 +18,7 @@ export const PDTid = () => {
 
     return (
         <div>
-            {data.length === 0 ? <NivelForm id={id!} /> : <h1>Cargando...</h1>}
+            {data.length === 0 ? <NivelForm id={id!} /> : <Tablero data={data} />}
         </div>
     )
 }

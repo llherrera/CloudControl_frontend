@@ -1,6 +1,5 @@
 export interface Nivel {
-    id: number;
-    nombre: string;
-    descripcion: string;
-    id_pdt: number;
+    id_nivel: number;
+    Nombre: string;
+    Descripcion: string;
 }

@@ -2,22 +2,23 @@ import React, { useState } from "react";
 import { Input } from "../Inputs";
 import { addNivel } from "../../services/api";
 
-export const NivelForm = ( id : any ) => {
+export const NivelForm = ( id :any ) => {
+
     const [data, setData] = useState([
-        { nombre: "", descripcion: "" },
-        { nombre: "", descripcion: "" },
-        { nombre: "", descripcion: "" }
+        { Nombre: "", Descripcion: "" },
+        { Nombre: "", Descripcion: "" },
+        { Nombre: "", Descripcion: "" }
     ])
 
     const [nivel, setNivel] = useState({
-        nombre: "",
-        descripcion: ""
+        Nombre: "",
+        Descripcion: ""
     })
 
     const agregarNivel = () => {
         const newData = [...data, nivel];
         setData(newData);
-        setNivel({ nombre: "", descripcion: "" });
+        setNivel({ Nombre: "", Descripcion: "" });
     }
 
     const eliminarNivel = () => {
@@ -36,48 +37,59 @@ export const NivelForm = ( id : any ) => {
         setData(newData);
     }
 
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        addNivel(data, id)
-            .then((res) => {
-                console.log(res)
-            })
+        try {
+            await addNivel(data, id.id)
+            window.location.reload();
+        } catch (error) {
+            console.log(error);
+        }
     }
 
     return (
         <form   onSubmit={ handleSubmit}
-                className="grid grid-cols-12 grid-row-6 mt-5">
-            <ul className="col-start-5 col-span-4 gap-3">
+                className="grid grid-cols-12 grid-rows-6 mt-5">
+            <ul className="col-start-5 col-span-4 gap-3 row-start-1 row-span-4">
                 {data.map(( e:any, index: number )=> 
                     <li className="mb-3 p-2 bg-cyan-200 rounded">
                         <Input  type={"text"}
                                 label="Nombre del Nivel:"
-                                id={"nombre"}
-                                name={"nombre"}
-                                value={e.nombre}
+                                id={"Nombre"}
+                                name={"Nombre"}
+                                value={e.Nombre}
                                 onChange={ (event) => handleInputFormChange(event, index) }/><br/>
                         <Input  type={"text"}
                                 label="Descripción:"
-                                id={"descripcion"}
-                                name={"descripcion"}
-                                value={e.descripcion}
+                                id={"Descripcion"}
+                                name={"Descripcion"}
+                                value={e.Descripcion}
                                 onChange={ (event) => handleInputFormChange(event, index) }/><br/>
                     </li>
                 )}
             <div className="w-full flex justify-around py-2 bg-cyan-200 rounded">
-                <input  type="submit"
-                        value={"+"}
-                        className="bg-green-300 w-12 p-2 rounded"
-                        onClick={ agregarNivel }/>
-                <input  type="submit"
-                        value={"-"}
-                        className="bg-red-300 w-12 p-2 rounded"
-                        onClick={ eliminarNivel }/>
+                <button className="bg-green-500
+                                   hover:bg-green-300 
+                                   text-white font-bold          
+                                   w-12 p-2 rounded"
+                        type="button"
+                        onClick={ agregarNivel }>+</button>
+                <button className="bg-red-500 
+                                   hover:bg-red-300 
+                                   text-white font-bold
+                                   w-12 p-2 rounded"
+                        type="button"
+                        onClick={ eliminarNivel }>-</button>
             </div>
             </ul>
-            <button className="mt-4 py-3 row-start-2 col-start-6 col-span-2 bg-green-500 rounded">
-                Guardar
-            </button>
+            <input  type="submit"
+                    value={"Guardar"}
+                    className="row-start-5 col-start-6 col-span-2
+                               bg-blue-500
+                               hover:bg-blue-300 
+                               text-white font-bold }
+                               rounded mt-5
+                               mx-6"/>
         </form>
     )
 }
