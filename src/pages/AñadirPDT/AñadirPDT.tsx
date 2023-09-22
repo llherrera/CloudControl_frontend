@@ -1,6 +1,6 @@
 import { PDTForm } from "../../components"
 
-export const AnadirPDT = () => {
+export const AñadirPDT = () => {
     return (
         <div className="container mx-auto border-t border-x my-4 pb-10">
             <div className="grid

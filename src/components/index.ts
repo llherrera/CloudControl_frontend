@@ -7,5 +7,5 @@ export {
     LoginForm, 
     PDTForm,
     NivelForm,
-    Tablero
+    Tablero,
 };

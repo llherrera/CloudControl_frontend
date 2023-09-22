@@ -5,6 +5,8 @@ import { PDT } from "./pdt";
 import { Nivel } from "./nivel";
 import { ContentProps } from "./contentProps";
 import { Nodo } from "./nodo";
+import { AñoFormState } from "./añoFormState";
+import { UnidFormState } from "./unidFormState";
 
 export {
     UserInterface,
@@ -13,5 +15,7 @@ export {
     PDT,
     Nivel,
     ContentProps,
-    Nodo
+    Nodo,
+    AñoFormState,
+    UnidFormState
 };

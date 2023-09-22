@@ -49,8 +49,8 @@ export const NivelForm = ( id :any ) => {
 
     return (
         <form   onSubmit={ handleSubmit}
-                className="grid grid-cols-12 grid-rows-6 mt-5">
-            <ul className="col-start-5 col-span-4 gap-3 row-start-1 row-span-4">
+                className="grid grid-cols-12 mt-5">
+            <ul className="col-start-5 col-span-4 gap-3">
                 {data.map(( e:any, index: number )=> 
                     <li className="mb-3 p-2 bg-cyan-200 rounded">
                         <Input  type={"text"}
@@ -84,12 +84,12 @@ export const NivelForm = ( id :any ) => {
             </ul>
             <input  type="submit"
                     value={"Guardar"}
-                    className="row-start-5 col-start-6 col-span-2
+                    className="col-start-6 col-span-2
                                bg-blue-500
                                hover:bg-blue-300 
                                text-white font-bold }
-                               rounded mt-5
-                               mx-6"/>
+                               rounded
+                               mt-5 mx-6 py-2"/>
         </form>
     )
 }

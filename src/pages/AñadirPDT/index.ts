@@ -1,3 +1,3 @@
-import { AnadirPDT } from "./AnadirPDT";
+import { AñadirPDT } from "./AñadirPDT";
 
-export default AnadirPDT;
+export default AñadirPDT;

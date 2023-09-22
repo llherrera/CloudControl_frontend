@@ -22,14 +22,14 @@ export const NodoForm = ( props : any ) => {
     const agregarNodo = () => {
         const newData = [...data, nodo];
         setData(newData);
-        nodo = ({ id_nodo: `${props.Padre ?? props.id}.${newData.length + 1}`, Nombre: "", Descripcion: "", id_nivel: props.id_nodo, Padre: props.Padre });
+        nodo = ({ id_nodo: `${props.Padre ?? props.id}.${newData.length + 1}`, Nombre: "", Descripcion: "", id_nivel: props.id, Padre: props.Padre });
     }
 
     const eliminarNodo = () => {
         if (data.length > 1) {
             const newData = data.slice(0, data.length - 1);
             setData(newData);
-            nodo = ({ id_nodo: `${props.Padre ?? props.id}.${newData.length }`, Nombre: "", Descripcion: "", id_nivel: props.id.id_nodo, Padre: props.Padre });
+            nodo = ({ id_nodo: `${props.Padre ?? props.id}.${newData.length }`, Nombre: "", Descripcion: "", id_nivel: props.id, Padre: props.Padre });
         }
     }
 
@@ -44,6 +44,7 @@ export const NodoForm = ( props : any ) => {
         event.preventDefault();
         try {
             await addNodoNivel(data)
+            props.callback(props.index -1, props.Padre)
         } catch (error) {
             console.log(error);
         }

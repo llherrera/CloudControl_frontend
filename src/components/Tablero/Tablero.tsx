@@ -1,14 +1,16 @@
 import React, { useState } from 'react'
 import { Content } from './Content';
 import { Nivel } from '../../interfaces';
+import { useParams } from 'react-router-dom';
 
 export const Tablero = ( { data } : { data : Nivel[] } ) => {
+    const { id } = useParams();
 
     const [index, setIndex] = useState(0);
     const [Padre, setPadre] = useState();
 
     const setData = (index: number, padre: any) => {
-        if (index < data.length) {
+        if (index < data.length && index >= 0) {
             setIndex(index)
             setPadre(padre)
         }
@@ -33,9 +35,11 @@ export const Tablero = ( { data } : { data : Nivel[] } ) => {
             </div>
             <div className='col-span-full'>
                 <Content index={index+1} 
+                         len={data.length}
                          data={data[index]} 
                          callback={setData} 
-                         Padre={Padre} />
+                         Padre={Padre} 
+                         id={id}/>
             </div>
         </div>
     )

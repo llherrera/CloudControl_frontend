@@ -1,4 +1,5 @@
 import axios from "axios";
+import { AñoFormState, UnidFormState } from "../interfaces";
 
 // Obtiene todos los PDTs
 export const getPDTs = async () => {
@@ -76,6 +77,58 @@ export const getNodosNivel = async (id: number, Padre? : string) => {
 export const addNodoNivel = async (nodo: {}[]) => {
     try {
         const response = await axios.post("/pdt/nivel", { Nodos: nodo } );
+        return response.data;
+    } catch (error) {
+        return error;
+    }
+}
+
+// Obtiene los nombres de cada nivel que tienen los nodos
+export const getNombreNivel = async (ids: string[]) => {
+    try {
+        const response = await axios.get(`/nodo/nombres`, {
+            params: { id_nodos: ids }
+        });
+        return response.data;
+    } catch (error) {
+        return error;
+    }
+}
+
+// Añade una unidad de nodo donde se registre la programacion financiera por años
+export const addNodoUnidadYAños = async (idPDT: string, idNodo: string, nodoUnidad: UnidFormState, años: AñoFormState) => {
+    try {
+        const response = await axios.post("/nodo", { 
+            idPDT: idPDT,
+            idNodo: idNodo,
+            Nodo: nodoUnidad,
+            Años: años
+        });
+        return response.data;
+    } catch (error) {
+        return error;
+    }
+}
+
+// Obtiene una unidad de nodo donde se registre la programacion financiera por años
+export const getNodoUnidadYAños = async (idPDT: string, idNodo: string) => {
+    try {
+        const response = await axios.get(`/nodo`, {
+            params: { idPDT: idPDT, idNodo: idNodo }
+        });
+        return response.data;
+    } catch (error) {
+        return error;
+    }
+}
+
+// 
+export const addEvicenciaMeta = async (codigo: string, evidencia: any) => {
+    try {
+        const response = await axios.post("/nodo/evidencia", { 
+            Codigo: codigo,
+            Evidencia: evidencia
+        });
         return response.data;
     } catch (error) {
         return error;
