@@ -6,9 +6,27 @@ export const NodoForm = ( props : any ) => {
 
     let id_nodo_gen : number = 1;
     const [data, setData] = useState([
-        { id_nodo: `${props.Padre ?? props.id}.${id_nodo_gen++}`, Nombre: "", Descripcion: "", id_nivel: props.id, Padre: props.Padre },
-        { id_nodo: `${props.Padre ?? props.id}.${id_nodo_gen++}`, Nombre: "", Descripcion: "", id_nivel: props.id, Padre: props.Padre },
-        { id_nodo: `${props.Padre ?? props.id}.${id_nodo_gen++}`, Nombre: "", Descripcion: "", id_nivel: props.id, Padre: props.Padre }
+        { id_nodo: `${props.Padre ?? props.id}.${id_nodo_gen++}`,
+          Nombre: "", 
+          Descripcion: "", 
+          id_nivel: props.id, 
+          Padre: props.Padre,
+          Peso: 33.33
+        },
+        { id_nodo: `${props.Padre ?? props.id}.${id_nodo_gen++}`, 
+          Nombre: "", 
+          Descripcion: "", 
+          id_nivel: props.id, 
+          Padre: props.Padre,
+          Peso: 33.33
+        },
+        { id_nodo: `${props.Padre ?? props.id}.${id_nodo_gen++}`, 
+          Nombre: "", 
+          Descripcion: "", 
+          id_nivel: props.id, 
+          Padre: props.Padre,
+          Peso: 33.33
+        }
     ] as Nodo[])
 
     let nodo = ({
@@ -16,20 +34,35 @@ export const NodoForm = ( props : any ) => {
         Nombre: "",
         Descripcion: "",
         id_nivel: props.id,
-        Padre: props.Padre
+        Padre: props.Padre,
+        Peso: 0
     } as Nodo)
 
     const agregarNodo = () => {
         const newData = [...data, nodo];
         setData(newData);
-        nodo = ({ id_nodo: `${props.Padre ?? props.id}.${newData.length + 1}`, Nombre: "", Descripcion: "", id_nivel: props.id, Padre: props.Padre });
+        nodo = ({ 
+            id_nodo: `${props.Padre ?? props.id}.${newData.length + 1}`, 
+            Nombre: "", 
+            Descripcion: "", 
+            id_nivel: props.id, 
+            Padre: props.Padre,
+            Peso: 100/data.length
+        });
     }
 
     const eliminarNodo = () => {
         if (data.length > 1) {
             const newData = data.slice(0, data.length - 1);
             setData(newData);
-            nodo = ({ id_nodo: `${props.Padre ?? props.id}.${newData.length }`, Nombre: "", Descripcion: "", id_nivel: props.id, Padre: props.Padre });
+            nodo = ({ 
+                id_nodo: `${props.Padre ?? props.id}.${newData.length }`, 
+                Nombre: "", 
+                Descripcion: "", 
+                id_nivel: props.id, 
+                Padre: props.Padre,
+                Peso: 100/data.length
+            });
         }
     }
 
@@ -42,6 +75,14 @@ export const NodoForm = ( props : any ) => {
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
+        let sum:number=0;
+        data.map((e) => sum += Number(e.Peso));
+        console.log(sum);
+        
+        if (sum !== 100) {
+            alert('La suma de los pesos debe ser 100')
+            return
+        }
         try {
             await addNodoNivel(data)
             props.callback(props.index -1, props.Padre)
@@ -55,7 +96,8 @@ export const NodoForm = ( props : any ) => {
                 className='grid grid-cols-12 m-5 '>
             <ul className='col-start-5 col-span-4'>
                 {data.map(( e, index )=> 
-                    <li className="mb-3 p-2 bg-cyan-200 rounded">
+                <div className='mb-3 px-3 p-2 bg-cyan-200 flex rounded'>
+                    <li className="mx-3">
                         <input  type={"text"}
                                 placeholder={`Nombre del nodo`}
                                 id={"Nombre"}
@@ -71,6 +113,14 @@ export const NodoForm = ( props : any ) => {
                                 className='rounded my-1 p-1'
                                 onChange={ (event) => handleInputFormChange(event, index) }/><br/>
                     </li>
+                    <input  type="number"
+                            placeholder='Peso'
+                            id='Peso'
+                            name='Peso'
+                            value={e.Peso}
+                            className='mx-4 w-1/2 h-7 rounded'
+                            onChange={ (event) => handleInputFormChange(event, index) } />
+                </div>
                 )}
                 <button className="bg-green-500 
                                    hover:bg-green-300 

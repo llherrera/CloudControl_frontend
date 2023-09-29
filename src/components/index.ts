@@ -1,4 +1,4 @@
-import { ButtonComponent } from "./Buttons";
+import { ButtonComponent, ButtonPlan } from "./Buttons";
 import { LoginForm, PDTForm, NivelForm } from "./Forms";
 import { Tablero } from "./Tablero";
 
@@ -8,4 +8,5 @@ export {
     PDTForm,
     NivelForm,
     Tablero,
+    ButtonPlan
 };

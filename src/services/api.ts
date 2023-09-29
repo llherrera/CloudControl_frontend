@@ -1,5 +1,5 @@
 import axios from "axios";
-import { AñoFormState, UnidFormState } from "../interfaces";
+import { AñoFormState, UnidFormState, Nodo } from "../interfaces";
 
 // Obtiene todos los PDTs
 export const getPDTs = async () => {
@@ -15,6 +15,15 @@ export const getPDTs = async () => {
 export const getPDTid = async (id: string) => {
     try {
         const response = await axios.get(`/pdt/${id}`);
+        return response.data;
+    } catch (error) {
+        return error;
+    }
+}
+
+export const getLastPDT = async () => {
+    try {
+        const response = await axios.get("/pdt/last");
         return response.data;
     } catch (error) {
         return error;
@@ -122,12 +131,27 @@ export const getNodoUnidadYAños = async (idPDT: string, idNodo: string) => {
     }
 }
 
-// 
+// Añade una evidencia a una unidad de nodo
 export const addEvicenciaMeta = async (codigo: string, evidencia: any) => {
     try {
         const response = await axios.post("/nodo/evidencia", { 
             Codigo: codigo,
             Evidencia: evidencia
+        });
+        return response.data;
+    } catch (error) {
+        return error;
+    }
+}
+
+// Obtiene los porcentajes de avance de un año de una unidad de nodo
+export const getProgresoAño = async (ids_nodos: string[], año: number) => {
+    try {
+        const response = await axios.get(`/nodo/progreso`, {
+            params: {
+                Ids: ids_nodos,
+                Año: año
+            }
         });
         return response.data;
     } catch (error) {

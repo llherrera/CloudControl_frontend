@@ -1,7 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Nodo } from '../../interfaces';
 
 export const ShowNodos = ( props : any ) => {
+
+    useEffect(() => {
+    }, [props.año])
 
     const handleButton = ( event: React.MouseEvent<HTMLButtonElement> , index: number ) => {
         event.preventDefault();

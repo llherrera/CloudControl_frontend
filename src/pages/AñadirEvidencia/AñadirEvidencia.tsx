@@ -114,66 +114,66 @@ export const AñadirEvidencia = () => {
         return(
             <div className="container mx-auto mt-2 grid grid-cols-12">
                 <header className=" col-start-2 col-end-12
-                                    border border-4 border-double border-gray-500">
+                                    border-4 border-double border-gray-500">
                     <h1 className="text-3xl font-bold text-blue-700">Memoria de avance del Plan</h1>
                 </header>
                 <table className=" col-start-3 col-end-11 mt-3 table-fixed">
                     <thead>
                         <tr>
-                            <th className="border border-4 border-double border-gray-500">
+                            <th className="border-4 border-double border-gray-500">
                                 <label className="font-bold">Dimension</label>
                             </th>
-                            <th className="border border-4 border-double border-gray-500 px-12">
+                            <th className="border-4 border-double border-gray-500 px-12">
                                 <label className="font-bold">la dimension</label>
                             </th>
-                            <th className="border border-4 border-double border-gray-500">
+                            <th className="border-4 border-double border-gray-500">
                                 <label className="font-bold">Codigo de la meta</label>
                             </th>
-                            <th className="border border-4 border-double border-gray-500 px-12">
+                            <th className="border-4 border-double border-gray-500 px-12">
                                 <label className="font-bold">El codigo</label>
                             </th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td className="border border-4 border-double border-gray-500">
+                            <td className="border-4 border-double border-gray-500">
                                 <label className="font-bold">Sector</label>
                             </td>
-                            <td className="border border-4 border-double border-gray-500">
+                            <td className="border-4 border-double border-gray-500">
                                 <label className="font-bold">El sector</label>
                             </td>
-                            <td className="border border-4 border-double border-gray-500">
+                            <td className="border-4 border-double border-gray-500">
                                 <label className="font-bold">Descripcion de meta</label>
                             </td>
-                            <td className="border border-4 border-double border-gray-500">
+                            <td className="border-4 border-double border-gray-500">
                                 <label className="font-bold">una descripcion</label>
                             </td>
                         </tr>
                         <tr>
-                            <td className="border border-4 border-double border-gray-500">
+                            <td className="border-4 border-double border-gray-500">
                                 <label className="font-bold">Programa</label>
                             </td>
-                            <td className="border border-4 border-double border-gray-500">
+                            <td className="border-4 border-double border-gray-500">
                                 <label className="font-bold">El programa</label>
                             </td>
-                            <td className="border border-4 border-double border-gray-500">
+                            <td className="border-4 border-double border-gray-500">
                                 <label className="font-bold">linea base</label>
                             </td>
-                            <td className="border border-4 border-double border-gray-500">
+                            <td className="border-4 border-double border-gray-500">
                                 <label className="font-bold">0</label>
                             </td>
                         </tr>
                         <tr>
-                            <td className="border border-4 border-double border-gray-500">
+                            <td className="border-4 border-double border-gray-500">
                                 <label className="font-bold"></label>
                             </td>
-                            <td className="border border-4 border-double border-gray-500">
+                            <td className="border-4 border-double border-gray-500">
                                 <label className="font-bold"></label>
                             </td>
-                            <td className="border border-4 border-double border-gray-500">
+                            <td className="border-4 border-double border-gray-500">
                                 <label className="font-bold">meta</label>
                             </td>
-                            <td className="border border-4 border-double border-gray-500">
+                            <td className="border-4 border-double border-gray-500">
                                 <label className="font-bold">1</label>
                             </td>
                         </tr>    
@@ -233,7 +233,7 @@ export const AñadirEvidencia = () => {
         return(
             <div className="container mx-auto mt-2 grid grid-cols-12">
                 <header className=" col-span-full
-                                    border border-4 border-double border-gray-500">
+                                    border-4 border-double border-gray-500">
                     <h1 className="text-3xl font-bold text-blue-700">Evidencias de la meta</h1>
                     <button onClick={handleSubmitButton}>
                         return

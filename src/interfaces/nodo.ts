@@ -4,4 +4,5 @@ export interface Nodo {
     Descripcion: string;
     Padre?: string;
     id_nivel: number;
+    Peso: number;
 }
