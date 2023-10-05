@@ -2,7 +2,7 @@ import { InputProps } from "../../interfaces";
 
 export const Input = (props: InputProps) => {
     return(
-        <div className="flex justify-between">
+        <div className="flex justify-center">
             <label htmlFor={props.id}>{props.label}</label>
             <input
                 type={props.type}

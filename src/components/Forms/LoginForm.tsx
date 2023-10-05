@@ -19,10 +19,18 @@ export const LoginForm = () => {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         try {
-            const res = doLogin(username, password);
-            navigate('/lobby')
+            doLogin(username, password)
+            .then((res) => {
+                if (res.token === undefined) {
+                    alert('Usuario o contraseña incorrectos')
+                    return
+                }
+                sessionStorage.setItem('token', JSON.stringify(res.token))
+                navigate('/lobby')
+            })
         } catch (error) {
-            console.log(error)
+            console.log(error);
+            
         }
     }
 

@@ -9,11 +9,31 @@ export const ShowNodosUnidad = ( props : any ) => {
 
     useEffect(() => {
         const ids = props.nodos.map((item: Nodo) => item.id_nodo)
-        getProgresoAño(ids, props.año)
-            .then((res) => {
-                setProgreso(res)
-            })
-    }, [props.año])
+        getProgress(ids)
+    }, [props.año, props.nodos])
+
+    const getProgress = (ids: number[]) => {
+        const pesosStr = localStorage.getItem('pesosNodo')
+        if (pesosStr == undefined) 
+            return 0
+        let pesosNodo = JSON.parse(pesosStr as string)
+        let progreso = [] as number[]
+        pesosNodo.forEach((item: any) => {
+            if (ids.includes(item.id_nodo)) {
+                const { porcentajes } = item
+                if (porcentajes) {
+                    porcentajes.forEach((porcentaje: any) => {
+                        if (porcentaje.año === props.año) {
+                            progreso.push(porcentaje.progreso)
+                        }
+                    })
+                }else {
+                    progreso.push(0)
+                }
+            }
+        })
+        setProgreso(progreso)
+    }
 
     const navigate = useNavigate();
 

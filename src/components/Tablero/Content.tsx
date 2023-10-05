@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Nodo } from "../../interfaces";
-import { getNodosNivel } from "../../services/api";
-import { NodoForm } from "../Forms";
+import { getNodosNivel, getColors } from "../../services/api";
+import { NodoForm, ColorForm } from "../Forms";
 import IconButton from "@mui/material/IconButton";
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import { useNavigate } from "react-router-dom";
@@ -18,6 +18,9 @@ export const Content = ( props : any ) => {
     const [años, setAños] = useState([2020, 2021, 2022, 2023]);
     const [añoSelect, setAño] = useState(2023);
 
+    const [color, setColor] = useState(false);
+    const [hadColor, setHadColor] = useState(false);
+
     React.useEffect(() => {
         if ( shouldUpdate ) {
             try{
@@ -25,6 +28,13 @@ export const Content = ( props : any ) => {
                     .then((res) => {
                         setNodos(res)
                 })
+
+                getColors(props.id)
+                    .then((res) => {
+                        if (res.length > 0) {
+                            setHadColor(true)
+                        }
+                    })                
             } catch (e) {
                 console.log(e)
             }
@@ -70,6 +80,11 @@ export const Content = ( props : any ) => {
         setAño(año);
     }
 
+    const handleColor = ( event: React.MouseEvent<HTMLButtonElement> ) => {
+        event.preventDefault();
+        setColor(!color);
+    }
+
     return (
         <div className="">
             {nodos.length === 0 ? 
@@ -101,12 +116,19 @@ export const Content = ( props : any ) => {
                         {props.data.Nombre}
                     </h1>
                 </div>
+                <button className=" mt-2 ml-2
+                                  bg-blue-300 
+                                    rounded"
+                        onClick={handleColor}>
+                    <p className="break-words">Definir colorimetria</p>
+                </button>
                 {props.index !== props.len ?
                 <ShowNodos  callback={props.callback}
                             callback2={setShouldUpdate} 
                             nodos={nodos} 
                             index={props.index}
-                            año={añoSelect} /> 
+                            año={añoSelect}
+                            progress={props.progress}/> 
                 : <ShowNodosUnidad  id={props.id} 
                                     nodos={nodos}
                                     año={añoSelect}/>
@@ -114,7 +136,7 @@ export const Content = ( props : any ) => {
 
                 <div className="col-start-4 col-span-8
                                 border-l-4 border-gray-400">
-                    <div className="flex justify-around">
+                    <div className="flex flex-wrap justify-around">
                         {años.map((año: number) => (
                             <button className ={`rounded-full
                                                 ${añoSelect === año ? 'bg-cyan-400' : 'bg-white'}
@@ -128,6 +150,15 @@ export const Content = ( props : any ) => {
                         ))}
                     </div>
                 </div>
+                
+                {hadColor ?
+                <div></div>
+                : <div className="col-start-4 col-span-8">
+                    {color ? 
+                    <div></div> 
+                    : <ColorForm id={props.id} callback={setColor}/>}
+                </div>
+                }
             </div>
             }
         </div>

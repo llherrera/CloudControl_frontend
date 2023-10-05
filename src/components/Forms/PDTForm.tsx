@@ -27,7 +27,7 @@ export const PDTForm = () => {
         e.preventDefault();
         try {
             const res = await addPDT(planData);
-            navigate("/lobby");
+            navigate(`/pdt/${res.id_plan}`);
         } catch (error) {
             console.log(error);
         }
@@ -38,29 +38,29 @@ export const PDTForm = () => {
                 className=" ">
 
             <Input  type={"text"}
-                        label="Nombre del Plan:"
-                        id={"nombrePlan"}
-                        name={"nombrePlan"}
-                        value={planData.nombrePlan}
-                        onChange={handleInputChange}/><br/>
+                    label="Nombre del Plan:"
+                    id={"nombrePlan"}
+                    name={"nombrePlan"}
+                    value={planData.nombrePlan}
+                    onChange={handleInputChange}/><br/>
             <Input  type={"text"}
-                        label="Alcaldía:"
-                        id={"alcaldia"}
-                        name={"alcaldia"}
-                        value={planData.alcaldia}
-                        onChange={handleInputChange}/><br/>
+                    label="Alcaldía:"
+                    id={"alcaldia"}
+                    name={"alcaldia"}
+                    value={planData.alcaldia}
+                    onChange={handleInputChange}/><br/>
             <Input  type={"text"}
-                        label="Municipio:"
-                        id={"municipio"}
-                        name={"municipio"}
-                        value={planData.municipio}
-                        onChange={handleInputChange}/><br/>
+                    label="Municipio:"
+                    id={"municipio"}
+                    name={"municipio"}
+                    value={planData.municipio}
+                    onChange={handleInputChange}/><br/>
             <Input  type={"text"}
-                        label="Descripción:"
-                        id={"descripcion"}
-                        name={"descripcion"}
-                        value={planData.descripcion}
-                        onChange={handleInputChange}/><br/>
+                    label="Descripción:"
+                    id={"descripcion"}
+                    name={"descripcion"}
+                    value={planData.descripcion}
+                    onChange={handleInputChange}/><br/>
             
             <div className="flex justify-between">
                 <Input  type={"date"}

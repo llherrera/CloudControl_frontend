@@ -21,6 +21,7 @@ export const getPDTid = async (id: string) => {
     }
 }
 
+// Obtiene el ultimo PDT
 export const getLastPDT = async () => {
     try {
         const response = await axios.get("/pdt/last");
@@ -151,6 +152,47 @@ export const getProgresoAño = async (ids_nodos: string[], año: number) => {
             params: {
                 Ids: ids_nodos,
                 Año: año
+            }
+        });
+        return response.data;
+    } catch (error) {
+        return error;
+    }
+}
+
+// 
+export const getProgresoTotal = async (id_plan: number) => {
+    try {
+        const response = await axios.get(`/nodo/progresoTotal`, {
+            params: {
+                Id: id_plan
+            }
+        });
+        return response.data;
+    } catch (error) {
+        return error;
+    }
+}
+
+// 
+export const addColor = async (id_plan: number, colors: number[]) => {
+    try {
+        const response = await axios.post(`/pdt/color`, {
+            Id: id_plan,
+            Colors: colors
+        });
+        return response.data;
+    } catch (error) {
+        return error;
+    }
+}
+
+//
+export const getColors = async (id_plan: number) => {
+    try {
+        const response = await axios.get(`/pdt/color`, {
+            params: {
+                Id: id_plan
             }
         });
         return response.data;

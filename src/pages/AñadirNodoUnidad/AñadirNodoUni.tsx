@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { addNodoUnidadYAños, getNombreNivel, getNodoUnidadYAños } from "../../services/api";
 import { AñoFormState, UnidFormState } from "../../interfaces";
@@ -33,7 +33,7 @@ export const AñadirNodoUni = () => {
         ejecFinanciera: [] as number[],
     };
 
-    React.useEffect(() => {
+    useEffect(() => {
         try {
             const ids = idNodo!.split('.');
             let ids2 = ids.reduce((acumulator:any, currentValue) => {
@@ -72,7 +72,7 @@ export const AñadirNodoUni = () => {
                 setañoForm(añosTemp);
             });
         } catch (error) {
-            console.log(error);
+            console.log('err');
         }
     }, []);
 
@@ -117,8 +117,9 @@ export const AñadirNodoUni = () => {
                 className="mt-5">
                 <table className  ="border-separate 
                                     border-spacing-2 
-                                    border border-slate-500
-                                    bg-white
+                                    border 
+                                  border-slate-500
+                                  bg-white
                                     rounded">
                     <thead>
                         <tr>
@@ -175,19 +176,31 @@ export const AñadirNodoUni = () => {
         )
     }
 
+    let temp = añoForm.programacion.reduce((a, b) => a + b, 0);
+
+    let porcentajeEjec = añoForm.ejecFisica.reduce((a, b) => a + b, 0) / (temp == 0 ? 1 : temp) * 100;
+
     const añosForm = () => {
+        años.forEach((año, index) => {
+            añoForm.ejecFisica[index] = añoForm.ejecFisica[index] ?? 0;
+            añoForm.programacion[index] = añoForm.programacion[index] ?? 0;
+            añoForm.ejecFinanciera[index] = añoForm.ejecFinanciera[index] ?? 0;
+        });
         return(
             <form   onSubmit={handleañosSubmit}
                     className="mt-5">
                 <table className  ="border-separate 
                                     border-spacing-2
-                                    border border-slate-500
-                                    bg-white
+                                    border 
+                                  border-slate-500
+                                  bg-white
                                     rounded">
                     <thead>
                         <tr>
-                            <th className ='border border-slate-600 
-                                            rounded bg-slate-300'> 
+                            <th className ='border 
+                                          border-slate-600 
+                                          bg-slate-300
+                                            rounded'> 
                                 <button onClick={handleSubmitButton}>Añadir evidencia</button>
                             </th>
                             {años.map((año, index) => {
@@ -209,7 +222,7 @@ export const AñadirNodoUni = () => {
                                     <td className="border border-slate-600 font-bold rounded">
                                         <input  type="text"
                                                 name={`programacion-${año}`}
-                                                value={añoForm.programacion[index] ?? 0}
+                                                value={añoForm.programacion[index]}
                                                 className='bg-gray-200' 
                                                 onChange={(e) => handleInputaño("programacion", index, e.target.value)}
                                                 size={10}/>
@@ -224,20 +237,17 @@ export const AñadirNodoUni = () => {
                                     <td className="border border-slate-600 font-bold rounded">
                                         <input  type="text"
                                                 name={`ejecFisica-${año}`}
-                                                value={añoForm.ejecFisica[index] ?? 0}
+                                                value={añoForm.ejecFisica[index]}
                                                 className='bg-gray-200'
                                                 onChange={(e) => handleInputaño("ejecFisica", index, e.target.value)}
                                                 size={10}/>
                                     </td>
                                 )
                             })}
-                            <td className="border border-slate-600 font-bold px-2 bg-gray-200 rounded"> {
-                                añoForm.programacion.reduce((a, b) => a + b, 0) === 0
-                                ? 0 // Evitar división por cero si la suma de programacion es 0
-                                : (
-                                    añoForm.ejecFisica.reduce((a, b) => (a || 0) + (b || 0), 0) /
-                                    añoForm.programacion.reduce((a, b) => a + b, 0)
-                                ) * 100} %
+                            <td className="border border-slate-600 font-bold px-2 bg-gray-200 rounded">
+                            {
+                                (añoForm.ejecFisica.reduce((a, b) => a + b, 0) / (añoForm.programacion.reduce((a, b) => a + b, 1)) * 100).toFixed(2)
+                            } %
                             </td>
                         </tr>
                         <tr>
@@ -247,14 +257,16 @@ export const AñadirNodoUni = () => {
                                     <td className="border border-slate-600 font-bold rounded">
                                         <input  type="text"
                                                 name={`ejecFinanciera-${año}`}
-                                                value={añoForm.ejecFinanciera[index] ?? 0}
+                                                value={añoForm.ejecFinanciera[index]}
                                                 className='bg-gray-200'
                                                 onChange={(e) => handleInputaño("ejecFinanciera", index, e.target.value)}
                                                 size={10}/>
                                     </td>
                                 )
                             })}
-                            <td className="border border-slate-600 font-bold px-2 bg-gray-200 rounded"> ${añoForm.ejecFinanciera.reduce((a, b) => a + b, 0)/2} </td>
+                            <td className="border border-slate-600 font-bold px-2 bg-gray-200 rounded"> 
+                            ${añoForm.ejecFinanciera.reduce((a, b) => a + b, 0)/2} 
+                            </td>
                         </tr>
                     </tbody>
                 </table>
@@ -264,12 +276,12 @@ export const AñadirNodoUni = () => {
 
     return (
         <div className="container mx-auto my-3
-                        bg-gray-200
+                      bg-gray-200
                         grid grid-cols-12
-                        border-8 border-gray-400 rounded-md ">
+                        border-8 
+                      border-gray-400 rounded-md ">
             <div className='cols-start-1 col-span-full
-                            flex
-                            justify-between
+                            flex justify-between
                             px-3 my-4
                             shadow-2xl
                             border-b-2 border-gray-400
@@ -279,7 +291,7 @@ export const AñadirNodoUni = () => {
                 <p> Plan indicativo </p>
             </div>
             <div className="col-start-1 col-span-full flex justify-center">
-            {nombres.map((nombre) => {
+            {nombres.length > 0 && nombres.map((nombre) => {
                 return (
                     <div className="flex mr-4">
                         <p className="text-green-600 font-bold">{nombre[1]}:</p> 
@@ -297,10 +309,11 @@ export const AñadirNodoUni = () => {
 
             <div className="col-start-1 col-span-full flex justify-center">
                 <button type="button" 
-                        className ="bg-blue-500 hover:bg-blue-300 
+                        className ="bg-blue-500 
+                                    hover:bg-blue-300 
                                     text-white font-bold 
-                                    py-2 px-4 my-5
-                                    rounded"
+                                      py-2 px-4 my-5
+                                      rounded"
                         onClick={handleInput}>
                     Guardar <br /> cambios
                 </button>
