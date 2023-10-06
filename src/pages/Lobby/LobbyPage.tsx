@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getLastPDT } from '../../services/api';
 import { ButtonPlan } from '../../components';
@@ -8,12 +8,14 @@ export const LobbyPage = () => {
     const navigate = useNavigate();
 
     const [rol, setRol] = useState("");
+    const [id, setId] = useState(0);
 
     useEffect(() => {
         const token = sessionStorage.getItem('token')
         try {
             if (token !== null && token !== undefined) {
                 const decoded = decode(token) as any
+                setId(decoded.id_plan)
                 setRol(decoded.rol)
             }
         } catch (error) {
@@ -24,6 +26,9 @@ export const LobbyPage = () => {
     const handleButton = () => {
         if (rol === "admin") {
             navigate('/pdt')
+            return
+        }else if (rol === "funcionario") {
+            navigate(`/pdt/${id}`)
             return
         }
         getLastPDT()

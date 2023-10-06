@@ -1,14 +1,18 @@
 import React, { useState } from "react";
 import { Input } from "../Inputs";
+import { doRegister } from "../../services/api";
+import { useNavigate } from "react-router-dom";
 
-export const RegisterForm = () => {
-    
+export const RegisterForm = (props: any) => {
+    const navigate = useNavigate();
+
     const [form, setForm] = useState({
         usuario: '',
         apellido: '',
         correo: '',
         contraseña: '',
-        confirmarContraseña: ''
+        confirmarContraseña: '',
+        rol: 'funcionario'
     });
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -16,8 +20,23 @@ export const RegisterForm = () => {
         setForm({ ...form, [name]: value });
     }
 
+    const submitForm = (event: React.FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
+        if (form.contraseña !== form.confirmarContraseña) {
+            alert("Las contraseñas no coinciden");
+            return;
+        }
+        doRegister(props.id, form)
+            .then((res) => {
+                navigate(`/pdt/${props.id}`, { replace: true})
+            })
+            .catch((err) => {
+                alert("Error al registrar usuario");
+            })
+    }
+
     return (
-        <form action="">
+        <form onSubmit={submitForm}>
             <h1>Registro</h1>
             <Input  label={"Usuario"}
                     type={"text"}
@@ -48,10 +67,9 @@ export const RegisterForm = () => {
                     id={"confirmarContraseña"}
                     name={"confirmarContraseña"}
                     value={form.confirmarContraseña}
-                    onChange={ (event) => handleInputChange(event)}/><br />
-            
+                    onChange={ (event) => handleInputChange(event)}/><br />    
             <button type="submit"
-                    className=' bg-green-300 
+                    className='bg-green-300 
                                 px-3 py-2
                                 rounded'>Registrarse</button>
         </form>

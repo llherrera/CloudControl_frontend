@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import { Nodo } from "../../interfaces";
 import { getNodosNivel, getColors } from "../../services/api";
 import { NodoForm, ColorForm } from "../Forms";
@@ -7,6 +7,7 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import { useNavigate } from "react-router-dom";
 import { ShowNodos } from "./ShowNodos";
 import { ShowNodosUnidad } from "./ShowNodosUnidad";
+import { decode } from "../../utils/decode";
 
 export const Content = ( props : any ) => {
     const navigate = useNavigate();
@@ -19,9 +20,23 @@ export const Content = ( props : any ) => {
     const [añoSelect, setAño] = useState(2023);
 
     const [color, setColor] = useState(false);
+    const [colors, setColors] = useState([] as number[]);
     const [hadColor, setHadColor] = useState(false);
+    
+    const [rol, setRol] = useState("")
+    const [id, setId] = useState(0)
 
-    React.useEffect(() => {
+    useEffect(() => {
+        const token = sessionStorage.getItem('token')
+        try {
+            if (token !== null && token !== undefined) {
+                const decoded = decode(token) as any
+                setId(decoded.id_plan)
+                setRol(decoded.rol)
+            }
+        } catch (error) {
+            console.log(error);
+        }
         if ( shouldUpdate ) {
             try{
                 getNodosNivel(props.data.id_nivel, props.Padre)
@@ -32,6 +47,12 @@ export const Content = ( props : any ) => {
                 getColors(props.id)
                     .then((res) => {
                         if (res.length > 0) {
+                            let temp = []
+                            temp.push(res[0].value1)
+                            temp.push(res[0].value2)
+                            temp.push(res[0].value3)
+                            temp.push(res[0].value4)
+                            setColors(temp)
                             setHadColor(true)
                         }
                     })                
@@ -99,11 +120,16 @@ export const Content = ( props : any ) => {
                         {props.data.Nombre}
                     </h1>
                 </div>
-                <NodoForm   index={props.index}
-                            id={props.data.id_nivel}
-                            Padre={props.Padre} 
-                            callback={callback}/>
-            </div> 
+                {(rol === "admin") || (rol === 'funcionario' && id === props.id) ?
+                    <NodoForm   index={props.index}
+                                id={props.data.id_nivel}
+                                Padre={props.Padre}
+                                callback={callback}/>
+                : <div>
+                    <p>De momemnto no hay contenido en este PDT</p>
+                </div>
+                }
+            </div>
             :<div className="   grid 
                                 grid-cols-12
                                 grid-flow-row">
@@ -116,22 +142,27 @@ export const Content = ( props : any ) => {
                         {props.data.Nombre}
                     </h1>
                 </div>
-                <button className=" mt-2 ml-2
+                {hadColor ?
+                <div></div>
+                :<button className=" mt-2 ml-2
                                   bg-blue-300 
-                                    rounded"
-                        onClick={handleColor}>
+                                  rounded"
+                                  onClick={handleColor}>
                     <p className="break-words">Definir colorimetria</p>
                 </button>
+                }
                 {props.index !== props.len ?
                 <ShowNodos  callback={props.callback}
                             callback2={setShouldUpdate} 
                             nodos={nodos} 
                             index={props.index}
                             año={añoSelect}
-                            progress={props.progress}/> 
+                            progress={props.progress}
+                            colors={colors}/> 
                 : <ShowNodosUnidad  id={props.id} 
                                     nodos={nodos}
-                                    año={añoSelect}/>
+                                    año={añoSelect}
+                                    colors={colors}/>
                 }
 
                 <div className="col-start-4 col-span-8

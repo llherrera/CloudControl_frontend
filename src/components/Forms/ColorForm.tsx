@@ -4,8 +4,8 @@ import Box from '@mui/material/Box';
 import { addColor } from '../../services/api';
 
 export const ColorForm = ( props : any ) => {
-    
-    const [value, setValue] = React.useState([[0, 24], [25, 49], [50, 74], [75, 100]]);
+
+    const [value, setValue] = useState([[0, 24], [25, 49], [50, 74], [75, 100]]);
 
     const handleChange = (index: number) => (event: Event, newValue: number | number[]) => {
         const updateValue = [...value];

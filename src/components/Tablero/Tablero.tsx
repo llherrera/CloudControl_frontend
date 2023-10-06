@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { Content } from './Content';
 import { Nivel } from '../../interfaces';
 import { useParams } from 'react-router-dom';
-import { getProgresoTotal, getColors } from '../../services/api';
+import { getProgresoTotal } from '../../services/api';
 
 export const Tablero = ( { data } : { data : Nivel[] } ) => {
     const { id } = useParams();
@@ -37,7 +37,6 @@ export const Tablero = ( { data } : { data : Nivel[] } ) => {
     }, [])
 
     const calcProgress = () => {
-        
         const pesosStr = localStorage.getItem('pesosNodo')
         const detalleStr = localStorage.getItem('detalleAño')
         if (!pesosStr || !detalleStr) return
@@ -52,7 +51,7 @@ export const Tablero = ( { data } : { data : Nivel[] } ) => {
             let peso = pesosNodo.find((peso: any) => peso.id_nodo === item.id_nodo)
             if (peso) {
                 peso.porcentajes = peso.porcentajes ? peso.porcentajes : []
-                peso.porcentajes.push({ progreso : progreso, año: item.Año })
+                peso.porcentajes.push({ progreso : progreso, año: item.Año, programacion: item.Programacion_fisica })
             }
         })
 
@@ -105,7 +104,7 @@ export const Tablero = ( { data } : { data : Nivel[] } ) => {
                             data={data[index]} 
                             callback={setData} 
                             Padre={Padre} 
-                            id={id}
+                            id={ parseInt(id as string) }
                             progress={getProgress}/>
             </div>
         </div>

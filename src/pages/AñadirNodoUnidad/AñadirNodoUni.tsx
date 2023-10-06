@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { addNodoUnidadYAños, getNombreNivel, getNodoUnidadYAños } from "../../services/api";
+import { addNodoUnidadYAños, getNombreNivel, getNodoUnidadYAños, getProgresoTotal } from "../../services/api";
 import { AñoFormState, UnidFormState } from "../../interfaces";
 
 export const AñadirNodoUni = () => {
@@ -10,6 +10,10 @@ export const AñadirNodoUni = () => {
     const [nombres, setNombres] = useState([[]]);
 
     const años = [2020,2021,2022,2023];
+    const [acum, setAcum] = useState(0);
+    const [acumFinan, setAcumFinan] = useState(0);
+    const [add, setAdd] = useState(false);
+    const [getProgress, setGetProgress] = useState(false);
 
     const [unidForm, setUnidForm] = useState<UnidFormState>({
         codigo: '',
@@ -35,6 +39,20 @@ export const AñadirNodoUni = () => {
 
     useEffect(() => {
         try {
+            const id_ = parseInt(idPDT as string)
+
+        getProgresoTotal(id_)
+            .then((res: any) => {
+                if (!res) return
+                localStorage.setItem('pesosNodo', JSON.stringify(res[0]))
+                localStorage.setItem('detalleAño', JSON.stringify(res[1]))
+                calcProgress()
+                setGetProgress(true)
+            })
+            .catch((err: any) => {
+                console.log(err);
+            })
+
             const ids = idNodo!.split('.');
             let ids2 = ids.reduce((acumulator:any, currentValue) => {
                 if (acumulator.length === 0) {
@@ -51,17 +69,21 @@ export const AñadirNodoUni = () => {
             });
 
             getNodoUnidadYAños(idPDT!, idNodo!).then((res) => {
-                const { Nodo, Años } = res;
-                if (Nodo === undefined) {
-                    return;
-                }
+                const { Nodo } = res;
+                if (Nodo === undefined) return;
+                const { Codigo, Descripcion, Indicador, Linea_base, Meta } = Nodo;
+                if (Codigo === undefined || Descripcion === undefined || Indicador === undefined || Linea_base === undefined || Meta === undefined) return;
                 setUnidForm({codigo: Nodo.Codigo,
                              descripcion: Nodo.Descripcion,
                              indicador: Nodo.Indicador,
                              base: Nodo.Linea_base,
                              meta: Nodo.Meta,
                 });
-
+                const detalleAño = localStorage.getItem('detalleAño');
+                if (detalleAño === null) 
+                    return;
+                const detalleAñoJSON = JSON.parse(detalleAño);
+                const Años = detalleAñoJSON.filter((dato:any) => dato.id_nodo === idNodo);
                 Años.forEach((dato:any) => {
                     const año = new Date(dato.Año).getFullYear();
                     añosTemp.año.push(año);
@@ -70,56 +92,128 @@ export const AñadirNodoUni = () => {
                     añosTemp.ejecFinanciera.push(dato.Ejecucion_financiera);
                 });
                 setañoForm(añosTemp);
+                const temp = calcularAcumulado( años, añosTemp);
+                setAcum(temp);
             });
         } catch (error) {
             console.log('err');
         }
-    }, []);
+    }, [add]);
+
+    const calcularAcumulado = (años: number[], añoForm: AñoFormState) => {
+        let acumulado = 0;
+        let acum = 0;
+        let finan = 0;
+        años.map((año, index) => {
+            if (añoForm.programacion[index] !== 0) {
+                acum++;
+                acumulado += (añoForm.ejecFisica[index]) / (añoForm.programacion[index]);
+            }
+            finan += añoForm.ejecFinanciera[index];
+        });
+        acumulado = acum === 0 ? 0 : (acumulado / acum);
+        setAcumFinan(finan);
+        return acumulado;
+    }
+
+    const calcProgress = () => {
+        const pesosStr = localStorage.getItem('pesosNodo')
+        const detalleStr = localStorage.getItem('detalleAño')
+        if (!pesosStr || !detalleStr) return
+        let pesosNodo = JSON.parse(pesosStr as string)
+        let detalleAño = JSON.parse(detalleStr as string)
+        
+        detalleAño.forEach((item: any) => {
+            let progreso = 0
+            if (item.Programacion_fisica !== 0)
+                progreso = item.Ejecucion_Fisica / item.Programacion_fisica
+                progreso = parseFloat(progreso.toFixed(2))
+            let peso = pesosNodo.find((peso: any) => peso.id_nodo === item.id_nodo)
+            if (peso) {
+                peso.porcentajes = peso.porcentajes ? peso.porcentajes : []
+                peso.porcentajes.push({ progreso : progreso, año: item.Año })
+            }
+        })
+
+        pesosNodo.forEach((item: any) => {
+            const { porcentajes, Padre } = item
+            if (porcentajes) {
+                if (Padre){
+                    porcentajes.forEach((porcentaje: any) => {
+                        let padre = pesosNodo.find((e: any) => e.id_nodo === Padre)
+                        if (padre) {
+                            let progresoPeso = parseFloat(porcentaje.progreso) * (parseFloat(item.Peso) / 100)
+                            progresoPeso = parseFloat(progresoPeso.toFixed(2))
+                            padre.porcentajes = padre.porcentajes ? padre.porcentajes : []
+                            const temp = padre.porcentajes.find((e: any) => e.año === porcentaje.año)
+                            if (temp) {
+                                temp.progreso += progresoPeso
+                            } else {
+                                padre.porcentajes.push({ progreso : progresoPeso, año: porcentaje.año })
+                            }
+                        }
+                    })
+                }
+            } else {
+
+            }
+        })
+        localStorage.setItem('pesosNodo', JSON.stringify(pesosNodo))
+    }
 
     const handleSubmitButton = () => {
         navigate(`/pdt/${idPDT}/${idNodo}/añadirEvidencia`)
     }
 
-    const handleInput = (e: any) => {
-        e.preventDefault();
-        addNodoUnidadYAños(idPDT!, idNodo!, unidForm, añoForm);
+    const handleInput = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        if (unidForm.meta === 0 || unidForm.codigo === '' || unidForm.descripcion === '' || unidForm.indicador === '')
+            return alert('Faltan campos por llenar')
+        let temp = 0;
+        for (let i = 0; i < añoForm.año.length; i++) {
+            if (añoForm.programacion[i] > 0)
+                temp++;
+            if (temp > 0)
+                break;
+        }
+        if (temp === 0)
+            return alert('Faltan campos por llenar')
+        
+        try {
+            addNodoUnidadYAños(idPDT!, idNodo!, unidForm, añoForm).then((res) => {
+                if (res === undefined)
+                    return alert('No se pudo añadir la unidad')
+                alert('Unidad añadida con éxito');
+                setAdd(true);
+            });
+        } catch (error) {
+            console.log(error);
+        }
     }
 
-    const handleInputUnid = (e: any) => {
+    const handleInputUnid = (e : React.ChangeEvent<HTMLInputElement>) => {
         setUnidForm({
             ...unidForm,
             [e.target.name]: e.target.value,
         });
     }
 
-    const handleUnidadSubmit = (e: any) => {
-        e.preventDefault();
-        console.log(unidForm);
-    }
-
-    const handleInputaño = (grupo: keyof AñoFormState, index: number, valor: any) => {
+    const handleInputaño = (grupo: keyof AñoFormState, index: number, valor: string) => {
         const nuevosValores = [...añoForm[grupo]];
-        nuevosValores[index] = valor;
+        nuevosValores[index] = parseFloat(valor);
         setañoForm({
             ...añoForm,
             [grupo]: nuevosValores,
         });
     }
 
-    const handleañosSubmit = (e: any) => {
-        e.preventDefault();
-        console.log(añoForm);
-    }
-
     const unidadForm = () => {
         return (
-            <form   onSubmit={handleUnidadSubmit}
-                className="mt-5">
+            <form   className="mt-5">
                 <table className  ="border-separate 
                                     border-spacing-2 
                                     border 
-                                  border-slate-500
-                                  bg-white
+                                    border-slate-500
+                                    bg-white
                                     rounded">
                     <thead>
                         <tr>
@@ -129,7 +223,8 @@ export const AñadirNodoUni = () => {
                                         name="codigo"
                                         value={unidForm.codigo}
                                         className="bg-gray-200" 
-                                        onChange={handleInputUnid}/>
+                                        onChange={ (e) => handleInputUnid(e)}
+                                        required/>
                             </th>
                             <th className="border border-slate-600 px-2 bg-gray-200 rounded">Línea base</th>
                             <th className="border border-slate-600 rounded">
@@ -137,7 +232,8 @@ export const AñadirNodoUni = () => {
                                         name="base"
                                         value={unidForm.base}
                                         className="bg-gray-200" 
-                                        onChange={handleInputUnid}/>
+                                        onChange={handleInputUnid}
+                                        required/>
                             </th>
                         </tr>
                     </thead>
@@ -149,7 +245,8 @@ export const AñadirNodoUni = () => {
                                         name="descripcion"
                                         value={unidForm.descripcion}
                                         className="bg-gray-200" 
-                                        onChange={handleInputUnid}/>
+                                        onChange={handleInputUnid}
+                                        required/>
                             </td>
                             <td className="border border-slate-600 font-bold bg-gray-200 rounded">Meta</td>
                             <td className="border border-slate-600 font-bold rounded">
@@ -157,7 +254,8 @@ export const AñadirNodoUni = () => {
                                         name="meta"
                                         value={unidForm.meta}
                                         className="bg-gray-200" 
-                                        onChange={handleInputUnid}/>
+                                        onChange={handleInputUnid}
+                                        required/>
                             </td>
                         </tr>
                         <tr>
@@ -167,7 +265,8 @@ export const AñadirNodoUni = () => {
                                         name="indicador"
                                         value={unidForm.indicador}
                                         className="bg-gray-200" 
-                                        onChange={handleInputUnid}/>
+                                        onChange={handleInputUnid}
+                                        required/>
                             </td>
                         </tr>
                     </tbody>
@@ -176,10 +275,6 @@ export const AñadirNodoUni = () => {
         )
     }
 
-    let temp = añoForm.programacion.reduce((a, b) => a + b, 0);
-
-    let porcentajeEjec = añoForm.ejecFisica.reduce((a, b) => a + b, 0) / (temp == 0 ? 1 : temp) * 100;
-
     const añosForm = () => {
         años.forEach((año, index) => {
             añoForm.ejecFisica[index] = añoForm.ejecFisica[index] ?? 0;
@@ -187,19 +282,18 @@ export const AñadirNodoUni = () => {
             añoForm.ejecFinanciera[index] = añoForm.ejecFinanciera[index] ?? 0;
         });
         return(
-            <form   onSubmit={handleañosSubmit}
-                    className="mt-5">
+            <form   className="mt-5">
                 <table className  ="border-separate 
                                     border-spacing-2
                                     border 
-                                  border-slate-500
-                                  bg-white
+                                    border-slate-500
+                                    bg-white
                                     rounded">
                     <thead>
                         <tr>
                             <th className ='border 
-                                          border-slate-600 
-                                          bg-slate-300
+                                            border-slate-600 
+                                            bg-slate-300
                                             rounded'> 
                                 <button onClick={handleSubmitButton}>Añadir evidencia</button>
                             </th>
@@ -225,7 +319,8 @@ export const AñadirNodoUni = () => {
                                                 value={añoForm.programacion[index]}
                                                 className='bg-gray-200' 
                                                 onChange={(e) => handleInputaño("programacion", index, e.target.value)}
-                                                size={10}/>
+                                                size={10}
+                                                required/>
                                     </td>
                                 )
                             })}
@@ -240,14 +335,13 @@ export const AñadirNodoUni = () => {
                                                 value={añoForm.ejecFisica[index]}
                                                 className='bg-gray-200'
                                                 onChange={(e) => handleInputaño("ejecFisica", index, e.target.value)}
-                                                size={10}/>
+                                                size={10}
+                                                required/>
                                     </td>
                                 )
                             })}
                             <td className="border border-slate-600 font-bold px-2 bg-gray-200 rounded">
-                            {
-                                (añoForm.ejecFisica.reduce((a, b) => a + b, 0) / (añoForm.programacion.reduce((a, b) => a + b, 1)) * 100).toFixed(2)
-                            } %
+                            {isNaN(acum) ? 0 : acum*100} %
                             </td>
                         </tr>
                         <tr>
@@ -260,12 +354,13 @@ export const AñadirNodoUni = () => {
                                                 value={añoForm.ejecFinanciera[index]}
                                                 className='bg-gray-200'
                                                 onChange={(e) => handleInputaño("ejecFinanciera", index, e.target.value)}
-                                                size={10}/>
+                                                size={10}
+                                                required/>
                                     </td>
                                 )
                             })}
                             <td className="border border-slate-600 font-bold px-2 bg-gray-200 rounded"> 
-                            ${añoForm.ejecFinanciera.reduce((a, b) => a + b, 0)/2} 
+                            ${isNaN(acumFinan) ? 0 : acumFinan}
                             </td>
                         </tr>
                     </tbody>
@@ -276,10 +371,10 @@ export const AñadirNodoUni = () => {
 
     return (
         <div className="container mx-auto my-3
-                      bg-gray-200
+                        bg-gray-200
                         grid grid-cols-12
                         border-8 
-                      border-gray-400 rounded-md ">
+                        border-gray-400 rounded-md ">
             <div className='cols-start-1 col-span-full
                             flex justify-between
                             px-3 my-4
@@ -312,9 +407,9 @@ export const AñadirNodoUni = () => {
                         className ="bg-blue-500 
                                     hover:bg-blue-300 
                                     text-white font-bold 
-                                      py-2 px-4 my-5
-                                      rounded"
-                        onClick={handleInput}>
+                                    py-2 px-4 my-5
+                                    rounded"
+                        onClick={(e) => handleInput(e)}>
                     Guardar <br /> cambios
                 </button>
             </div>

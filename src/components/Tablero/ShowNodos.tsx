@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Nodo } from '../../interfaces';
-import { getProgresoAño } from '../../services/api';
 
 export const ShowNodos = ( props : any ) => {
 
@@ -50,13 +49,15 @@ export const ShowNodos = ( props : any ) => {
                         border-r-4 border-gray-400">
             {props.nodos.map((item: Nodo, index: number) => (
                 <div className="my-5 flex">
-                    <button className ="rounded-full
-                                      bg-white
+                    <button className ={`rounded-full
+                                        ${(progreso[index]??0)*100 < props.colors[0] ? 'bg-red-400'   :
+                                          (progreso[index]??0)*100 < props.colors[1] ? 'bg-yellow-400':
+                                          (progreso[index]??0)*100 < props.colors[2] ? 'bg-green-400' : 'bg-blue-400'}
                                         ml-3
                                         w-12 h-12
-                                      border-yellow-300 border-8
                                         translate-x-3
-                                        scale-100"
+                                        font-bold
+                                        scale-100`}
                             onClick={ (event) => handleButton(event, index)}>
                         {(progreso[index]??0)*100}%
                     </button>
