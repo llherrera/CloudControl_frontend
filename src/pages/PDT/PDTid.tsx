@@ -2,12 +2,11 @@ import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { getPDTid } from "../../services/api";
 import { NivelForm, Tablero } from "../../components";
-import { Nivel } from "../../interfaces";
+import { NivelInterface } from "../../interfaces";
 
 export const PDTid = () => {
     const { id } = useParams();
-
-    const [data, setData] = useState([] as Nivel[]);
+    const [data, setData] = useState<NivelInterface[]>([]);
 
     useEffect(() => {
         getPDTid(id!)

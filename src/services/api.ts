@@ -1,5 +1,5 @@
 import axios from "axios";
-import { AñoFormState, UnidFormState, Nodo } from "../interfaces";
+import { AñoFormState, UnidFormState, Nodo, NivelInterface, RegisterInterface, PDTInterface, EvidenciaInterface } from "../interfaces";
 
 // Obtiene todos los PDTs
 export const getPDTs = async () => {
@@ -45,7 +45,7 @@ export const doLogin = async (username: string, password: string) => {
 }
 
 // Crea un usuario funcionario para un PDT especifico
-export const doRegister = async (id: number, userData: any) => {
+export const doRegister = async (id: number, userData: RegisterInterface) => {
     try {
         const response = await axios.post('/users/register', {
             id:       id,
@@ -62,15 +62,15 @@ export const doRegister = async (id: number, userData: any) => {
 }
 
 // Añade un nuevo PDT
-export const addPDT = async (pdt: any) => {
+export const addPDT = async (pdt: PDTInterface) => {
     try {
         const response = await axios.post("/pdt", {
-            Nombre:       pdt.nombrePlan,
-            Alcaldia:     pdt.alcaldia,
-            Municipio:    pdt.municipio,
-            Fecha_inicio: pdt.fechaIni,
-            Fecha_fin:    pdt.fechaFin,
-            Descripcion:  pdt.descripcion,
+            Nombre:       pdt.Nombre,
+            Alcaldia:     pdt.Alcaldia,
+            Municipio:    pdt.Municipio,
+            Fecha_inicio: pdt.Fecha_inicio,
+            Fecha_fin:    pdt.Fecha_fin,
+            Descripcion:  pdt.Descripcion,
         });
         return response.data;
     } catch (error) {
@@ -79,7 +79,7 @@ export const addPDT = async (pdt: any) => {
 };
 
 // Añade todos los niveles a un PDT
-export const addNivel = async (nivel: {}[], id : string) => {
+export const addNivel = async (nivel: NivelInterface[], id : string) => {
     try {
         const response = await axios.post(`/pdt/${id}`, { Niveles: nivel } );
         return response.data;
@@ -89,7 +89,7 @@ export const addNivel = async (nivel: {}[], id : string) => {
 }
 
 // Obtiene todos los nodos de un nivel de un PDT
-export const getNodosNivel = async (id: number, Padre? : string) => {
+export const getNodosNivel = async (id: number, Padre: (string | null)) => {
     try {
         const response = await axios.get(`/pdt/nivel`, { 
             params: { 
@@ -104,7 +104,7 @@ export const getNodosNivel = async (id: number, Padre? : string) => {
 }
 
 // Añade todos los nodos a un nivel de un PDT
-export const addNodoNivel = async (nodo: {}[]) => {
+export const addNodoNivel = async (nodo: Nodo[]) => {
     try {
         const response = await axios.post("/pdt/nivel", { Nodos: nodo } );
         return response.data;
@@ -158,7 +158,7 @@ export const getNodoUnidadYAños = async (idPDT: string, idNodo: string) => {
 }
 
 // Añade una evidencia a una unidad de nodo
-export const addEvicenciaMeta = async (codigo: string, evidencia: any) => {
+export const addEvicenciaMeta = async (codigo: string, evidencia: EvidenciaInterface) => {
     try {
         const response = await axios.post("/nodo/evidencia", { 
             Codigo:    codigo,

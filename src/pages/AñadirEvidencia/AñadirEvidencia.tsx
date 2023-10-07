@@ -1,7 +1,7 @@
-import React, { useState } from "react"
+import React, { useState, useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { addEvicenciaMeta, getNombreNivel, getNodoUnidadYAños } from "../../services/api"
-import { AñoFormState, UnidFormState } from "../../interfaces"
+import { AñoFormState, UnidFormState, DetalleAño, EvidenciaInterface } from "../../interfaces"
 
 export const AñadirEvidencia = () => {
     const navigate = useNavigate()
@@ -15,12 +15,12 @@ export const AñadirEvidencia = () => {
         base: 0,
         meta: 0,
     });
-    const [añoForm, setañoForm] = useState({
+    const [añoForm, setañoForm] = useState<AñoFormState>({
         año: [],
         programacion: [],
         ejecFisica: [],
         ejecFinanciera: [],
-    } as AñoFormState);
+    });
 
     let añosTemp = {
         año: [] as number[],
@@ -29,10 +29,10 @@ export const AñadirEvidencia = () => {
         ejecFinanciera: [] as number[],
     };
 
-    React.useEffect(() => {
+    useEffect(() => {
         try {
             const ids = idNodo!.split('.');
-            let ids2 = ids.reduce((acumulator:any, currentValue) => {
+            let ids2 = ids.reduce((acumulator:string[], currentValue) => {
                 if (acumulator.length === 0) {
                     return [currentValue];
                 } else {
@@ -58,7 +58,7 @@ export const AñadirEvidencia = () => {
                              meta: Nodo.Meta,
                 });
 
-                Años.forEach((dato:any) => {
+                Años.forEach((dato:DetalleAño) => {
                     const año = new Date(dato.Año).getFullYear();
                     añosTemp.año.push(año);
                     añosTemp.programacion.push(dato.Programacion_fisica);
@@ -73,7 +73,7 @@ export const AñadirEvidencia = () => {
     }, []);
     
     const [cargar, setCargar] = useState(false)
-    const [data, setData] = useState({
+    const [data, setData] = useState<EvidenciaInterface>({
         Fecha: "",
         DescripcionActividades: "",
         Unidad: "num",
@@ -96,7 +96,7 @@ export const AñadirEvidencia = () => {
         setData({ ...data, [name]: value });
     }
 
-    const handleSubmitEvidencia = (e: any) => {
+    const handleSubmitEvidencia = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault()
         addEvicenciaMeta(unidForm.codigo, data)
         setCargar(!cargar)
@@ -106,7 +106,7 @@ export const AñadirEvidencia = () => {
         navigate(-1)
     }
 
-    const handleSubmitButton = (e: any) => {
+    const handleSubmitButton = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         setCargar(!cargar)
     }
 
@@ -235,7 +235,7 @@ export const AñadirEvidencia = () => {
                 <header className=" col-span-full
                                     border-4 border-double border-gray-500">
                     <h1 className="text-3xl font-bold text-blue-700">Evidencias de la meta</h1>
-                    <button onClick={handleSubmitButton}>
+                    <button onClick={ (e) => handleSubmitButton(e)}>
                         return
                     </button>
                 </header>

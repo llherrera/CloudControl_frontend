@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { addNodoUnidadYAños, getNombreNivel, getNodoUnidadYAños, getProgresoTotal } from "../../services/api";
-import { AñoFormState, UnidFormState } from "../../interfaces";
+import { AñoFormState, UnidFormState, DetalleAño, PesosNodos, Porcentaje } from "../../interfaces";
 
 export const AñadirNodoUni = () => {
     const navigate = useNavigate()
@@ -23,12 +23,12 @@ export const AñadirNodoUni = () => {
         meta: 0,
     });
 
-    const [añoForm, setañoForm] = useState({
+    const [añoForm, setañoForm] = useState<AñoFormState>({
         año: [],
         programacion: [],
         ejecFisica: [],
         ejecFinanciera: [],
-    } as AñoFormState);
+    });
 
     let añosTemp = {
         año: [] as number[],
@@ -42,19 +42,19 @@ export const AñadirNodoUni = () => {
             const id_ = parseInt(idPDT as string)
 
         getProgresoTotal(id_)
-            .then((res: any) => {
+            .then((res) => {
                 if (!res) return
                 localStorage.setItem('pesosNodo', JSON.stringify(res[0]))
                 localStorage.setItem('detalleAño', JSON.stringify(res[1]))
                 calcProgress()
                 setGetProgress(true)
             })
-            .catch((err: any) => {
+            .catch((err) => {
                 console.log(err);
             })
 
             const ids = idNodo!.split('.');
-            let ids2 = ids.reduce((acumulator:any, currentValue) => {
+            let ids2 = ids.reduce((acumulator:string[], currentValue) => {
                 if (acumulator.length === 0) {
                     return [currentValue];
                 } else {
@@ -83,8 +83,8 @@ export const AñadirNodoUni = () => {
                 if (detalleAño === null) 
                     return;
                 const detalleAñoJSON = JSON.parse(detalleAño);
-                const Años = detalleAñoJSON.filter((dato:any) => dato.id_nodo === idNodo);
-                Años.forEach((dato:any) => {
+                const Años = detalleAñoJSON.filter((dato:DetalleAño) => dato.id_nodo === idNodo);
+                Años.forEach((dato:DetalleAño) => {
                     const año = new Date(dato.Año).getFullYear();
                     añosTemp.año.push(año);
                     añosTemp.programacion.push(dato.Programacion_fisica);
@@ -104,7 +104,7 @@ export const AñadirNodoUni = () => {
         let acumulado = 0;
         let acum = 0;
         let finan = 0;
-        años.map((año, index) => {
+        años.map((año: number, index: number) => {
             if (añoForm.programacion[index] !== 0) {
                 acum++;
                 acumulado += (añoForm.ejecFisica[index]) / (añoForm.programacion[index]);
@@ -123,29 +123,29 @@ export const AñadirNodoUni = () => {
         let pesosNodo = JSON.parse(pesosStr as string)
         let detalleAño = JSON.parse(detalleStr as string)
         
-        detalleAño.forEach((item: any) => {
+        detalleAño.forEach((item: DetalleAño) => {
             let progreso = 0
             if (item.Programacion_fisica !== 0)
                 progreso = item.Ejecucion_Fisica / item.Programacion_fisica
                 progreso = parseFloat(progreso.toFixed(2))
-            let peso = pesosNodo.find((peso: any) => peso.id_nodo === item.id_nodo)
+            let peso = pesosNodo.find((peso: PesosNodos) => peso.id_nodo === item.id_nodo)
             if (peso) {
                 peso.porcentajes = peso.porcentajes ? peso.porcentajes : []
                 peso.porcentajes.push({ progreso : progreso, año: item.Año })
             }
         })
 
-        pesosNodo.forEach((item: any) => {
+        pesosNodo.forEach((item: PesosNodos) => {
             const { porcentajes, Padre } = item
             if (porcentajes) {
                 if (Padre){
-                    porcentajes.forEach((porcentaje: any) => {
-                        let padre = pesosNodo.find((e: any) => e.id_nodo === Padre)
+                    porcentajes.forEach((porcentaje: Porcentaje) => {
+                        let padre = pesosNodo.find((e: PesosNodos) => e.id_nodo === Padre)
                         if (padre) {
-                            let progresoPeso = parseFloat(porcentaje.progreso) * (parseFloat(item.Peso) / 100)
+                            let progresoPeso = porcentaje.progreso * item.Peso / 100
                             progresoPeso = parseFloat(progresoPeso.toFixed(2))
                             padre.porcentajes = padre.porcentajes ? padre.porcentajes : []
-                            const temp = padre.porcentajes.find((e: any) => e.año === porcentaje.año)
+                            const temp = padre.porcentajes.find((e: Porcentaje) => e.año === porcentaje.año)
                             if (temp) {
                                 temp.progreso += progresoPeso
                             } else {

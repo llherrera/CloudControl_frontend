@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Nodo } from "../../interfaces";
+import { Nodo, ContentProps, Token } from "../../interfaces";
 import { getNodosNivel, getColors } from "../../services/api";
 import { NodoForm, ColorForm } from "../Forms";
 import IconButton from "@mui/material/IconButton";
@@ -9,10 +9,10 @@ import { ShowNodos } from "./ShowNodos";
 import { ShowNodosUnidad } from "./ShowNodosUnidad";
 import { decode } from "../../utils/decode";
 
-export const Content = ( props : any ) => {
+export const Content = ( props : ContentProps ) => {
     const navigate = useNavigate();
 
-    const [nodos, setNodos] = useState([] as Nodo[]);
+    const [nodos, setNodos] = useState<Nodo[]>([]);
     const [shouldUpdate, setShouldUpdate] = useState(true);
     const [propPad, setPropPad] = useState(props.index);
 
@@ -20,7 +20,7 @@ export const Content = ( props : any ) => {
     const [añoSelect, setAño] = useState(2023);
 
     const [color, setColor] = useState(false);
-    const [colors, setColors] = useState([] as number[]);
+    const [colors, setColors] = useState<number[]>([]);
     const [hadColor, setHadColor] = useState(false);
     
     const [rol, setRol] = useState("")
@@ -30,7 +30,7 @@ export const Content = ( props : any ) => {
         const token = sessionStorage.getItem('token')
         try {
             if (token !== null && token !== undefined) {
-                const decoded = decode(token) as any
+                const decoded = decode(token) as Token
                 setId(decoded.id_plan)
                 setRol(decoded.rol)
             }
@@ -68,7 +68,7 @@ export const Content = ( props : any ) => {
         setShouldUpdate(true)
         if (props.index === 1) navigate(-1)
         try{
-            const padre = props.Padre.split('.')
+            const padre = props.Padre!.split('.')
             setPropPad(-1)
             padre.length > 2 ? 
                 props.callback(props.index-2, padre.slice(0, padre.length-1).join('.') )
@@ -79,7 +79,7 @@ export const Content = ( props : any ) => {
         }
     }
 
-    const callback = (index: number, padre: any) => {
+    const callback = (index: number, padre: (string | null)) => {
         setShouldUpdate(true)
         setPropPad(-1)
         props.callback(index, padre)
@@ -153,13 +153,13 @@ export const Content = ( props : any ) => {
                 }
                 {props.index !== props.len ?
                 <ShowNodos  callback={props.callback}
-                            callback2={setShouldUpdate} 
-                            nodos={nodos} 
+                            callback2={setShouldUpdate}
+                            nodos={nodos}
                             index={props.index}
                             año={añoSelect}
                             progress={props.progress}
-                            colors={colors}/> 
-                : <ShowNodosUnidad  id={props.id} 
+                            colors={colors}/>
+                : <ShowNodosUnidad  id={props.id}
                                     nodos={nodos}
                                     año={añoSelect}
                                     colors={colors}/>

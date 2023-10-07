@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import Slider from '@mui/material/Slider';
 import Box from '@mui/material/Box';
 import { addColor } from '../../services/api';
+import { ColorProps } from '../../interfaces';
 
-export const ColorForm = ( props : any ) => {
+export const ColorForm = ( props : ColorProps ) => {
 
     const [value, setValue] = useState([[0, 24], [25, 49], [50, 74], [75, 100]]);
 
@@ -16,7 +17,7 @@ export const ColorForm = ( props : any ) => {
         setValue(updateValue);
     };
 
-    const handleInput = (event: any) => {
+    const handleInput = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         event.preventDefault();
         const colors = value.map((item: number[]) => item[1])
         addColor(props.id, colors)

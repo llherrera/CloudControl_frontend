@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
-import { Nodo } from '../../interfaces';
+import { Nodo, ShowNodoUniProps, PesosNodos, Porcentaje } from '../../interfaces';
 
-export const ShowNodosUnidad = ( props : any ) => {
+export const ShowNodosUnidad = ( props : ShowNodoUniProps ) => {
 
     const [progreso, setProgreso] = useState([] as number[])
     const [programacion, setProgramacion] = useState([] as number[])
@@ -12,18 +12,18 @@ export const ShowNodosUnidad = ( props : any ) => {
         getProgress(ids)
     }, [props.año, props.nodos])
 
-    const getProgress = (ids: number[]) => {
+    const getProgress = (ids: string[]) => {
         const pesosStr = localStorage.getItem('pesosNodo')
         if (pesosStr == undefined) 
             return 0
         let pesosNodo = JSON.parse(pesosStr as string)
         let progreso = [] as number[]
         let programacion = [] as number[]
-        pesosNodo.forEach((item: any) => {
+        pesosNodo.forEach((item: PesosNodos) => {
             if (ids.includes(item.id_nodo)) {
                 const { porcentajes } = item
                 if (porcentajes) {
-                    porcentajes.forEach((porcentaje: any) => {
+                    porcentajes.forEach((porcentaje: Porcentaje) => {
                         if (porcentaje.año === props.año) {
                             progreso.push(porcentaje.progreso)
                             programacion.push(porcentaje.programacion)

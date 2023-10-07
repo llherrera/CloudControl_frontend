@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { getLastPDT } from '../../services/api';
 import { ButtonPlan } from '../../components';
 import { decode } from '../../utils/decode';
+import { Token } from '../../interfaces';
 
 export const LobbyPage = () => {
     const navigate = useNavigate();
@@ -14,7 +15,7 @@ export const LobbyPage = () => {
         const token = sessionStorage.getItem('token')
         try {
             if (token !== null && token !== undefined) {
-                const decoded = decode(token) as any
+                const decoded = decode(token) as Token
                 setId(decoded.id_plan)
                 setRol(decoded.rol)
             }

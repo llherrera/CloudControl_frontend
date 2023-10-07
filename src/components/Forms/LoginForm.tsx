@@ -40,9 +40,9 @@ export const LoginForm = () => {
     }
 
     return (
-        <form onSubmit={handleSubmit}
-              className='col-start-2
-                        row-start-1 row-span-3'>
+        <form   onSubmit={handleSubmit}
+                className=' col-start-2
+                            row-start-1 row-span-3'>
             <div>
                 <label htmlFor="user">Usuario</label>
                 <input

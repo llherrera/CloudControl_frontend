@@ -1,4 +1,6 @@
-export const ButtonPlan = (props: any) => {
+import { ButtonPlanProps } from "../../interfaces"
+
+export const ButtonPlan = (props: ButtonPlanProps) => {
     return (
         <button className=""
                 onClick={props.handleButton}>

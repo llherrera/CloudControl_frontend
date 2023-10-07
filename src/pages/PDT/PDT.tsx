@@ -1,21 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { getPDTs } from "../../services/api";
 import IconButton from "@mui/material/IconButton";
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 import { decode } from "../../utils/decode";
+import { Token, PDTInterface } from "../../interfaces";
 
 export const PDT = () => {
     const navigate = useNavigate();
 
-    const [data, setData] = useState([])
+    const [data, setData] = useState<PDTInterface[]>([])
     const [rol, setRol] = useState("")
 
-    React.useEffect(() => {
+    useEffect(() => {
         const token = sessionStorage.getItem('token')
         try {
             if (token !== null && token !== undefined) {
-                const decoded = decode(token) as any
+                const decoded = decode(token) as Token
                 setRol(decoded.rol)
             }
         } catch (error) {
@@ -47,17 +48,17 @@ export const PDT = () => {
                     onClick={handleAddPdt}>
                 Añadir Plan +
             </button>
-            { data!.map(( e:any )=>
+            { data!.map(( e:PDTInterface )=>
             <div className="flex">
                 <button className="flex justify-between w-full mb-4 p-2 rounded bg-gray-200"
-                        onClick={(event) => handlePdtid(e.id_plan)}>
+                        onClick={(event) => handlePdtid(e.id_plan!)}>
                     
                     <p className="mr-4">{e.Nombre}</p>
                     <p className="ml-4">{e.Alcaldia}</p>
                 </button>
                 <IconButton color="success"
                             aria-label="delete"
-                            onClick={(event) => handleAdd(e.id_plan)}>
+                            onClick={(event) => handleAdd(e.id_plan!)}>
                     <PersonAddAltIcon/>
                 </IconButton>
             </div> 

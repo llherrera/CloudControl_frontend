@@ -1,33 +1,33 @@
 import React, { useState } from 'react'
-import { Nodo } from '../../interfaces'
+import { Nodo, NodoProps } from '../../interfaces'
 import { addNodoNivel } from '../../services/api'
 
-export const NodoForm = ( props : any ) => {
+export const NodoForm = ( props : NodoProps ) => {
 
     let id_nodo_gen : number = 1;
-    const [data, setData] = useState([
-        { id_nodo: `${props.Padre ?? props.id}.${id_nodo_gen++}`,
-          Nombre: "", 
-          Descripcion: "", 
-          id_nivel: props.id, 
-          Padre: props.Padre,
-          Peso: 33.33
+    const [data, setData] = useState<Nodo[]>([
+        {   id_nodo: `${props.Padre ?? props.id}.${id_nodo_gen++}`,
+            Nombre: "", 
+            Descripcion: "", 
+            id_nivel: props.id, 
+            Padre: props.Padre,
+            Peso: 33.33
         },
-        { id_nodo: `${props.Padre ?? props.id}.${id_nodo_gen++}`, 
-          Nombre: "", 
-          Descripcion: "", 
-          id_nivel: props.id, 
-          Padre: props.Padre,
-          Peso: 33.33
+        {   id_nodo: `${props.Padre ?? props.id}.${id_nodo_gen++}`, 
+            Nombre: "", 
+            Descripcion: "", 
+            id_nivel: props.id, 
+            Padre: props.Padre,
+            Peso: 33.33
         },
-        { id_nodo: `${props.Padre ?? props.id}.${id_nodo_gen++}`, 
-          Nombre: "", 
-          Descripcion: "", 
-          id_nivel: props.id, 
-          Padre: props.Padre,
-          Peso: 33.33
+        {   id_nodo: `${props.Padre ?? props.id}.${id_nodo_gen++}`, 
+            Nombre: "", 
+            Descripcion: "", 
+            id_nivel: props.id, 
+            Padre: props.Padre,
+            Peso: 33.33
         }
-    ] as Nodo[])
+    ])
 
     let nodo = ({
         id_nodo: `${props.Padre ?? props.id}.${data.length + 1}`,
@@ -75,7 +75,7 @@ export const NodoForm = ( props : any ) => {
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        let sum:number=0;
+        let sum: number=0;
         data.map((e) => sum += Number(e.Peso));
         console.log(sum);
         

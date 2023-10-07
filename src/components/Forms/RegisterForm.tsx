@@ -2,11 +2,12 @@ import React, { useState } from "react";
 import { Input } from "../Inputs";
 import { doRegister } from "../../services/api";
 import { useNavigate } from "react-router-dom";
+import { RegisterProps, RegisterInterface } from "../../interfaces";
 
-export const RegisterForm = (props: any) => {
+export const RegisterForm = (props: RegisterProps) => {
     const navigate = useNavigate();
 
-    const [form, setForm] = useState({
+    const [form, setForm] = useState<RegisterInterface>({
         usuario: '',
         apellido: '',
         correo: '',

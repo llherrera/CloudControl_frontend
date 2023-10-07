@@ -2,10 +2,11 @@ import React, { useState, useEffect } from "react";
 import { Input } from "../Inputs";
 import { addNivel } from "../../services/api";
 import { decode } from "../../utils/decode";
+import { NivelProps, NivelInterface, Token } from "../../interfaces";
 
-export const NivelForm = ( id :any ) => {
+export const NivelForm = ( props: NivelProps ) => {
 
-    const [data, setData] = useState([
+    const [data, setData] = useState<NivelInterface[]>([
         { Nombre: "", Descripcion: "" },
         { Nombre: "", Descripcion: "" },
         { Nombre: "", Descripcion: "" }
@@ -23,7 +24,7 @@ export const NivelForm = ( id :any ) => {
         const token = sessionStorage.getItem('token')
         try {
             if (token !== null && token !== undefined) {
-                const decoded = decode(token) as any
+                const decoded = decode(token) as Token
                 setId(decoded.id_plan)
                 setRol(decoded.rol)
             }
@@ -57,7 +58,7 @@ export const NivelForm = ( id :any ) => {
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         try {
-            await addNivel(data, id.id)
+            await addNivel(data, props.id)
             window.location.reload();
         } catch (error) {
             console.log(error);
@@ -66,11 +67,11 @@ export const NivelForm = ( id :any ) => {
 
     return (
         <div>
-            {(rol === "admin") || (rol === 'funcionario' && id === id.id) ?
+            {(rol === "admin") || (rol === 'funcionario' && id_ === parseInt(props.id)) ?
             <form   onSubmit={ handleSubmit}
                     className="grid grid-cols-12 mt-5">
                 <ul className="col-start-5 col-span-4 gap-3">
-                {data.map(( e:any, index: number )=> 
+                {data.map(( e:NivelInterface, index: number )=> 
                     <li className="mb-3 p-2 bg-cyan-200 rounded">
                         <Input  type={"text"}
                                 label="Nombre del Nivel:"

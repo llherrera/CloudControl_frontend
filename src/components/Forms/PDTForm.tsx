@@ -2,17 +2,18 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Input } from "../Inputs";
 import { addPDT } from "../../services/api";
+import { PDTInterface } from "../../interfaces";
 
 export const PDTForm = () => {
     const navigate = useNavigate();
 
-    const [planData, setPlanData] = useState({
-        nombrePlan: "",
-        alcaldia: "",
-        municipio: "",
-        fechaIni: Date(),
-        fechaFin: Date(),
-        descripcion: "",
+    const [planData, setPlanData] = useState<PDTInterface>({
+        Nombre: "",
+        Alcaldia: "",
+        Municipio: "",
+        Fecha_inicio: Date(),
+        Fecha_fin: Date(),
+        Descripcion: "",
     });
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -41,25 +42,25 @@ export const PDTForm = () => {
                     label="Nombre del Plan:"
                     id={"nombrePlan"}
                     name={"nombrePlan"}
-                    value={planData.nombrePlan}
+                    value={planData.Nombre}
                     onChange={handleInputChange}/><br/>
             <Input  type={"text"}
                     label="Alcaldía:"
                     id={"alcaldia"}
                     name={"alcaldia"}
-                    value={planData.alcaldia}
+                    value={planData.Alcaldia}
                     onChange={handleInputChange}/><br/>
             <Input  type={"text"}
                     label="Municipio:"
                     id={"municipio"}
                     name={"municipio"}
-                    value={planData.municipio}
+                    value={planData.Municipio}
                     onChange={handleInputChange}/><br/>
             <Input  type={"text"}
                     label="Descripción:"
                     id={"descripcion"}
                     name={"descripcion"}
-                    value={planData.descripcion}
+                    value={planData.Descripcion}
                     onChange={handleInputChange}/><br/>
             
             <div className="flex justify-between">
@@ -67,14 +68,14 @@ export const PDTForm = () => {
                         label="Fecha de Inicio"
                         id="fechaIni"
                         name="fechaIni"
-                        value={planData.fechaIni}
+                        value={planData.Fecha_inicio}
                         onChange={handleInputChange}/>
                 
                 <Input  type={"date"}
                         label="Fecha de Fin"
                         id="fechaFin"
                         name="fechaFin"
-                        value={planData.fechaFin}
+                        value={planData.Fecha_fin}
                         onChange={handleInputChange}/>
             </div><br/>
             <input  type="submit"

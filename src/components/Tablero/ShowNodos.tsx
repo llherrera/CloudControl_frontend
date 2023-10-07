@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Nodo } from '../../interfaces';
+import { Nodo, ShowNodoProps, PesosNodos, Porcentaje } from '../../interfaces';
 
-export const ShowNodos = ( props : any ) => {
+export const ShowNodos = ( props: ShowNodoProps ) => {
 
     const [progreso, setProgreso] = useState([] as number[])
 
@@ -14,18 +14,18 @@ export const ShowNodos = ( props : any ) => {
         }
     }, [props.año, props.nodos, props.progress])
 
-    const getProgress = (ids: number[]) => {
+    const getProgress = (ids: string[]) => {
         let pesosStr = localStorage.getItem('pesosNodo')
         if (pesosStr == undefined) 
             pesosStr = '[]'
         
         let pesosNodo = JSON.parse(pesosStr as string)
         let progreso = [] as number[]
-        pesosNodo.forEach((item: any) => {
+        pesosNodo.forEach((item: PesosNodos) => {
             if (ids.includes(item.id_nodo)) {
                 const { porcentajes } = item
                 if (porcentajes) {
-                    porcentajes.forEach((porcentaje: any) => {
+                    porcentajes.forEach((porcentaje: Porcentaje) => {
                         if (porcentaje.año === props.año) {
                             progreso.push(porcentaje.progreso)
                         }
