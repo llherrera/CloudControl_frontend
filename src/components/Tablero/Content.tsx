@@ -39,7 +39,7 @@ export const Content = ( props : ContentProps ) => {
         }
         if ( shouldUpdate ) {
             try{
-                getNodosNivel(props.data.id_nivel, props.Padre)
+                getNodosNivel(props.data.id_nivel!, props.Padre)
                     .then((res) => {
                         setNodos(res)
                 })
@@ -122,7 +122,7 @@ export const Content = ( props : ContentProps ) => {
                 </div>
                 {(rol === "admin") || (rol === 'funcionario' && id === props.id) ?
                     <NodoForm   index={props.index}
-                                id={props.data.id_nivel}
+                                id={props.data.id_nivel!}
                                 Padre={props.Padre}
                                 callback={callback}/>
                 : <div>

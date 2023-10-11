@@ -35,9 +35,20 @@ export const getLastPDT = async () => {
 export const doLogin = async (username: string, password: string) => {
     try {
         const response = await axios.post('/users/login', {
-            user:     username,
-            password: password
+            usuario: username,
+            clave:   password
         });
+        return response.data;
+    } catch (error) {
+        return error;
+    }
+}
+
+// Hacer logout
+export const doLogout = async () => {
+    try {
+        sessionStorage.removeItem('token');
+        const response = await axios.post('/users/logout');
         return response.data;
     } catch (error) {
         return error;
@@ -48,12 +59,25 @@ export const doLogin = async (username: string, password: string) => {
 export const doRegister = async (id: number, userData: RegisterInterface) => {
     try {
         const response = await axios.post('/users/register', {
-            id:       id,
+            id_plan:  id,
             usuario:  userData.usuario,
             apellido: userData.apellido,
             clave:    userData.contraseña,
             correo:   userData.correo,
             rol:      userData.rol,
+        });
+        return response.data;
+    } catch (error) {
+        return error;
+    }
+}
+
+// Cambiar permisos de un usuario
+export const changePermissions = async (id: number, rol: string) => {
+    try {
+        const response = await axios.post('/users/update', {
+            id_user: id,
+            rol:     rol
         });
         return response.data;
     } catch (error) {
@@ -78,10 +102,37 @@ export const addPDT = async (pdt: PDTInterface) => {
     }
 };
 
+// Actualiza un PDT
+export const updatePDT = async (id: number, pdt: PDTInterface) => {
+    try {
+        const response = await axios.put(`/pdt/${id}`, {
+            Nombre:       pdt.Nombre,
+            Alcaldia:     pdt.Alcaldia,
+            Municipio:    pdt.Municipio,
+            Fecha_inicio: pdt.Fecha_inicio,
+            Fecha_fin:    pdt.Fecha_fin,
+            Descripcion:  pdt.Descripcion,
+        });
+        return response.data;
+    } catch (error) {
+        return error;
+    }
+}
+
+// Borrar un PDT
+export const deletePDT = async (id: number) => {
+    try {
+        const response = await axios.delete(`/pdt/${id}`);
+        return response.data;
+    } catch (error) {
+        return error;
+    }
+}
+
 // Añade todos los niveles a un PDT
 export const addNivel = async (nivel: NivelInterface[], id : string) => {
     try {
-        const response = await axios.post(`/pdt/${id}`, { Niveles: nivel } );
+        const response = await axios.post(`/pdt/${id}`, { niveles: nivel } );
         return response.data;
     } catch (error) {
         return error;
@@ -106,7 +157,21 @@ export const getNodosNivel = async (id: number, Padre: (string | null)) => {
 // Añade todos los nodos a un nivel de un PDT
 export const addNodoNivel = async (nodo: Nodo[]) => {
     try {
-        const response = await axios.post("/pdt/nivel", { Nodos: nodo } );
+        const response = await axios.post("/pdt/nivel", { nodos: nodo } );
+        return response.data;
+    } catch (error) {
+        return error;
+    }
+}
+
+// Borrar un nivel de un PDT
+export const deleteNivel = async (id: number) => {
+    try {
+        const response = await axios.delete(`/pdt/nivel`, {
+            params: {
+                id_nivel: id
+            }
+        });
         return response.data;
     } catch (error) {
         return error;
@@ -131,10 +196,10 @@ export const getNombreNivel = async (ids: string[]) => {
 export const addNodoUnidadYAños = async (idPDT: string, idNodo: string, nodoUnidad: UnidFormState, años: AñoFormState) => {
     try {
         const response = await axios.post("/nodo", { 
-            idPDT:  idPDT,
-            idNodo: idNodo,
-            Nodo:   nodoUnidad,
-            Años:   años
+            id_plan: idPDT,
+            id_nodo: idNodo,
+            nodo:    nodoUnidad,
+            años:    años
         });
         return response.data;
     } catch (error) {
@@ -147,8 +212,8 @@ export const getNodoUnidadYAños = async (idPDT: string, idNodo: string) => {
     try {
         const response = await axios.get(`/nodo`, {
             params: { 
-                idPDT:  idPDT, 
-                idNodo: idNodo 
+                id_plan: idPDT, 
+                id_nodo: idNodo 
             }
         });
         return response.data;
@@ -161,8 +226,8 @@ export const getNodoUnidadYAños = async (idPDT: string, idNodo: string) => {
 export const addEvicenciaMeta = async (codigo: string, evidencia: EvidenciaInterface) => {
     try {
         const response = await axios.post("/nodo/evidencia", { 
-            Codigo:    codigo,
-            Evidencia: evidencia
+            codigo:    codigo,
+            evidencia: evidencia
         });
         return response.data;
     } catch (error) {
@@ -175,8 +240,8 @@ export const getProgresoAño = async (ids_nodos: string[], año: number) => {
     try {
         const response = await axios.get(`/nodo/progreso`, {
             params: {
-                Ids: ids_nodos,
-                Año: año
+                ids: ids_nodos,
+                año: año
             }
         });
         return response.data;
@@ -190,7 +255,49 @@ export const getProgresoTotal = async (id_plan: number) => {
     try {
         const response = await axios.get(`/nodo/progresoTotal`, {
             params: {
-                Id: id_plan
+                id_plan: id_plan
+            }
+        });
+        return response.data;
+    } catch (error) {
+        return error;
+    }
+}
+
+// Actualizar una unidad de nodo
+export const updateNodo = async (idPDT: string, idNodo: string, nodo: UnidFormState, años: AñoFormState) => {
+    try {
+        const response = await axios.put("/nodo", { 
+            id_plan: idPDT,
+            id_nodo: idNodo,
+            nodo:    nodo,
+            años:    años
+        });
+        return response.data;
+    } catch (error) {
+        return error;
+    }
+}
+
+// Actualizar evidencia de una unidad de nodo
+export const updateEvidencia = async (codigo: string, evidencia: EvidenciaInterface) => {
+    try {
+        const response = await axios.put("/nodo/evidencia", { 
+            codigo:     codigo,
+            evidencia:  evidencia
+        });
+        return response.data;
+    } catch (error) {
+        return error;
+    }
+}
+
+// Borrar evidencia de una unidad de nodo
+export const deleteEvidencia = async (id_evidencia: number) => {
+    try {
+        const response = await axios.delete("/nodo/evidencia", {
+            params: {
+                id_evidencia: id_evidencia
             }
         });
         return response.data;
@@ -203,8 +310,8 @@ export const getProgresoTotal = async (id_plan: number) => {
 export const addColor = async (id_plan: number, colors: number[]) => {
     try {
         const response = await axios.post(`/pdt/color`, {
-            Id:     id_plan,
-            Colors: colors
+            id_plan:     id_plan,
+            porcentajes: colors
         });
         return response.data;
     } catch (error) {
@@ -217,8 +324,21 @@ export const getColors = async (id_plan: number) => {
     try {
         const response = await axios.get(`/pdt/color`, {
             params: {
-                Id: id_plan
+                id_plan: id_plan
             }
+        });
+        return response.data;
+    } catch (error) {
+        return error;
+    }
+}
+
+// Actualiza los valores de los porcentajes de cada rango de color
+export const updateColor = async (id_plan: number, colors: number[]) => {
+    try {
+        const response = await axios.put(`/pdt/color`, {
+            id_plan:     id_plan,
+            porcentajes: colors
         });
         return response.data;
     } catch (error) {
