@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
-import { Nodo, ShowNodoUniProps, PesosNodos, Porcentaje } from '../../interfaces';
+import { NodoInterface, ShowNodoUniProps, PesosNodos, Porcentaje } from '../../interfaces';
 
 export const ShowNodosUnidad = ( props : ShowNodoUniProps ) => {
 
@@ -8,7 +8,7 @@ export const ShowNodosUnidad = ( props : ShowNodoUniProps ) => {
     const [programacion, setProgramacion] = useState([] as number[])
 
     useEffect(() => {
-        const ids = props.nodos.map((item: Nodo) => item.id_nodo)
+        const ids = props.nodos.map((item: NodoInterface) => item.id_nodo)
         getProgress(ids)
     }, [props.año, props.nodos])
 
@@ -49,7 +49,7 @@ export const ShowNodosUnidad = ( props : ShowNodoUniProps ) => {
     return (
         <div className="col-start-1 col-span-3 flex flex-wrap
                         border-r-4 border-gray-400 gap-4">
-            {props.nodos.map((item: Nodo, index: number) => (
+            {props.nodos.map((item: NodoInterface, index: number) => (
                 <button className ={`rounded-full
                                     ${programacion[index] === 0 ? 'bg-gray-400' :
                                         (progreso[index]??0)*100 < props.colors[0] ? 'bg-red-400'   :
@@ -59,7 +59,8 @@ export const ShowNodosUnidad = ( props : ShowNodoUniProps ) => {
                                     my-4
                                     font-bold
                                     translate-x-3`}
-                        onClick={ (event) => handleButtonUnidad(event, index)}>
+                        onClick={ (event) => handleButtonUnidad(event, index)}
+                        title={item.Descripcion}>
                     {progreso[index]*100}%
                 </button>
             ))}

@@ -5,6 +5,7 @@ import IconButton from "@mui/material/IconButton";
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 import { decode } from "../../utils/decode";
 import { Token, PDTInterface } from "../../interfaces";
+import Cookies from "js-cookie";
 
 export const PDT = () => {
     const navigate = useNavigate();
@@ -13,7 +14,8 @@ export const PDT = () => {
     const [rol, setRol] = useState("")
 
     useEffect(() => {
-        const token = sessionStorage.getItem('token')
+        //const token = sessionStorage.getItem('token')
+        const token = Cookies.get('token')
         try {
             if (token !== null && token !== undefined) {
                 const decoded = decode(token) as Token
@@ -45,20 +47,22 @@ export const PDT = () => {
             {rol === "admin" ? 
             <ul className="border p-4 rounded">
             <button className="bg-green-300 rounded w-full py-2 mb-4"
-                    onClick={handleAddPdt}>
+                    onClick={handleAddPdt}
+                    title="Agregar un nuevo plan">
                 Añadir Plan +
             </button>
             { data!.map(( e:PDTInterface )=>
             <div className="flex">
                 <button className="flex justify-between w-full mb-4 p-2 rounded bg-gray-200"
-                        onClick={(event) => handlePdtid(e.id_plan!)}>
-                    
+                        onClick={(event) => handlePdtid(e.id_plan!)}
+                        title={e.Descripcion}>
                     <p className="mr-4">{e.Nombre}</p>
                     <p className="ml-4">{e.Alcaldia}</p>
                 </button>
                 <IconButton color="success"
                             aria-label="delete"
-                            onClick={(event) => handleAdd(e.id_plan!)}>
+                            onClick={(event) => handleAdd(e.id_plan!)}
+                            title="Agregar funcionario al plan">
                     <PersonAddAltIcon/>
                 </IconButton>
             </div> 

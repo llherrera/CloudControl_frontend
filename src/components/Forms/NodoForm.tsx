@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
-import { Nodo, NodoProps } from '../../interfaces'
+import { NodoInterface, NodoProps } from '../../interfaces'
 import { addNodoNivel } from '../../services/api'
 
 export const NodoForm = ( props : NodoProps ) => {
 
     let id_nodo_gen : number = 1;
-    const [data, setData] = useState<Nodo[]>([
+    const [data, setData] = useState<NodoInterface[]>([
         {   id_nodo: `${props.Padre ?? props.id}.${id_nodo_gen++}`,
             Nombre: "", 
             Descripcion: "", 
@@ -29,14 +29,14 @@ export const NodoForm = ( props : NodoProps ) => {
         }
     ])
 
-    let nodo = ({
+    let nodo: NodoInterface = ({
         id_nodo: `${props.Padre ?? props.id}.${data.length + 1}`,
         Nombre: "",
         Descripcion: "",
         id_nivel: props.id,
         Padre: props.Padre,
         Peso: 0
-    } as Nodo)
+    })
 
     const agregarNodo = () => {
         const newData = [...data, nodo];
@@ -77,7 +77,6 @@ export const NodoForm = ( props : NodoProps ) => {
         event.preventDefault();
         let sum: number=0;
         data.map((e) => sum += Number(e.Peso));
-        console.log(sum);
         
         if (sum !== 100) {
             alert('La suma de los pesos debe ser 100')
@@ -95,7 +94,7 @@ export const NodoForm = ( props : NodoProps ) => {
         <form   onSubmit={handleSubmit}
                 className='grid grid-cols-12 m-5 '>
             <ul className='col-start-5 col-span-4'>
-                {data.map(( e, index )=> 
+                {data.map(( e: NodoInterface, index: number )=> 
                 <div className='mb-3 px-3 p-2 bg-cyan-200 flex rounded'>
                     <li className="mx-3">
                         <input  type={"text"}
@@ -127,16 +126,19 @@ export const NodoForm = ( props : NodoProps ) => {
                                    text-white font-bold 
                                    py-2 px-4 rounded mr-5" 
                         type='button'
+                        title='Agregar Nodo'
                         onClick={agregarNodo}>Agregar Nodo</button>
                 <button className="bg-red-500 
                                    hover:bg-red-300 
                                    text-white font-bold 
                                    py-2 px-4 rounded ml-5"
                         type='button'
+                        title='Eliminar Nodo'
                         onClick={eliminarNodo}>Eliminar Nodo</button>
             </ul>
             <input  type="submit"
                     value={"Guardar"}
+                    title='Guardar nodos en el nivel'
                     className="row-start-5 col-start-6 col-span-2
                                bg-blue-500
                                hover:bg-blue-300 

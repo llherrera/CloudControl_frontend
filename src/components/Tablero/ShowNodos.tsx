@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Nodo, ShowNodoProps, PesosNodos, Porcentaje } from '../../interfaces';
+import { NodoInterface, ShowNodoProps, PesosNodos, Porcentaje } from '../../interfaces';
 
 export const ShowNodos = ( props: ShowNodoProps ) => {
 
-    const [progreso, setProgreso] = useState([] as number[])
+    const [progreso, setProgreso] = useState<number[]>([])
+    const [nodos, setNodos] = useState<NodoInterface[]>([])
 
     useEffect(() => {
         try {
-            const ids = props.nodos.map((item: Nodo) => item.id_nodo)
+            setNodos(props.nodos)
+            const ids = nodos.map((item: NodoInterface) => item.id_nodo)
             getProgress(ids)
         } catch (e) {
             console.log(e)
@@ -47,7 +49,7 @@ export const ShowNodos = ( props: ShowNodoProps ) => {
     return (
         <div className="col-start-1 col-span-3
                         border-r-4 border-gray-400">
-            {props.nodos.map((item: Nodo, index: number) => (
+            {nodos.map((item: NodoInterface, index: number) => (
                 <div className="my-5 flex">
                     <button className ={`rounded-full
                                         ${(progreso[index]??0)*100 < props.colors[0] ? 'bg-red-400'   :
@@ -58,14 +60,16 @@ export const ShowNodos = ( props: ShowNodoProps ) => {
                                         translate-x-3
                                         font-bold
                                         scale-100`}
-                            onClick={ (event) => handleButton(event, index)}>
+                            onClick={ (event) => handleButton(event, index)}
+                            title={item.Descripcion}>
                         {(progreso[index]??0)*100}%
                     </button>
                     <button className ="bg-red-300
                                         h-8 my-2
                                         w-2/3
                                         rounded"
-                            onClick={ (event) => handleButton(event, index)}>
+                            onClick={ (event) => handleButton(event, index)}
+                            title={item.Descripcion}>
                         <p>{item.Nombre}</p>
                     </button>
                 </div>

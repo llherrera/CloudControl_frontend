@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { addNodoUnidadYAños, getNombreNivel, getNodoUnidadYAños, getProgresoTotal } from "../../services/api";
-import { AñoFormState, UnidFormState, DetalleAño, PesosNodos, Porcentaje } from "../../interfaces";
+import { AñoInterface, UnidadInterface, DetalleAño, PesosNodos, Porcentaje } from "../../interfaces";
 
 export const AñadirNodoUni = () => {
     const navigate = useNavigate()
@@ -15,7 +15,7 @@ export const AñadirNodoUni = () => {
     const [add, setAdd] = useState(false);
     const [getProgress, setGetProgress] = useState(false);
 
-    const [unidForm, setUnidForm] = useState<UnidFormState>({
+    const [unidForm, setUnidForm] = useState<UnidadInterface>({
         codigo: '',
         descripcion: '',
         indicador: '',
@@ -23,7 +23,7 @@ export const AñadirNodoUni = () => {
         meta: 0,
     });
 
-    const [añoForm, setañoForm] = useState<AñoFormState>({
+    const [añoForm, setañoForm] = useState<AñoInterface>({
         año: [],
         programacion: [],
         ejecFisica: [],
@@ -100,7 +100,7 @@ export const AñadirNodoUni = () => {
         }
     }, [add]);
 
-    const calcularAcumulado = (años: number[], añoForm: AñoFormState) => {
+    const calcularAcumulado = (años: number[], añoForm: AñoInterface) => {
         let acumulado = 0;
         let acum = 0;
         let finan = 0;
@@ -197,7 +197,7 @@ export const AñadirNodoUni = () => {
         });
     }
 
-    const handleInputaño = (grupo: keyof AñoFormState, index: number, valor: string) => {
+    const handleInputaño = (grupo: keyof AñoInterface, index: number, valor: string) => {
         const nuevosValores = [...añoForm[grupo]];
         nuevosValores[index] = parseFloat(valor);
         setañoForm({

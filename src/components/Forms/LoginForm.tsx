@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import Cookies from 'js-cookie'
 import { doLogin } from '../../services/api'
 
 export const LoginForm = () => {
@@ -25,7 +26,8 @@ export const LoginForm = () => {
                     alert('Usuario o contraseña incorrectos')
                     return
                 }
-                sessionStorage.setItem('token', JSON.stringify(res.token))
+                Cookies.set('token', res.token, { expires: 1 })
+                //sessionStorage.setItem('token', JSON.stringify(res.token))
                 navigate('/lobby')
             })
         } catch (error) {
@@ -66,8 +68,17 @@ export const LoginForm = () => {
                 />
             </div>
             <div className='flex '>
-                <button type="submit" className='bg-green-500 py-1 px-3 rounded'>Entrar</button>
-                <button type="button" className='bg-red-500 py-1 px-3 rounded' onClick={handleCancelar}>Cancelar</button>
+                <button type="submit" 
+                        className='bg-green-500 hover:bg-green-300 py-1 px-3 rounded'
+                        title='Entrar'>
+                    Entrar
+                </button>
+                <button type="button" 
+                        className='bg-red-500 py-1 hover:bg-red-300 px-3 rounded' 
+                        onClick={handleCancelar}
+                        title='Cancelar'>
+                    Cancelar
+                </button>
             </div>
         </form>
     )

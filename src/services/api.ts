@@ -1,10 +1,19 @@
 import axios from "axios";
-import { AñoFormState, UnidFormState, Nodo, NivelInterface, RegisterInterface, PDTInterface, EvidenciaInterface } from "../interfaces";
+import { AñoInterface, UnidadInterface, NodoInterface, 
+    NivelInterface, RegisterInterface, PDTInterface, EvidenciaInterface } from "../interfaces";
+import Cookies from "js-cookie";
+
+//const token = sessionStorage.getItem('token');
+const token = Cookies.get('token');
+if (token) {
+    axios.defaults.headers.common['authorization'] = `Bearer ${token}`;
+}
 
 // Obtiene todos los PDTs
 export const getPDTs = async () => {
     try {
-        const response = await axios.get("/pdt");
+        const response = await axios.get("/pdt",
+            { headers: { 'authorization': `Bearer ${token}` } });
         return response.data;
     } catch (error) {
         return error;
@@ -37,7 +46,8 @@ export const doLogin = async (username: string, password: string) => {
         const response = await axios.post('/users/login', {
             usuario: username,
             clave:   password
-        });
+        },
+        { headers: { 'authorization': `Bearer ${token}` } });
         return response.data;
     } catch (error) {
         return error;
@@ -47,7 +57,7 @@ export const doLogin = async (username: string, password: string) => {
 // Hacer logout
 export const doLogout = async () => {
     try {
-        sessionStorage.removeItem('token');
+        Cookies.remove('token');
         const response = await axios.post('/users/logout');
         return response.data;
     } catch (error) {
@@ -65,7 +75,8 @@ export const doRegister = async (id: number, userData: RegisterInterface) => {
             clave:    userData.contraseña,
             correo:   userData.correo,
             rol:      userData.rol,
-        });
+        },
+        { headers: { 'authorization': `Bearer ${token}` } });
         return response.data;
     } catch (error) {
         return error;
@@ -78,7 +89,8 @@ export const changePermissions = async (id: number, rol: string) => {
         const response = await axios.post('/users/update', {
             id_user: id,
             rol:     rol
-        });
+        },
+        { headers: { 'authorization': `Bearer ${token}` } });
         return response.data;
     } catch (error) {
         return error;
@@ -95,7 +107,8 @@ export const addPDT = async (pdt: PDTInterface) => {
             Fecha_inicio: pdt.Fecha_inicio,
             Fecha_fin:    pdt.Fecha_fin,
             Descripcion:  pdt.Descripcion,
-        });
+        },
+        { headers: { 'authorization': `Bearer ${token}` } });
         return response.data;
     } catch (error) {
         return error;
@@ -112,7 +125,8 @@ export const updatePDT = async (id: number, pdt: PDTInterface) => {
             Fecha_inicio: pdt.Fecha_inicio,
             Fecha_fin:    pdt.Fecha_fin,
             Descripcion:  pdt.Descripcion,
-        });
+        },
+        { headers: { 'authorization': `Bearer ${token}` } });
         return response.data;
     } catch (error) {
         return error;
@@ -122,7 +136,8 @@ export const updatePDT = async (id: number, pdt: PDTInterface) => {
 // Borrar un PDT
 export const deletePDT = async (id: number) => {
     try {
-        const response = await axios.delete(`/pdt/${id}`);
+        const response = await axios.delete(`/pdt/${id}`,
+            { headers: { 'authorization': `Bearer ${token}` } });
         return response.data;
     } catch (error) {
         return error;
@@ -132,7 +147,8 @@ export const deletePDT = async (id: number) => {
 // Añade todos los niveles a un PDT
 export const addNivel = async (nivel: NivelInterface[], id : string) => {
     try {
-        const response = await axios.post(`/pdt/${id}`, { niveles: nivel } );
+        const response = await axios.post(`/pdt/${id}`, { niveles: nivel },
+            { headers: { 'authorization': `Bearer ${token}` } });
         return response.data;
     } catch (error) {
         return error;
@@ -146,7 +162,8 @@ export const getNodosNivel = async (id: number, Padre: (string | null)) => {
             params: { 
                 id_nivel: id, 
                 Padre:    Padre 
-            }
+            },
+            headers: { 'authorization': `Bearer ${token}` }
         });
         return response.data;
     } catch (error) {
@@ -155,9 +172,10 @@ export const getNodosNivel = async (id: number, Padre: (string | null)) => {
 }
 
 // Añade todos los nodos a un nivel de un PDT
-export const addNodoNivel = async (nodo: Nodo[]) => {
+export const addNodoNivel = async (nodo: NodoInterface[]) => {
     try {
-        const response = await axios.post("/pdt/nivel", { nodos: nodo } );
+        const response = await axios.post("/pdt/nivel", { nodos: nodo },
+            { headers: { 'authorization': `Bearer ${token}` } });
         return response.data;
     } catch (error) {
         return error;
@@ -170,7 +188,8 @@ export const deleteNivel = async (id: number) => {
         const response = await axios.delete(`/pdt/nivel`, {
             params: {
                 id_nivel: id
-            }
+            },
+            headers: { 'authorization': `Bearer ${token}` }
         });
         return response.data;
     } catch (error) {
@@ -184,7 +203,8 @@ export const getNombreNivel = async (ids: string[]) => {
         const response = await axios.get(`/nodo/nombres`, {
             params: { 
                 id_nodos: ids 
-            }
+            },
+            headers: { 'authorization': `Bearer ${token}` }
         });
         return response.data;
     } catch (error) {
@@ -193,14 +213,15 @@ export const getNombreNivel = async (ids: string[]) => {
 }
 
 // Añade una unidad de nodo donde se registre la programacion financiera por años
-export const addNodoUnidadYAños = async (idPDT: string, idNodo: string, nodoUnidad: UnidFormState, años: AñoFormState) => {
+export const addNodoUnidadYAños = async (idPDT: string, idNodo: string, nodoUnidad: UnidadInterface, años: AñoInterface) => {
     try {
         const response = await axios.post("/nodo", { 
             id_plan: idPDT,
             id_nodo: idNodo,
             nodo:    nodoUnidad,
             años:    años
-        });
+        },
+        { headers: { 'authorization': `Bearer ${token}` } });
         return response.data;
     } catch (error) {
         return error;
@@ -214,7 +235,8 @@ export const getNodoUnidadYAños = async (idPDT: string, idNodo: string) => {
             params: { 
                 id_plan: idPDT, 
                 id_nodo: idNodo 
-            }
+            },
+            headers: { 'authorization': `Bearer ${token}` }
         });
         return response.data;
     } catch (error) {
@@ -228,7 +250,8 @@ export const addEvicenciaMeta = async (codigo: string, evidencia: EvidenciaInter
         const response = await axios.post("/nodo/evidencia", { 
             codigo:    codigo,
             evidencia: evidencia
-        });
+        },
+        { headers: { 'authorization': `Bearer ${token}` } });
         return response.data;
     } catch (error) {
         return error;
@@ -242,7 +265,8 @@ export const getProgresoAño = async (ids_nodos: string[], año: number) => {
             params: {
                 ids: ids_nodos,
                 año: año
-            }
+            },
+            headers: { 'authorization': `Bearer ${token}` }
         });
         return response.data;
     } catch (error) {
@@ -256,7 +280,8 @@ export const getProgresoTotal = async (id_plan: number) => {
         const response = await axios.get(`/nodo/progresoTotal`, {
             params: {
                 id_plan: id_plan
-            }
+            },
+            headers: { 'authorization': `Bearer ${token}` }
         });
         return response.data;
     } catch (error) {
@@ -265,14 +290,15 @@ export const getProgresoTotal = async (id_plan: number) => {
 }
 
 // Actualizar una unidad de nodo
-export const updateNodo = async (idPDT: string, idNodo: string, nodo: UnidFormState, años: AñoFormState) => {
+export const updateNodo = async (idPDT: string, idNodo: string, nodo: UnidadInterface, años: AñoInterface) => {
     try {
         const response = await axios.put("/nodo", { 
             id_plan: idPDT,
             id_nodo: idNodo,
             nodo:    nodo,
             años:    años
-        });
+        },
+        { headers: { 'authorization': `Bearer ${token}` } });
         return response.data;
     } catch (error) {
         return error;
@@ -285,7 +311,8 @@ export const updateEvidencia = async (codigo: string, evidencia: EvidenciaInterf
         const response = await axios.put("/nodo/evidencia", { 
             codigo:     codigo,
             evidencia:  evidencia
-        });
+        },
+        { headers: { 'authorization': `Bearer ${token}` } });
         return response.data;
     } catch (error) {
         return error;
@@ -298,7 +325,8 @@ export const deleteEvidencia = async (id_evidencia: number) => {
         const response = await axios.delete("/nodo/evidencia", {
             params: {
                 id_evidencia: id_evidencia
-            }
+            },
+            headers: { 'authorization': `Bearer ${token}` }
         });
         return response.data;
     } catch (error) {
@@ -312,7 +340,8 @@ export const addColor = async (id_plan: number, colors: number[]) => {
         const response = await axios.post(`/pdt/color`, {
             id_plan:     id_plan,
             porcentajes: colors
-        });
+        },
+        { headers: { 'authorization': `Bearer ${token}` } });
         return response.data;
     } catch (error) {
         return error;
@@ -325,7 +354,8 @@ export const getColors = async (id_plan: number) => {
         const response = await axios.get(`/pdt/color`, {
             params: {
                 id_plan: id_plan
-            }
+            },
+            headers: { 'authorization': `Bearer ${token}` }
         });
         return response.data;
     } catch (error) {
@@ -339,7 +369,8 @@ export const updateColor = async (id_plan: number, colors: number[]) => {
         const response = await axios.put(`/pdt/color`, {
             id_plan:     id_plan,
             porcentajes: colors
-        });
+        },
+        { headers: { 'authorization': `Bearer ${token}` } });
         return response.data;
     } catch (error) {
         return error;

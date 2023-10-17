@@ -1,22 +1,12 @@
-import { UserInterface } from "./user";
-import { ButtonProps, ButtonPlanProps } from "./buttonProps";
-import { InputProps } from "./inputProps";
-import { PDTInterface } from "./pdt";
-import { NivelInterface } from "./nivelInterface";
-import { NivelProps } from "./nivelProps";
-import { ContentProps } from "./contentProps";
-import { Nodo } from "./nodo";
-import { NodoProps } from "./nodoProps";
-import { AñoFormState } from "./añoFormState";
-import { UnidFormState } from "./unidFormState";
-import { RegisterProps } from "./registerProps";
-import { RegisterInterface } from "./registerInterface";
 import { Token } from "./token";
-import { TableroProps } from "./tableroProps";
 import { PesosNodos, Porcentaje, DetalleAño } from "./pesosNodo";
-import { ShowNodoProps, ShowNodoUniProps } from "./showNodoProps";
-import { ColorProps } from "./colorProps";
-import { EvidenciaInterface } from "./evidenciaInterface";
+
+import { ButtonProps, ButtonPlanProps, ColorProps, ContentProps, 
+         InputProps, NivelProps, NodoProps, RegisterProps, ShowNodoProps, 
+         ShowNodoUniProps, TableroProps} from './propsInterfaces';
+
+import { RegisterInterface, UserInterface, PDTInterface, NivelInterface, 
+         NodoInterface, UnidadInterface, AñoInterface, EvidenciaInterface } from './formInterfaces'
 
 export {
     UserInterface,
@@ -27,10 +17,10 @@ export {
     NivelInterface,
     NivelProps,
     ContentProps,
-    Nodo,
+    NodoInterface,
     NodoProps,
-    AñoFormState,
-    UnidFormState,
+    AñoInterface,
+    UnidadInterface,
     RegisterProps,
     RegisterInterface,
     Token,

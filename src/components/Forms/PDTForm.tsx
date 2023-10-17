@@ -27,8 +27,13 @@ export const PDTForm = () => {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         try {
-            const res = await addPDT(planData);
-            navigate(`/pdt/${res.id_plan}`);
+            addPDT(planData)
+            .then((res) => {
+                navigate(`/pdt/${res.id_plan}`)
+            })
+            .catch((err) => {
+                alert(err);
+            });
         } catch (error) {
             console.log(error);
         }
@@ -40,47 +45,49 @@ export const PDTForm = () => {
 
             <Input  type={"text"}
                     label="Nombre del Plan:"
-                    id={"nombrePlan"}
-                    name={"nombrePlan"}
+                    id={"Nombre"}
+                    name={"Nombre"}
                     value={planData.Nombre}
                     onChange={handleInputChange}/><br/>
             <Input  type={"text"}
                     label="Alcaldía:"
-                    id={"alcaldia"}
-                    name={"alcaldia"}
+                    id={"Alcaldia"}
+                    name={"Alcaldia"}
                     value={planData.Alcaldia}
                     onChange={handleInputChange}/><br/>
             <Input  type={"text"}
                     label="Municipio:"
-                    id={"municipio"}
-                    name={"municipio"}
+                    id={"Municipio"}
+                    name={"Municipio"}
                     value={planData.Municipio}
                     onChange={handleInputChange}/><br/>
             <Input  type={"text"}
                     label="Descripción:"
-                    id={"descripcion"}
-                    name={"descripcion"}
+                    id={"Descripcion"}
+                    name={"Descripcion"}
                     value={planData.Descripcion}
                     onChange={handleInputChange}/><br/>
             
             <div className="flex justify-between">
                 <Input  type={"date"}
                         label="Fecha de Inicio"
-                        id="fechaIni"
-                        name="fechaIni"
+                        id="Fecha_inicio"
+                        name="Fecha_inicio"
                         value={planData.Fecha_inicio}
                         onChange={handleInputChange}/>
                 
                 <Input  type={"date"}
                         label="Fecha de Fin"
-                        id="fechaFin"
-                        name="fechaFin"
+                        id="Fecha_fin"
+                        name="Fecha_fin"
                         value={planData.Fecha_fin}
                         onChange={handleInputChange}/>
             </div><br/>
             <input  type="submit"
                     value="Registrar Plan"
+                    title="Añadir plan"
                     className=" bg-green-500
+                                hover:bg-green-300
                                 rounded
                                 p-2"
             />

@@ -1,21 +1,21 @@
 import React, { useState, useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import { addEvicenciaMeta, getNombreNivel, getNodoUnidadYAños } from "../../services/api"
-import { AñoFormState, UnidFormState, DetalleAño, EvidenciaInterface } from "../../interfaces"
+import { AñoInterface, UnidadInterface, DetalleAño, EvidenciaInterface } from "../../interfaces"
 
 export const AñadirEvidencia = () => {
     const navigate = useNavigate()
     const { idPDT, idNodo } = useParams();
 
     const [nombres, setNombres] = useState([[]]);
-    const [unidForm, setUnidForm] = useState<UnidFormState>({
+    const [unidForm, setUnidForm] = useState<UnidadInterface>({
         codigo: '',
         descripcion: '',
         indicador: '',
         base: 0,
         meta: 0,
     });
-    const [añoForm, setañoForm] = useState<AñoFormState>({
+    const [añoForm, setañoForm] = useState<AñoInterface>({
         año: [],
         programacion: [],
         ejecFisica: [],

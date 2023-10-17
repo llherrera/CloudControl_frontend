@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Nodo, ContentProps, Token } from "../../interfaces";
+import { NodoInterface, ContentProps, Token } from "../../interfaces";
 import { getNodosNivel, getColors } from "../../services/api";
 import { NodoForm, ColorForm } from "../Forms";
 import IconButton from "@mui/material/IconButton";
@@ -8,11 +8,12 @@ import { useNavigate } from "react-router-dom";
 import { ShowNodos } from "./ShowNodos";
 import { ShowNodosUnidad } from "./ShowNodosUnidad";
 import { decode } from "../../utils/decode";
+import Cookies from "js-cookie";
 
 export const Content = ( props : ContentProps ) => {
     const navigate = useNavigate();
 
-    const [nodos, setNodos] = useState<Nodo[]>([]);
+    const [nodos, setNodos] = useState<NodoInterface[]>([]);
     const [shouldUpdate, setShouldUpdate] = useState(true);
     const [propPad, setPropPad] = useState(props.index);
 
@@ -27,7 +28,8 @@ export const Content = ( props : ContentProps ) => {
     const [id, setId] = useState(0)
 
     useEffect(() => {
-        const token = sessionStorage.getItem('token')
+        //const token = sessionStorage.getItem('token')
+        const token = Cookies.get('token')
         try {
             if (token !== null && token !== undefined) {
                 const decoded = decode(token) as Token
@@ -43,7 +45,6 @@ export const Content = ( props : ContentProps ) => {
                     .then((res) => {
                         setNodos(res)
                 })
-
                 getColors(props.id)
                     .then((res) => {
                         if (res.length > 0) {
@@ -90,7 +91,8 @@ export const Content = ( props : ContentProps ) => {
             <IconButton aria-label="delete"
                         size="small"
                         color="secondary"
-                        onClick={handleBack}> 
+                        onClick={handleBack}
+                        title="Regresar">
                 <ArrowBackIosIcon/>
             </IconButton>
         )

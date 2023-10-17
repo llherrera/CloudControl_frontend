@@ -58,13 +58,13 @@ export const RegisterForm = (props: RegisterProps) => {
                     value={form.correo}
                     onChange={ (event) => handleInputChange(event)}/><br />
             <Input  label={"Contraseña"}
-                    type={"text"}
+                    type={"password"}
                     id={"contraseña"}
                     name={"contraseña"}
                     value={form.contraseña}
                     onChange={ (event) => handleInputChange(event)}/><br />
             <Input  label={"Confirmar Contraseña"}
-                    type={"text"}
+                    type={"password"}
                     id={"confirmarContraseña"}
                     name={"confirmarContraseña"}
                     value={form.confirmarContraseña}
@@ -72,7 +72,9 @@ export const RegisterForm = (props: RegisterProps) => {
             <button type="submit"
                     className='bg-green-300 
                                 px-3 py-2
-                                rounded'>Registrarse</button>
+                                rounded'>
+                Registrar funcionario
+            </button>
         </form>
     );
 }
