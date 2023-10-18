@@ -1,3 +1,1 @@
-import { AñadirPDT } from "./AñadirPDT";
-
-export default AñadirPDT;
+export * from "./AñadirPDT";

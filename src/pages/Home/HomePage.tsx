@@ -2,7 +2,7 @@ import { ButtonComponent } from "../../components"
 
 export const HomePage = () => {
     return (
-        <div className="container mx-auto border my-4 pb-10">
+        <main className="container mx-auto border my-4 pb-10">
             <div className="grid grid-cols-12 grid-row-6 gap-6">
                 <div className="col-start-4
                                 col-span-6
@@ -20,6 +20,6 @@ export const HomePage = () => {
                 <ButtonComponent lado={"izq"} dir={"izq"}/>
                 <ButtonComponent lado={"der"} dir={"der"}/>
             </div>
-        </div>
+        </main>
     )
 }

@@ -1,15 +1,6 @@
-import { LoginForm } from './LoginForm';
-import { PDTForm } from './PDTForm';
-import { NivelForm } from './NivelForm';
-import { NodoForm } from './NodoForm';
-import { ColorForm } from './ColorForm';
-import { RegisterForm } from './RegisterForm';
-
-export {
-    LoginForm,
-    PDTForm,
-    NivelForm,
-    NodoForm,
-    ColorForm,
-    RegisterForm
-};
+export * from './LoginForm';
+export * from './PDTForm';
+export * from './NivelForm';
+export * from './NodoForm';
+export * from './ColorForm';
+export * from './RegisterForm';

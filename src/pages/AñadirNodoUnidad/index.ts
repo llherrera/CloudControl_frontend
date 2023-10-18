@@ -1,3 +1,1 @@
-import { AñadirNodoUni } from "./AñadirNodoUni";
-
-export default AñadirNodoUni;
+export * from "./AñadirNodoUni";

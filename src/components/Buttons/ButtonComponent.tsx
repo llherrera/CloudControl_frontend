@@ -16,7 +16,7 @@ export const ButtonComponent = ( {lado, dir} : ButtonProps ) => {
                             col-span-3
                             row-span-3
                             bg-cyan-500
-                            shadow hover:shadow-lg
+                            shadow tw-hover:shadow-lg
                             ${lado === 'izq' ? 'rounded-r-full' : 'rounded-l-full'}`}
                 onClick={ handleClick}
                 title={`Entrar como ${lado === 'izq' ? 'ciudadano':'funcionario'}`}>

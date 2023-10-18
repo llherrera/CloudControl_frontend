@@ -1,3 +1,1 @@
-import { Tablero } from "./Tablero";
-
-export {Tablero};
+export * from "./Tablero";
