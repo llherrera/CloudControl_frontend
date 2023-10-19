@@ -43,21 +43,21 @@ export const PDT = () => {
     }
 
     return (
-        <div className="flex justify-center mt-10">
+        <div className="tw-flex tw-justify-center tw-mt-10">
             {rol === "admin" ? 
-            <ul className="border p-4 rounded">
-            <button className="bg-green-300 rounded w-full py-2 mb-4"
+            <ul className="tw-border tw-p-4 tw-rounded">
+            <button className="tw-bg-green-300 tw-rounded tw-w-full tw-py-2 tw-mb-4"
                     onClick={handleAddPdt}
                     title="Agregar un nuevo plan">
                 Añadir Plan +
             </button>
             { data!.map(( e:PDTInterface )=>
-            <div className="flex">
-                <button className="flex justify-between w-full mb-4 p-2 rounded bg-gray-200"
+            <div className="tw-flex">
+                <button className="tw-flex tw-justify-between tw-w-full tw-mb-4 tw-p-2 tw-rounded tw-bg-gray-200"
                         onClick={(event) => handlePdtid(e.id_plan!)}
                         title={e.Descripcion}>
-                    <p className="mr-4">{e.Nombre}</p>
-                    <p className="ml-4">{e.Alcaldia}</p>
+                    <p className="tw-mr-4">{e.Nombre}</p>
+                    <p className="tw-ml-4">{e.Alcaldia}</p>
                 </button>
                 <IconButton color="success"
                             aria-label="delete"
@@ -68,7 +68,7 @@ export const PDT = () => {
             </div> 
             ) }
         </ul> 
-        : <p className="text-3xl font-bold">No tiene suficientes permisos</p>}
+        : <p className="tw-text-3xl tw-font-bold">No tiene suficientes permisos</p>}
             
         </div>
     )

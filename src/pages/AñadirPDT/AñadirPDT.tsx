@@ -2,31 +2,24 @@ import { PDTForm } from "../../components"
 
 export const AñadirPDT = () => {
     return (
-        <div className="container mx-auto border-t border-x my-4 pb-10">
-            <div className="grid
-                            grid-cols-12
-                            grid-row-6
-                            gap-6
-                            pb-4
-                            border-b-2
-                            border-slat-300
-                            mx-5
-                            mb-5">
-                <div className="col-start-4
-                                col-span-6
-                                bg-gray-400">
+        <div className="tw-container tw-mx-auto tw-border-t tw-border-x tw-my-4 tw-pb-10">
+            <div className="tw-grid tw-grid-cols-12
+                            tw-grid-row-6 tw-gap-6
+                            tw-pb-4 tw-mx-5 tw-mb-5
+                            tw-border-b-2 tw-border-slat-300">
+                <div className="tw-col-start-4
+                                tw-col-span-6
+                                tw-bg-gray-400">
                     Alcalcia Municipal, Nombre Plan, PISAMI
                 </div>
-                <div className="row-start-2
-                                row-end-5
-                                col-start-5
-                                col-span-4
-                                bg-gray-400
-                                rounded-b-3xl">
+                <div className="tw-row-start-2 tw-row-end-5
+                                tw-col-start-5 tw-col-span-4
+                                tw-bg-gray-400
+                                tw-rounded-b-3xl">
                     Cloud Control
                 </div>
             </div>
-            <div className="flex justify-center">
+            <div className="tw-flex tw-justify-center">
                 <PDTForm/>
             </div>
         </div>

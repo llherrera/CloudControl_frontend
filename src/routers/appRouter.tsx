@@ -2,12 +2,12 @@ import { Route, Routes } from 'react-router-dom'
 
 import { useAppSelector } from '../store'
 
-import { PrivateRouter } from './privateRouter'
+import { PrivateRouter } from './adminRouter'
 import { PublicRouter } from './publicRouter'
 
 export const AppRouter = () => {
-    const logged = false;
-//    const { logged } = useAppSelector(store => store.auth)
+//    const logged = false;
+    const { logged } = useAppSelector(store => store.auth)
 
     return logged ? (
         <Routes>

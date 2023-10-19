@@ -1,8 +1,15 @@
 import React, { useState } from 'react'
-import { NodoInterface, NodoProps } from '../../interfaces'
+import { NodoInterface } from '../../interfaces'
 import { addNodoNivel } from '../../services/api'
 
-export const NodoForm = ( props : NodoProps ) => {
+interface Props {
+    index: number;
+    id: number;
+    Padre: string | null;
+    callback: (index: number, Padre: (string | null)) => void;
+}
+
+export const NodoForm = ( props : Props ) => {
 
     let id_nodo_gen : number = 1;
     const [data, setData] = useState<NodoInterface[]>([
@@ -92,11 +99,11 @@ export const NodoForm = ( props : NodoProps ) => {
 
     return (
         <form   onSubmit={handleSubmit}
-                className='grid grid-cols-12 m-5 '>
-            <ul className='col-start-5 col-span-4'>
+                className='tw-grid tw-grid-cols-12 tw-m-5 '>
+            <ul className='tw-col-start-5 tw-col-span-4'>
                 {data.map(( e: NodoInterface, index: number )=> 
-                <div className='mb-3 px-3 p-2 bg-cyan-200 flex rounded'>
-                    <li className="mx-3">
+                <div className='tw-mb-3 tw-px-3 tw-p-2 tw-bg-cyan-200 tw-flex tw-rounded'>
+                    <li className="tw-mx-3">
                         <input  type={"text"}
                                 placeholder={`Nombre del nodo`}
                                 id={"Nombre"}
@@ -121,17 +128,17 @@ export const NodoForm = ( props : NodoProps ) => {
                             onChange={ (event) => handleInputFormChange(event, index) } />
                 </div>
                 )}
-                <button className="bg-green-500 
-                                   hover:bg-green-300 
-                                   text-white font-bold 
-                                   py-2 px-4 rounded mr-5" 
+                <button className=" tw-bg-green-500 
+                                    hover:tw-bg-green-300 
+                                    tw-text-white tw-font-bold 
+                                    tw-py-2 tw-px-4 tw-rounded tw-mr-5" 
                         type='button'
                         title='Agregar Nodo'
                         onClick={agregarNodo}>Agregar Nodo</button>
-                <button className="bg-red-500 
-                                   hover:bg-red-300 
-                                   text-white font-bold 
-                                   py-2 px-4 rounded ml-5"
+                <button className=" tw-bg-red-500 
+                                    hover:tw-bg-red-300 
+                                    tw-text-white tw-font-bold 
+                                    tw-py-2 tw-px-4 tw-rounded tw-ml-5"
                         type='button'
                         title='Eliminar Nodo'
                         onClick={eliminarNodo}>Eliminar Nodo</button>
@@ -139,12 +146,12 @@ export const NodoForm = ( props : NodoProps ) => {
             <input  type="submit"
                     value={"Guardar"}
                     title='Guardar nodos en el nivel'
-                    className="row-start-5 col-start-6 col-span-2
-                               bg-blue-500
-                               hover:bg-blue-300 
-                               text-white font-bold }
-                               rounded
-                               mt-5 mx-6 py-2"/>
+                    className=" tw-row-start-5 tw-col-start-6 tw-col-span-2
+                                tw-bg-blue-500
+                                hover:tw-bg-blue-300 
+                                tw-text-white tw-font-bold }
+                                tw-rounded
+                                tw-mt-5 tw-mx-6 tw-py-2"/>
         </form>
     )
 }

@@ -2,9 +2,13 @@ import React, { useState } from 'react';
 import Slider from '@mui/material/Slider';
 import Box from '@mui/material/Box';
 import { addColor } from '../../services/api';
-import { ColorProps } from '../../interfaces';
 
-export const ColorForm = ( props : ColorProps ) => {
+interface Props {
+    id: number;
+    callback: (bool: boolean) => void;
+}
+
+export const ColorForm = ( props : Props ) => {
 
     const [value, setValue] = useState([[0, 24], [25, 49], [50, 74], [75, 100]]);
 
@@ -30,10 +34,10 @@ export const ColorForm = ( props : ColorProps ) => {
     }
 
     return (
-        <form className='flex flex-wrap mb-2 ml-4'>
+        <form className='tw-flex tw-flex-wrap tw-mb-2 tw-ml-4'>
             {value.map((value: number[], index: number) => {
                 return (
-                    <div className='flex mx-2'>
+                    <div className='tw-flex tw-mx-2'>
                         <Box sx={{ width:100 }}>
                             <Slider min={0}
                                     max={100}
@@ -42,23 +46,23 @@ export const ColorForm = ( props : ColorProps ) => {
                                     valueLabelDisplay="auto"
                                     disableSwap/>
                         </Box>
-                        <div className={`w-12 h-12 ml-2
-                                        ${index=== 0 ? 'bg-red-400'   : 
-                                        (index === 1 ? 'bg-yellow-400': 
-                                        (index === 2 ? 'bg-green-400' : 
-                                        'bg-blue-400'))}
-                                        rounded-full`}>
-                            <p className='mt-3 font-bold'>
+                        <div className={`tw-w-12 tw-h-12 tw-ml-2
+                                        ${index=== 0 ? 'tw-bg-red-400'   : 
+                                        (index === 1 ? 'tw-bg-yellow-400': 
+                                        (index === 2 ? 'tw-bg-green-400' : 
+                                        'tw-bg-blue-400'))}
+                                        tw-rounded-full`}>
+                            <p className='tw-mt-3 tw-font-bold'>
                                 {value[1]}
                             </p>
                         </div>
                     </div>
                 )
             })}
-            <button className='bg-green-300
-                                px-2
-                                rounded
-                                font-bold'
+            <button className=' tw-bg-green-300
+                                tw-px-2
+                                tw-rounded
+                                tw-font-bold'
                     onClick={handleInput}>
                 Guardar
             </button>

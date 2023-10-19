@@ -1,10 +1,14 @@
 import { useState, useEffect } from 'react'
 import { Content } from './Content';
-import { TableroProps, PesosNodos, Porcentaje, DetalleAño } from '../../interfaces';
+import { PesosNodos, Porcentaje, DetalleAño, NivelInterface } from '../../interfaces';
 import { useParams } from 'react-router-dom';
 import { getProgresoTotal } from '../../services/api';
 
-export const Tablero = ( props : TableroProps ) => {
+interface Props {
+    data: NivelInterface[];
+}
+
+export const Tablero = ( props : Props ) => {
     const { id } = useParams();
 
     const [index, setIndex] = useState(0);
@@ -82,23 +86,23 @@ export const Tablero = ( props : TableroProps ) => {
     }
 
     return (
-        <div className="container mx-auto my-3
-                        bg-gray-200
-                        grid grid-cols-12
-                        content-center
-                        border-8 border-gray-400 rounded-md ">
-            <div className='flex 
-                            col-start-1 col-span-full
-                            justify-between
-                            px-3 mt-4
-                            shadow-2xl
-                            border-b-2 border-gray-400
-                            z-40'>
+        <div className="tw-container tw-mx-auto my-3
+                        tw-bg-gray-200
+                        tw-grid tw-grid-cols-12
+                        tw-content-center
+                        tw-border-8 tw-border-gray-400 tw-rounded-md ">
+            <div className='tw-flex 
+                            tw-col-start-1 tw-col-span-full
+                            tw-justify-between
+                            tw-px-3 tw-mt-4
+                            tw-shadow-2xl
+                            tw-border-b-2 tw-border-gray-400
+                            tw-z-40'>
                 <p> CloudControl </p>
                 <p> Alcalcia Municipal, Nombre Plan, PISAMI </p>
                 <p> Plan indicativo </p>
             </div>
-            <div className='col-span-full'>
+            <div className='tw-col-span-full'>
                 <Content    index={index+1} 
                             len={props.data.length}
                             data={props.data[index]} 

@@ -2,10 +2,14 @@ import React, { useState, useEffect } from "react";
 import { Input } from "../Inputs";
 import { addNivel } from "../../services/api";
 import { decode } from "../../utils/decode";
-import { NivelProps, NivelInterface, Token } from "../../interfaces";
+import { NivelInterface, Token } from "../../interfaces";
 import Cookies from "js-cookie";
 
-export const NivelForm = ( props: NivelProps ) => {
+interface Props {
+    id: string;
+}
+
+export const NivelForm = ( props: Props ) => {
 
     const [data, setData] = useState<NivelInterface[]>([
         { Nombre: "", Descripcion: "" },
@@ -71,10 +75,10 @@ export const NivelForm = ( props: NivelProps ) => {
         <div>
             {(rol === "admin") || (rol === 'funcionario' && id_ === parseInt(props.id)) ?
             <form   onSubmit={ handleSubmit}
-                    className="grid grid-cols-12 mt-5">
-                <ul className="col-start-5 col-span-4 gap-3">
+                    className="tw-grid tw-grid-cols-12 tw-mt-5">
+                <ul className="tw-col-start-5 tw-col-span-4 tw-gap-3">
                 {data.map(( e:NivelInterface, index: number )=> 
-                    <li className="mb-3 p-2 bg-cyan-200 rounded">
+                    <li className="tw-mb-3 tw-p-2 tw-bg-cyan-200 tw-rounded">
                         <Input  type={"text"}
                                 label="Nombre del Nivel:"
                                 id={"Nombre"}
@@ -89,18 +93,18 @@ export const NivelForm = ( props: NivelProps ) => {
                                 onChange={ (event) => handleInputFormChange(event, index) }/><br/>
                     </li>
                 )}
-                <div className="w-full flex justify-around py-2 bg-cyan-200 rounded">
-                    <button className="bg-green-500
-                                       hover:bg-green-300 
-                                       text-white font-bold          
-                                        w-12 p-2 rounded"
+                <div className="tw-w-full tw-flex tw-justify-around tw-py-2 tw-bg-cyan-200 tw-rounded">
+                    <button className=" tw-bg-green-500
+                                        hover:tw-bg-green-300 
+                                        tw-text-white tw-font-bold          
+                                        tw-w-12 tw-p-2 tw-rounded"
                             type="button"
                             title="Agregar un nuevo nivel"
                             onClick={ agregarNivel }>+</button>
-                    <button className="bg-red-500 
-                                       hover:bg-red-300 
-                                       text-white font-bold
-                                        w-12 p-2 rounded"
+                    <button className=" tw-bg-red-500 
+                                        hover:tw-bg-red-300 
+                                        tw-text-white tw-font-bold
+                                        tw-w-12 tw-p-2 tw-rounded"
                             type="button"
                             title="Eliminar un nivel"
                             onClick={ eliminarNivel }>-</button>
@@ -109,12 +113,12 @@ export const NivelForm = ( props: NivelProps ) => {
                 <input  type="submit"
                         value={"Guardar"}
                         title="Guardar"
-                        className=" col-start-6 col-span-2
-                                    bg-blue-500
-                                    hover:bg-blue-300 
-                                    text-white font-bold }
-                                    rounded
-                                    mt-5 mx-6 py-2"/>
+                        className=" tw-col-start-6 tw-col-span-2
+                                    tw-bg-blue-500
+                                    hover:tw-bg-blue-300 
+                                    tw-text-white tw-font-bold }
+                                    tw-rounded
+                                    tw-mt-5 tw-mx-6 tw-py-2"/>
             </form>
             : <div>No tiene permisos suficientes</div>}
         </div>

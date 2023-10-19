@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { NodoInterface, ContentProps, Token } from "../../interfaces";
+import { NodoInterface, Token, NivelInterface } from "../../interfaces";
 import { getNodosNivel, getColors } from "../../services/api";
 import { NodoForm, ColorForm } from "../Forms";
 import IconButton from "@mui/material/IconButton";
@@ -10,7 +10,17 @@ import { ShowNodosUnidad } from "./ShowNodosUnidad";
 import { decode } from "../../utils/decode";
 import Cookies from "js-cookie";
 
-export const Content = ( props : ContentProps ) => {
+interface Props {
+    index: number;
+    len: number;
+    data: NivelInterface;
+    callback: (index: number, padre: (string | null)) => void;
+    Padre: (string | null);
+    id: number;
+    progress: boolean;
+}
+
+export const Content = ( props : Props ) => {
     const navigate = useNavigate();
 
     const [nodos, setNodos] = useState<NodoInterface[]>([]);
@@ -132,25 +142,25 @@ export const Content = ( props : ContentProps ) => {
                 </div>
                 }
             </div>
-            :<div className="   grid 
-                                grid-cols-12
-                                grid-flow-row">
-                <div className="bg-gray-400 
-                                py-1 mt-2 
-                                col-span-3 flex">
+            :<div className="   tw-grid 
+                                tw-grid-cols-12
+                                tw-grid-flow-row">
+                <div className="tw-bg-gray-400 
+                                tw-py-1 tw-mt-2 
+                                tw-col-span-3 tw-flex">
                     {backIconButton()}
-                    <h1 className=" mr-5 grow 
-                                    justify-self-center">
+                    <h1 className=" tw-mr-5 tw-grow 
+                                    tw-justify-self-center">
                         {props.data.Nombre}
                     </h1>
                 </div>
                 {hadColor ?
                 <div></div>
-                :<button className=" mt-2 ml-2
-                                  bg-blue-300 
-                                  rounded"
-                                  onClick={handleColor}>
-                    <p className="break-words">Definir colorimetria</p>
+                :<button className="tw-mt-2 tw-ml-2
+                                    tw-bg-blue-300 
+                                    tw-rounded"
+                          onClick={handleColor}>
+                    <p className="tw-break-words">Definir colorimetria</p>
                 </button>
                 }
                 {props.index !== props.len ?
@@ -167,16 +177,16 @@ export const Content = ( props : ContentProps ) => {
                                     colors={colors}/>
                 }
 
-                <div className="col-start-4 col-span-8
-                                border-l-4 border-gray-400">
-                    <div className="flex flex-wrap justify-around">
+                <div className="tw-col-start-4 tw-col-span-8
+                                tw-border-l-4 tw-border-gray-400">
+                    <div className="tw-flex tw-flex-wrap tw-justify-around">
                         {años.map((año: number) => (
-                            <button className ={`rounded-full
-                                                ${añoSelect === año ? 'bg-cyan-400' : 'bg-white'}
-                                                ml-3 w-16 h-16
-                                              border-yellow-300 border-8
-                                                translate-x-3
-                                                scale-100`}
+                            <button className ={`tw-rounded-full
+                                                ${añoSelect === año ? 'tw-bg-cyan-400' : 'tw-bg-white'}
+                                                tw-ml-3 tw-w-16 tw-h-16
+                                                tw-border-yellow-300 tw-border-8
+                                                tw-translate-x-3
+                                                tw-scale-100`}
                                     onClick={ (event) => handleAños(event, año)}>
                                 {año}
                             </button>
@@ -186,7 +196,7 @@ export const Content = ( props : ContentProps ) => {
                 
                 {hadColor ?
                 <div></div>
-                : <div className="col-start-4 col-span-8">
+                : <div className="tw-col-start-4 tw-col-span-8">
                     {color ? 
                     <div></div> 
                     : <ColorForm id={props.id} callback={setColor}/>}

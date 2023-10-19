@@ -1,14 +1,22 @@
-import { InputProps } from "../../interfaces";
+interface Props {
+    type: string;
+    label: string;
+    id: string;
+    name: string;
+    value: string;
+    onChange: (e: React.ChangeEvent<HTMLInputElement>, index:(number | void)) => void;
+    isRequired?: boolean;
+}
 
-export const Input = (props: InputProps) => {
+export const Input = (props: Props) => {
     return(
-        <div className="flex justify-center">
+        <div className="tw-flex tw-justify-center">
             <label htmlFor={props.id}>{props.label}</label>
             <input
                 type={props.type}
                 id={props.id}
                 name={props.name}
-                className="border rounded ml-3"
+                className="tw-border tw-rounded tw-ml-3"
                 value={props.value}
                 onChange={props.onChange}
                 required/>

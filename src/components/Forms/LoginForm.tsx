@@ -43,8 +43,8 @@ export const LoginForm = () => {
 
     return (
         <form   onSubmit={handleSubmit}
-                className=' col-start-2
-                            row-start-1 row-span-3'>
+                className=' tw-col-start-2
+                            tw-row-start-1 tw-row-span-3'>
             <div>
                 <label htmlFor="user">Usuario</label>
                 <input
@@ -67,14 +67,14 @@ export const LoginForm = () => {
                     onChange={handlePassword}
                 />
             </div>
-            <div className='flex '>
+            <div className='tw-flex '>
                 <button type="submit" 
-                        className='bg-green-500 hover:bg-green-300 py-1 px-3 rounded'
+                        className='tw-bg-green-500 hover:tw-bg-green-300 tw-py-1 tw-px-3 tw-rounded'
                         title='Entrar'>
                     Entrar
                 </button>
                 <button type="button" 
-                        className='bg-red-500 py-1 hover:bg-red-300 px-3 rounded' 
+                        className='tw-bg-red-500 tw-py-1 hover:tw-bg-red-300 tw-px-3 tw-rounded' 
                         onClick={handleCancelar}
                         title='Cancelar'>
                     Cancelar

@@ -3,9 +3,12 @@ import { Action, combineReducers, configureStore, ThunkAction } from '@reduxjs/t
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'
 
 import authReducer from './auth/authSlice'
+// En los reducers se definen las propiedades del estado global
+// To Do: Hacer mas reducers, los que sean necesarios, se hace la carpeta con el Slice y los thunks
 
 export const reducers = {
   auth: authReducer
+  // Aqui se agregan los reducers
 }
 
 const rootReducer = combineReducers(reducers)

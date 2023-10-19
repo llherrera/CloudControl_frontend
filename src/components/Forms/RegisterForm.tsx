@@ -2,9 +2,13 @@ import React, { useState } from "react";
 import { Input } from "../Inputs";
 import { doRegister } from "../../services/api";
 import { useNavigate } from "react-router-dom";
-import { RegisterProps, RegisterInterface } from "../../interfaces";
+import { RegisterInterface } from "../../interfaces";
 
-export const RegisterForm = (props: RegisterProps) => {
+interface Props {
+    id: number;
+}
+
+export const RegisterForm = (props: Props) => {
     const navigate = useNavigate();
 
     const [form, setForm] = useState<RegisterInterface>({
@@ -70,9 +74,9 @@ export const RegisterForm = (props: RegisterProps) => {
                     value={form.confirmarContraseña}
                     onChange={ (event) => handleInputChange(event)}/><br />    
             <button type="submit"
-                    className='bg-green-300 
-                                px-3 py-2
-                                rounded'>
+                    className=' tw-bg-green-300 
+                                tw-px-3 tw-py-2
+                                tw-rounded'>
                 Registrar funcionario
             </button>
         </form>

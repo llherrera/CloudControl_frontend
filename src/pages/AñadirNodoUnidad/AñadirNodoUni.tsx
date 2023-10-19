@@ -208,30 +208,30 @@ export const AñadirNodoUni = () => {
 
     const unidadForm = () => {
         return (
-            <form   className="mt-5">
-                <table className  ="border-separate 
-                                    border-spacing-2 
-                                    border 
-                                    border-slate-500
-                                    bg-white
-                                    rounded">
+            <form className="tw-mt-5">
+                <table className="  tw-border-separate 
+                                    tw-border-spacing-2 
+                                    tw-border 
+                                    tw-border-slate-500
+                                    tw-bg-white
+                                    tw-rounded">
                     <thead>
                         <tr>
-                            <th className="border border-slate-600 bg-gray-200 rounded">Código de la meta: </th>
-                            <th className="border border-slate-600 rounded">
+                            <th className="tw-border tw-border-slate-600 tw-bg-gray-200 tw-rounded">Código de la meta: </th>
+                            <th className="tw-border tw-border-slate-600 tw-rounded">
                                 <input  type="text"
                                         name="codigo"
                                         value={unidForm.codigo}
-                                        className="bg-gray-200" 
+                                        className="tw-bg-gray-200" 
                                         onChange={ (e) => handleInputUnid(e)}
                                         required/>
                             </th>
-                            <th className="border border-slate-600 px-2 bg-gray-200 rounded">Línea base</th>
-                            <th className="border border-slate-600 rounded">
+                            <th className="tw-border tw-border-slate-600 tw-px-2 tw-bg-gray-200 tw-rounded">Línea base</th>
+                            <th className="tw-border tw-border-slate-600 tw-rounded">
                                 <input  type="text"
                                         name="base"
                                         value={unidForm.base}
-                                        className="bg-gray-200" 
+                                        className="tw-bg-gray-200" 
                                         onChange={handleInputUnid}
                                         required/>
                             </th>
@@ -239,32 +239,32 @@ export const AñadirNodoUni = () => {
                     </thead>
                     <tbody>
                         <tr>
-                            <td className="border border-slate-600 font-bold px-2 bg-gray-200 rounded">Descripción de la meta: </td>
-                            <td className="border border-slate-600 font-bold rounded">
+                            <td className="tw-border tw-border-slate-600 tw-font-bold tw-px-2 tw-bg-gray-200 tw-rounded">Descripción de la meta: </td>
+                            <td className="tw-border tw-border-slate-600 tw-font-bold tw-rounded">
                                 <input  type="text"
                                         name="descripcion"
                                         value={unidForm.descripcion}
-                                        className="bg-gray-200" 
+                                        className="tw-bg-gray-200" 
                                         onChange={handleInputUnid}
                                         required/>
                             </td>
-                            <td className="border border-slate-600 font-bold bg-gray-200 rounded">Meta</td>
-                            <td className="border border-slate-600 font-bold rounded">
+                            <td className="tw-border tw-border-slate-600 tw-font-bold tw-bg-gray-200 tw-rounded">Meta</td>
+                            <td className="tw-border tw-border-slate-600 tw-font-bold tw-rounded">
                                 <input  type="text"
                                         name="meta"
                                         value={unidForm.meta}
-                                        className="bg-gray-200" 
+                                        className="tw-bg-gray-200" 
                                         onChange={handleInputUnid}
                                         required/>
                             </td>
                         </tr>
                         <tr>
-                            <td className="border border-slate-600 font-bold bg-gray-200 rounded">Indicador de meta: </td>
-                            <td className="border border-slate-600 font-bold rounded">
+                            <td className="tw-border tw-border-slate-600 tw-font-bold tw-bg-gray-200 tw-rounded">Indicador de meta: </td>
+                            <td className="tw-border tw-border-slate-600 tw-font-bold tw-rounded">
                                 <input  type="text"
                                         name="indicador"
                                         value={unidForm.indicador}
-                                        className="bg-gray-200" 
+                                        className="tw-bg-gray-200" 
                                         onChange={handleInputUnid}
                                         required/>
                             </td>
@@ -282,42 +282,42 @@ export const AñadirNodoUni = () => {
             añoForm.ejecFinanciera[index] = añoForm.ejecFinanciera[index] ?? 0;
         });
         return(
-            <form   className="mt-5">
-                <table className  ="border-separate 
-                                    border-spacing-2
-                                    border 
-                                    border-slate-500
-                                    bg-white
-                                    rounded">
+            <form className="tw-mt-5">
+                <table className="  tw-border-separate 
+                                    tw-border-spacing-2
+                                    tw-border 
+                                    tw-border-slate-500
+                                    tw-bg-white
+                                    tw-rounded">
                     <thead>
                         <tr>
-                            <th className ='border 
-                                            border-slate-600 
-                                            bg-slate-300
-                                            rounded'> 
+                            <th className=' tw-border 
+                                            tw-border-slate-600 
+                                            tw-bg-slate-300
+                                            tw-rounded'> 
                                 <button onClick={handleSubmitButton}>Añadir evidencia</button>
                             </th>
                             {años.map((año, index) => {
                                 return(
                                     añoForm.año[index] = año,
-                                    <th className="border border-slate-600 px-10 bg-yellow-400 rounded">
+                                    <th className="tw-border tw-border-slate-600 tw-px-10 tw-bg-yellow-400 tw-rounded">
                                         <p> { año } </p>
                                     </th>
                                 )
                             })}
-                            <th className='border border-slate-600 px-10 bg-yellow-400 rounded'>Acumulado</th>
+                            <th className='tw-border tw-border-slate-600 tw-px-10 tw-bg-yellow-400 tw-rounded'>Acumulado</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td className="border border-slate-600 font-bold px-2 rounded">Programación</td>
+                            <td className="tw-border tw-border-slate-600 tw-font-bold tw-px-2 tw-rounded">Programación</td>
                             {años.map((año, index) => {
                                 return(
-                                    <td className="border border-slate-600 font-bold rounded">
+                                    <td className="tw-border tw-border-slate-600 tw-font-bold tw-rounded">
                                         <input  type="text"
                                                 name={`programacion-${año}`}
                                                 value={añoForm.programacion[index]}
-                                                className='bg-gray-200' 
+                                                className='tw-bg-gray-200' 
                                                 onChange={(e) => handleInputaño("programacion", index, e.target.value)}
                                                 size={10}
                                                 required/>
@@ -326,40 +326,40 @@ export const AñadirNodoUni = () => {
                             })}
                         </tr>
                         <tr>
-                            <td className="border border-slate-600 font-bold px-2 rounded">Ejecución física</td>
+                            <td className="tw-border tw-border-slate-600 tw-font-bold tw-px-2 tw-rounded">Ejecución física</td>
                             {años.map((año, index) => {
                                 return(
-                                    <td className="border border-slate-600 font-bold rounded">
+                                    <td className="tw-border tw-border-slate-600 tw-font-bold tw-rounded">
                                         <input  type="text"
                                                 name={`ejecFisica-${año}`}
                                                 value={añoForm.ejecFisica[index]}
-                                                className='bg-gray-200'
+                                                className='tw-bg-gray-200'
                                                 onChange={(e) => handleInputaño("ejecFisica", index, e.target.value)}
                                                 size={10}
                                                 required/>
                                     </td>
                                 )
                             })}
-                            <td className="border border-slate-600 font-bold px-2 bg-gray-200 rounded">
+                            <td className="tw-border tw-border-slate-600 tw-font-bold tw-px-2 tw-bg-gray-200 tw-rounded">
                             {isNaN(acum) ? 0 : acum*100} %
                             </td>
                         </tr>
                         <tr>
-                            <td className="border border-slate-600 font-bold px-2 rounded">Ejecución financiera</td>
+                            <td className="tw-border tw-border-slate-600 tw-font-bold tw-px-2 tw-rounded">Ejecución financiera</td>
                             {años.map((año, index) => {
                                 return(
-                                    <td className="border border-slate-600 font-bold rounded">
+                                    <td className="tw-border tw-border-slate-600 tw-font-bold tw-rounded">
                                         <input  type="text"
                                                 name={`ejecFinanciera-${año}`}
                                                 value={añoForm.ejecFinanciera[index]}
-                                                className='bg-gray-200'
+                                                className='tw-bg-gray-200'
                                                 onChange={(e) => handleInputaño("ejecFinanciera", index, e.target.value)}
                                                 size={10}
                                                 required/>
                                     </td>
                                 )
                             })}
-                            <td className="border border-slate-600 font-bold px-2 bg-gray-200 rounded"> 
+                            <td className="tw-border tw-border-slate-600 tw-font-bold tw-px-2 tw-bg-gray-200 tw-rounded"> 
                             ${isNaN(acumFinan) ? 0 : acumFinan}
                             </td>
                         </tr>
@@ -370,45 +370,45 @@ export const AñadirNodoUni = () => {
     }
 
     return (
-        <div className="container mx-auto my-3
-                        bg-gray-200
-                        grid grid-cols-12
-                        border-8 
-                        border-gray-400 rounded-md ">
-            <div className='cols-start-1 col-span-full
-                            flex justify-between
-                            px-3 my-4
-                            shadow-2xl
-                            border-b-2 border-gray-400
-                            z-40'>
+        <div className="tw-container tw-mx-auto tw-my-3
+                        tw-bg-gray-200
+                        tw-grid tw-grid-cols-12
+                        tw-border-8 
+                        tw-border-gray-400 tw-rounded-md ">
+            <div className='tw-cols-start-1 tw-col-span-full
+                            tw-flex tw-justify-between
+                            tw-px-3 tw-my-4
+                            tw-shadow-2xl
+                            tw-border-b-2 tw-border-gray-400
+                            tw-z-40'>
                 <p> CloudControl </p>
                 <p> Alcalcia Municipal, Nombre Plan, PISAMI </p>
                 <p> Plan indicativo </p>
             </div>
-            <div className="col-start-1 col-span-full flex justify-center">
+            <div className="tw-col-start-1 tw-col-span-full tw-flex tw-justify-center">
             {nombres.length > 0 && nombres.map((nombre) => {
                 return (
-                    <div className="flex mr-4">
-                        <p className="text-green-600 font-bold">{nombre[1]}:</p> 
-                        <span className="pr-1"/> <p>{nombre[0]}</p>
+                    <div className="tw-flex mr-4">
+                        <p className="tw-text-green-600 tw-font-bold">{nombre[1]}:</p> 
+                        <span className="tw-pr-1"/> <p>{nombre[0]}</p>
                     </div>
                 );
             })}
             </div>
-            <div className="col-start-1 col-span-full flex justify-center">
+            <div className="tw-col-start-1 tw-col-span-full tw-flex tw-justify-center">
                 {unidadForm()}
             </div>
-            <div className="col-start-1 col-span-full flex justify-center">
+            <div className="tw-col-start-1 tw-col-span-full tw-flex tw-justify-center">
                 {añosForm()}
             </div>
 
-            <div className="col-start-1 col-span-full flex justify-center">
-                <button type="button" 
-                        className ="bg-blue-500 
-                                    hover:bg-blue-300 
-                                    text-white font-bold 
-                                    py-2 px-4 my-5
-                                    rounded"
+            <div className="tw-col-start-1 tw-col-span-full tw-flex tw-justify-center">
+                <button type="button"
+                        className=" tw-bg-blue-500 
+                                    hover:tw-bg-blue-300 
+                                    tw-text-white tw-font-bold 
+                                    tw-py-2 tw-px-4 tw-my-5
+                                    tw-rounded"
                         onClick={(e) => handleInput(e)}>
                     Guardar <br /> cambios
                 </button>

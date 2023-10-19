@@ -50,29 +50,29 @@ export const LobbyPage = () => {
     }
 
     return (
-        <div className="mx-10 mt-4 pb-10
-                        h-96
-                        border">
-            <header className=" grid grid-cols-6
-                                shadow p-2
-                                border-4 border-double
-                                bg-gray-400">
-                <h1 className=" col-start-2 col-span-4
-                                text-3xl
-                                font-bold
-                                text-blue-700">
+        <div className="tw-mx-10 tw-mt-4 tw-pb-10
+                        tw-h-96
+                        tw-border">
+            <header className=" tw-grid tw-grid-cols-6
+                                tw-shadow tw-p-2
+                                tw-border-4 tw-border-double
+                                tw-bg-gray-400">
+                <h1 className=" tw-col-start-2 tw-col-span-4
+                                tw-text-3xl
+                                tw-font-bold
+                                tw-text-blue-700">
                     Alcalcia Municipal, Nombre Plan, PISAMI
                 </h1>
                 {rol === '' ? <div></div>:
                     <button type='submit'
-                            className='bg-red-500 hover:bg-red-300
-                                        rounded shadow'
+                            className=' tw-bg-red-500 hover:tw-bg-red-300
+                                        tw-rounded tw-shadow'
                             onClick={handleLogout}>
                         <p>Cerrar sesion</p>
                     </button>
                 }
             </header>
-            <div className='flex justify-center'>
+            <div className='tw-flex tw-justify-center'>
                 <ButtonPlan text="Plan indicativo" 
                             handleButton={handleButton}
                             x={Math.cos(2 * Math.PI * 1 / 5) * 200}
@@ -81,9 +81,9 @@ export const LobbyPage = () => {
                             handleButton={handleButton}
                             x={Math.cos(2 * Math.PI * 2 / 5) * 100}
                             y={Math.sin(2 * Math.PI * 2 / 5) * 100} />
-                <div className="shadow px-32
-                                bg-gray-400
-                                rounded-b-3xl"
+                <div className="tw-shadow tw-px-32
+                                tw-bg-gray-400
+                                tw-rounded-b-3xl"
                     style={{ left: 0, top:0 }}>
                     Cloud Control
                 </div>

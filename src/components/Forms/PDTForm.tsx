@@ -68,7 +68,7 @@ export const PDTForm = () => {
                     value={planData.Descripcion}
                     onChange={handleInputChange}/><br/>
             
-            <div className="flex justify-between">
+            <div className="tw-flex tw-justify-between">
                 <Input  type={"date"}
                         label="Fecha de Inicio"
                         id="Fecha_inicio"
@@ -86,10 +86,10 @@ export const PDTForm = () => {
             <input  type="submit"
                     value="Registrar Plan"
                     title="Añadir plan"
-                    className=" bg-green-500
-                                hover:bg-green-300
-                                rounded
-                                p-2"
+                    className=" tw-bg-green-500
+                                hover:tw-bg-green-300
+                                tw-rounded
+                                tw-p-2"
             />
 
         </form>

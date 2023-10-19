@@ -112,116 +112,119 @@ export const AñadirEvidencia = () => {
 
     const memorias = () =>{
         return(
-            <div className="container mx-auto mt-2 grid grid-cols-12">
-                <header className=" col-start-2 col-end-12
-                                    border-4 border-double border-gray-500">
-                    <h1 className="text-3xl font-bold text-blue-700">Memoria de avance del Plan</h1>
+            <div className="tw-container tw-mx-auto tw-mt-2 tw-grid tw-grid-cols-12">
+                <header className=" tw-col-start-2 tw-col-end-12
+                                    tw-border-4 tw-border-double tw-border-gray-500">
+                    <h1 className=" tw-text-3xl tw-font-bold tw-text-blue-700">Memoria de avance del Plan</h1>
                 </header>
-                <table className=" col-start-3 col-end-11 mt-3 table-fixed">
+                <table className="  tw-col-start-3 tw-col-end-11 tw-mt-3 tw-table-fixed">
                     <thead>
                         <tr>
-                            <th className="border-4 border-double border-gray-500">
-                                <label className="font-bold">Dimension</label>
+                            <th className="tw-border-4 tw-border-double tw-border-gray-500">
+                                <label className="tw-font-bold">Dimension</label>
                             </th>
-                            <th className="border-4 border-double border-gray-500 px-12">
-                                <label className="font-bold">la dimension</label>
+                            <th className="tw-border-4 tw-border-double tw-border-gray-500 tw-px-12">
+                                <label className="tw-font-bold">la dimension</label>
                             </th>
-                            <th className="border-4 border-double border-gray-500">
-                                <label className="font-bold">Codigo de la meta</label>
+                            <th className="tw-border-4 tw-border-double tw-border-gray-500">
+                                <label className="tw-font-bold">Codigo de la meta</label>
                             </th>
-                            <th className="border-4 border-double border-gray-500 px-12">
-                                <label className="font-bold">El codigo</label>
+                            <th className="tw-border-4 tw-border-double tw-border-gray-500 tw-px-12">
+                                <label className="tw-font-bold">El codigo</label>
                             </th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td className="border-4 border-double border-gray-500">
-                                <label className="font-bold">Sector</label>
+                            <td className="tw-border-4 tw-border-double tw-border-gray-500">
+                                <label className="tw-font-bold">Sector</label>
                             </td>
-                            <td className="border-4 border-double border-gray-500">
-                                <label className="font-bold">El sector</label>
+                            <td className="tw-border-4 tw-border-double tw-border-gray-500">
+                                <label className="tw-font-bold">El sector</label>
                             </td>
-                            <td className="border-4 border-double border-gray-500">
-                                <label className="font-bold">Descripcion de meta</label>
+                            <td className="tw-border-4 tw-border-double tw-border-gray-500">
+                                <label className="tw-font-bold">Descripcion de meta</label>
                             </td>
-                            <td className="border-4 border-double border-gray-500">
-                                <label className="font-bold">una descripcion</label>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td className="border-4 border-double border-gray-500">
-                                <label className="font-bold">Programa</label>
-                            </td>
-                            <td className="border-4 border-double border-gray-500">
-                                <label className="font-bold">El programa</label>
-                            </td>
-                            <td className="border-4 border-double border-gray-500">
-                                <label className="font-bold">linea base</label>
-                            </td>
-                            <td className="border-4 border-double border-gray-500">
-                                <label className="font-bold">0</label>
+                            <td className="tw-border-4 tw-border-double tw-border-gray-500">
+                                <label className="tw-font-bold">una descripcion</label>
                             </td>
                         </tr>
                         <tr>
-                            <td className="border-4 border-double border-gray-500">
-                                <label className="font-bold"></label>
+                            <td className="tw-border-4 tw-border-double tw-border-gray-500">
+                                <label className="tw-font-bold">Programa</label>
                             </td>
-                            <td className="border-4 border-double border-gray-500">
-                                <label className="font-bold"></label>
+                            <td className="tw-border-4 tw-border-double tw-border-gray-500">
+                                <label className="tw-font-bold">El programa</label>
                             </td>
-                            <td className="border-4 border-double border-gray-500">
-                                <label className="font-bold">meta</label>
+                            <td className="tw-border-4 tw-border-double tw-border-gray-500">
+                                <label className="tw-font-bold">linea base</label>
                             </td>
-                            <td className="border-4 border-double border-gray-500">
-                                <label className="font-bold">1</label>
+                            <td className="tw-border-4 tw-border-double tw-border-gray-500">
+                                <label className="tw-font-bold">0</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td className="tw-border-4 tw-border-double tw-border-gray-500">
+                                <label className="tw-font-bold"></label>
+                            </td>
+                            <td className="tw-border-4 tw-border-double tw-border-gray-500">
+                                <label className="tw-font-bold"></label>
+                            </td>
+                            <td className="tw-border-4 tw-border-double tw-border-gray-500">
+                                <label className="tw-font-bold">meta</label>
+                            </td>
+                            <td className="tw-border-4 tw-border-double tw-border-gray-500">
+                                <label className="tw-font-bold">1</label>
                             </td>
                         </tr>    
                     </tbody>
                 </table>
-                <p className="  col-start-3 col-span-2 mt-4
-                                justify-self-start">
+                <p className="  tw-col-start-3 tw-col-span-2 tw-mt-4
+                                tw-justify-self-start">
                     Fecha: 01/02/1400
                 </p>
-                <p className="  font-bold col-start-5 mt-4
-                                justify-self-start">
+                <p className="  tw-font-bold tw-col-start-5 tw-mt-4
+                                tw-justify-self-start">
                     Lugar:
                 </p>
-                <input  className=" ml-4 grow border py-4 mt-4
-                                    col-start-6 col-end-11"
+                <input  className=" tw-ml-4 tw-py-4 tw-mt-4
+                                    tw-grow tw-border
+                                    tw-col-start-6 tw-col-end-11"
                         type="text" 
                         name="" 
                         id="" 
                 />
-                <p className="  col-start-3 col-span-2 mt-4
-                                justify-self-start">
+                <p className="  tw-col-start-3 tw-col-span-2 tw-mt-4
+                                tw-justify-self-start">
                     Hora: 23:59
                 </p>
-                <p className="  font-bold mt-4 col-start-5 
-                                justify-self-start">
+                <p className="  tw-font-bold tw-mt-4 tw-col-start-5 
+                                tw-justify-self-start">
                     Responsable del cargo:
                 </p>
-                <input  className=" ml-4 grow border py-4 mt-4
-                                    col-start-6 col-end-11" 
+                <input  className=" tw-ml-4 tw-py-4 tw-mt-4
+                                    tw-grow tw-border
+                                    tw-col-start-6 tw-col-end-11" 
                         type="text" 
                         name="" 
                         id="" 
                 />
-                <p className="  font-bold mt-4 col-start-5 
-                                justify-self-start">
+                <p className="  tw-font-bold tw-mt-4 tw-col-start-5 
+                                tw-justify-self-start">
                     Descripción:
                 </p>
-                <input  className=" ml-4 grow border py-4 mt-4
-                                    col-start-6 col-end-11" 
+                <input  className=" tw-ml-4 tw-py-4 tw-mt-4
+                                    tw-grow tw-border
+                                    tw-col-start-6 tw-col-end-11" 
                         type="text" 
                         name="" 
                         id="" 
                 />
-                <button className=" col-span-full 
-                                    bg-blue-500
-                                    py-4 mt-4
-                                    rounded
-                                    text-white font-bold"
+                <button className=" tw-col-span-full 
+                                    tw-bg-blue-500
+                                    tw-py-4 tw-mt-4
+                                    tw-rounded
+                                    tw-text-white tw-font-bold"
                         onClick={handleSubmitButton}>
                     cargar evidencias de esta meta
                 </button>
@@ -231,20 +234,20 @@ export const AñadirEvidencia = () => {
 
     const evidencias = () =>{
         return(
-            <div className="container mx-auto mt-2 grid grid-cols-12">
-                <header className=" col-span-full
-                                    border-4 border-double border-gray-500">
-                    <h1 className="text-3xl font-bold text-blue-700">Evidencias de la meta</h1>
+            <div className="tw-container tw-mx-auto tw-mt-2 tw-grid tw-grid-cols-12">
+                <header className=" tw-col-span-full
+                                    tw-border-4 tw-border-double tw-border-gray-500">
+                    <h1 className=" tw-text-3xl tw-font-bold tw-text-blue-700">Evidencias de la meta</h1>
                     <button onClick={ (e) => handleSubmitButton(e)}>
                         return
                     </button>
                 </header>
-                <form action="" className="col-span-full">
+                <form action="" className="tw-col-span-full">
                     <label  htmlFor="">Fecha</label>
                     <input  type="date" 
                             name="Fecha"
                             id="Fecha" 
-                            className="border"
+                            className="tw-border"
                             onChange={(e) => handleInputChange(e)}/><hr />
 
                     <label  htmlFor="">Codigo meta</label>
@@ -254,14 +257,14 @@ export const AñadirEvidencia = () => {
                     <input  type="text" 
                             name="DescripcionActividades" 
                             id="DescripcionActividades" 
-                            className="border"
+                            className="tw-border"
                             onChange={(e) => handleInputChange(e)}/><hr />
 
                     <label  htmlFor="">Numero de actividades</label><br />
                     <label  htmlFor="">Unidad</label>
                     <select name="Unidad"
                             id="Unidad"
-                            className="border"
+                            className="tw-border"
                             onChange={(e) => handleInputChange(e)}
                             value={data.Unidad}>
                         <option value="num">Numeros</option>
@@ -271,14 +274,14 @@ export const AñadirEvidencia = () => {
                     <input  type="number" 
                             name="Cantidad" 
                             id="Cantidad" 
-                            className="border"
+                            className="tw-border"
                             onChange={(e)=> handleInputChange(e)}/><hr />
 
                     <label  htmlFor="">Ubicacion</label><br />
                     <label  htmlFor="">Comuna</label>
                     <select name="Comuna"
                             id="Comuna"
-                            className="border"
+                            className="tw-border"
                             onChange={(e)=> handleInputChange(e)}
                             value={data.Comuna}>
                         <option value="Tubara">Tubara</option>
@@ -287,7 +290,7 @@ export const AñadirEvidencia = () => {
                     <label  htmlFor="">Barrio</label>
                     <select name="Barrio"
                             id="Barrio"
-                            className="border"
+                            className="tw-border"
                             onChange={(e)=> handleInputChange(e)}
                             value={data.Barrio}>
                         <option value="Soledad">Soledad</option>
@@ -296,7 +299,7 @@ export const AñadirEvidencia = () => {
                     <label  htmlFor="">Correguimiento</label>
                     <select name="Correguimiento" 
                             id="Correguimiento" 
-                            className="border"
+                            className="tw-border"
                             onChange={(e)=> handleInputChange(e)}
                             value={data.Correguimiento}>
                         <option value="Carrizal">Carrizal</option>
@@ -305,7 +308,7 @@ export const AñadirEvidencia = () => {
                     <label  htmlFor="">Vereda</label>
                     <select name="Vereda" 
                             id="Vereda" 
-                            className="border"
+                            className="tw-border"
                             onChange={(e)=> handleInputChange(e)}
                             value={data.Vereda}>
                         <option value="Eden">El Eden</option>
@@ -315,7 +318,7 @@ export const AñadirEvidencia = () => {
                     <label  htmlFor="">Poblacion beneficiada</label>
                     <select name="PoblacionBeneficiada" 
                             id="PoblacionBeneficiada" 
-                            className="border"
+                            className="tw-border"
                             onChange={(e)=> handleInputChange(e)}
                             value={data.PoblacionBeneficiada}>
                         <option value="AdultoMayor">Adulto Mayor</option>
@@ -326,20 +329,20 @@ export const AñadirEvidencia = () => {
                     <input  type="number" 
                             name="NumeroPoblacionBeneficiada" 
                             id="NumeroPoblacionBeneficiada" 
-                            className="border"
+                            className="tw-border"
                             onChange={(e)=> handleInputChange(e)}/><hr />
 
                     <label  htmlFor="">Recursos ejecutados</label>
                     <input  type="number" 
                             name="RecursosEjecutados" 
                             id="RecursosEjecutados" 
-                            className="border"
+                            className="tw-border"
                             onChange={(e)=> handleInputChange(e)}/><br />
 
                     <label  htmlFor="">Fuente de recursos</label>
                     <select name="FuenteRecursos" 
                             id="FuenteRecursos" 
-                            className="border"
+                            className="tw-border"
                             onChange={(e)=> handleInputChange(e)}
                             value={data.FuenteRecursos}>
                         <option value="Privado">Sector privado</option>
@@ -355,13 +358,13 @@ export const AñadirEvidencia = () => {
                     <input  type="text" 
                             name="NombreDocumento" 
                             id="NombreDocumento" 
-                            className="border"
+                            className="tw-border"
                             onChange={(e) => handleInputChange(e)}/><br />
                     <label  htmlFor="">Lugar</label>
                     <input  type="text" 
                             name="Lugar" 
                             id="lugar" 
-                            className="border"
+                            className="tw-border"
                             onChange={(e) => handleInputChange(e)}/><br />
                     <label  htmlFor="">Fecha</label>
                     <input  type="date" 
@@ -369,12 +372,12 @@ export const AñadirEvidencia = () => {
                             id="Fecha2" 
                             onChange={(e) => handleInputChange(e)}/><hr />
 
-                    <div className="flex justify-center">
-                        <button className=" grow
-                                            bg-blue-500
-                                            py-4 mt-4
-                                            rounded
-                                            text-white font-bold"
+                    <div className="tw-flex tw-justify-center">
+                        <button className=" tw-grow
+                                            tw-bg-blue-500
+                                            tw-py-4 tw-mt-4
+                                            tw-rounded
+                                            tw-text-white tw-font-bold"
                                 onClick={handleSubmitEvidencia}>
                             Añadir evidencia
                         </button>
