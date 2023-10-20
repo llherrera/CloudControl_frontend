@@ -1,14 +1,19 @@
 import { useState, useEffect } from 'react'
 import { Content } from './Content';
+import { ButtonComponent } from '../Buttons';
+import { NavBar } from '../NavBar';
 import { PesosNodos, Porcentaje, DetalleAño, NivelInterface } from '../../interfaces';
 import { useParams } from 'react-router-dom';
 import { getProgresoTotal } from '../../services/api';
+import { useNavigate } from 'react-router-dom';
+import * as svg from '../../assets/icons';
 
 interface Props {
     data: NivelInterface[];
 }
 
 export const Tablero = ( props : Props ) => {
+    const navigate = useNavigate();
     const { id } = useParams();
 
     const [index, setIndex] = useState(0);
@@ -85,32 +90,33 @@ export const Tablero = ( props : Props ) => {
         localStorage.setItem('pesosNodo', JSON.stringify(pesosNodo))
     }
 
+    const buttons = [
+        <ButtonComponent inside={true} onClick={() => navigate('/')} text='Plan indicativo' icon={()=>svg.PlanIndicativoIcon('black')}/>,
+        <ButtonComponent inside={true} onClick={() => navigate('/')} text='Banco de proyectos' icon={()=>svg.BancoProyectoIcon('black')}/>,
+        <ButtonComponent inside={true} onClick={() => navigate('/')} text='POAI' icon={()=>svg.POAIIcon('white')}/>,
+        <ButtonComponent inside={true} onClick={() => navigate('/')} text='Plan de accion' icon={()=>svg.PlanAccionIcon('red')}/>
+    ]
+
     return (
-        <div className="tw-container tw-mx-auto my-3
-                        tw-bg-gray-200
-                        tw-grid tw-grid-cols-12
-                        tw-content-center
-                        tw-border-8 tw-border-gray-400 tw-rounded-md ">
-            <div className='tw-flex 
-                            tw-col-start-1 tw-col-span-full
-                            tw-justify-between
-                            tw-px-3 tw-mt-4
-                            tw-shadow-2xl
-                            tw-border-b-2 tw-border-gray-400
-                            tw-z-40'>
-                <p> CloudControl </p>
-                <p> Alcalcia Municipal, Nombre Plan, PISAMI </p>
-                <p> Plan indicativo </p>
+        <body>
+            <header className='tw-flex tw-justify-between tw-bg-[#E7E6E8] tw-shadow-xl'>
+                <img src="\src\assets\images\Logo.png" alt="" width={100} height={100}/>
+                <img src="\src\assets\images\Logo-municipio.png" alt="" width={300} />
+                <div>salir</div>
+            </header>
+            <div className='tw-flex'>
+                <NavBar buttons={buttons} bgColor='#D9D9D9'/>
+                <div className='tw-flex-grow'>
+                    <Content    index={index+1} 
+                                len={props.data.length}
+                                data={props.data[index]} 
+                                callback={setData} 
+                                Padre={Padre} 
+                                id={ parseInt(id as string) }
+                                progress={getProgress}/>
+                </div>
             </div>
-            <div className='tw-col-span-full'>
-                <Content    index={index+1} 
-                            len={props.data.length}
-                            data={props.data[index]} 
-                            callback={setData} 
-                            Padre={Padre} 
-                            id={ parseInt(id as string) }
-                            progress={getProgress}/>
-            </div>
-        </div>
+        </body>
     )
 }
+ 

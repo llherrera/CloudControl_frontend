@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getLastPDT } from '../../services/api';
-import { ButtonPlan } from '../../components';
+import { ButtonComponent, Header } from '../../components';
 import { decode } from '../../utils/decode';
 import { Token } from '../../interfaces';
 import Cookies from 'js-cookie';
@@ -49,53 +49,14 @@ export const LobbyPage = () => {
         navigate('/')
     }
 
+    const buttons = [
+        <ButtonComponent inside={false} text='Plan indicativo' src="\src\assets\images\Plan-indicativo.png" onClick={handleButton}/>,
+        <ButtonComponent inside={false} text='Banco de proyectos' src="\src\assets\images\Banco-proyectos.png" onClick={() => navigate('/login')}/>,
+        <ButtonComponent inside={false} text='POAI' src="\src\assets\images\POAI.png" onClick={() => navigate('/login')}/>,
+        <ButtonComponent inside={false} text='Plan de accion' src="\src\assets\images\Plan-accion.png" onClick={() => navigate('/login')}/>
+    ]
+
     return (
-        <div className="tw-mx-10 tw-mt-4 tw-pb-10
-                        tw-h-96
-                        tw-border">
-            <header className=" tw-grid tw-grid-cols-6
-                                tw-shadow tw-p-2
-                                tw-border-4 tw-border-double
-                                tw-bg-gray-400">
-                <h1 className=" tw-col-start-2 tw-col-span-4
-                                tw-text-3xl
-                                tw-font-bold
-                                tw-text-blue-700">
-                    Alcalcia Municipal, Nombre Plan, PISAMI
-                </h1>
-                {rol === '' ? <div></div>:
-                    <button type='submit'
-                            className=' tw-bg-red-500 hover:tw-bg-red-300
-                                        tw-rounded tw-shadow'
-                            onClick={handleLogout}>
-                        <p>Cerrar sesion</p>
-                    </button>
-                }
-            </header>
-            <div className='tw-flex tw-justify-center'>
-                <ButtonPlan text="Plan indicativo" 
-                            handleButton={handleButton}
-                            x={Math.cos(2 * Math.PI * 1 / 5) * 200}
-                            y={Math.sin(2 * Math.PI * 1 / 5) * 200} />
-                <ButtonPlan text="Banco de proyectos"
-                            handleButton={handleButton}
-                            x={Math.cos(2 * Math.PI * 2 / 5) * 100}
-                            y={Math.sin(2 * Math.PI * 2 / 5) * 100} />
-                <div className="tw-shadow tw-px-32
-                                tw-bg-gray-400
-                                tw-rounded-b-3xl"
-                    style={{ left: 0, top:0 }}>
-                    Cloud Control
-                </div>
-                <ButtonPlan text="POAI" 
-                            handleButton={handleButton}
-                            x={Math.cos(2 * Math.PI * 3 / 5) * 100}
-                            y={Math.sin(2 * Math.PI * 3 / 5) * 100} />
-                <ButtonPlan text="Plan de accion"
-                            handleButton={handleButton}
-                            x={Math.cos(2 * Math.PI * 4 / 5) * 100}
-                            y={Math.sin(2 * Math.PI * 4 / 5) * 100} />
-            </div>
-        </div>
+        <Header componentes={buttons}/>
     );
 }

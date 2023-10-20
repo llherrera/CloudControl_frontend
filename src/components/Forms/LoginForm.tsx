@@ -1,26 +1,27 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import Cookies from 'js-cookie'
 import { doLogin } from '../../services/api'
+import Cookies from 'js-cookie'
 
 export const LoginForm = () => {
     const navigate = useNavigate()
 
-    const [username, setusername] = useState("")
-    const [password, setpassword] = useState("")
-
-    const handleUsername = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setusername(e.target.value)
-    }
-
-    const handlePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setpassword(e.target.value)
+    const [user, setuser] = useState({
+        username: "",
+        password: ""
+    })
+    
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setuser({
+            ...user,
+            [e.target.name]: e.target.value
+        })
     }
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         try {
-            doLogin(username, password)
+            doLogin(user.username, user.password)
             .then((res) => {
                 if (res.token === undefined) {
                     alert('Usuario o contraseña incorrectos')
@@ -34,52 +35,46 @@ export const LoginForm = () => {
             console.log(error);
             
         }
+        //navigate('/lobby')
     }
 
     const handleCancelar = () => {
-        setusername("")
-        setpassword("")
+        navigate('/')
     }
-
-    return (
-        <form   onSubmit={handleSubmit}
-                className=' tw-col-start-2
-                            tw-row-start-1 tw-row-span-3'>
-            <div>
-                <label htmlFor="user">Usuario</label>
-                <input
-                    type="text"
-                    name="user"
-                    id="user"
-                    className='border rounded'
-                    value={username}
-                    onChange={handleUsername}
-                />
-            </div>
-            <div>
-                <label htmlFor="password">Contraseña</label>
-                <input
-                    type="password"
-                    name="password"
-                    id="password"
-                    className='border rounded'
-                    value={password}
-                    onChange={handlePassword}
-                />
-            </div>
-            <div className='tw-flex '>
-                <button type="submit" 
-                        className='tw-bg-green-500 hover:tw-bg-green-300 tw-py-1 tw-px-3 tw-rounded'
-                        title='Entrar'>
-                    Entrar
-                </button>
-                <button type="button" 
-                        className='tw-bg-red-500 tw-py-1 hover:tw-bg-red-300 tw-px-3 tw-rounded' 
+/**
+ * <IconButton aria-label="delete"
+                        size="small"
+                        color="primary"
                         onClick={handleCancelar}
-                        title='Cancelar'>
-                    Cancelar
-                </button>
-            </div>
+                        title="Regresar"
+                        className=' tw-self-start'>
+                <ArrowBackIosIcon/>
+                <p className='tw-text-[#706E6B]'>Volver</p>
+            </IconButton><br /><br />
+ */
+    return (
+        <form className='   tw-rounded
+                            tw-flex tw-flex-col
+                            tw-px-10 tw-mx-6
+                            tw-bg-[#FCFCFE]
+                            tw-shadow-2xl'
+                onSubmit={handleSubmit}>
+            <label className='tw-font-montserrat'>Usuario</label>
+            <input  type="text" 
+                    name="username" 
+                    onChange={handleChange}
+                    className='tw-border tw-rounded'/><br/>
+            <label className='tw-font-montserrat'>Clave</label>
+            <input  type="password" 
+                    name="password" 
+                    onChange={handleChange}
+                    className='tw-border tw-rounded'/><br/>
+            <button className='tw-bg-[#008432] hover:tw-opacity-50
+                                tw-rounded tw-py-2'>
+                Iniciar sesión</button><br />
+            <input  type="button" 
+                    value={'¿Olvidaste tu contraseña?'}
+                    className='tw-pb-10 hover:tw-bg-black-50' />
         </form>
-    )
+    );
 }

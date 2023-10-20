@@ -1,16 +1,17 @@
 import { ButtonComponent } from "../../components"
+import { useNavigate } from "react-router-dom"
+import { Header } from "@/components/Header"
+import React from "react"
 
 export const HomePage = () => {
+    const navigate = useNavigate()
+
+    const buttons: React.ReactNode[] = [
+        <ButtonComponent inside={false} text='Funcionario' src="\src\assets\images\Funcionario.png" onClick={() => navigate('/login')}/>,
+        <ButtonComponent inside={false} text='Ciudadano' src="\src\assets\images\Ciudadano.png" onClick={() => navigate('/lobby')}/>
+    ]
+
     return (
-        <main className="   tw-container 
-                            tw-mx-auto tw-my-4 tw-pb-10
-                            tw-border">
-            <div>
-                <img src="\src\assets\Logo.png" alt="" />
-                <img src="\src\assets\Logo-Municipio.png" alt="" />
-                <p className="tw-font-montserrat">Selecciona un usuario en la derecha para comenzar</p>
-            </div>
-            <div></div>
-        </main>
+        <Header componentes={buttons} />
     )
 }

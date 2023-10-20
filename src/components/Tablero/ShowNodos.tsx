@@ -57,17 +57,19 @@ export const ShowNodos = ( props: Props ) => {
     }
 
     return (
-        <div className="tw-col-start-1 tw-col-span-3
-                        tw-border-r-4 tw-border-gray-400">
+        <ul className=" tw-rounded tw-shadow-2xl
+                        tw-bg-slate-200
+                        tw-h-full
+                        tw-w-1/3 tw-mx-6">
             {nodos.map((item: NodoInterface, index: number) => (
                 <div className="tw-my-5 tw-flex">
-                    <button className ={`tw-rounded-full
-                                        ${(progreso[index]??0)*100 < props.colors[0] ? 'tw-bg-red-400'   :
-                                          (progreso[index]??0)*100 < props.colors[1] ? 'tw-bg-yellow-400':
-                                          (progreso[index]??0)*100 < props.colors[2] ? 'tw-bg-green-400' : 'tw-bg-blue-400'}
+                    <button className ={`tw-rounded
+                                        tw-border-4
+                                        ${(progreso[index]??0)*100 < props.colors[0] ? 'tw-border-red-400'   :
+                                          (progreso[index]??0)*100 < props.colors[1] ? 'tw-border-yellow-400':
+                                          (progreso[index]??0)*100 < props.colors[2] ? 'tw-border-green-400' : 'tw-border-blue-400'}
                                         tw-ml-3
                                         tw-w-12 tw-h-12
-                                        tw-translate-x-3
                                         tw-font-bold
                                         tw-scale-100`}
                             onClick={ (event) => handleButton(event, index)}
@@ -77,13 +79,13 @@ export const ShowNodos = ( props: Props ) => {
                     <button className ="tw-bg-red-300
                                         tw-h-8 tw-my-2
                                         tw-w-2/3
-                                        tw-rounded"
+                                        tw-rounded-r-lg"
                             onClick={ (event) => handleButton(event, index)}
                             title={item.Descripcion}>
                         <p>{item.Nombre}</p>
                     </button>
                 </div>
             ))}
-        </div>
+        </ul>
     );
 }

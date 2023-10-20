@@ -1,30 +1,45 @@
-import { useNavigate } from "react-router-dom";
-import Cookies from "js-cookie";
-
 interface Props {
-    lado : String,
-    dir : String
+    text: string,
+    src?: string,
+    inside: boolean,
+    icon?: ()=>JSX.Element,
+    onClick: () => void
 }
 
 export const ButtonComponent = ( props : Props ) => {
-    const navigate = useNavigate();
-
-    const handleClick = () => {
-        Cookies.remove('token');
-        navigate( props.dir === 'izq' ? '/lobby' : '/login');
-    }
-
     return (
-        <button className={`${props.lado === 'izq' ? 'tw-ml-3' : 'tw-mr-3'}
-                            ${props.lado === 'izq' ? 'tw-col-start-1' : 'tw-col-start-10'}
-                            tw-col-span-3
-                            tw-row-span-3
-                            tw-bg-cyan-500
-                            tw-shadow hover:tw-shadow-lg
-                            ${props.lado === 'izq' ? 'tw-rounded-r-full' : 'tw-rounded-l-full'}`}
-                onClick={ handleClick}
-                title={`Entrar como ${props.lado === 'izq' ? 'ciudadano':'funcionario'}`}>
-            {props.lado === 'izq' ? 'Ciudadanos' : 'Funcionarios'}
-        </button>
+        <div className="tw-flex">
+            <button type="submit"
+                    onClick={props.onClick}
+                    className=" tw-bg-[#008432]
+                                hover:tw-bg-[#00a651]
+                                tw-p-4 tw-rounded
+                                tw-w-28 tw-h-28
+                                tw-flex tw-flex-col
+                                tw-justify-center
+                                tw-items-center">
+                    {props.src ? 
+                    <img src={props.src} alt="icon" className="tw-w-10 tw-h-10" />
+                    : null}
+                    {props.icon ?
+                    props.icon()
+                    : null}
+                {props.inside ? 
+                <p className="  tw-ml-3 
+                                tw-flex tw-flex-wrap 
+                                tw-font-montserrat 
+                                tw-self-center
+                                tw-text-white">
+                    {props.text}</p>
+                : null
+                }
+            </button>
+            {props.inside ? null :
+            <p className="  tw-ml-3 
+                            tw-font-montserrat 
+                            tw-self-center">
+                {props.text}</p>
+            }
+        </div>
     );
 }

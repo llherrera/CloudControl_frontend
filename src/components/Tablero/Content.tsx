@@ -119,6 +119,47 @@ export const Content = ( props : Props ) => {
     }
 
     return (
+        <div className="tw-h-full tw-border
+                        tw-bg-[url('/src/assets/images/bg-plan-indicativo.png')]
+                        tw-opacity-80">
+            <h1 className="tw-ml-6 tw-mt-6">Plan de proyectos</h1>
+            <div className="tw-flex tw-h-2/3">
+                <ShowNodos  callback={callback}
+                            callback2={setShouldUpdate}
+                            nodos={nodos}
+                            index={props.index}
+                            año={añoSelect}
+                            progress={props.progress}
+                            colors={colors}/>
+                <div className="tw-w-2/3 tw-flex tw-flex-col tw-justify-between tw-mb-3">
+                    <div className="tw-flex-wrap tw-flex-grow
+                                    tw-justify-around
+                                    tw-h-1/2 tw-rounded
+                                    tw-bg-slate-200">
+                        <p>Plan de desarrollo. ¡Así vamos!</p>
+                        {años.map((año: number) => (
+                            <button className ={`tw-rounded
+                                                ${añoSelect === año ? 'tw-border-cyan-400' : 'tw-border-green-400'}
+                                                tw-ml-3 tw-w-16 tw-h-16
+                                                tw-border-8
+                                                tw-translate-x-3
+                                                tw-scale-100`}
+                                    onClick={ (event) => handleAños(event, año)}>
+                                {año}
+                            </button>
+                        ))}
+                    </div>
+                    <div className="tw-mt-2 tw-h-1/2
+                                    tw-bg-slate-200
+                                    tw-rounded">
+                        To Do
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+
+    /*return (
         <div className="">
             {nodos.length === 0 ? 
             <div>
@@ -205,5 +246,5 @@ export const Content = ( props : Props ) => {
             </div>
             }
         </div>
-    )
+    )*/
 }
