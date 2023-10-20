@@ -57,7 +57,7 @@ export const ShowNodos = ( props: Props ) => {
     }
 
     return (
-        <ul className=" tw-rounded tw-shadow-2xl
+        <ul className=" tw-rounded tw-drop-shadow-lg
                         tw-bg-slate-200
                         tw-h-full
                         tw-w-1/3 tw-mx-6">

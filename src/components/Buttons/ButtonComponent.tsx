@@ -3,7 +3,9 @@ interface Props {
     src?: string,
     inside: boolean,
     icon?: ()=>JSX.Element,
-    onClick: () => void
+    onClick: () => void,
+    bgColor?: string,
+    textColor?: string
 }
 
 export const ButtonComponent = ( props : Props ) => {
@@ -11,13 +13,14 @@ export const ButtonComponent = ( props : Props ) => {
         <div className="tw-flex">
             <button type="submit"
                     onClick={props.onClick}
-                    className=" tw-bg-[#008432]
+                    className={`${props.bgColor ? `tw-bg-[${props.bgColor}]` : 'tw-bg-[#008432]'}
                                 hover:tw-bg-[#00a651]
+                                tw-border ${props.bgColor ? `tw-border-[${props.bgColor}]` : 'tw-border-[#008432]'}
                                 tw-p-4 tw-rounded
                                 tw-w-28 tw-h-28
                                 tw-flex tw-flex-col
                                 tw-justify-center
-                                tw-items-center">
+                                tw-items-center`}>
                     {props.src ? 
                     <img src={props.src} alt="icon" className="tw-w-10 tw-h-10" />
                     : null}
@@ -25,11 +28,11 @@ export const ButtonComponent = ( props : Props ) => {
                     props.icon()
                     : null}
                 {props.inside ? 
-                <p className="  tw-ml-3 
+                <p className={` tw-ml-3 
                                 tw-flex tw-flex-wrap 
                                 tw-font-montserrat 
                                 tw-self-center
-                                tw-text-white">
+                                ${props.textColor ? `tw-text-[${props.textColor}]`:'tw-text-[#FFFFFF]'}`}>
                     {props.text}</p>
                 : null
                 }
