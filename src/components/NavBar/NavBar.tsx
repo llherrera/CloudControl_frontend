@@ -23,26 +23,20 @@ export const NavBar = ( props: Props) => {
         action();
     };
 
-    console.log(`tw-px-10 tw-h-[32rem]
-                        tw-flex tw-flex-col
-                        ${props.bgColor ? `tw-bg-[${props.bgColor}]` : 'tw-bg-[#D9D9D9]'}
-                        tw-justify-around`);
-    
-
     return (
         <ul className={`tw-px-10 tw-h-[32rem]
                         tw-flex tw-flex-col
-                        ${props.bgColor ? `tw-bg-[${props.bgColor}]` : 'tw-bg-[#D9D9D9]'}
+                        tw-bg-navBar
                         tw-justify-around`}>
             {props.buttons.map((button, i) => (
                 <li className='tw-shadow' key={i}>
                     <ButtonComponent
-                        text={button['text']}
+                        text={button.text}
                         inside={true}
                         onClick={() => handleClick(i, button['onClick'])}
-                        icon={button['icon']}
-                        bgColor={i===index ? button['textColor'] : button['bgColor']}
-                        textColor={i===index ? button['bgColor'] : button['textColor']}
+                        icon={button.icon}
+                        bgColor={i=== index ? button.textColor : button.bgColor}
+                        textColor={i=== index ? button.bgColor : button.textColor}
                     />
                 </li>
             ))}

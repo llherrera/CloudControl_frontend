@@ -12,6 +12,11 @@ export default {
         'lato': ['Lato'],
         'garamond': ['Garamond']
       },
+      colors: {
+        'greenBtn': '#008432',
+        'navBar': '#D9D9D9',
+        'header': '#E7E6E8'
+      }
     },
   },
   plugins: [],

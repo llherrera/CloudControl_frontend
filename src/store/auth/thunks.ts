@@ -31,14 +31,17 @@ export const thunkRefreshToken = createAsyncThunk<AuthInterface>(
   }
 )
 
-export const thunkLogout = createAsyncThunk<AuthInterface>('auth/thunkLogout', async (props, { rejectWithValue }) => {
-  try {
-    const { data } = await apiLogout()
-    return data.data
-  } catch (err) {
-    const result = parseErrorAxios(err)
-    return rejectWithValue(result)
+export const thunkLogout = createAsyncThunk<AuthInterface>(
+  'auth/thunkLogout', 
+  async (props, { rejectWithValue }) => {
+    try {
+      const { data } = await apiLogout()
+      return data.data
+    } catch (err) {
+      const result = parseErrorAxios(err)
+      return rejectWithValue(result)
+    }
   }
-})
+)
 
 export const logout = createAction('auth/logout')

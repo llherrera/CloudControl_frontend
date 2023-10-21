@@ -96,8 +96,9 @@ export const Tablero = ( props : Props ) => {
     //    <ButtonComponent inside={true} onClick={() => navigate('/')} text='POAI' icon={()=>svg.POAIIcon('white')}/>,
     //    <ButtonComponent inside={true} onClick={() => navigate('/')} text='Plan de accion' icon={()=>svg.PlanAccionIcon('white')}/>
     //]
-    const bgcolor='#344613'
-    const logocolor='#FF0000'
+    const bgcolor='#008432'
+    const logocolor='#FFFFFF'
+    const textcolor='#FFFFFF'
 
     const buttons = [
         {
@@ -105,44 +106,44 @@ export const Tablero = ( props : Props ) => {
             onClick: () => navigate('/'), 
             text: 'Plan indicativo', 
             bgColor: bgcolor, 
-            textColor: logocolor, 
+            textColor: textcolor,
             icon: ()=>svg.PlanIndicativoIcon(logocolor)
         },
         {
             inside: true, 
             onClick: () => navigate('/'), 
             text: 'Banco de proyectos', 
-            bgColor: bgcolor, 
-            textColor: logocolor, 
+            bgColor: bgcolor,
+            textColor: textcolor,
             icon: ()=>svg.BancoProyectoIcon(logocolor)
         },
         {
             inside: true, 
             onClick: () => navigate('/'), 
             text: 'POAI', 
-            bgColor: bgcolor, 
-            textColor: logocolor, 
+            bgColor: bgcolor,
+            textColor: textcolor,
             icon: ()=>svg.POAIIcon(logocolor)
         },
         {
             inside: true, 
             onClick: () => navigate('/'), 
             text: 'Plan de accion', 
-            bgColor: bgcolor, 
-            textColor: logocolor, 
+            bgColor: bgcolor,
+            textColor: textcolor,
             icon: ()=>svg.PlanAccionIcon(logocolor)
         }
     ]
 
     return (
         <body>
-            <header className='tw-flex tw-justify-between tw-bg-[#E7E6E8] tw-drop-shadow-xl'>
+            <header className={`tw-flex tw-justify-between tw-bg-header tw-drop-shadow-xl`}>
                 <img src="\src\assets\images\Logo.png" alt="" width={100} height={100}/>
                 <img src="\src\assets\images\Logo-municipio.png" alt="" width={300} />
                 <div>salir</div>
             </header>
             <div className='tw-flex'>
-                <NavBar buttons={buttons} bgColor='#0000FF'/>
+                <NavBar buttons={buttons}/>
                 <div className='tw-flex-grow'>
                     <Content    index={index+1} 
                                 len={props.data.length}
