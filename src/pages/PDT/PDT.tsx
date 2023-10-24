@@ -5,7 +5,7 @@ import IconButton from "@mui/material/IconButton";
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 import { decode } from "../../utils/decode";
 import { Token, PDTInterface } from "../../interfaces";
-import Cookies from "js-cookie";
+import { getToken } from "@/utils";
 
 export const PDT = () => {
     const navigate = useNavigate();
@@ -14,8 +14,7 @@ export const PDT = () => {
     const [rol, setRol] = useState("")
 
     useEffect(() => {
-        //const token = sessionStorage.getItem('token')
-        const token = Cookies.get('token')
+        const {token} = getToken();
         try {
             if (token !== null && token !== undefined) {
                 const decoded = decode(token) as Token
@@ -28,7 +27,7 @@ export const PDT = () => {
             .then((res) => {
                 setData(res)
             })
-    }, []);
+    }, [data]);
 
     const handleAddPdt = () => {
         navigate('/anadirPDT')

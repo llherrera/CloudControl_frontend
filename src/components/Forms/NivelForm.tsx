@@ -3,7 +3,7 @@ import { Input } from "../Inputs";
 import { addNivel } from "../../services/api";
 import { decode } from "../../utils/decode";
 import { NivelInterface, Token } from "../../interfaces";
-import Cookies from "js-cookie";
+import { getToken } from "@/utils";
 
 interface Props {
     id: string;
@@ -27,7 +27,7 @@ export const NivelForm = ( props: Props ) => {
 
     useEffect(() => {
         //const token = sessionStorage.getItem('token')
-        const token = Cookies.get('token')
+        const { token } = getToken()
         try {
             if (token !== null && token !== undefined) {
                 const decoded = decode(token) as Token

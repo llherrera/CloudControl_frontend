@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { ShowNodos } from "./ShowNodos";
 import { ShowNodosUnidad } from "./ShowNodosUnidad";
 import { decode } from "../../utils/decode";
-import Cookies from "js-cookie";
+import { getToken } from "@/utils";
 
 interface Props {
     index: number;
@@ -38,8 +38,9 @@ export const Content = ( props : Props ) => {
     const [id, setId] = useState(0)
 
     useEffect(() => {
-        //const token = sessionStorage.getItem('token')
-        const token = Cookies.get('token')
+        console.log('Content');
+        
+        const { token } = getToken()
         try {
             if (token !== null && token !== undefined) {
                 const decoded = decode(token) as Token
@@ -72,7 +73,7 @@ export const Content = ( props : Props ) => {
             }
             setShouldUpdate(false)
         }
-    }, [props.index, nodos, propPad])
+    }, [props.index, nodos, propPad, shouldUpdate])
 
     const handleBack = ( event: React.MouseEvent<HTMLButtonElement> ) => {
         event.preventDefault();
@@ -122,36 +123,85 @@ export const Content = ( props : Props ) => {
         <div className="tw-h-full tw-border
                         tw-bg-[url('/src/assets/images/bg-plan-indicativo.png')]
                         tw-opacity-80">
-            <h1 className="tw-ml-6 tw-mt-6">Plan de proyectos</h1>
-            <div className="tw-flex tw-h-2/3">
-                <ShowNodos  callback={callback}
-                            callback2={setShouldUpdate}
-                            nodos={nodos}
-                            index={props.index}
-                            año={añoSelect}
-                            progress={props.progress}
-                            colors={colors}/>
-                <div className="tw-w-2/3 tw-flex tw-flex-col tw-justify-between tw-mb-3">
+            <h1 className=" tw-ml-6 tw-mt-6 
+                            tw-text-[#222222] 
+                            tw-font-bold
+                            tw-text-lg
+                            tw-font-montserrat">
+                Plan de proyectos
+            </h1>
+            <div className="tw-flex tw-h-2/3 tw-mt-4">
+                <div className="tw-rounded tw-drop-shadow-lg
+                                tw-bg-slate-200
+                                tw-w-1/3 tw-mx-6">
+                    <p className="tw-ml-4 tw-mt-3 tw-font-montserrat tw-font-bold">
+                        {backIconButton()}
+                        {props.data.Nombre}
+                    </p>
+                    <div className="tw-bg-slate-200 tw-rounded tw-pb-1 tw-mb-2">
+                        {nodos.length === 0 ?
+                        <div>
+                            {(rol === "admin") || (rol === 'funcionario' && id === props.id) ?
+                            <NodoForm   index={props.index}
+                            id={props.data.id_nivel!}
+                            Padre={props.Padre}
+                            callback={callback}/>
+                            : <div>
+                                <p>De momemnto no hay contenido en este PDT</p>
+                            </div>
+                            }
+                        </div>
+                        : <div>
+                            { props.index !== props.len ?
+                            <ShowNodos  callback={callback}
+                                        callback2={setShouldUpdate}
+                                        nodos={nodos}
+                                        index={props.index}
+                                        año={añoSelect}
+                                        progress={props.progress}
+                                        colors={colors}/>
+                            : <ShowNodosUnidad  id={props.id}
+                                                nodos={nodos}
+                                                año={añoSelect}
+                                                colors={colors}
+                                                index={props.index}/>
+                                    }
+                        </div>
+                        }
+                    </div>
+                </div>
+                <div className="tw-w-2/3 
+                                tw-flex tw-flex-col 
+                                tw-justify-between 
+                                tw-mb-3 tw-mr-6">
                     <div className="tw-flex-wrap tw-flex-grow
                                     tw-justify-around
                                     tw-h-1/2 tw-rounded
-                                    tw-bg-slate-200">
-                        <p>Plan de desarrollo. ¡Así vamos!</p>
+                                    tw-bg-slate-200
+                                    tw-shadow-lg">
+                        <p className="tw-font-montserrat">
+                            Plan de desarrollo. ¡Así vamos!
+                        </p>
                         {años.map((año: number) => (
-                            <button className ={`tw-rounded
-                                                ${añoSelect === año ? 'tw-border-cyan-400' : 'tw-border-green-400'}
-                                                tw-ml-3 tw-w-16 tw-h-16
-                                                tw-border-8
-                                                tw-translate-x-3
-                                                tw-scale-100`}
-                                    onClick={ (event) => handleAños(event, año)}>
-                                {año}
-                            </button>
+                            <div className="tw-inline-block tw-ml-4">
+                                <p className="tw-font-montserrat tw-ml-2 tw-text-[#222222]">
+                                    {año}
+                                </p>
+                                <button className={`tw-rounded
+                                                    ${añoSelect === año ? 'tw-border-cyan-400' : 'tw-border-green-400'}
+                                                    tw-w-16 tw-h-16
+                                                    tw-border-8
+                                                    tw-scale-100`}
+                                                    onClick={ (event) => handleAños(event, año)}>
+                                    to do
+                                </button>
+                            </div>
                         ))}
                     </div>
                     <div className="tw-mt-2 tw-h-1/2
                                     tw-bg-slate-200
-                                    tw-rounded">
+                                    tw-rounded
+                                    tw-shadow-lg">
                         To Do
                     </div>
                 </div>

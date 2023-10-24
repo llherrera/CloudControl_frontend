@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { Content } from './Content';
-import { ButtonComponent } from '../Buttons';
 import { NavBar } from '../NavBar';
 import { PesosNodos, Porcentaje, DetalleAño, NivelInterface } from '../../interfaces';
 import { useParams } from 'react-router-dom';
@@ -90,24 +89,18 @@ export const Tablero = ( props : Props ) => {
         localStorage.setItem('pesosNodo', JSON.stringify(pesosNodo))
     }
 
-    //const buttons = [
-    //    <ButtonComponent inside={true} onClick={() => navigate('/')} text='Plan indicativo' icon={()=>svg.PlanIndicativoIcon('white')}/>,
-    //    <ButtonComponent inside={true} onClick={() => navigate('/')} text='Banco de proyectos' icon={()=>svg.BancoProyectoIcon('white')}/>,
-    //    <ButtonComponent inside={true} onClick={() => navigate('/')} text='POAI' icon={()=>svg.POAIIcon('white')}/>,
-    //    <ButtonComponent inside={true} onClick={() => navigate('/')} text='Plan de accion' icon={()=>svg.PlanAccionIcon('white')}/>
-    //]
-    const bgcolor='#008432'
+    const bgcolor='greenBtn'
     const logocolor='#FFFFFF'
-    const textcolor='#FFFFFF'
+    const textcolor='white'
 
     const buttons = [
         {
             inside: true,
             onClick: () => navigate('/'), 
             text: 'Plan indicativo', 
-            bgColor: bgcolor, 
+            bgColor: bgcolor,
             textColor: textcolor,
-            icon: ()=>svg.PlanIndicativoIcon(logocolor)
+            icon: ()=>svg.PlanIndicativoIcon('#008432')
         },
         {
             inside: true, 

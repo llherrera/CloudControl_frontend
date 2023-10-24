@@ -99,8 +99,8 @@ export const NodoForm = ( props : Props ) => {
 
     return (
         <form   onSubmit={handleSubmit}
-                className='tw-grid tw-grid-cols-12 tw-m-5 '>
-            <ul className='tw-col-start-5 tw-col-span-4'>
+                className='tw-m-5 tw-flex tw-flex-col'>
+            <ul className=''>
                 {data.map(( e: NodoInterface, index: number )=> 
                 <div className='tw-mb-3 tw-px-3 tw-p-2 tw-bg-cyan-200 tw-flex tw-rounded'>
                     <li className="tw-mx-3">
@@ -109,7 +109,7 @@ export const NodoForm = ( props : Props ) => {
                                 id={"Nombre"}
                                 name={"Nombre"}
                                 value={e.Nombre}
-                                className='rounded my-1 p-1'
+                                className='tw-rounded tw-my-1 tw-p-1'
                                 onChange={ (event) => handleInputFormChange(event, index) }/><br/>
                         <input  type={"text"}
                                 placeholder="Descripción del Nodo"
@@ -124,34 +124,36 @@ export const NodoForm = ( props : Props ) => {
                             id='Peso'
                             name='Peso'
                             value={e.Peso}
-                            className='mx-4 w-1/2 h-7 rounded'
+                            className='tw-mx-4 tw-w-1/2 tw-h-7 tw-rounded'
                             onChange={ (event) => handleInputFormChange(event, index) } />
                 </div>
                 )}
-                <button className=" tw-bg-green-500 
-                                    hover:tw-bg-green-300 
-                                    tw-text-white tw-font-bold 
-                                    tw-py-2 tw-px-4 tw-rounded tw-mr-5" 
-                        type='button'
-                        title='Agregar Nodo'
-                        onClick={agregarNodo}>Agregar Nodo</button>
-                <button className=" tw-bg-red-500 
-                                    hover:tw-bg-red-300 
-                                    tw-text-white tw-font-bold 
-                                    tw-py-2 tw-px-4 tw-rounded tw-ml-5"
-                        type='button'
-                        title='Eliminar Nodo'
-                        onClick={eliminarNodo}>Eliminar Nodo</button>
+                <div className='tw-flex tw-justify-around'>
+                    <button className=" tw-bg-green-500
+                                        hover:tw-bg-green-300
+                                        tw-text-white tw-font-bold
+                                        tw-py-2 tw-px-4 tw-rounded tw-mr-5" 
+                                        type='button'
+                                        title='Agregar Nodo'
+                            onClick={agregarNodo}>Agregar Nodo</button>
+                    <button className=" tw-bg-red-500
+                                        hover:tw-bg-red-300
+                                        tw-text-white tw-font-bold
+                                        tw-py-2 tw-px-4 tw-rounded tw-ml-5"
+                                        type='button'
+                                        title='Eliminar Nodo'
+                                        onClick={eliminarNodo}>Eliminar Nodo</button>
+                </div>
             </ul>
             <input  type="submit"
                     value={"Guardar"}
                     title='Guardar nodos en el nivel'
-                    className=" tw-row-start-5 tw-col-start-6 tw-col-span-2
-                                tw-bg-blue-500
+                    className=" tw-bg-blue-500
                                 hover:tw-bg-blue-300 
                                 tw-text-white tw-font-bold }
+                                tw-flex tw-grow tw-self-center
                                 tw-rounded
-                                tw-mt-5 tw-mx-6 tw-py-2"/>
+                                tw-p-5 tw-mt-2"/>
         </form>
     )
 }

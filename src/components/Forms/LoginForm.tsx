@@ -1,16 +1,18 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { doLogin } from '../../services/api'
-import Cookies from 'js-cookie'
+import { useAppDispatch, useAppSelector } from '../../store'
+import { thunkLogin } from '../../store/auth/thunks'
 
 export const LoginForm = () => {
+    const dispatch = useAppDispatch()
+    const { logged } = useAppSelector(store => store.auth)
     const navigate = useNavigate()
 
     const [user, setuser] = useState({
         username: "",
         password: ""
     })
-    
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setuser({
             ...user,
@@ -21,21 +23,18 @@ export const LoginForm = () => {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         try {
-            doLogin(user.username, user.password)
-            .then((res) => {
-                if (res.token === undefined) {
-                    alert('Usuario o contraseña incorrectos')
-                    return
-                }
-                Cookies.set('token', res.token, { expires: 1 })
-                //sessionStorage.setItem('token', JSON.stringify(res.token))
-                navigate('/lobby')
-            })
+            dispatch(thunkLogin(user))
+                .unwrap()
+                .then((res) => {
+                    if (logged === false) {
+                        alert('Usuario o contraseña incorrectos')
+                        return
+                    }else
+                        navigate('/lobby')
+                })
         } catch (error) {
             console.log(error);
-            
         }
-        //navigate('/lobby')
     }
 
     const handleCancelar = () => {

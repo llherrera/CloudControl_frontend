@@ -24,12 +24,12 @@ export const NavBar = ( props: Props) => {
     };
 
     return (
-        <ul className={`tw-px-10 tw-h-[32rem]
+        <ul className={`tw-px-10 
                         tw-flex tw-flex-col
                         tw-bg-navBar
                         tw-justify-around`}>
             {props.buttons.map((button, i) => (
-                <li className='tw-shadow' key={i}>
+                <li className='tw-shadow tw-my-1' key={i}>
                     <ButtonComponent
                         text={button.text}
                         inside={true}

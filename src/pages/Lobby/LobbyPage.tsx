@@ -4,7 +4,7 @@ import { getLastPDT } from '../../services/api';
 import { ButtonComponent, Header } from '../../components';
 import { decode } from '../../utils/decode';
 import { Token } from '../../interfaces';
-import Cookies from 'js-cookie';
+import { getToken, removeToken } from '@/utils';
 
 export const LobbyPage = () => {
     const navigate = useNavigate();
@@ -13,8 +13,7 @@ export const LobbyPage = () => {
     const [id, setId] = useState(0);
 
     useEffect(() => {
-        //const token = sessionStorage.getItem('token')
-        const token = Cookies.get('token')
+        const {token} = getToken()
         try {
             if (token !== null && token !== undefined) {
                 const decoded = decode(token) as Token
@@ -44,16 +43,35 @@ export const LobbyPage = () => {
     }
 
     const handleLogout = () => {
-        //sessionStorage.removeItem('token')
-        Cookies.remove('token')
+        removeToken()
         navigate('/')
     }
 
     const buttons = [
-        <ButtonComponent inside={false} text='Plan indicativo' src="\src\assets\images\Plan-indicativo.png" onClick={handleButton}/>,
-        <ButtonComponent inside={false} text='Banco de proyectos' src="\src\assets\images\Banco-proyectos.png" onClick={() => navigate('/login')}/>,
-        <ButtonComponent inside={false} text='POAI' src="\src\assets\images\POAI.png" onClick={() => navigate('/login')}/>,
-        <ButtonComponent inside={false} text='Plan de accion' src="\src\assets\images\Plan-accion.png" onClick={() => navigate('/login')}/>
+        <ButtonComponent 
+            inside={false} 
+            text='Plan indicativo' 
+            src="\src\assets\images\Plan-indicativo.png" 
+            onClick={handleButton}
+            bgColor="greenBtn"/>,
+        <ButtonComponent 
+            inside={false} 
+            text='Banco de proyectos' 
+            src="\src\assets\images\Banco-proyectos.png" 
+            onClick={() => navigate('/login')}
+            bgColor="greenBtn"/>,
+        <ButtonComponent 
+            inside={false} 
+            text='POAI' 
+            src="\src\assets\images\POAI.png" 
+            onClick={() => navigate('/login')}
+            bgColor="greenBtn"/>,
+        <ButtonComponent 
+            inside={false} 
+            text='Plan de accion' 
+            src="\src\assets\images\Plan-accion.png" 
+            onClick={() => navigate('/login')}
+            bgColor="greenBtn"/>
     ]
 
     return (

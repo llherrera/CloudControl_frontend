@@ -17,6 +17,8 @@ export const ShowNodos = ( props: Props ) => {
     const [nodos, setNodos] = useState<NodoInterface[]>([])
 
     useEffect(() => {
+        console.log('Nodos');
+        
         try {
             setNodos(props.nodos)
             const ids = nodos.map((item: NodoInterface) => item.id_nodo)
@@ -57,10 +59,7 @@ export const ShowNodos = ( props: Props ) => {
     }
 
     return (
-        <ul className=" tw-rounded tw-drop-shadow-lg
-                        tw-bg-slate-200
-                        tw-h-full
-                        tw-w-1/3 tw-mx-6">
+        <ul className=" ">
             {nodos.map((item: NodoInterface, index: number) => (
                 <div className="tw-my-5 tw-flex">
                     <button className ={`tw-rounded
@@ -70,8 +69,7 @@ export const ShowNodos = ( props: Props ) => {
                                           (progreso[index]??0)*100 < props.colors[2] ? 'tw-border-green-400' : 'tw-border-blue-400'}
                                         tw-ml-3
                                         tw-w-12 tw-h-12
-                                        tw-font-bold
-                                        tw-scale-100`}
+                                        tw-font-bold`}
                             onClick={ (event) => handleButton(event, index)}
                             title={item.Descripcion}>
                         {(progreso[index]??0)*100}%
