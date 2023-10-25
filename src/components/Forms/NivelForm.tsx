@@ -26,8 +26,8 @@ export const NivelForm = ( props: Props ) => {
     const [id_, setId] = useState(0)
 
     useEffect(() => {
-        //const token = sessionStorage.getItem('token')
-        const { token } = getToken()
+        const gettoken = getToken()
+        const token = gettoken ? gettoken : null
         try {
             if (token !== null && token !== undefined) {
                 const decoded = decode(token) as Token

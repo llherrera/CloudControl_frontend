@@ -38,10 +38,9 @@ export const Content = ( props : Props ) => {
     const [id, setId] = useState(0)
 
     useEffect(() => {
-        console.log('Content');
-        
-        const { token } = getToken()
+        const gettoken = getToken()
         try {
+            const {token} = gettoken ? gettoken : null
             if (token !== null && token !== undefined) {
                 const decoded = decode(token) as Token
                 setId(decoded.id_plan)
@@ -132,13 +131,13 @@ export const Content = ( props : Props ) => {
             </h1>
             <div className="tw-flex tw-h-2/3 tw-mt-4">
                 <div className="tw-rounded tw-drop-shadow-lg
-                                tw-bg-slate-200
+                                tw-bg-white
                                 tw-w-1/3 tw-mx-6">
                     <p className="tw-ml-4 tw-mt-3 tw-font-montserrat tw-font-bold">
                         {backIconButton()}
                         {props.data.Nombre}
                     </p>
-                    <div className="tw-bg-slate-200 tw-rounded tw-pb-1 tw-mb-2">
+                    <div className="tw-pb-1 tw-mb-2">
                         {nodos.length === 0 ?
                         <div>
                             {(rol === "admin") || (rol === 'funcionario' && id === props.id) ?
@@ -147,7 +146,7 @@ export const Content = ( props : Props ) => {
                             Padre={props.Padre}
                             callback={callback}/>
                             : <div>
-                                <p>De momemnto no hay contenido en este PDT</p>
+                                <p className="tw-ml-4">De momemnto no hay contenido en este PDT</p>
                             </div>
                             }
                         </div>
@@ -177,9 +176,9 @@ export const Content = ( props : Props ) => {
                     <div className="tw-flex-wrap tw-flex-grow
                                     tw-justify-around
                                     tw-h-1/2 tw-rounded
-                                    tw-bg-slate-200
+                                    tw-bg-white
                                     tw-shadow-lg">
-                        <p className="tw-font-montserrat">
+                        <p className="tw-font-montserrat tw-ml-4">
                             Plan de desarrollo. ¡Así vamos!
                         </p>
                         {años.map((año: number) => (
@@ -199,10 +198,30 @@ export const Content = ( props : Props ) => {
                         ))}
                     </div>
                     <div className="tw-mt-2 tw-h-1/2
-                                    tw-bg-slate-200
+                                    tw-px-4
+                                    tw-bg-white
                                     tw-rounded
                                     tw-shadow-lg">
-                        To Do
+                        <p>Cuaternio</p><br />
+                        <div className="tw-flex">
+                        <svg width="489" height="59" viewBox="0 0 489 59" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M278.136 3.18734L460.447 1.18536L487.63 28.0992L461.017 53.1298L278.707 55.1318L278.136 3.18734Z" fill="#008DCC"/>
+                            <path d="M278.136 3.18734L460.447 1.18536L487.63 28.0992L461.017 53.1298L278.707 55.1318L278.136 3.18734Z" stroke="#FCC623"/>
+                            <path d="M278.136 3.18734L460.447 1.18536L487.63 28.0992L461.017 53.1298L278.707 55.1318L278.136 3.18734Z" stroke="#008DCC"/>
+                            <path d="M226.047 3.75936L408.358 1.75738L435.541 28.6712L408.928 53.7019L226.618 55.7038L226.047 3.75936Z" fill="#119432" stroke="#119432"/>
+                            <path d="M133.632 4.77426L315.943 2.77227L343.126 29.6861L316.513 54.7168L134.203 56.7187L133.632 4.77426Z" fill="#FCC623" stroke="#FCC623"/>
+                            <path d="M0.890247 6.2319L183.2 4.22992L210.384 31.1437L183.771 56.1744L1.46066 58.1764L0.890247 6.2319Z" fill="#FE1700" stroke="#FE1700"/>
+                        </svg>
+                        <button className=" tw-rounded
+                                            tw-border-2
+                                            tw-border-green-300
+                                            tw-px-2 tw-ml-3">
+                            to do
+                        </button>
+                        </div>
+                        <p>
+                            2020-2023
+                        </p>
                     </div>
                 </div>
             </div>

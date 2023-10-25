@@ -24,7 +24,6 @@ export const LoginForm = () => {
         e.preventDefault()
         try {
             dispatch(thunkLogin(user))
-                .unwrap()
                 .then((res) => {
                     if (logged === false) {
                         alert('Usuario o contraseña incorrectos')

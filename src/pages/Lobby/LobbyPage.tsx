@@ -1,21 +1,25 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getLastPDT } from '../../services/api';
-import { ButtonComponent, Header } from '../../components';
+import { Header, ButtonComponent } from '../../components';
 import { decode } from '../../utils/decode';
 import { Token } from '../../interfaces';
 import { getToken, removeToken } from '@/utils';
+import { thunkLogout } from '@/store/auth/thunks';
+import { useDispatch } from 'react-redux';
 
 export const LobbyPage = () => {
+    const dispatch = useDispatch()
     const navigate = useNavigate();
 
     const [rol, setRol] = useState("");
     const [id, setId] = useState(0);
 
     useEffect(() => {
-        const {token} = getToken()
+        const gettoken = getToken()
         try {
-            if (token !== null && token !== undefined) {
+            let {token} = gettoken ? gettoken : null
+            if (token !== null || token !== undefined) {
                 const decoded = decode(token) as Token
                 setId(decoded.id_plan)
                 setRol(decoded.rol)
@@ -42,36 +46,43 @@ export const LobbyPage = () => {
             })
     }
 
-    const handleLogout = () => {
-        removeToken()
-        navigate('/')
-    }
+    //const handleLogout = () => {
+    //    dispatch(thunkLogout())
+    //    navigate('/')
+    //}
 
-    const buttons = [
-        <ButtonComponent 
-            inside={false} 
-            text='Plan indicativo' 
-            src="\src\assets\images\Plan-indicativo.png" 
+    const buttons: React.ReactNode[] = [
+        <ButtonComponent
+            inside={false}
+            text='Plan indicativo'
+            src="/src/assets/images/plan-indicativo.png"
             onClick={handleButton}
-            bgColor="greenBtn"/>,
-        <ButtonComponent 
-            inside={false} 
-            text='Banco de proyectos' 
-            src="\src\assets\images\Banco-proyectos.png" 
-            onClick={() => navigate('/login')}
-            bgColor="greenBtn"/>,
-        <ButtonComponent 
-            inside={false} 
-            text='POAI' 
-            src="\src\assets\images\POAI.png" 
-            onClick={() => navigate('/login')}
-            bgColor="greenBtn"/>,
-        <ButtonComponent 
-            inside={false} 
-            text='Plan de accion' 
-            src="\src\assets\images\Plan-accion.png" 
-            onClick={() => navigate('/login')}
-            bgColor="greenBtn"/>
+            bgColor="tw-bg-greenBtn" />,
+        <ButtonComponent
+            inside={false}
+            text='Banco de proyectos'
+            src="/src/assets/images/Banco-proyectos.png"
+            onClick={() => navigate('/')}
+            bgColor="tw-bg-greenBtn" />,
+        <ButtonComponent
+            inside={false}
+            text='POAI'
+            src="/src/assets/images/POAI.png"
+            onClick={() => navigate('/')}
+            bgColor="tw-bg-greenBtn" />,
+        <ButtonComponent
+            inside={false}
+            text='Plan de acción'
+            src="/src/assets/images/Plan-accion.png"
+            onClick={() => navigate('/')}
+            bgColor="tw-bg-greenBtn" />,
+        //{
+        //    inside: false,
+        //    text: 'Salir',
+        //    src: "/src/assets/images/exit.png",
+        //    onClick: handleLogout,
+        //    bgColor: "tw-bg-red-500"
+        //}
     ]
 
     return (

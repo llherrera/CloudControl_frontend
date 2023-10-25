@@ -32,7 +32,7 @@ export const NavBar = ( props: Props) => {
                 <li className='tw-shadow tw-my-1' key={i}>
                     <ButtonComponent
                         text={button.text}
-                        inside={true}
+                        inside={button.inside}
                         onClick={() => handleClick(i, button['onClick'])}
                         icon={button.icon}
                         bgColor={i=== index ? button.textColor : button.bgColor}

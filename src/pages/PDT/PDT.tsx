@@ -27,6 +27,9 @@ export const PDT = () => {
             .then((res) => {
                 setData(res)
             })
+            .catch((err) => {
+                console.log(err);
+            })
     }, [data]);
 
     const handleAddPdt = () => {

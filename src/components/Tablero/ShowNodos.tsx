@@ -74,10 +74,12 @@ export const ShowNodos = ( props: Props ) => {
                             title={item.Descripcion}>
                         {(progreso[index]??0)*100}%
                     </button>
-                    <button className ="tw-bg-red-300
+                    <button className={`${(progreso[index]??0)*100 < props.colors[0] ? 'tw-bg-red-400'   :
+                                          (progreso[index]??0)*100 < props.colors[1] ? 'tw-bg-yellow-400':
+                                          (progreso[index]??0)*100 < props.colors[2] ? 'tw-bg-green-400' : 'tw-bg-blue-400'}
                                         tw-h-8 tw-my-2
                                         tw-w-2/3
-                                        tw-rounded-r-lg"
+                                        tw-rounded-r-lg`}
                             onClick={ (event) => handleButton(event, index)}
                             title={item.Descripcion}>
                         <p>{item.Nombre}</p>

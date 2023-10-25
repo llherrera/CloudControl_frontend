@@ -3,8 +3,13 @@ import { useNavigate } from "react-router-dom"
 import { Header } from "@/components/Header"
 import { removeToken } from "@/utils"
 import React from "react"
+import { thunkLogout } from "@/store/auth/thunks"
+
+import { useAppDispatch, useAppSelector } from '../../store'
 
 export const HomePage = () => {
+    const dispatch = useAppDispatch()
+    const { logged } = useAppSelector(store => store.auth)
     const navigate = useNavigate()
 
     const handleBtnCiudadano = () => {
@@ -14,22 +19,31 @@ export const HomePage = () => {
         } catch (error) {}
     }
 
+    const handleSalir = () => {
+        try {
+            dispatch(thunkLogout())
+        } catch (error) {}
+    }
+
     const buttons: React.ReactNode[] = [
         <ButtonComponent 
             inside={false} 
             text='Funcionario' 
             src="\src\assets\images\Funcionario.png" 
             onClick={() => navigate('/login')}
-            bgColor="greenBtn"/>,
+            bgColor="tw-bg-greenBtn"/>,
         <ButtonComponent 
             inside={false} 
             text='Ciudadano' 
             src="\src\assets\images\Ciudadano.png" 
             onClick={handleBtnCiudadano}
-            bgColor="greenBtn"/>
+            bgColor="tw-bg-greenBtn"/>
     ]
 
     return (
-        <Header componentes={buttons} />
+        <div>
+            <Header componentes={buttons} />
+            <button onClick={thunkLogout}>Salir</button>
+        </div>
     )
 }

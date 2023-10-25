@@ -4,7 +4,7 @@ import { apiLogin, apiLogout, apiRefreshToken } from '../../apis/authApi'
 import { AuthInterface, ErrorBasicInterface } from '../../interfaces'
 import { parseErrorAxios, setToken } from '../../utils'
 
-import { doLogin, doRefreshToken } from '@/services/api'
+import { doLogin, doRefreshToken, doLogout } from '@/services/api'
 
 interface LoginProps {
   username: string
@@ -42,7 +42,7 @@ export const thunkLogout = createAsyncThunk<AuthInterface>(
   'auth/thunkLogout', 
   async (props, { rejectWithValue }) => {
     try {
-      const { data } = await apiLogout()
+      const { data } = await doLogout()
       return data.data
     } catch (err) {
       const result = parseErrorAxios(err)
