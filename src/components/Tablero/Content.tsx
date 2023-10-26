@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { NodoInterface, Token, NivelInterface } from "../../interfaces";
+import { NodoInterface, Token, NivelInterface, PesosNodos } from "../../interfaces";
 import { getNodosNivel, getColors } from "../../services/api";
 import { NodoForm, ColorForm } from "../Forms";
 import IconButton from "@mui/material/IconButton";
@@ -29,6 +29,8 @@ export const Content = ( props : Props ) => {
 
     const [años, setAños] = useState([2020, 2021, 2022, 2023]);
     const [añoSelect, setAño] = useState(2023);
+    const [progresoAño, setProgresoAño] = useState<number[]>([])
+    const [progress, setProgress] = useState(0);
 
     const [color, setColor] = useState(false);
     const [colors, setColors] = useState<number[]>([]);
@@ -66,13 +68,37 @@ export const Content = ( props : Props ) => {
                             setColors(temp)
                             setHadColor(true)
                         }
-                    })                
+                    })
+                getProgresoAños()
             } catch (e) {
                 console.log(e)
             }
             setShouldUpdate(false)
         }
     }, [props.index, nodos, propPad, shouldUpdate])
+
+    const getProgresoAños = () => {
+        let pesosStr = localStorage.getItem('pesosNodo')
+        if (pesosStr == undefined) 
+            pesosStr = '[]'
+        
+        let pesosNodo = JSON.parse(pesosStr as string)
+        let progreso = [] as number[]
+        const nodoss = pesosNodo.filter((item: PesosNodos) => item.Padre === props.Padre)
+        for (let i = 0; i < años.length; i++) {
+            let temp = 0
+            nodoss.forEach((item: PesosNodos) => {
+                const { porcentajes } = item
+                if (porcentajes) {
+                    temp += (porcentajes[i].progreso)*(item.Peso/100)
+                }
+            })
+            temp = Number.parseFloat((temp).toFixed(2))
+            progreso.push(temp)
+        }
+        setProgress(progreso.reduce((a, b) => a + b, 0)*100/años.length)
+        setProgresoAño(progreso)
+    }
 
     const handleBack = ( event: React.MouseEvent<HTMLButtonElement> ) => {
         event.preventDefault();
@@ -129,9 +155,10 @@ export const Content = ( props : Props ) => {
                             tw-font-montserrat">
                 Plan de proyectos
             </h1>
-            <div className="tw-flex tw-h-2/3 tw-mt-4">
+            <div className="tw-flex tw-h-5/6 tw-mt-4">
                 <div className="tw-rounded tw-drop-shadow-lg
                                 tw-bg-white
+                                tw-ring-1 tw-ring-gray-300
                                 tw-w-1/3 tw-mx-6">
                     <p className="tw-ml-4 tw-mt-3 tw-font-montserrat tw-font-bold">
                         {backIconButton()}
@@ -173,33 +200,76 @@ export const Content = ( props : Props ) => {
                                 tw-flex tw-flex-col 
                                 tw-justify-between 
                                 tw-mb-3 tw-mr-6">
-                    <div className="tw-flex-wrap tw-flex-grow
+                    <div className="tw-flex-wrap tw-grow
                                     tw-justify-around
                                     tw-h-1/2 tw-rounded
                                     tw-bg-white
+                                    tw-ring-1 tw-ring-gray-300
                                     tw-shadow-lg">
                         <p className="tw-font-montserrat tw-ml-4">
                             Plan de desarrollo. ¡Así vamos!
                         </p>
-                        {años.map((año: number) => (
-                            <div className="tw-inline-block tw-ml-4">
-                                <p className="tw-font-montserrat tw-ml-2 tw-text-[#222222]">
-                                    {año}
-                                </p>
+                        <ol className="tw-flex tw-h-4/5 tw-items-center tw-ml-4">
+                        {años.map((año: number, index: number) => (
+                            <li className="tw-grid tw-grid-rows-3">
                                 <button className={`tw-rounded
-                                                    ${añoSelect === año ? 'tw-border-cyan-400' : 'tw-border-green-400'}
-                                                    tw-w-16 tw-h-16
+                                                    ${(progresoAño[index]??0)*100 < colors[0] ? 'tw-border-red-400'   : 
+                                                      (progresoAño[index]??0)*100 < colors[1] ? 'tw-border-yellow-400':
+                                                      (progresoAño[index]??0)*100 < colors[2] ? 'tw-border-green-400' : 'tw-border-blue-400'}
+                                                    ${añoSelect === año ? 'tw-ring' : null}
+                                                    ${index%2 === 0 ? 'tw-row-start-1' : 'tw-row-start-3'}
                                                     tw-border-8
+                                                    tw-py-2
                                                     tw-scale-100`}
-                                                    onClick={ (event) => handleAños(event, año)}>
-                                    to do
+                                        onClick={ (event) => handleAños(event, año)}>
+                                    {(progresoAño[index]*100).toFixed(2)}%
                                 </button>
-                            </div>
+                                <div className="tw-flex tw-items-center tw-relative tw-row-start-2">
+                                    <div className={`tw-flex 
+                                                    tw-w-full tw-h-3
+                                                    tw-px-3
+                                                    tw-z-10 tw-absolute 
+                                                    ${(progresoAño[index]??0)*100 < colors[0] ? 'tw-bg-red-400'   : 
+                                                      (progresoAño[index]??0)*100 < colors[1] ? 'tw-bg-yellow-400':
+                                                      (progresoAño[index]??0)*100 < colors[2] ? 'tw-bg-green-400' : 'tw-bg-blue-400'}`}>
+                                    </div>
+                                    <div className={` tw-font-montserrat
+                                                    tw-text-[#222222]
+                                                    tw-h-full
+                                                    tw-grow
+                                                    tw-flex tw-flex-col
+                                                    ${(progresoAño[index]??0)*100 < colors[0] ? 'tw-text-red-400'   : 
+                                                      (progresoAño[index]??0)*100 < colors[1] ? 'tw-text-yellow-400':
+                                                      (progresoAño[index]??0)*100 < colors[2] ? 'tw-text-green-400' : 'tw-text-blue-400'}`}>
+                                        {index%2 === 0 ? 
+                                            <div className={`tw-grow tw-self-center
+                                                            tw-h-1/4 tw-w-2
+                                                            tw-border
+                                                            ${(progresoAño[index]??0)*100 < colors[0] ? 'tw-bg-red-400'   : 
+                                                              (progresoAño[index]??0)*100 < colors[1] ? 'tw-bg-yellow-400':
+                                                              (progresoAño[index]??0)*100 < colors[2] ? 'tw-bg-green-400' : 'tw-bg-blue-400'}`}></div>
+                                        : null}
+                                        <p className="tw-self-center">
+                                            {año}
+                                        </p>
+                                        {index%2 === 1 ? 
+                                            <div className={`tw-grow tw-self-center
+                                                            tw-h-1/4 tw-w-2
+                                                            tw-border
+                                                            ${(progresoAño[index]??0)*100 < colors[0] ? 'tw-bg-red-400'   : 
+                                                              (progresoAño[index]??0)*100 < colors[1] ? 'tw-bg-yellow-400':
+                                                              (progresoAño[index]??0)*100 < colors[2] ? 'tw-bg-green-400' : 'tw-bg-blue-400'}`}></div>
+                                        : null}
+                                    </div>
+                                </div>
+                            </li>
                         ))}
+                        </ol>
                     </div>
                     <div className="tw-mt-2 tw-h-1/2
                                     tw-px-4
                                     tw-bg-white
+                                    tw-ring-1 tw-ring-gray-300
                                     tw-rounded
                                     tw-shadow-lg">
                         <p>Cuaternio</p><br />
@@ -212,11 +282,13 @@ export const Content = ( props : Props ) => {
                             <path d="M133.632 4.77426L315.943 2.77227L343.126 29.6861L316.513 54.7168L134.203 56.7187L133.632 4.77426Z" fill="#FCC623" stroke="#FCC623"/>
                             <path d="M0.890247 6.2319L183.2 4.22992L210.384 31.1437L183.771 56.1744L1.46066 58.1764L0.890247 6.2319Z" fill="#FE1700" stroke="#FE1700"/>
                         </svg>
-                        <button className=" tw-rounded
-                                            tw-border-2
-                                            tw-border-green-300
-                                            tw-px-2 tw-ml-3">
-                            to do
+                        <button className={`tw-rounded
+                                            tw-border-8
+                                            ${progress < colors[0] ? 'tw-border-red-400'   : 
+                                              progress < colors[1] ? 'tw-border-yellow-400':
+                                              progress < colors[2] ? 'tw-border-green-400' : 'tw-border-blue-400'}
+                                            tw-py-3 tw-px-1 tw-ml-3`}>
+                            {progress.toFixed(2)}%
                         </button>
                         </div>
                         <p>

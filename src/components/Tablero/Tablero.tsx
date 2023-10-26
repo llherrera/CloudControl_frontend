@@ -47,9 +47,10 @@ export const Tablero = ( props : Props ) => {
     const calcProgress = () => {
         const pesosStr = localStorage.getItem('pesosNodo')
         const detalleStr = localStorage.getItem('detalleAño')
-        if (!pesosStr || !detalleStr) return
-        let pesosNodo = JSON.parse(pesosStr as string)
-        let detalleAño = JSON.parse(detalleStr as string)
+        if (pesosStr === null || pesosStr === undefined || detalleStr === null || detalleStr === undefined) 
+            return console.log('No hay datos')
+        let pesosNodo = JSON.parse((pesosStr as string) ?? '[]')
+        let detalleAño = JSON.parse((detalleStr as string) ?? '[]')
         
         detalleAño.forEach((item: DetalleAño) => {
             let progreso = 0
@@ -129,13 +130,13 @@ export const Tablero = ( props : Props ) => {
     ]
 
     return (
-        <body>
+        <body className='tw-h-screen'>
             <header className={`tw-flex tw-justify-between tw-bg-header tw-drop-shadow-xl`}>
                 <img src="\src\assets\images\Logo.png" alt="" width={100} height={100}/>
                 <img src="\src\assets\images\Logo-municipio.png" alt="" width={300} />
                 <div>salir</div>
             </header>
-            <div className='tw-flex'>
+            <div className='tw-flex tw-h-5/6'>
                 <NavBar buttons={buttons}/>
                 <div className='tw-flex-grow'>
                     <Content    index={index+1} 

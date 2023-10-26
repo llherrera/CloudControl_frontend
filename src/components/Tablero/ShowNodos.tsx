@@ -14,6 +14,7 @@ interface Props {
 export const ShowNodos = ( props: Props ) => {
 
     const [progreso, setProgreso] = useState<number[]>([])
+    const [porcentajeAño, setPorcentajeAño] = useState<number[]>([])
     const [nodos, setNodos] = useState<NodoInterface[]>([])
 
     useEffect(() => {
@@ -30,10 +31,7 @@ export const ShowNodos = ( props: Props ) => {
 
     const getProgress = (ids: string[]) => {
         let pesosStr = localStorage.getItem('pesosNodo')
-        if (pesosStr == undefined) 
-            pesosStr = '[]'
-        
-        let pesosNodo = JSON.parse(pesosStr as string)
+        let pesosNodo = JSON.parse( (pesosStr as string) ?? '[]')
         let progreso = [] as number[]
         pesosNodo.forEach((item: PesosNodos) => {
             if (ids.includes(item.id_nodo)) {

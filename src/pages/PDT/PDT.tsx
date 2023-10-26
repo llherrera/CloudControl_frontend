@@ -14,9 +14,10 @@ export const PDT = () => {
     const [rol, setRol] = useState("")
 
     useEffect(() => {
-        const {token} = getToken();
+        const gettoken = getToken();
         try {
-            if (token !== null && token !== undefined) {
+            const {token} = gettoken;
+            if (token !== null || token !== undefined) {
                 const decoded = decode(token) as Token
                 setRol(decoded.rol)
             }

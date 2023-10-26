@@ -27,9 +27,9 @@ export const NivelForm = ( props: Props ) => {
 
     useEffect(() => {
         const gettoken = getToken()
-        const token = gettoken ? gettoken : null
         try {
-            if (token !== null && token !== undefined) {
+            const {token} = gettoken
+            if (token !== null || token !== undefined) {
                 const decoded = decode(token) as Token
                 setId(decoded.id_plan)
                 setRol(decoded.rol)
