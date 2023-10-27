@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { getPDTid } from "../../services/api";
-import { NivelForm, Tablero } from "../../components";
+import { NivelForm, Tablero, Frame } from "../../components";
 import { NivelInterface } from "../../interfaces";
 
 export const PDTid = () => {
@@ -16,8 +16,8 @@ export const PDTid = () => {
     }, []);
 
     return (
-        <div>
-            {data.length === 0 ? <NivelForm id={id!} /> : <Tablero data={data} />}
-        </div>
+        <Frame
+            data={data.length === 0 ? <NivelForm id={id!} /> : <Tablero data={data} />}
+        />
     )
 }

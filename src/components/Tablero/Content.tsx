@@ -1,14 +1,12 @@
 import { useState, useEffect } from "react";
-import { NodoInterface, Token, NivelInterface, PesosNodos } from "../../interfaces";
-import { getNodosNivel, getColors } from "../../services/api";
-import { NodoForm, ColorForm } from "../Forms";
 import IconButton from "@mui/material/IconButton";
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import { useNavigate } from "react-router-dom";
-import { ShowNodos } from "./ShowNodos";
-import { ShowNodosUnidad } from "./ShowNodosUnidad";
-import { decode } from "../../utils/decode";
-import { getToken } from "@/utils";
+
+import { NodoInterface, Token, NivelInterface, PesosNodos } from "@/interfaces";
+import { getNodosNivel, getColors } from '@/services/api';
+import { NodoForm, ColorForm, ShowNodos, ShowNodosUnidad } from "@/components";
+import { getToken, decode } from "@/utils";
 
 interface Props {
     index: number;
@@ -93,10 +91,12 @@ export const Content = ( props : Props ) => {
                     temp += (porcentajes[i].progreso)*(item.Peso/100)
                 }
             })
-            temp = Number.parseFloat((temp).toFixed(2))
+            temp = Math.round(temp*100)/100
             progreso.push(temp)
         }
-        setProgress(progreso.reduce((a, b) => a + b, 0)*100/años.length)
+        let temp = progreso.reduce((a, b) => a + b, 0)
+        temp = Math.round(temp*100/años.length)
+        setProgress(temp)
         setProgresoAño(progreso)
     }
 
@@ -209,56 +209,57 @@ export const Content = ( props : Props ) => {
                         <p className="tw-font-montserrat tw-ml-4">
                             Plan de desarrollo. ¡Así vamos!
                         </p>
-                        <ol className="tw-flex tw-h-4/5 tw-items-center tw-ml-4">
+                        <ol className="tw-flex tw-h-4/5 tw-justify-center tw-items-center tw-mx-4">
                         {años.map((año: number, index: number) => (
-                            <li className="tw-grid tw-grid-rows-3">
-                                <button className={`tw-rounded
-                                                    ${(progresoAño[index]??0)*100 < colors[0] ? 'tw-border-red-400'   : 
-                                                      (progresoAño[index]??0)*100 < colors[1] ? 'tw-border-yellow-400':
-                                                      (progresoAño[index]??0)*100 < colors[2] ? 'tw-border-green-400' : 'tw-border-blue-400'}
+                            <li className="tw-grid tw-grid-rows-3 tw-w-full tw-justify-items-center">
+                                <button className={`tw-rounded 
+                                                    tw-flex tw-justify-center tw-items-center
+                                                    ${(progresoAño[index]??0)*100 < colors[0] ? 'tw-border-redColory'   : 
+                                                      (progresoAño[index]??0)*100 < colors[1] ? 'tw-border-yellowColory':
+                                                      (progresoAño[index]??0)*100 < colors[2] ? 'tw-border-greenColory' : 'tw-border-blueColory'}
                                                     ${añoSelect === año ? 'tw-ring' : null}
                                                     ${index%2 === 0 ? 'tw-row-start-1' : 'tw-row-start-3'}
-                                                    tw-border-8
-                                                    tw-py-2
-                                                    tw-scale-100`}
+                                                    tw-border-4
+                                                    tw-w-12 tw-h-12
+                                                    tw-font-bold`}
                                         onClick={ (event) => handleAños(event, año)}>
-                                    {(progresoAño[index]*100).toFixed(2)}%
+                                    {(progresoAño[index]*100)}%
                                 </button>
-                                <div className="tw-flex tw-items-center tw-relative tw-row-start-2">
-                                    <div className={`tw-flex 
-                                                    tw-w-full tw-h-3
+                                <div className="tw-flex tw-items-center tw-w-full tw-relative tw-row-start-2">
+                                    <div className={`tw-w-full tw-h-2
                                                     tw-px-3
                                                     tw-z-10 tw-absolute 
-                                                    ${(progresoAño[index]??0)*100 < colors[0] ? 'tw-bg-red-400'   : 
-                                                      (progresoAño[index]??0)*100 < colors[1] ? 'tw-bg-yellow-400':
-                                                      (progresoAño[index]??0)*100 < colors[2] ? 'tw-bg-green-400' : 'tw-bg-blue-400'}`}>
+                                                    ${(progresoAño[index]??0)*100 < colors[0] ? 'tw-bg-redColory'   : 
+                                                      (progresoAño[index]??0)*100 < colors[1] ? 'tw-bg-yellowColory':
+                                                      (progresoAño[index]??0)*100 < colors[2] ? 'tw-bg-greenColory' : 'tw-bg-blueColory'}`}>
                                     </div>
-                                    <div className={` tw-font-montserrat
-                                                    tw-text-[#222222]
-                                                    tw-h-full
+                                    <div className={`tw-h-full
                                                     tw-grow
-                                                    tw-flex tw-flex-col
-                                                    ${(progresoAño[index]??0)*100 < colors[0] ? 'tw-text-red-400'   : 
-                                                      (progresoAño[index]??0)*100 < colors[1] ? 'tw-text-yellow-400':
-                                                      (progresoAño[index]??0)*100 < colors[2] ? 'tw-text-green-400' : 'tw-text-blue-400'}`}>
+                                                    tw-flex tw-flex-col`}>
                                         {index%2 === 0 ? 
-                                            <div className={`tw-grow tw-self-center
-                                                            tw-h-1/4 tw-w-2
-                                                            tw-border
-                                                            ${(progresoAño[index]??0)*100 < colors[0] ? 'tw-bg-red-400'   : 
-                                                              (progresoAño[index]??0)*100 < colors[1] ? 'tw-bg-yellow-400':
-                                                              (progresoAño[index]??0)*100 < colors[2] ? 'tw-bg-green-400' : 'tw-bg-blue-400'}`}></div>
+                                            <button className={`tw-grow tw-self-center
+                                                                tw-h-1/4 tw-w-2
+                                                                ${(progresoAño[index]??0)*100 < colors[0] ? 'tw-bg-redColory'   : 
+                                                                  (progresoAño[index]??0)*100 < colors[1] ? 'tw-bg-yellowColory':
+                                                                  (progresoAño[index]??0)*100 < colors[2] ? 'tw-bg-greenColory' : 'tw-bg-blueColory'}`}
+                                                    onClick={ (event) => handleAños(event, año)}>
+                                            </button>
                                         : null}
-                                        <p className="tw-self-center">
+                                        <button className={`tw-self-center tw-font-bold tw-font-montserrat tw-text-[#222222]
+                                                            ${(progresoAño[index]??0)*100 < colors[0] ? 'tw-text-redColory'   : 
+                                                            (progresoAño[index]??0)*100 < colors[1] ? 'tw-text-yellowColory':
+                                                            (progresoAño[index]??0)*100 < colors[2] ? 'tw-text-greenColory' : 'tw-text-blueColory'}`}
+                                                onClick={ (event) => handleAños(event, año)}>
                                             {año}
-                                        </p>
+                                        </button>
                                         {index%2 === 1 ? 
-                                            <div className={`tw-grow tw-self-center
-                                                            tw-h-1/4 tw-w-2
-                                                            tw-border
-                                                            ${(progresoAño[index]??0)*100 < colors[0] ? 'tw-bg-red-400'   : 
-                                                              (progresoAño[index]??0)*100 < colors[1] ? 'tw-bg-yellow-400':
-                                                              (progresoAño[index]??0)*100 < colors[2] ? 'tw-bg-green-400' : 'tw-bg-blue-400'}`}></div>
+                                            <button className={`tw-grow tw-self-center
+                                                                tw-h-1/4 tw-w-2
+                                                                ${(progresoAño[index]??0)*100 < colors[0] ? 'tw-bg-redColory'   : 
+                                                                  (progresoAño[index]??0)*100 < colors[1] ? 'tw-bg-yellowColory':
+                                                                  (progresoAño[index]??0)*100 < colors[2] ? 'tw-bg-greenColory' : 'tw-bg-blueColory'}`}
+                                                    onClick={ (event) => handleAños(event, año)}>
+                                            </button>
                                         : null}
                                     </div>
                                 </div>
@@ -282,13 +283,18 @@ export const Content = ( props : Props ) => {
                             <path d="M133.632 4.77426L315.943 2.77227L343.126 29.6861L316.513 54.7168L134.203 56.7187L133.632 4.77426Z" fill="#FCC623" stroke="#FCC623"/>
                             <path d="M0.890247 6.2319L183.2 4.22992L210.384 31.1437L183.771 56.1744L1.46066 58.1764L0.890247 6.2319Z" fill="#FE1700" stroke="#FE1700"/>
                         </svg>
-                        <button className={`tw-rounded
-                                            tw-border-8
-                                            ${progress < colors[0] ? 'tw-border-red-400'   : 
-                                              progress < colors[1] ? 'tw-border-yellow-400':
-                                              progress < colors[2] ? 'tw-border-green-400' : 'tw-border-blue-400'}
-                                            tw-py-3 tw-px-1 tw-ml-3`}>
-                            {progress.toFixed(2)}%
+                        <button className={`tw-rounded 
+                                            tw-flex tw-justify-center tw-items-center
+                                            tw-border-4
+                                            tw-self-center
+                                            tw-w-12 tw-h-12
+                                            ${progress < colors[0] ? 'tw-border-redColory'   : 
+                                              progress < colors[1] ? 'tw-border-yellowColory':
+                                              progress < colors[2] ? 'tw-border-greenColory' : 'tw-border-blueColory'}
+                                            tw-ml-3`}>
+                            <p className="tw-break-words tw-font-bold">
+                                {progress}%
+                            </p>
                         </button>
                         </div>
                         <p>

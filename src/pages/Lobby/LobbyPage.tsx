@@ -6,10 +6,12 @@ import { decode } from '../../utils/decode';
 import { Token } from '../../interfaces';
 import { getToken, removeToken } from '@/utils';
 import { thunkLogout } from '@/store/auth/thunks';
-import { useDispatch } from 'react-redux';
+import { useAppDispatch, useAppSelector } from '@/store';
+import { selectOption } from '@/store/content/contentSlice';
 
 export const LobbyPage = () => {
-    const dispatch = useDispatch()
+    const index = useAppSelector((state) => state.content.index);
+    const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
     const [rol, setRol] = useState("");
@@ -18,7 +20,7 @@ export const LobbyPage = () => {
     useEffect(() => {
         const gettoken = getToken()
         try {
-            let {token} = gettoken ? gettoken : null
+            let {token} = gettoken
             if (token !== null || token !== undefined) {
                 const decoded = decode(token) as Token
                 setId(decoded.id_plan)
@@ -56,25 +58,33 @@ export const LobbyPage = () => {
             inside={false}
             text='Plan indicativo'
             src="/src/assets/images/plan-indicativo.png"
-            onClick={handleButton}
+            onClick={()=>{
+                dispatch(selectOption(0))
+                handleButton()}}
             bgColor="tw-bg-greenBtn" />,
         <ButtonComponent
             inside={false}
             text='Banco de proyectos'
             src="/src/assets/images/Banco-proyectos.png"
-            onClick={() => navigate('/')}
+            onClick={() => {
+                dispatch(selectOption(1))
+                navigate('/')}}
             bgColor="tw-bg-greenBtn" />,
         <ButtonComponent
             inside={false}
             text='POAI'
             src="/src/assets/images/POAI.png"
-            onClick={() => navigate('/')}
+            onClick={() => {
+                dispatch(selectOption(2))
+                navigate('/')}}
             bgColor="tw-bg-greenBtn" />,
         <ButtonComponent
             inside={false}
             text='Plan de acción'
             src="/src/assets/images/Plan-accion.png"
-            onClick={() => navigate('/')}
+            onClick={() => {
+                dispatch(selectOption(3))
+                navigate('/')}}
             bgColor="tw-bg-greenBtn" />,
         //{
         //    inside: false,

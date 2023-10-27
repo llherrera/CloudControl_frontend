@@ -130,25 +130,15 @@ export const Tablero = ( props : Props ) => {
     ]
 
     return (
-        <body className='tw-h-screen'>
-            <header className={`tw-flex tw-justify-between tw-bg-header tw-drop-shadow-xl`}>
-                <img src="\src\assets\images\Logo.png" alt="" width={100} height={100}/>
-                <img src="\src\assets\images\Logo-municipio.png" alt="" width={300} />
-                <div>salir</div>
-            </header>
-            <div className='tw-flex tw-h-5/6'>
-                <NavBar buttons={buttons}/>
-                <div className='tw-flex-grow'>
-                    <Content    index={index+1} 
-                                len={props.data.length}
-                                data={props.data[index]} 
-                                callback={setData} 
-                                Padre={Padre} 
-                                id={ parseInt(id as string) }
-                                progress={getProgress}/>
-                </div>
-            </div>
-        </body>
+        <Content    
+            index={index+1} 
+            len={props.data.length}
+            data={props.data[index]} 
+            callback={setData} 
+            Padre={Padre} 
+            id={ parseInt(id as string) }
+            progress={getProgress}
+        />
     )
 }
  

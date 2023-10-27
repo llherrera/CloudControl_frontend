@@ -15,7 +15,11 @@ export default {
       colors: {
         'greenBtn': '#008432',
         'navBar': '#D9D9D9',
-        'header': '#E7E6E8'
+        'header': '#E7E6E8',
+        'redColory': '#FE1700',
+        'yellowColory': '#FCC623',
+        'greenColory': '#119432',
+        'blueColory': '#008DCC',
       }
     },
     fontSize: {

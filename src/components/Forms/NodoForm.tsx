@@ -99,24 +99,24 @@ export const NodoForm = ( props : Props ) => {
 
     return (
         <form   onSubmit={handleSubmit}
-                className='tw-m-5 tw-flex tw-flex-col'>
+                className='tw-mx-4'>
             <ul className=''>
                 {data.map(( e: NodoInterface, index: number )=> 
-                <div className='tw-mb-3 tw-px-3 tw-p-2 tw-bg-cyan-200 tw-flex tw-rounded'>
-                    <li className="tw-mx-3">
+                <div className='tw-mb-3 tw-p-1 tw-relative tw-bg-cyan-200 tw-flex tw-rounded'>
+                    <li className="tw-ml-3">
                         <input  type={"text"}
                                 placeholder={`Nombre del nodo`}
                                 id={"Nombre"}
                                 name={"Nombre"}
                                 value={e.Nombre}
-                                className='tw-rounded tw-my-1 tw-p-1'
+                                className='tw-rounded tw-my-1 tw-w-5/6'
                                 onChange={ (event) => handleInputFormChange(event, index) }/><br/>
                         <input  type={"text"}
                                 placeholder="Descripción del Nodo"
                                 id={"Descripcion"}
                                 name={"Descripcion"}
                                 value={e.Descripcion}
-                                className='rounded my-1 p-1'
+                                className='rounded my-1 tw-w-5/6'
                                 onChange={ (event) => handleInputFormChange(event, index) }/><br/>
                     </li>
                     <input  type="number"
@@ -124,22 +124,22 @@ export const NodoForm = ( props : Props ) => {
                             id='Peso'
                             name='Peso'
                             value={e.Peso}
-                            className='tw-mx-4 tw-w-1/2 tw-h-7 tw-rounded'
+                            className=' tw-w-1/6 tw-absolute tw-right-4 tw-h-7 tw-rounded'
                             onChange={ (event) => handleInputFormChange(event, index) } />
                 </div>
                 )}
-                <div className='tw-flex tw-justify-around'>
+                <div className='tw-flex tw-justify-between'>
                     <button className=" tw-bg-green-500
                                         hover:tw-bg-green-300
                                         tw-text-white tw-font-bold
-                                        tw-py-2 tw-px-4 tw-rounded tw-mr-5" 
+                                        tw-py-2 tw-px-1 tw-rounded tw-mr-5" 
                                         type='button'
                                         title='Agregar Nodo'
                             onClick={agregarNodo}>Agregar Nodo</button>
                     <button className=" tw-bg-red-500
                                         hover:tw-bg-red-300
                                         tw-text-white tw-font-bold
-                                        tw-py-2 tw-px-4 tw-rounded tw-ml-5"
+                                        tw-py-2 tw-rounded tw-ml-5"
                                         type='button'
                                         title='Eliminar Nodo'
                                         onClick={eliminarNodo}>Eliminar Nodo</button>
@@ -150,10 +150,10 @@ export const NodoForm = ( props : Props ) => {
                     title='Guardar nodos en el nivel'
                     className=" tw-bg-blue-500
                                 hover:tw-bg-blue-300 
-                                tw-text-white tw-font-bold }
-                                tw-flex tw-grow tw-self-center
-                                tw-rounded
-                                tw-p-5 tw-mt-2"/>
+                                tw-text-white tw-font-bold
+                                tw-flex tw-justify-center
+                                tw-rounded tw-w-full
+                                tw-p-2 tw-mt-2"/>
         </form>
     )
 }

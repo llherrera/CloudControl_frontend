@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from "react";
+import IconButton from "@mui/material/IconButton";
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import { useNavigate } from "react-router-dom";
+
 import { Input } from "../Inputs";
-import { addNivel } from "../../services/api";
-import { decode } from "../../utils/decode";
-import { NivelInterface, Token } from "../../interfaces";
-import { getToken } from "@/utils";
+import { addNivel } from "@/services/api";
+import { NivelInterface, Token } from "@/interfaces";
+import { getToken, decode } from "@/utils";
 
 interface Props {
     id: string;
 }
 
 export const NivelForm = ( props: Props ) => {
+    const navigate = useNavigate()
 
     const [data, setData] = useState<NivelInterface[]>([
         { Nombre: "", Descripcion: "" },
@@ -38,6 +42,18 @@ export const NivelForm = ( props: Props ) => {
             console.log(error);
         }
     })
+
+    const backIconButton = () => {
+        return (
+            <IconButton aria-label="delete"
+                        size="small"
+                        color="secondary"
+                        onClick={()=>navigate(-1)}
+                        title="Regresar">
+                <ArrowBackIosIcon/>
+            </IconButton>
+        )
+    }
 
     const agregarNivel = () => {
         const newData = [...data, nivel];
@@ -73,6 +89,7 @@ export const NivelForm = ( props: Props ) => {
 
     return (
         <div>
+            {backIconButton()}
             {(rol === "admin") || (rol === 'funcionario' && id_ === parseInt(props.id)) ?
             <form   onSubmit={ handleSubmit}
                     className="tw-grid tw-grid-cols-12 tw-mt-5">

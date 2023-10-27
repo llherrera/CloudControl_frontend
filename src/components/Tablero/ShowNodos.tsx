@@ -14,7 +14,6 @@ interface Props {
 export const ShowNodos = ( props: Props ) => {
 
     const [progreso, setProgreso] = useState<number[]>([])
-    const [porcentajeAño, setPorcentajeAño] = useState<number[]>([])
     const [nodos, setNodos] = useState<NodoInterface[]>([])
 
     useEffect(() => {
@@ -60,11 +59,12 @@ export const ShowNodos = ( props: Props ) => {
         <ul className=" ">
             {nodos.map((item: NodoInterface, index: number) => (
                 <div className="tw-my-5 tw-flex">
-                    <button className ={`tw-rounded
+                    <button className={`tw-rounded
+                                        tw-flex tw-justify-center tw-items-center
                                         tw-border-4
-                                        ${(progreso[index]??0)*100 < props.colors[0] ? 'tw-border-red-400'   :
-                                          (progreso[index]??0)*100 < props.colors[1] ? 'tw-border-yellow-400':
-                                          (progreso[index]??0)*100 < props.colors[2] ? 'tw-border-green-400' : 'tw-border-blue-400'}
+                                        ${(progreso[index]??0)*100 < props.colors[0] ? 'tw-border-redColory'   :
+                                          (progreso[index]??0)*100 < props.colors[1] ? 'tw-border-yellowColory':
+                                          (progreso[index]??0)*100 < props.colors[2] ? 'tw-border-greenColory' : 'tw-border-blueColory'}
                                         tw-ml-3
                                         tw-w-12 tw-h-12
                                         tw-font-bold`}
@@ -72,12 +72,13 @@ export const ShowNodos = ( props: Props ) => {
                             title={item.Descripcion}>
                         {(progreso[index]??0)*100}%
                     </button>
-                    <button className={`${(progreso[index]??0)*100 < props.colors[0] ? 'tw-bg-red-400'   :
-                                          (progreso[index]??0)*100 < props.colors[1] ? 'tw-bg-yellow-400':
-                                          (progreso[index]??0)*100 < props.colors[2] ? 'tw-bg-green-400' : 'tw-bg-blue-400'}
+                    <button className={`${(progreso[index]??0)*100 < props.colors[0] ? 'tw-bg-redColory'   :
+                                          (progreso[index]??0)*100 < props.colors[1] ? 'tw-bg-yellowColory':
+                                          (progreso[index]??0)*100 < props.colors[2] ? 'tw-bg-greenColory' : 'tw-bg-blueColory'}
                                         tw-h-8 tw-my-2
                                         tw-w-2/3
-                                        tw-rounded-r-lg`}
+                                        tw-rounded-r-lg
+                                        tw-text-white tw-font-bold`}
                             onClick={ (event) => handleButton(event, index)}
                             title={item.Descripcion}>
                         <p>{item.Nombre}</p>

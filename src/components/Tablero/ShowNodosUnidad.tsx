@@ -65,9 +65,9 @@ export const ShowNodosUnidad = ( props : Props ) => {
                 <button className ={`tw-rounded
                                     tw-border-4
                                     ${programacion[index] === 0 ? 'tw-border-gray-400' :
-                                      (progreso[index]??0)*100 < props.colors[0] ? 'tw-border-red-400'   :
-                                      (progreso[index]??0)*100 < props.colors[1] ? 'tw-border-yellow-400':
-                                      (progreso[index]??0)*100 < props.colors[2] ? 'tw-border-green-400' : 'tw-border-blue-400'}
+                                      (progreso[index]??0)*100 < props.colors[0] ? 'tw-border-redColory'   :
+                                      (progreso[index]??0)*100 < props.colors[1] ? 'tw-border-yellowColory':
+                                      (progreso[index]??0)*100 < props.colors[2] ? 'tw-border-greenColory' : 'tw-border-blueColory'}
                                     tw-w-12 tw-h-12
                                     tw-my-4 tw-ml-3
                                     tw-font-bold`}
