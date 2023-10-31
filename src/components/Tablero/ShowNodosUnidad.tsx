@@ -62,7 +62,7 @@ export const ShowNodosUnidad = ( props : Props ) => {
                         tw-border-gray-400 
                         tw-gap-4">
             {props.nodos.map((item: NodoInterface, index: number) => (
-                <button className ={`tw-rounded
+                <button className={`tw-rounded
                                     tw-border-4
                                     ${programacion[index] === 0 ? 'tw-border-gray-400' :
                                       (progreso[index]??0)*100 < props.colors[0] ? 'tw-border-redColory'   :
@@ -72,7 +72,7 @@ export const ShowNodosUnidad = ( props : Props ) => {
                                     tw-my-4 tw-ml-3
                                     tw-font-bold`}
                         onClick={ (event) => handleButtonUnidad(event, index)}
-                        title={item.Descripcion}>
+                        title={item.Description}>
                     {progreso[index]*100}%
                 </button>
             ))}

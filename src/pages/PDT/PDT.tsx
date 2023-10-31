@@ -23,8 +23,7 @@ export const PDT = () => {
         const gettoken = getToken();
         try {
             const {token} = gettoken;
-            console.log(token);
-            
+
             if (token !== null || token !== undefined) {
                 const decoded = decode(token!) as Token
                 setRol(decoded.rol)

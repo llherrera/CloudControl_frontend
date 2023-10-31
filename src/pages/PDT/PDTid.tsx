@@ -4,6 +4,13 @@ import { getPDTid } from "../../services/api";
 import { NivelForm, Tablero, Frame } from "../../components";
 import { NivelInterface } from "../../interfaces";
 
+type nivel = {
+    id_plan: number;
+    Nombre: string;
+    Descripcion: string;
+    id_nivel: number;
+}
+
 export const PDTid = () => {
     const { id } = useParams();
     const [data, setData] = useState<NivelInterface[]>([]);
@@ -11,7 +18,16 @@ export const PDTid = () => {
     useEffect(() => {
         getPDTid(id!)
             .then((res) => {
-                setData(res)
+                const resArr = [...res];
+                const temp = [] as NivelInterface[]
+                resArr.forEach((item:nivel) => {
+                    temp.push({
+                        id_nivel: item.id_nivel,
+                        LevelName: item.Nombre,
+                        Description: item.Descripcion,
+                    })
+                })
+                setData(temp)
             })
     }, []);
 

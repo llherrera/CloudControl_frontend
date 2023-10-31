@@ -16,14 +16,14 @@ export const NivelForm = ( props: Props ) => {
     const navigate = useNavigate()
 
     const [data, setData] = useState<NivelInterface[]>([
-        { Nombre: "", Descripcion: "" },
-        { Nombre: "", Descripcion: "" },
-        { Nombre: "", Descripcion: "" }
+        { LevelName: "", Description: "" },
+        { LevelName: "", Description: "" },
+        { LevelName: "", Description: "" }
     ])
 
     const [nivel, setNivel] = useState<NivelInterface>({
-        Nombre: "",
-        Descripcion: ""
+        LevelName: "",
+        Description: ""
     })
 
     const [rol, setRol] = useState("")
@@ -58,7 +58,7 @@ export const NivelForm = ( props: Props ) => {
     const agregarNivel = () => {
         const newData = [...data, nivel];
         setData(newData);
-        setNivel({ Nombre: "", Descripcion: "" } as NivelInterface);
+        setNivel({ LevelName: "", Description: "" } as NivelInterface);
     }
 
     const eliminarNivel = () => {
@@ -98,15 +98,15 @@ export const NivelForm = ( props: Props ) => {
                     <li className="tw-mb-3 tw-p-2 tw-bg-cyan-200 tw-rounded">
                         <Input  type={"text"}
                                 label="Nombre del Nivel:"
-                                id={"Nombre"}
-                                name={"Nombre"}
-                                value={e.Nombre}
+                                id={"LevelName"}
+                                name={"LevelName"}
+                                value={e.LevelName}
                                 onChange={ (event) => handleInputFormChange(event, index) }/><br/>
                         <Input  type={"text"}
                                 label="Descripción:"
-                                id={"Descripcion"}
-                                name={"Descripcion"}
-                                value={e.Descripcion}
+                                id={"Description"}
+                                name={"Description"}
+                                value={e.Description}
                                 onChange={ (event) => handleInputFormChange(event, index) }/><br/>
                     </li>
                 )}

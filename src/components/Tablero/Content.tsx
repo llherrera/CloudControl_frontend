@@ -18,6 +18,14 @@ interface Props {
     progress: boolean;
 }
 
+type nodos = {
+    id_nodo: string;
+    Nombre: string;
+    Descripcion: string;
+    Padre: (string | null);
+    id_nivel: number;
+}
+
 export const Content = ( props : Props ) => {
     const navigate = useNavigate();
 
@@ -53,7 +61,19 @@ export const Content = ( props : Props ) => {
             try{
                 getNodosNivel(props.data.id_nivel!, props.Padre)
                     .then((res) => {
-                        setNodos(res)
+                        const resArr = [...res];
+                        const temp = [] as NodoInterface[]
+                        resArr.forEach((item:nodos) => {
+                            temp.push({
+                                id_nodo: item.id_nodo,
+                                NodeName: item.Nombre,
+                                Description: item.Descripcion,
+                                Parent: item.Padre,
+                                id_level: item.id_nivel,
+                                Weight: 0,
+                            })
+                        })
+                        setNodos(temp)
                 })
                 getColors(props.id)
                     .then((res) => {
@@ -162,7 +182,7 @@ export const Content = ( props : Props ) => {
                                 tw-w-1/3 tw-mx-6">
                     <p className="tw-ml-4 tw-mt-3 tw-font-montserrat tw-font-bold">
                         {backIconButton()}
-                        {props.data.Nombre}
+                        {props.data.LevelName}
                     </p>
                     <div className="tw-pb-1 tw-mb-2">
                         {nodos.length === 0 ?
