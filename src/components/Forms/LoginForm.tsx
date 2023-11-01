@@ -5,7 +5,8 @@ import { thunkLogin } from '../../store/auth/thunks'
 
 export const LoginForm = () => {
     const dispatch = useAppDispatch()
-    const { logged } = useAppSelector(store => store.auth)
+    const logged = useAppSelector(store => store.auth.logged)
+
     const navigate = useNavigate()
 
     const [user, setuser] = useState({
@@ -22,34 +23,21 @@ export const LoginForm = () => {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
-        try {
-            dispatch(thunkLogin(user))
-                .then((res) => {
-                    if (logged === false) {
-                        alert('Usuario o contraseña incorrectos')
-                        return
-                    }else
-                        navigate('/lobby')
-                })
-        } catch (error) {
-            console.log(error);
-        }
+        await dispatch(thunkLogin(user))
+            .unwrap()
+            .then(() => {
+                navigate('/lobby')
+            })
+            .catch((err) => {
+                console.log(err)
+            }
+        )
     }
 
     const handleCancelar = () => {
         navigate('/')
     }
-/**
- * <IconButton aria-label="delete"
-                        size="small"
-                        color="primary"
-                        onClick={handleCancelar}
-                        title="Regresar"
-                        className=' tw-self-start'>
-                <ArrowBackIosIcon/>
-                <p className='tw-text-[#706E6B]'>Volver</p>
-            </IconButton><br /><br />
- */
+
     return (
         <form className='   tw-rounded
                             tw-flex tw-flex-col
@@ -61,12 +49,14 @@ export const LoginForm = () => {
             <input  type="text" 
                     name="username" 
                     onChange={handleChange}
-                    className='tw-border tw-rounded'/><br/>
+                    className='tw-border tw-rounded'
+                    required/><br/>
             <label className='tw-font-montserrat'>Clave</label>
             <input  type="password" 
                     name="password" 
                     onChange={handleChange}
-                    className='tw-border tw-rounded'/><br/>
+                    className='tw-border tw-rounded'
+                    required/><br/>
             <button className='tw-bg-[#008432] hover:tw-opacity-50
                                 tw-rounded tw-py-2'>
                 Iniciar sesión</button><br />

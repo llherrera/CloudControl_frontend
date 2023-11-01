@@ -17,7 +17,13 @@ export const thunkLogin = createAsyncThunk<AuthInterface, LoginProps, { rejectVa
   async (props: LoginProps, { rejectWithValue }) => {
     try {
       const res = await doLogin(props)
-      return res
+      const { token } = res
+      if (token) {
+        return res
+      }else {
+        const result = parseErrorAxios(res)
+        return rejectWithValue(result)
+      }
     } catch (err) {
       const result = parseErrorAxios(err)
       return rejectWithValue(result)

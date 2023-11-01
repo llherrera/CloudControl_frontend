@@ -46,6 +46,7 @@ export const authSlice = createSlice({
             error_text = 'No está permitido acceder aquí.'
             break
           case 404:
+            alert('Usuario o contraseña incorrecto.')
             error_text = 'Usuario o contraseña incorrecto.'
             break
           case 500:
