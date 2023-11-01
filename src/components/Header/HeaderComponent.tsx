@@ -1,5 +1,3 @@
-import React from 'react';
-
 type Props = {
     componentes: React.ReactNode[]
 }
@@ -19,14 +17,14 @@ export const Header = ( {componentes}: Props) => {
                 <p className="tw-font-montserrat tw-font-bold">
                     Selecciona un usuario en la derecha para comenzar</p>
             </div>
-            <div className="tw-pl-3">
+            <ul className="tw-pl-3">
                 {componentes.map((componente, index) => (
-                    <div key={index} className="tw-m-3">
+                    <li key={index} className="tw-m-3">
                         {componente}
-                    </div>
+                    </li>
                 ))
                 }
-            </div>
+            </ul>
         </main>
     )
 }

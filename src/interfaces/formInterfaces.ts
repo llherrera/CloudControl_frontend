@@ -20,38 +20,39 @@ export interface PDTInterface {
     Alcaldia: string;
     Municipio: string;
     Descripcion: string;
-    Fecha_inicio: string;
-    Fecha_fin: string;
+    Fecha_inicio: Date;
+    Fecha_fin: Date;
 }
 
 export interface NivelInterface {
     id_nivel?: number;
-    Nombre: string;
-    Descripcion: string;
+    LevelName: string;
+    Description: string;
 }
 
 export interface NodoInterface {
-    id_nodo: string;
-    Nombre: string;
-    Descripcion: string;
-    Padre: (string | null);
-    id_nivel: number;
-    Peso: number;
+    id_node: string;
+    NodeName: string;
+    Description: string;
+    Parent: (string | null);
+    id_level: number;
+    Weight: number;
 }
 
 export interface UnidadInterface {
-    codigo: string,
-    descripcion: string,
-    indicador: string,
+    code: string,
+    description: string,
+    indicator: string,
     base: number,
-    meta: number,
+    goal: number,
+    years: AñoInterface[]
 }
 
 export interface AñoInterface {
-    año: number[];
-    programacion: number[];
-    ejecFisica: number[];
-    ejecFinanciera: number[];
+    year: number;
+    programed: number;
+    phisicalExecuted: number;
+    finalcialExecuted: number;
 }
 
 export interface EvidenciaInterface {

@@ -1,35 +1,39 @@
 import React, { useState, useEffect } from "react";
+import IconButton from "@mui/material/IconButton";
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+import { useNavigate } from "react-router-dom";
+
 import { Input } from "../Inputs";
-import { addNivel } from "../../services/api";
-import { decode } from "../../utils/decode";
-import { NivelInterface, Token } from "../../interfaces";
-import Cookies from "js-cookie";
+import { addNivel } from "@/services/api";
+import { NivelInterface, Token } from "@/interfaces";
+import { getToken, decode } from "@/utils";
 
 interface Props {
     id: string;
 }
 
 export const NivelForm = ( props: Props ) => {
+    const navigate = useNavigate()
 
     const [data, setData] = useState<NivelInterface[]>([
-        { Nombre: "", Descripcion: "" },
-        { Nombre: "", Descripcion: "" },
-        { Nombre: "", Descripcion: "" }
+        { LevelName: "", Description: "" },
+        { LevelName: "", Description: "" },
+        { LevelName: "", Description: "" }
     ])
 
     const [nivel, setNivel] = useState<NivelInterface>({
-        Nombre: "",
-        Descripcion: ""
+        LevelName: "",
+        Description: ""
     })
 
     const [rol, setRol] = useState("")
     const [id_, setId] = useState(0)
 
     useEffect(() => {
-        //const token = sessionStorage.getItem('token')
-        const token = Cookies.get('token')
+        const gettoken = getToken()
         try {
-            if (token !== null && token !== undefined) {
+            const {token} = gettoken
+            if (token !== null || token !== undefined) {
                 const decoded = decode(token) as Token
                 setId(decoded.id_plan)
                 setRol(decoded.rol)
@@ -39,10 +43,23 @@ export const NivelForm = ( props: Props ) => {
         }
     })
 
+    const backIconButton = () => {
+        return (
+            <IconButton aria-label="delete"
+                        size="small"
+                        color="secondary"
+                        onClick={()=>navigate(-1)}
+                        title="Regresar"
+                        key={data.length}>
+                <ArrowBackIosIcon/>
+            </IconButton>
+        )
+    }
+
     const agregarNivel = () => {
         const newData = [...data, nivel];
         setData(newData);
-        setNivel({ Nombre: "", Descripcion: "" } as NivelInterface);
+        setNivel({ LevelName: "", Description: "" } as NivelInterface);
     }
 
     const eliminarNivel = () => {
@@ -73,23 +90,25 @@ export const NivelForm = ( props: Props ) => {
 
     return (
         <div>
+            {backIconButton()}
             {(rol === "admin") || (rol === 'funcionario' && id_ === parseInt(props.id)) ?
             <form   onSubmit={ handleSubmit}
                     className="tw-grid tw-grid-cols-12 tw-mt-5">
                 <ul className="tw-col-start-5 tw-col-span-4 tw-gap-3">
                 {data.map(( e:NivelInterface, index: number )=> 
-                    <li className="tw-mb-3 tw-p-2 tw-bg-cyan-200 tw-rounded">
+                    <li className="tw-mb-3 tw-p-2 tw-bg-cyan-200 tw-rounded"
+                        key={e.id_nivel}>
                         <Input  type={"text"}
                                 label="Nombre del Nivel:"
-                                id={"Nombre"}
-                                name={"Nombre"}
-                                value={e.Nombre}
+                                id={"LevelName"}
+                                name={"LevelName"}
+                                value={e.LevelName}
                                 onChange={ (event) => handleInputFormChange(event, index) }/><br/>
                         <Input  type={"text"}
                                 label="Descripción:"
-                                id={"Descripcion"}
-                                name={"Descripcion"}
-                                value={e.Descripcion}
+                                id={"Description"}
+                                name={"Description"}
+                                value={e.Description}
                                 onChange={ (event) => handleInputFormChange(event, index) }/><br/>
                     </li>
                 )}

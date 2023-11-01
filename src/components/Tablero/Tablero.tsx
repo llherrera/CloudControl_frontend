@@ -1,7 +1,5 @@
 import { useState, useEffect } from 'react'
 import { Content } from './Content';
-import { ButtonComponent } from '../Buttons';
-import { NavBar } from '../NavBar';
 import { PesosNodos, Porcentaje, DetalleAño, NivelInterface } from '../../interfaces';
 import { useParams } from 'react-router-dom';
 import { getProgresoTotal } from '../../services/api';
@@ -48,9 +46,10 @@ export const Tablero = ( props : Props ) => {
     const calcProgress = () => {
         const pesosStr = localStorage.getItem('pesosNodo')
         const detalleStr = localStorage.getItem('detalleAño')
-        if (!pesosStr || !detalleStr) return
-        let pesosNodo = JSON.parse(pesosStr as string)
-        let detalleAño = JSON.parse(detalleStr as string)
+        if (pesosStr === null || pesosStr === undefined || detalleStr === null || detalleStr === undefined) 
+            return console.log('No hay datos')
+        let pesosNodo = JSON.parse(pesosStr ?? '[]')
+        let detalleAño = JSON.parse(detalleStr ?? '[]')
         
         detalleAño.forEach((item: DetalleAño) => {
             let progreso = 0
@@ -90,70 +89,55 @@ export const Tablero = ( props : Props ) => {
         localStorage.setItem('pesosNodo', JSON.stringify(pesosNodo))
     }
 
-    //const buttons = [
-    //    <ButtonComponent inside={true} onClick={() => navigate('/')} text='Plan indicativo' icon={()=>svg.PlanIndicativoIcon('white')}/>,
-    //    <ButtonComponent inside={true} onClick={() => navigate('/')} text='Banco de proyectos' icon={()=>svg.BancoProyectoIcon('white')}/>,
-    //    <ButtonComponent inside={true} onClick={() => navigate('/')} text='POAI' icon={()=>svg.POAIIcon('white')}/>,
-    //    <ButtonComponent inside={true} onClick={() => navigate('/')} text='Plan de accion' icon={()=>svg.PlanAccionIcon('white')}/>
-    //]
-    const bgcolor='#344613'
-    const logocolor='#FF0000'
+    const bgcolor='greenBtn'
+    const logocolor='#FFFFFF'
+    const textcolor='white'
 
     const buttons = [
         {
             inside: true,
             onClick: () => navigate('/'), 
             text: 'Plan indicativo', 
-            bgColor: bgcolor, 
-            textColor: logocolor, 
-            icon: ()=>svg.PlanIndicativoIcon(logocolor)
+            bgColor: bgcolor,
+            textColor: textcolor,
+            icon: ()=>svg.PlanIndicativoIcon('#008432')
         },
         {
             inside: true, 
             onClick: () => navigate('/'), 
             text: 'Banco de proyectos', 
-            bgColor: bgcolor, 
-            textColor: logocolor, 
+            bgColor: bgcolor,
+            textColor: textcolor,
             icon: ()=>svg.BancoProyectoIcon(logocolor)
         },
         {
             inside: true, 
             onClick: () => navigate('/'), 
             text: 'POAI', 
-            bgColor: bgcolor, 
-            textColor: logocolor, 
+            bgColor: bgcolor,
+            textColor: textcolor,
             icon: ()=>svg.POAIIcon(logocolor)
         },
         {
             inside: true, 
             onClick: () => navigate('/'), 
             text: 'Plan de accion', 
-            bgColor: bgcolor, 
-            textColor: logocolor, 
+            bgColor: bgcolor,
+            textColor: textcolor,
             icon: ()=>svg.PlanAccionIcon(logocolor)
         }
     ]
 
     return (
-        <body>
-            <header className='tw-flex tw-justify-between tw-bg-[#E7E6E8] tw-drop-shadow-xl'>
-                <img src="\src\assets\images\Logo.png" alt="" width={100} height={100}/>
-                <img src="\src\assets\images\Logo-municipio.png" alt="" width={300} />
-                <div>salir</div>
-            </header>
-            <div className='tw-flex'>
-                <NavBar buttons={buttons} bgColor='#0000FF'/>
-                <div className='tw-flex-grow'>
-                    <Content    index={index+1} 
-                                len={props.data.length}
-                                data={props.data[index]} 
-                                callback={setData} 
-                                Padre={Padre} 
-                                id={ parseInt(id as string) }
-                                progress={getProgress}/>
-                </div>
-            </div>
-        </body>
+        <Content    
+            index={index+1} 
+            len={props.data.length}
+            data={props.data[index]} 
+            callback={setData} 
+            Padre={Padre} 
+            id={ parseInt(id as string) }
+            progress={getProgress}
+        />
     )
 }
  
