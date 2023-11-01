@@ -68,7 +68,8 @@ const ListPDT = ( props: Props ) => {
                         size="small"
                         color="secondary"
                         onClick={()=>navigate(-1)}
-                        title="Regresar">
+                        title="Regresar"
+                        key={props.data!.length}>
                 <ArrowBackIosIcon/>
             </IconButton>
         )
@@ -81,27 +82,28 @@ const ListPDT = ( props: Props ) => {
             </div>
             {props.rol === "admin" ? 
             <ul className="tw-shadow-2xl tw-p-4 tw-rounded">
-            <button className="tw-bg-green-300 tw-rounded tw-w-full tw-py-2 tw-mb-4"
-                    onClick={handleAddPdt}
-                    title="Agregar un nuevo plan">
-                Añadir Plan +
-            </button>
-            { props.data!.map(( e:PDTInterface )=>
-            <div className="tw-flex">
-                <button className="tw-flex tw-justify-between tw-w-full tw-mb-4 tw-p-2 tw-rounded tw-bg-gray-200"
-                        onClick={(event) => handlePdtid(e.id_plan!)}
-                        title={e.Descripcion}>
-                    <p className="tw-mr-4">{e.Nombre}</p>
-                    <p className="tw-ml-4">{e.Alcaldia}</p>
+                <button className="tw-bg-green-300 tw-rounded tw-w-full tw-py-2 tw-mb-4"
+                        onClick={handleAddPdt}
+                        title="Agregar un nuevo plan">
+                    Añadir Plan +
                 </button>
-                <IconButton color="success"
-                            aria-label="delete"
-                            onClick={(event) => handleAdd(e.id_plan!)}
-                            title="Agregar funcionario al plan">
-                    <PersonAddAltIcon/>
-                </IconButton>
-            </div> 
-            )}
+                { props.data!.map(( e:PDTInterface, index: number )=>
+                <li className="tw-flex"
+                    key={index}>
+                    <button className="tw-flex tw-justify-between tw-w-full tw-mb-4 tw-p-2 tw-rounded tw-bg-gray-200"
+                            onClick={(event) => handlePdtid(e.id_plan!)}
+                            title={e.Descripcion}>
+                        <p className="tw-mr-4">{e.Nombre}</p>
+                        <p className="tw-ml-4">{e.Alcaldia}</p>
+                    </button>
+                    <IconButton color="success"
+                                aria-label="delete"
+                                onClick={(event) => handleAdd(e.id_plan!)}
+                                title="Agregar funcionario al plan">
+                        <PersonAddAltIcon/>
+                    </IconButton>
+                </li> 
+                )}
             </ul> 
             : <p className="tw-text-3xl tw-font-bold">No tiene suficientes permisos</p>}
         </div>

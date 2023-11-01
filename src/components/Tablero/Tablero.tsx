@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { Content } from './Content';
-import { NavBar } from '../NavBar';
 import { PesosNodos, Porcentaje, DetalleAño, NivelInterface } from '../../interfaces';
 import { useParams } from 'react-router-dom';
 import { getProgresoTotal } from '../../services/api';
@@ -49,8 +48,8 @@ export const Tablero = ( props : Props ) => {
         const detalleStr = localStorage.getItem('detalleAño')
         if (pesosStr === null || pesosStr === undefined || detalleStr === null || detalleStr === undefined) 
             return console.log('No hay datos')
-        let pesosNodo = JSON.parse((pesosStr as string) ?? '[]')
-        let detalleAño = JSON.parse((detalleStr as string) ?? '[]')
+        let pesosNodo = JSON.parse(pesosStr ?? '[]')
+        let detalleAño = JSON.parse(detalleStr ?? '[]')
         
         detalleAño.forEach((item: DetalleAño) => {
             let progreso = 0

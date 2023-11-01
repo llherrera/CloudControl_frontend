@@ -20,8 +20,8 @@ export interface PDTInterface {
     Alcaldia: string;
     Municipio: string;
     Descripcion: string;
-    Fecha_inicio: string;
-    Fecha_fin: string;
+    Fecha_inicio: Date;
+    Fecha_fin: Date;
 }
 
 export interface NivelInterface {
@@ -31,7 +31,7 @@ export interface NivelInterface {
 }
 
 export interface NodoInterface {
-    id_nodo: string;
+    id_node: string;
     NodeName: string;
     Description: string;
     Parent: (string | null);

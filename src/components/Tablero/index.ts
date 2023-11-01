@@ -1,3 +1,2 @@
 export * from "./Tablero";
-export * from './ShowNodos'
-export * from './ShowNodosUnidad'
+export * from './ListaNodos'

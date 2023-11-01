@@ -1,5 +1,8 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import IconButton from "@mui/material/IconButton";
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+
 import { Input } from "../Inputs";
 import { addPDT } from "../../services/api";
 import { PDTInterface } from "../../interfaces";
@@ -7,14 +10,28 @@ import { PDTInterface } from "../../interfaces";
 export const PDTForm = () => {
     const navigate = useNavigate();
 
+    const fechaInicio = new Date().getFullYear()
+    const fechaFin = fechaInicio + 4
+
+    const [año, setAño] = useState<number>(fechaInicio)
     const [planData, setPlanData] = useState<PDTInterface>({
         Nombre: "",
         Alcaldia: "",
         Municipio: "",
-        Fecha_inicio: Date(),
-        Fecha_fin: Date(),
+        Fecha_inicio: new Date(),
+        Fecha_fin: new Date(),
         Descripcion: "",
     });
+
+    const handleInputYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const { value } = e.target;
+        setAño(parseInt(value));
+        setPlanData({
+            ...planData,
+            Fecha_inicio: new Date(parseInt(value), 0, 1),
+            Fecha_fin: new Date(parseInt(value) + 3, 11, 31),
+        });
+    }
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -39,8 +56,21 @@ export const PDTForm = () => {
         }
     };
 
+    const backIconButton = () => {
+        return (
+            <IconButton aria-label="delete"
+                        size="small"
+                        color="secondary"
+                        onClick={()=>navigate(-1)}
+                        title="Regresar">
+                <ArrowBackIosIcon/>
+            </IconButton>
+        )
+    }
+
     return (
         <div className="tw-flex tw-justify-center">
+            {backIconButton()}
             <form   onSubmit={handleSubmit}
                     className=" tw-flex tw-flex-col 
                                 tw-items-center tw-justify-center 
@@ -72,18 +102,12 @@ export const PDTForm = () => {
                         onChange={handleInputChange}/><br/>
 
                 <div className="tw-flex">
-                    <Input  type={"date"}
-                            label="Fecha de Inicio"
-                            id="Fecha_inicio"
-                            name="Fecha_inicio"
-                            value={planData.Fecha_inicio}
-                            onChange={handleInputChange}/>
-                    <Input  type={"date"}
-                            label="Fecha de Fin"
-                            id="Fecha_fin"
-                            name="Fecha_fin"
-                            value={planData.Fecha_fin}
-                            onChange={handleInputChange}/>
+                    <label className="tw-mr-4">Fecha de inicio</label>
+                    <select name="Fecha_inicio" id="Fecha_inicio" onChange={handleInputYearChange}>
+                        {Array.from(Array(5).keys()).map((e) => {
+                            return <option value={fechaInicio + e}>{fechaInicio + e}</option>;
+                        })}
+                    </select>
                 </div><br/>
                 <input  type="submit"
                         value="Registrar Plan"

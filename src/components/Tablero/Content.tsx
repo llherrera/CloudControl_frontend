@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 import { NodoInterface, Token, NivelInterface, PesosNodos } from "@/interfaces";
 import { getNodosNivel, getColors } from '@/services/api';
-import { NodoForm, ColorForm, ShowNodos, ShowNodosUnidad } from "@/components";
+import { NodoForm, ColorForm, NodesList } from "@/components";
 import { getToken, decode } from "@/utils";
 
 interface Props {
@@ -65,7 +65,7 @@ export const Content = ( props : Props ) => {
                         const temp = [] as NodoInterface[]
                         resArr.forEach((item:nodos) => {
                             temp.push({
-                                id_nodo: item.id_nodo,
+                                id_node: item.id_nodo,
                                 NodeName: item.Nombre,
                                 Description: item.Descripcion,
                                 Parent: item.Padre,
@@ -148,7 +148,8 @@ export const Content = ( props : Props ) => {
                         size="small"
                         color="secondary"
                         onClick={handleBack}
-                        title="Regresar">
+                        title="Regresar"
+                        key={props.id}>
                 <ArrowBackIosIcon/>
             </IconButton>
         )
@@ -197,22 +198,15 @@ export const Content = ( props : Props ) => {
                             </div>
                             }
                         </div>
-                        : <div>
-                            { props.index !== props.len ?
-                            <ShowNodos  callback={callback}
-                                        callback2={setShouldUpdate}
-                                        nodos={nodos}
-                                        index={props.index}
-                                        año={añoSelect}
-                                        progress={props.progress}
-                                        colors={colors}/>
-                            : <ShowNodosUnidad  id={props.id}
-                                                nodos={nodos}
-                                                año={añoSelect}
-                                                colors={colors}
-                                                index={props.index}/>
-                                    }
-                        </div>
+                        : <NodesList callback={callback}
+                                    callback2={setShouldUpdate}
+                                    nodos={nodos}
+                                    id={props.id}
+                                    index={props.index}
+                                    año={añoSelect}
+                                    colors={colors}
+                                    len={props.len}
+                                    />
                         }
                     </div>
                 </div>
@@ -231,7 +225,8 @@ export const Content = ( props : Props ) => {
                         </p>
                         <ol className="tw-flex tw-h-4/5 tw-justify-center tw-items-center tw-mx-4">
                         {años.map((año: number, index: number) => (
-                            <li className="tw-grid tw-grid-rows-3 tw-w-full tw-justify-items-center">
+                            <li className="tw-grid tw-grid-rows-3 tw-w-full tw-justify-items-center"
+                                key={index}>
                                 <button className={`tw-rounded 
                                                     tw-flex tw-justify-center tw-items-center
                                                     ${(progresoAño[index]??0)*100 < colors[0] ? 'tw-border-redColory'   : 
@@ -325,6 +320,25 @@ export const Content = ( props : Props ) => {
             </div>
         </div>
     );
+
+    /**
+     <div>
+                            { props.index !== props.len ?
+                            <ShowNodos  callback={callback}
+                                        callback2={setShouldUpdate}
+                                        nodos={nodos}
+                                        index={props.index}
+                                        año={añoSelect}
+                                        progress={props.progress}
+                                        colors={colors}/>
+                            : <ShowNodosUnidad  id={props.id}
+                                                nodos={nodos}
+                                                año={añoSelect}
+                                                colors={colors}
+                                                index={props.index}/>
+                            }
+                        </div>
+     */
 
     /*return (
         <div className="">

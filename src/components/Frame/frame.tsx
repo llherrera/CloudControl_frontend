@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { useNavigate } from 'react-router-dom'
 import { NavBar } from '..'
 import * as svg from '../../assets/icons'
@@ -50,7 +50,7 @@ export const Frame = (props: Props) => {
     ]
 
     return (
-        <body className='tw-h-screen'>
+        <div className='tw-h-screen'>
             <header className={`tw-flex tw-justify-between tw-bg-header tw-drop-shadow-xl`}>
                 <img src="\src\assets\images\Logo.png" alt="" width={100} height={100}/>
                 <img src="\src\assets\images\Logo-municipio.png" alt="" width={300} />
@@ -62,6 +62,6 @@ export const Frame = (props: Props) => {
                     {props.data}
                 </div>
             </div>
-        </body>
+        </div>
     )
 }

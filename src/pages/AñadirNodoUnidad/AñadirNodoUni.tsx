@@ -37,17 +37,17 @@ export const AñadirNodoUni = () => {
         try {
             const id_ = parseInt(idPDT as string)
 
-        getProgresoTotal(id_)
-            .then((res) => {
-                if (!res) return
-                localStorage.setItem('pesosNodo', JSON.stringify(res[0]))
-                localStorage.setItem('detalleAño', JSON.stringify(res[1]))
-                calcProgress()
-                setGetProgress(true)
-            })
-            .catch((err) => {
-                console.log(err);
-            })
+            getProgresoTotal(id_)
+                .then((res) => {
+                    if (!res) return
+                    localStorage.setItem('pesosNodo', JSON.stringify(res[0]))
+                    localStorage.setItem('detalleAño', JSON.stringify(res[1]))
+                    calcProgress()
+                    setGetProgress(true)
+                })
+                .catch((err) => {
+                    console.log(err);
+                })
 
             const ids = idNodo!.split('.');
             let ids2 = ids.reduce((acumulator:string[], currentValue) => {
@@ -91,10 +91,6 @@ export const AñadirNodoUni = () => {
                         phisicalExecuted: dato.Ejecucion_Fisica,
                         finalcialExecuted: dato.Ejecucion_financiera,
                     });
-                    //añosTemp.año.push(año);
-                    //añosTemp.programacion.push(dato.Programacion_fisica);
-                    //añosTemp.ejecFisica.push(dato.Ejecucion_Fisica);
-                    //añosTemp.ejecFinanciera.push(dato.Ejecucion_financiera);
                 });
                 setañoForm(añosTemp);
                 const temp = calcularAcumulado( años, añosTemp);

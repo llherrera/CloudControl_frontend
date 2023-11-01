@@ -49,7 +49,8 @@ export const NivelForm = ( props: Props ) => {
                         size="small"
                         color="secondary"
                         onClick={()=>navigate(-1)}
-                        title="Regresar">
+                        title="Regresar"
+                        key={data.length}>
                 <ArrowBackIosIcon/>
             </IconButton>
         )
@@ -95,7 +96,8 @@ export const NivelForm = ( props: Props ) => {
                     className="tw-grid tw-grid-cols-12 tw-mt-5">
                 <ul className="tw-col-start-5 tw-col-span-4 tw-gap-3">
                 {data.map(( e:NivelInterface, index: number )=> 
-                    <li className="tw-mb-3 tw-p-2 tw-bg-cyan-200 tw-rounded">
+                    <li className="tw-mb-3 tw-p-2 tw-bg-cyan-200 tw-rounded"
+                        key={e.id_nivel}>
                         <Input  type={"text"}
                                 label="Nombre del Nivel:"
                                 id={"LevelName"}

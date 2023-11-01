@@ -13,21 +13,21 @@ export const NodoForm = ( props : Props ) => {
 
     let id_nodo_gen : number = 1;
     const [data, setData] = useState<NodoInterface[]>([
-        {   id_nodo: `${props.Padre ?? props.id}.${id_nodo_gen++}`,
+        {   id_node: `${props.Padre ?? props.id}.${id_nodo_gen++}`,
             NodeName: "", 
             Description: "", 
             id_level: props.id, 
             Parent: props.Padre,
             Weight: 33.33
         },
-        {   id_nodo: `${props.Padre ?? props.id}.${id_nodo_gen++}`, 
+        {   id_node: `${props.Padre ?? props.id}.${id_nodo_gen++}`, 
             NodeName: "", 
             Description: "", 
             id_level: props.id, 
             Parent: props.Padre,
             Weight: 33.33
         },
-        {   id_nodo: `${props.Padre ?? props.id}.${id_nodo_gen++}`, 
+        {   id_node: `${props.Padre ?? props.id}.${id_nodo_gen++}`, 
             NodeName: "", 
             Description: "", 
             id_level: props.id, 
@@ -37,7 +37,7 @@ export const NodoForm = ( props : Props ) => {
     ])
 
     let nodo: NodoInterface = ({
-        id_nodo: `${props.Padre ?? props.id}.${data.length + 1}`,
+        id_node: `${props.Padre ?? props.id}.${data.length + 1}`,
         NodeName: "",
         Description: "",
         id_level: props.id,
@@ -49,7 +49,7 @@ export const NodoForm = ( props : Props ) => {
         const newData = [...data, nodo];
         setData(newData);
         nodo = ({ 
-            id_nodo: `${props.Padre ?? props.id}.${newData.length + 1}`, 
+            id_node: `${props.Padre ?? props.id}.${newData.length + 1}`, 
             NodeName: "", 
             Description: "", 
             id_level: props.id, 
@@ -63,7 +63,7 @@ export const NodoForm = ( props : Props ) => {
             const newData = data.slice(0, data.length - 1);
             setData(newData);
             nodo = ({ 
-                id_nodo: `${props.Padre ?? props.id}.${newData.length }`, 
+                id_node: `${props.Padre ?? props.id}.${newData.length }`, 
                 NodeName: "", 
                 Description: "", 
                 id_level: props.id, 
@@ -102,12 +102,13 @@ export const NodoForm = ( props : Props ) => {
                 className='tw-mx-4'>
             <ul className=''>
                 {data.map(( e: NodoInterface, index: number )=> 
-                <div className='tw-mb-3 tw-p-1 tw-relative tw-bg-cyan-200 tw-flex tw-rounded'>
+                <div className='tw-mb-3 tw-p-1 tw-relative tw-bg-cyan-200 tw-flex tw-rounded'
+                    key={e.id_node}>
                     <li className="tw-ml-3">
                         <input  type={"text"}
                                 placeholder={`Nombre del nodo`}
                                 id={"NodeName"}
-                                name={"NodeNamw"}
+                                name={"NodeName"}
                                 value={e.NodeName}
                                 className='tw-rounded tw-my-1 tw-w-5/6'
                                 onChange={ (event) => handleInputFormChange(event, index) }/><br/>
@@ -133,16 +134,16 @@ export const NodoForm = ( props : Props ) => {
                                         hover:tw-bg-green-300
                                         tw-text-white tw-font-bold
                                         tw-py-2 tw-px-1 tw-rounded tw-mr-5" 
-                                        type='button'
-                                        title='Agregar Nodo'
+                            type='button'
+                            title='Agregar Nodo'
                             onClick={agregarNodo}>Agregar Nodo</button>
                     <button className=" tw-bg-red-500
                                         hover:tw-bg-red-300
                                         tw-text-white tw-font-bold
                                         tw-py-2 tw-rounded tw-ml-5"
-                                        type='button'
-                                        title='Eliminar Nodo'
-                                        onClick={eliminarNodo}>Eliminar Nodo</button>
+                            type='button'
+                            title='Eliminar Nodo'
+                            onClick={eliminarNodo}>Eliminar Nodo</button>
                 </div>
             </ul>
             <input  type="submit"

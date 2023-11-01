@@ -153,8 +153,8 @@ export const addPDT = async (pdt: PDTInterface) => {
             PlanName:     pdt.Nombre,
             TownHall:     pdt.Alcaldia,
             Municipality: pdt.Municipio,
-            StartDate:    pdt.Fecha_inicio,
-            EndDate:      pdt.Fecha_fin,
+            StartDate:    pdt.Fecha_inicio.toISOString().slice(0, 19).replace('T', ' '),
+            EndDate:      pdt.Fecha_fin.toISOString().slice(0, 19).replace('T', ' '),
             Description:  pdt.Descripcion,
         },
         { headers: { authorization: `Bearer ${token}` } });
