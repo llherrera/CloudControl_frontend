@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Content } from './Content';
-import { PesosNodos, Porcentaje, DetalleAño, NivelInterface } from '../../interfaces';
+import { PesosNodos, Porcentaje, DetalleAño, NivelInterface, PDTInterface } from '../../interfaces';
 import { useParams } from 'react-router-dom';
-import { getProgresoTotal } from '../../services/api';
+import { getPDTid, getProgresoTotal } from '../../services/api';
 import { useNavigate } from 'react-router-dom';
 import * as svg from '../../assets/icons';
 
@@ -16,6 +16,7 @@ export const Tablero = ( props : Props ) => {
 
     const [index, setIndex] = useState(0);
     const [Padre, setPadre] = useState<string | null>(null);
+    const [plan, setPlan] = useState<PDTInterface | null>(null);
 
     const [getProgress, setGetProgress] = useState(false);
 
@@ -27,7 +28,16 @@ export const Tablero = ( props : Props ) => {
     }
 
     useEffect(() => {
+        if (!id) return;
         const id_ = parseInt(id as string)
+
+        getPDTid(id)
+            .then((res: PDTInterface) => {
+                setPlan(res);
+            })
+            .catch((err) =>  {
+                console.log(err);
+            });
 
         getProgresoTotal(id_)
             .then((res) => {
@@ -137,6 +147,7 @@ export const Tablero = ( props : Props ) => {
             Padre={Padre} 
             id={ parseInt(id as string) }
             progress={getProgress}
+            planData={plan}
         />
     )
 }

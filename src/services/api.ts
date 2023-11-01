@@ -54,10 +54,21 @@ export const getPDTs = async () => {
     }
 }
 
-// Obtiene los niveles de un PDT 
+// Obtiene información de un PDT
 export const getPDTid = async (id: string) => {
     try {
         const response = await api.get(`/plan-territorial/${id}`,
+        { headers: { authorization: `Bearer ${token}` } });
+        return response.data;
+    } catch (error) {
+        return error;
+    }
+}
+
+// Obtiene los niveles de un PDT 
+export const getPDTLevelsById = async (id: string) => {
+    try {
+        const response = await api.get(`/plan-territorial/${id}/nivel`,
         { headers: { authorization: `Bearer ${token}` } });
         return response.data;
     } catch (error) {
