@@ -96,6 +96,8 @@ export const AñadirNodoUni = () => {
                 const temp = calcularAcumulado( años, añosTemp);
                 setAcum(temp);
             });
+            console.log(añoForm);
+            
         } catch (error) {
             console.log('err');
         }
@@ -403,9 +405,7 @@ export const AñadirNodoUni = () => {
             <div className="tw-col-start-1 tw-col-span-full tw-flex tw-justify-center">
                 {unidadForm()}
             </div>
-            <div className="tw-col-start-1 tw-col-span-full tw-flex tw-justify-center">
-                {añosForm()}
-            </div>
+            
 
             <div className="tw-col-start-1 tw-col-span-full tw-flex tw-justify-center">
                 <button type="button"
@@ -421,3 +421,9 @@ export const AñadirNodoUni = () => {
         </div>
     );
 }
+
+/**
+ <div className="tw-col-start-1 tw-col-span-full tw-flex tw-justify-center">
+                {añosForm()}
+            </div>
+ */

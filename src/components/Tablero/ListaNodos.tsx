@@ -31,7 +31,12 @@ export const NodesList = ( props : Props ) => {
         const pesosStr = localStorage.getItem('pesosNodo')
         if (pesosStr == undefined) 
             return 0
-        let pesosNodo = JSON.parse(pesosStr as string)
+        let pesosNodo = []
+        try {
+            pesosNodo = JSON.parse(pesosStr as string)            
+        } catch (error) {
+            pesosNodo = []
+        }
         let progreso = [] as number[]
         let programacion = [] as number[]
         pesosNodo.forEach((item: PesosNodos) => {
