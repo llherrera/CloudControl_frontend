@@ -47,19 +47,19 @@ export const ColorForm = ( props : Props ) => {
                                     disableSwap/>
                         </Box>
                         <div className={`tw-w-12 tw-h-12 tw-ml-2
-                                        ${index=== 0 ? 'tw-bg-red-400'   : 
-                                        (index === 1 ? 'tw-bg-yellow-400': 
-                                        (index === 2 ? 'tw-bg-green-400' : 
-                                        'tw-bg-blue-400'))}
+                                        ${index=== 0 ? 'tw-bg-redColory'   : 
+                                        (index === 1 ? 'tw-bg-yellowColory': 
+                                        (index === 2 ? 'tw-bg-greenColory' : 
+                                        'tw-bg-blueColory'))}
                                         tw-rounded-full`}>
-                            <p className='tw-mt-3 tw-font-bold'>
+                            <p className='tw-mt-3 tw-font-bold tw-text-center'>
                                 {value[1]}
                             </p>
                         </div>
                     </div>
                 )
             })}
-            <button className=' tw-bg-green-300
+            <button className=' tw-bg-greenColory
                                 tw-px-2
                                 tw-rounded
                                 tw-font-bold'

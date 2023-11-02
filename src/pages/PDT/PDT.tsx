@@ -10,10 +10,9 @@ import { getToken, decode } from "@/utils";
 import { Frame } from "@/components";
 
 interface Props {
-    data: PDTInterface[];
-    rol: string;
+    data: PDTInterface[],
+    rol: string
 }
-
 
 export const PDT = () => {
     const [data, setData] = useState<PDTInterface[]>([])

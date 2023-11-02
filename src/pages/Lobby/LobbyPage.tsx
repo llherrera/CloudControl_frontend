@@ -61,7 +61,7 @@ export const LobbyPage = () => {
             onClick={()=>{
                 dispatch(selectOption(0))
                 handleButton()}}
-            bgColor="tw-bg-greenBtn" />,
+            bgColor="greenBtn" />,
         <ButtonComponent
             inside={false}
             text='Banco de proyectos'
@@ -69,7 +69,7 @@ export const LobbyPage = () => {
             onClick={() => {
                 dispatch(selectOption(1))
                 navigate('/')}}
-            bgColor="tw-bg-greenBtn" />,
+            bgColor="greenBtn" />,
         <ButtonComponent
             inside={false}
             text='POAI'
@@ -77,7 +77,7 @@ export const LobbyPage = () => {
             onClick={() => {
                 dispatch(selectOption(2))
                 navigate('/')}}
-            bgColor="tw-bg-greenBtn" />,
+            bgColor="greenBtn" />,
         <ButtonComponent
             inside={false}
             text='Plan de acción'
@@ -85,14 +85,7 @@ export const LobbyPage = () => {
             onClick={() => {
                 dispatch(selectOption(3))
                 navigate('/')}}
-            bgColor="tw-bg-greenBtn" />,
-        //{
-        //    inside: false,
-        //    text: 'Salir',
-        //    src: "/src/assets/images/exit.png",
-        //    onClick: handleLogout,
-        //    bgColor: "tw-bg-red-500"
-        //}
+            bgColor="greenBtn" />,
     ]
 
     return (

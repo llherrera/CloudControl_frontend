@@ -1,5 +1,11 @@
 import React from 'react'
 import { useNavigate } from 'react-router-dom'
+import { IconButton } from '@mui/material'
+import LogoutIcon from '@mui/icons-material/Logout';
+
+import { useAppDispatch, useAppSelector } from '../../store'
+import { thunkLogout } from '@/store/auth/thunks';
+
 import { NavBar } from '..'
 import * as svg from '../../assets/icons'
 
@@ -9,6 +15,8 @@ interface Props {
 
 export const Frame = (props: Props) => {
     const navigate = useNavigate();
+    const dispatch = useAppDispatch()
+    const logged = useAppSelector(store => store.auth.logged)
     
     const bgcolor='greenBtn'
     const logocolor='#FFFFFF'
@@ -49,12 +57,22 @@ export const Frame = (props: Props) => {
         }
     ]
 
+    const handleBtn = () => {
+        dispatch(thunkLogout())
+            .unwrap()
+            .then(() => {
+                navigate('/')
+            })
+    }
+
     return (
         <div className='tw-h-screen'>
             <header className={`tw-flex tw-justify-between tw-bg-header tw-drop-shadow-xl`}>
                 <img src="\src\assets\images\Logo.png" alt="" width={100} height={100}/>
                 <img src="\src\assets\images\Logo-municipio.png" alt="" width={300} />
-                <div>salir</div>
+                <IconButton onClick={handleBtn}>
+                    <LogoutIcon sx={{color: 'green'}}/>
+                </IconButton>
             </header>
             <div className='tw-flex tw-h-5/6'>
                 <NavBar buttons={buttons}/>

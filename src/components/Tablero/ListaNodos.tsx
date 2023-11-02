@@ -22,9 +22,11 @@ export const NodesList = ( props : Props ) => {
     const [programacion, setProgramacion] = useState([] as number[])
 
     useEffect(() => {
+        const abortController = new AbortController()
         const ids = props.nodos.map((item: NodoInterface) => item.id_node)
         getProgress(ids)
         setNodos(props.nodos)
+        return () => abortController.abort()
     }, [props.año, props.nodos, props.index])
 
     const getProgress = (ids: string[]) => {
@@ -77,10 +79,10 @@ export const NodesList = ( props : Props ) => {
                     <button className={`tw-rounded
                                         tw-flex tw-justify-center tw-items-center
                                         tw-border-4
-                                        ${(programacion[index] === 0 || programacion[index] === undefined) ? 'tw-border-gray-400' :
-                                        (progreso[index]??0)*100 < props.colors[0] ? 'tw-border-redColory'   :
-                                        (progreso[index]??0)*100 < props.colors[1] ? 'tw-border-yellowColory':
-                                        (progreso[index]??0)*100 < props.colors[2] ? 'tw-border-greenColory' : 'tw-border-blueColory'}
+                                        ${(progreso[index])*100 < props.colors[0] ? 'tw-border-redColory'   :
+                                        (progreso[index])*100 <   props.colors[1] ? 'tw-border-yellowColory':
+                                        (progreso[index])*100 <   props.colors[2] ? 'tw-border-greenColory' : 
+                                        (progreso[index])*100 <=  props.colors[3] ? 'tw-border-blueColory'  : 'tw-border-gray-400'}
                                         tw-ml-3
                                         tw-w-12 tw-h-12
                                         tw-font-bold`}
@@ -89,14 +91,15 @@ export const NodesList = ( props : Props ) => {
                         {(progreso[index]??0)*100}%
                     </button>
                     {props.index !== props.len ?
-                    <button className={`${(programacion[index] === 0 || programacion[index] === undefined) ? 'tw-bg-gray-400' :
-                                        (progreso[index]??0)*100 < props.colors[0] ? 'tw-bg-redColory'   :
-                                        (progreso[index]??0)*100 < props.colors[1] ? 'tw-bg-yellowColory':
-                                        (progreso[index]??0)*100 < props.colors[2] ? 'tw-bg-greenColory' : 'tw-bg-blueColory'}
+                    <button className={`${(progreso[index])*100 < props.colors[0] ? 'tw-bg-redColory'   :
+                                        (progreso[index])*100 < props.colors[1]   ? 'tw-bg-yellowColory':
+                                        (progreso[index])*100 < props.colors[2]   ? 'tw-bg-greenColory' : 
+                                        (progreso[index])*100 <= props.colors[3]  ? 'tw-bg-blueColory'  : 'tw-border-gray-400'}
                                         tw-h-8 tw-my-2
                                         tw-w-2/3
                                         tw-rounded-r-lg
-                                        tw-text-white tw-font-bold`}
+                                        tw-text-white tw-font-bold
+                                        tw-font-montserrat`}
                             onClick={ (event) => handleButton(event, index)}
                             title={item.Description}>
                         <p>{item.NodeName}</p>

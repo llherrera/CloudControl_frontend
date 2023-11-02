@@ -48,8 +48,8 @@ export const thunkLogout = createAsyncThunk<AuthInterface>(
   'auth/thunkLogout', 
   async (props, { rejectWithValue }) => {
     try {
-      const { data } = await doLogout()
-      return data.data
+      const res = await doLogout()
+      return res
     } catch (err) {
       const result = parseErrorAxios(err)
       return rejectWithValue(result)

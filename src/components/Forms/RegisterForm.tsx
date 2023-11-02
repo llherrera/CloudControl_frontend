@@ -1,4 +1,7 @@
 import React, { useState } from "react";
+import IconButton from "@mui/material/IconButton";
+import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
+
 import { Input } from "../Inputs";
 import { doRegister } from "../../services/api";
 import { useNavigate } from "react-router-dom";
@@ -40,45 +43,64 @@ export const RegisterForm = (props: Props) => {
             })
     }
 
+    const backIconButton = () => {
+        return (
+            <IconButton aria-label="delete"
+                        size="small"
+                        color="secondary"
+                        onClick={()=>navigate(-1)}
+                        title="Regresar">
+                <ArrowBackIosIcon/>
+            </IconButton>
+        )
+    }
+
     return (
-        <form onSubmit={submitForm}>
-            <h1>Registro</h1>
-            <Input  label={"Usuario"}
-                    type={"text"}
-                    id={"usuario"}
-                    name={"usuario"}
-                    value={form.usuario}
-                    onChange={ (event) => handleInputChange(event)}/><br />
-            <Input  label={"Apellido"}
-                    type={"text"}
-                    id={"apellido"}
-                    name={"apellido"}
-                    value={form.apellido}
-                    onChange={ (event) => handleInputChange(event)}/><br />
-            <Input  label={"Correo"}
-                    type={"text"}
-                    id={"correo"}
-                    name={"correo"}
-                    value={form.correo}
-                    onChange={ (event) => handleInputChange(event)}/><br />
-            <Input  label={"Contraseña"}
-                    type={"password"}
-                    id={"contraseña"}
-                    name={"contraseña"}
-                    value={form.contraseña}
-                    onChange={ (event) => handleInputChange(event)}/><br />
-            <Input  label={"Confirmar Contraseña"}
-                    type={"password"}
-                    id={"confirmarContraseña"}
-                    name={"confirmarContraseña"}
-                    value={form.confirmarContraseña}
-                    onChange={ (event) => handleInputChange(event)}/><br />    
-            <button type="submit"
-                    className=' tw-bg-green-300 
-                                tw-px-3 tw-py-2
-                                tw-rounded'>
-                Registrar funcionario
-            </button>
-        </form>
+        <div className="tw-flex tw-justify-center">
+            <div className="tw-float">
+                {backIconButton()}
+            </div>
+            <form onSubmit={submitForm}>
+                <h1 className="tw-mb-4 tw-grow tw-text-center tw-text-xl">Registrar funcionario</h1>
+                <Input  label={"Usuario"}
+                        type={"text"}
+                        id={"usuario"}
+                        name={"usuario"}
+                        value={form.usuario}
+                        onChange={ (event) => handleInputChange(event)}/><br />
+                <Input  label={"Apellido"}
+                        type={"text"}
+                        id={"apellido"}
+                        name={"apellido"}
+                        value={form.apellido}
+                        onChange={ (event) => handleInputChange(event)}/><br />
+                <Input  label={"Correo"}
+                        type={"text"}
+                        id={"correo"}
+                        name={"correo"}
+                        value={form.correo}
+                        onChange={ (event) => handleInputChange(event)}/><br />
+                <Input  label={"Contraseña"}
+                        type={"password"}
+                        id={"contraseña"}
+                        name={"contraseña"}
+                        value={form.contraseña}
+                        onChange={ (event) => handleInputChange(event)}/><br />
+                <Input  label={"Confirmar Contraseña"}
+                        type={"password"}
+                        id={"confirmarContraseña"}
+                        name={"confirmarContraseña"}
+                        value={form.confirmarContraseña}
+                        onChange={ (event) => handleInputChange(event)}/><br />    
+                <button type="submit"
+                        className=' tw-bg-green-300 
+                                    tw-py-2
+                                    tw-rounded 
+                                    tw-w-full
+                                    tw-grow'>
+                    Registrar funcionario
+                </button>
+            </form>
+        </div>
     );
 }

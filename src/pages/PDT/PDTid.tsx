@@ -16,6 +16,7 @@ export const PDTid = () => {
     const [data, setData] = useState<NivelInterface[]>([]);
 
     useEffect(() => {
+        const abortController = new AbortController()
         getPDTid(id!)
             .then((res) => {
                 const resArr = [...res];
@@ -29,6 +30,10 @@ export const PDTid = () => {
                 })
                 setData(temp)
             })
+            .catch((err) => {
+                console.log(err);
+            })
+        return () => abortController.abort()
     }, []);
 
     return (

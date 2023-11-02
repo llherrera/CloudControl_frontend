@@ -12,7 +12,6 @@ export const AñadirNodoUni = () => {
     const años = [2020,2021,2022,2023];
     const [acum, setAcum] = useState(0);
     const [acumFinan, setAcumFinan] = useState(0);
-    const [add, setAdd] = useState(false);
     const [getProgress, setGetProgress] = useState(false);
 
     const [unidForm, setUnidForm] = useState<UnidadInterface>({
@@ -24,19 +23,51 @@ export const AñadirNodoUni = () => {
         years: []
     });
 
-    const [añoForm, setañoForm] = useState<AñoInterface[]>([{
-        year: 0,
-        programed: 0,
-        phisicalExecuted: 0,
-        finalcialExecuted: 0,
-    }]);
+    const [añoForm, setañoForm] = useState<AñoInterface[]>([
+        {
+            year: 0,
+            programed: 0,
+            phisicalExecuted: 0,
+            finalcialExecuted: 0,
+        },
+        {
+            year: 0,
+            programed: 0,
+            phisicalExecuted: 0,
+            finalcialExecuted: 0,
+        },
+        {
+            year: 0,
+            programed: 0,
+            phisicalExecuted: 0,
+            finalcialExecuted: 0,
+        },
+        {
+            year: 0,
+            programed: 0,
+            phisicalExecuted: 0,
+            finalcialExecuted: 0,
+        }
+    ]);
 
     let añosTemp = [] as AñoInterface[];
 
     useEffect(() => {
         try {
-            const id_ = parseInt(idPDT as string)
+            const ids = idNodo!.split('.');
+            let ids2 = ids.reduce((acumulator:string[], currentValue) => {
+                if (acumulator.length === 0) {
+                    return [currentValue];
+                } else {
+                    const ultimoElemento = acumulator[acumulator.length - 1];
+                    const concatenado = `${ultimoElemento}.${currentValue}`;
+                    return [...acumulator, concatenado];
+                }
+            }, []);
+            ids2 = ids2.slice(1);
+            getNombreNivel(ids2).then((res) => setNombres(res));
 
+            const id_ = parseInt(idPDT as string)
             getProgresoTotal(id_)
                 .then((res) => {
                     if (!res) return
@@ -49,24 +80,8 @@ export const AñadirNodoUni = () => {
                     console.log(err);
                 })
 
-            const ids = idNodo!.split('.');
-            let ids2 = ids.reduce((acumulator:string[], currentValue) => {
-                if (acumulator.length === 0) {
-                    return [currentValue];
-                } else {
-                    const ultimoElemento = acumulator[acumulator.length - 1];
-                    const concatenado = `${ultimoElemento}.${currentValue}`;
-                    return [...acumulator, concatenado];
-                }
-            }, []);
-            ids2 = ids2.slice(1);
-            getNombreNivel(ids2).then((res) => {
-                setNombres(res);
-            });
-
             getNodoUnidadYAños(idPDT!, idNodo!).then((res) => {
                 const { Node } = res;
-                console.log(res);
                 
                 if (Node === undefined) return;
                 const { Codigo, Descripcion, Indicador, Linea_base, Meta } = Node;
@@ -96,12 +111,10 @@ export const AñadirNodoUni = () => {
                 const temp = calcularAcumulado( años, añosTemp);
                 setAcum(temp);
             });
-            console.log(añoForm);
-            
         } catch (error) {
             console.log('err');
         }
-    }, [add]);
+    }, []);
 
     const calcularAcumulado = (años: number[], añoForm: AñoInterface[]) => {
         let acumulado = 0;
@@ -186,7 +199,6 @@ export const AñadirNodoUni = () => {
                 if (res === undefined)
                     return alert('No se pudo añadir la unidad')
                 alert('Unidad añadida con éxito');
-                setAdd(true);
             });
         } catch (error) {
             console.log(error);
@@ -224,21 +236,21 @@ export const AñadirNodoUni = () => {
                                     tw-rounded">
                     <thead>
                         <tr>
-                            <th className="tw-border tw-border-slate-600 tw-bg-gray-200 tw-rounded">Código de la meta: </th>
+                            <th className="tw-border tw-border-slate-600 tw-bg-gray-200 tw-text-center tw-rounded">Código de la meta: </th>
                             <th className="tw-border tw-border-slate-600 tw-rounded">
                                 <input  type="text"
                                         name="code"
                                         value={unidForm.code}
-                                        className="tw-bg-gray-200" 
-                                        onChange={ (e) => handleInputUnid(e)}
+                                        className="tw-bg-gray-200 tw-text-center"
+                                        onChange={ handleInputUnid}
                                         required/>
                             </th>
-                            <th className="tw-border tw-border-slate-600 tw-px-2 tw-bg-gray-200 tw-rounded">Línea base</th>
+                            <th className="tw-border tw-border-slate-600 tw-px-2 tw-text-center tw-bg-gray-200 tw-rounded">Línea base</th>
                             <th className="tw-border tw-border-slate-600 tw-rounded">
                                 <input  type="text"
                                         name="base"
                                         value={unidForm.base}
-                                        className="tw-bg-gray-200" 
+                                        className="tw-bg-gray-200 tw-text-center"
                                         onChange={handleInputUnid}
                                         required/>
                             </th>
@@ -246,32 +258,32 @@ export const AñadirNodoUni = () => {
                     </thead>
                     <tbody>
                         <tr>
-                            <td className="tw-border tw-border-slate-600 tw-font-bold tw-px-2 tw-bg-gray-200 tw-rounded">Descripción de la meta: </td>
+                            <td className="tw-border tw-border-slate-600 tw-font-bold tw-px-2 tw-text-center tw-bg-gray-200 tw-rounded">Descripción de la meta: </td>
                             <td className="tw-border tw-border-slate-600 tw-font-bold tw-rounded">
                                 <input  type="text"
                                         name="description"
                                         value={unidForm.description}
-                                        className="tw-bg-gray-200" 
+                                        className="tw-bg-gray-200 tw-text-center"
                                         onChange={handleInputUnid}
                                         required/>
                             </td>
-                            <td className="tw-border tw-border-slate-600 tw-font-bold tw-bg-gray-200 tw-rounded">Meta</td>
+                            <td className="tw-border tw-border-slate-600 tw-font-bold tw-text-center tw-bg-gray-200 tw-rounded">Meta</td>
                             <td className="tw-border tw-border-slate-600 tw-font-bold tw-rounded">
                                 <input  type="text"
                                         name="goal"
                                         value={unidForm.goal}
-                                        className="tw-bg-gray-200" 
+                                        className="tw-bg-gray-200 tw-text-center"
                                         onChange={handleInputUnid}
                                         required/>
                             </td>
                         </tr>
                         <tr>
-                            <td className="tw-border tw-border-slate-600 tw-font-bold tw-bg-gray-200 tw-rounded">Indicador de meta: </td>
+                            <td className="tw-border tw-border-slate-600 tw-font-bold tw-text-center tw-bg-gray-200 tw-rounded">Indicador de meta: </td>
                             <td className="tw-border tw-border-slate-600 tw-font-bold tw-rounded">
                                 <input  type="text"
                                         name="indicator"
                                         value={unidForm.indicator}
-                                        className="tw-bg-gray-200" 
+                                        className="tw-bg-gray-200 tw-text-center"
                                         onChange={handleInputUnid}
                                         required/>
                             </td>
@@ -284,6 +296,7 @@ export const AñadirNodoUni = () => {
 
     const añosForm = () => {
         años.forEach((año, index) => {
+            añoForm[index].year = año;
             añoForm[index].phisicalExecuted = añoForm[index].phisicalExecuted ?? 0;
             añoForm[index].programed = añoForm[index].programed ?? 0;
             añoForm[index].finalcialExecuted = añoForm[index].finalcialExecuted ?? 0;
@@ -306,8 +319,8 @@ export const AñadirNodoUni = () => {
                             </th>
                             {años.map((año, index) => {
                                 return(
-                                    añoForm[index].year = año,
-                                    <th className="tw-border tw-border-slate-600 tw-px-10 tw-bg-yellow-400 tw-rounded">
+                                    <th className="tw-border tw-border-slate-600 tw-px-10 tw-bg-yellow-400 tw-rounded"
+                                        key={index}>
                                         <p> { año } </p>
                                     </th>
                                 )
@@ -320,7 +333,8 @@ export const AñadirNodoUni = () => {
                             <td className="tw-border tw-border-slate-600 tw-font-bold tw-px-2 tw-rounded">Programación</td>
                             {años.map((año, index) => {
                                 return(
-                                    <td className="tw-border tw-border-slate-600 tw-font-bold tw-rounded">
+                                    <td className="tw-border tw-border-slate-600 tw-font-bold tw-rounded"
+                                        key={index}>
                                         <input  type="text"
                                                 name={`programacion-${año}`}
                                                 value={añoForm[index].programed}
@@ -336,7 +350,8 @@ export const AñadirNodoUni = () => {
                             <td className="tw-border tw-border-slate-600 tw-font-bold tw-px-2 tw-rounded">Ejecución física</td>
                             {años.map((año, index) => {
                                 return(
-                                    <td className="tw-border tw-border-slate-600 tw-font-bold tw-rounded">
+                                    <td className="tw-border tw-border-slate-600 tw-font-bold tw-rounded"
+                                        key={index}>
                                         <input  type="text"
                                                 name={`ejecFisica-${año}`}
                                                 value={añoForm[index].phisicalExecuted}
@@ -348,14 +363,15 @@ export const AñadirNodoUni = () => {
                                 )
                             })}
                             <td className="tw-border tw-border-slate-600 tw-font-bold tw-px-2 tw-bg-gray-200 tw-rounded">
-                            {isNaN(acum) ? 0 : acum*100} %
+                            {(isNaN(acum) ? 0 : acum*100).toFixed(2)} %
                             </td>
                         </tr>
                         <tr>
                             <td className="tw-border tw-border-slate-600 tw-font-bold tw-px-2 tw-rounded">Ejecución financiera</td>
                             {años.map((año, index) => {
                                 return(
-                                    <td className="tw-border tw-border-slate-600 tw-font-bold tw-rounded">
+                                    <td className="tw-border tw-border-slate-600 tw-font-bold tw-rounded"
+                                        key={index}>
                                         <input  type="text"
                                                 name={`ejecFinanciera-${año}`}
                                                 value={añoForm[index].finalcialExecuted}
@@ -388,14 +404,14 @@ export const AñadirNodoUni = () => {
                             tw-shadow-2xl
                             tw-border-b-2 tw-border-gray-400
                             tw-z-40'>
-                <p> CloudControl </p>
-                <p> Alcalcia Municipal, Nombre Plan, PISAMI </p>
-                <p> Plan indicativo </p>
+                <img src="/src/assets/images/Logo.png" alt="" width={100} />
+                <img src="/src/assets/images/Logo-Municipio.png" alt="" width={250} />
+                <img src="/src/assets/images/Plan-indicativo.png" alt="" width={60} />
             </div>
             <div className="tw-col-start-1 tw-col-span-full tw-flex tw-justify-center">
-            {nombres.length > 0 && nombres.map((nombre) => {
+            {nombres.length > 0 && nombres.map((nombre, index) => {
                 return (
-                    <div className="tw-flex mr-4">
+                    <div className="tw-flex mr-4" key={index}>
                         <p className="tw-text-green-600 tw-font-bold">{nombre[1]}:</p> 
                         <span className="tw-pr-1"/> <p>{nombre[0]}</p>
                     </div>
@@ -405,7 +421,9 @@ export const AñadirNodoUni = () => {
             <div className="tw-col-start-1 tw-col-span-full tw-flex tw-justify-center">
                 {unidadForm()}
             </div>
-            
+            <div className="tw-col-start-1 tw-col-span-full tw-flex tw-justify-center">
+                {añosForm()}
+            </div>
 
             <div className="tw-col-start-1 tw-col-span-full tw-flex tw-justify-center">
                 <button type="button"
@@ -421,9 +439,3 @@ export const AñadirNodoUni = () => {
         </div>
     );
 }
-
-/**
- <div className="tw-col-start-1 tw-col-span-full tw-flex tw-justify-center">
-                {añosForm()}
-            </div>
- */

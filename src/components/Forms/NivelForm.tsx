@@ -30,6 +30,7 @@ export const NivelForm = ( props: Props ) => {
     const [id_, setId] = useState(0)
 
     useEffect(() => {
+        const abortController = new AbortController()
         const gettoken = getToken()
         try {
             const {token} = gettoken
@@ -41,6 +42,7 @@ export const NivelForm = ( props: Props ) => {
         } catch (error) {
             console.log(error);
         }
+        return () => abortController.abort()
     })
 
     const backIconButton = () => {
@@ -97,7 +99,7 @@ export const NivelForm = ( props: Props ) => {
                 <ul className="tw-col-start-5 tw-col-span-4 tw-gap-3">
                 {data.map(( e:NivelInterface, index: number )=> 
                     <li className="tw-mb-3 tw-p-2 tw-bg-cyan-200 tw-rounded"
-                        key={e.id_nivel}>
+                        key={index}>
                         <Input  type={"text"}
                                 label="Nombre del Nivel:"
                                 id={"LevelName"}

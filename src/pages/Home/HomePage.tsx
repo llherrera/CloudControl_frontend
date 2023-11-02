@@ -14,8 +14,11 @@ export const HomePage = () => {
 
     const handleBtnCiudadano = () => {
         try {
-            removeToken()
-            navigate('/lobby')
+            if (logged) {
+                dispatch(thunkLogout())
+                    .unwrap()
+                    .then(() => navigate('/lobby'))
+            }
         } catch (error) {}
     }
 
@@ -31,13 +34,13 @@ export const HomePage = () => {
             text='Funcionario' 
             src="\src\assets\images\Funcionario.png" 
             onClick={() => navigate('/login')}
-            bgColor="tw-bg-greenBtn"/>,
+            bgColor="greenBtn"/>,
         <ButtonComponent 
             inside={false} 
             text='Ciudadano' 
             src="\src\assets\images\Ciudadano.png" 
             onClick={handleBtnCiudadano}
-            bgColor="tw-bg-greenBtn"/>
+            bgColor="greenBtn"/>
     ]
 
     return (

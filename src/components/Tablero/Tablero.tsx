@@ -27,6 +27,7 @@ export const Tablero = ( props : Props ) => {
     }
 
     useEffect(() => {
+        const abortController = new AbortController()
         const id_ = parseInt(id as string)
 
         getProgresoTotal(id_)
@@ -40,7 +41,7 @@ export const Tablero = ( props : Props ) => {
             .catch((err) => {
                 console.log(err);
             })
-
+        return () => abortController.abort()
     }, [])
 
     const calcProgress = () => {

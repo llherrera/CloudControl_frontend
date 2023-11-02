@@ -9,45 +9,49 @@ const api = axios.create({
     baseURL: "http://localhost:8080"
 });
 
-const gettoken = getToken();
-let token: string;
-if (gettoken) {
-    token = gettoken.token;
-}
+//const gettoken = getToken();
+//let token: string;
+//if (gettoken) {
+//    token = gettoken.token;
+//}
 
-/*api.interceptors.request.use(async request => {
-    const token = getToken();
-    if (token) {
-        // @ts-expect-error request.headers
-        request.headers = {
-            ...request.headers,
-            Authorization: `Bearer ${token}`
-        }
-        const decoder: {exp: number} = jwtDecode(token);
-        const isExpired = new Date(decoder.exp * 1000) < new Date();
-        if (!isExpired) return request
-        const newToken = await refreshToken();
-        if (newToken)
-            // @ts-expect-error request.headers
-            request.headers = {
-                ...request.headers,
-                Authorization: `Bearer ${newToken}`
+api.interceptors.request.use(
+    async request => {
+        try {
+            const {token} = getToken();
+            if (token) {
+                // @ts-expect-error request.headers
+                request.headers = {
+                    ...request.headers,
+                    Authorization: `Bearer ${token}`
+                }
+                const decoder: {exp: number} = jwtDecode(token);
+                const isExpired = new Date(decoder.exp * 1000) < new Date();
+                if (!isExpired) return request
+                    const newToken = await refreshToken();
+                if (newToken)
+                // @ts-expect-error request.headers
+                    request.headers = {
+                        ...request.headers,
+                        Authorization: `Bearer ${newToken}`
+                    }
+                return request;
             }
-        return request;
-    }
+        } catch (error) {
+            console.log(error);
+        }
     return request;
     }, error => {
         console.log(error);
         
         return Promise.reject(error);
     }
-);*/
+);
 
 // Obtiene todos los PDTs
 export const getPDTs = async () => {
     try {
-        const response = await api.get("/plan-territorial",
-        { headers: { authorization: `Bearer ${token}` } });
+        const response = await api.get("/plan-territorial");
         return response.data;
     } catch (error) {
         return error;
@@ -57,8 +61,7 @@ export const getPDTs = async () => {
 // Obtiene los niveles de un PDT 
 export const getPDTid = async (id: string) => {
     try {
-        const response = await api.get(`/plan-territorial/${id}`,
-        { headers: { authorization: `Bearer ${token}` } });
+        const response = await api.get(`/plan-territorial/${id}`);
         return response.data;
     } catch (error) {
         return error;
@@ -96,8 +99,7 @@ export const doLogin = async (data:LoginProps) => {
 // Hacer logout
 export const doLogout = async () => {
     try {
-        const response = await api.post('/usuarios/cerrar',
-        { headers: { authorization: `Bearer ${token}` } });
+        const response = await api.post('/usuarios/cerrar');
         return response.data;
     } catch (error) {
         return error;
@@ -106,8 +108,7 @@ export const doLogout = async () => {
 
 export const doRefreshToken = async () => {
     try {
-        const response = await api.post('/usuarios/refresh',
-        { headers: { authorization: `Bearer ${token}` } });
+        const response = await api.post('/usuarios/refresh');
         return response.data;
     } catch (error) {
         return error;
@@ -124,8 +125,7 @@ export const doRegister = async (id: number, userData: RegisterInterface) => {
             password: userData.contraseña,
             email:    userData.correo,
             rol:      userData.rol,
-        },
-        { headers: { authorization: `Bearer ${token}` } });
+        });
         return response.data;
     } catch (error) {
         return error;
@@ -138,8 +138,7 @@ export const changePermissions = async (id: number, rol: string) => {
         const response = await api.put('/usuarios/actualizar', {
             id_user: id,
             rol:     rol
-        },
-        { headers: { authorization: `Bearer ${token}` } });
+        });
         return response.data;
     } catch (error) {
         return error;
@@ -156,8 +155,7 @@ export const addPDT = async (pdt: PDTInterface) => {
             StartDate:    pdt.Fecha_inicio.toISOString().slice(0, 19).replace('T', ' '),
             EndDate:      pdt.Fecha_fin.toISOString().slice(0, 19).replace('T', ' '),
             Description:  pdt.Descripcion,
-        },
-        { headers: { authorization: `Bearer ${token}` } });
+        });
         return response.data;
     } catch (error) {
         return error;
@@ -174,8 +172,7 @@ export const updatePDT = async (id: number, pdt: PDTInterface) => {
             StartDate:    pdt.Fecha_inicio,
             EndDate:      pdt.Fecha_fin,
             Description:  pdt.Descripcion,
-        },
-        { headers: { authorization: `Bearer ${token}` } });
+        });
         return response.data;
     } catch (error) {
         return error;
@@ -185,8 +182,7 @@ export const updatePDT = async (id: number, pdt: PDTInterface) => {
 // Borrar un PDT
 export const deletePDT = async (id: number) => {
     try {
-        const response = await api.delete(`/plan-territorial/${id}`,
-        { headers: { authorization: `Bearer ${token}` } });
+        const response = await api.delete(`/plan-territorial/${id}`);
         return response.data;
     } catch (error) {
         return error;
@@ -196,8 +192,7 @@ export const deletePDT = async (id: number) => {
 // Añade todos los niveles a un PDT
 export const addNivel = async (nivel: NivelInterface[], id : string) => {
     try {
-        const response = await api.post(`/plan-territorial/${id}`, { levels: nivel },
-        { headers: { authorization: `Bearer ${token}` } });
+        const response = await api.post(`/plan-territorial/${id}`, { levels: nivel });
         return response.data;
     } catch (error) {
         return error;
@@ -226,8 +221,7 @@ export const addNodoNivel = async (nodes: NodoInterface[], parent: (string|null)
             nodes: nodes,
             parent: parent,
             id_level: id_level
-        },
-        { headers: { authorization: `Bearer ${token}` } });
+        });
         return response.data;
     } catch (error) {
         return error;
@@ -240,8 +234,7 @@ export const deleteNivel = async (id: number) => {
         const response = await api.delete(`/plan-territorial/nivel`, {
             params: {
                 id_level: id
-            },
-            headers: { authorization: `Bearer ${token}` }
+            }
         });
         return response.data;
     } catch (error) {
@@ -271,8 +264,7 @@ export const addNodoUnidadYAños = async (idPDT: string, idNodo: string, nodoUni
             id_node: idNodo,
             node:    nodoUnidad,
             years:   años
-        },
-        { headers: { authorization: `Bearer ${token}` } });
+        });
         return response.data;
     } catch (error) {
         return error;
@@ -300,8 +292,7 @@ export const addEvicenciaMeta = async (codigo: string, evidencia: EvidenciaInter
         const response = await api.post("/nodo/evidencia", { 
             code:     codigo,
             evidence: evidencia
-        },
-        { headers: { authorization: `Bearer ${token}` } });
+        });
         return response.data;
     } catch (error) {
         return error;
@@ -345,8 +336,7 @@ export const updateNodo = async (idPDT: string, idNodo: string, nodo: UnidadInte
             id_node: idNodo,
             node:    nodo,
             years:   años
-        },
-        { headers: { authorization: `Bearer ${token}` } });
+        });
         return response.data;
     } catch (error) {
         return error;
@@ -359,8 +349,7 @@ export const updateEvidencia = async (codigo: string, evidencia: EvidenciaInterf
         const response = await api.put("/nodo/evidencia", { 
             code:      codigo,
             evidence:  evidencia
-        },
-        { headers: { authorization: `Bearer ${token}` } });
+        });
         return response.data;
     } catch (error) {
         return error;
@@ -373,8 +362,7 @@ export const deleteEvidencia = async (id_evidencia: number) => {
         const response = await api.delete("/nodo/evidencia", {
             params: {
                 id_evidence: id_evidencia
-            },
-            headers: { authorization: `Bearer ${token}` }
+            }
         });
         return response.data;
     } catch (error) {
@@ -388,8 +376,7 @@ export const addColor = async (id_plan: number, colors: number[]) => {
         const response = await api.post(`/plan-territorial/color`, {
             id_plan:     id_plan,
             percentages: colors
-        },
-        { headers: { authorization: `Bearer ${token}` } });
+        });
         return response.data;
     } catch (error) {
         return error;
@@ -416,8 +403,7 @@ export const updateColor = async (id_plan: number, colors: number[]) => {
         const response = await api.put(`/plan-territorial/color`, {
             id_plan:     id_plan,
             percentages: colors
-        },
-        { headers: { authorization: `Bearer ${token}` } });
+        });
         return response.data;
     } catch (error) {
         return error;
