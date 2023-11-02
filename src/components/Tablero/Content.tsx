@@ -3,7 +3,7 @@ import IconButton from "@mui/material/IconButton";
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import { useNavigate } from "react-router-dom";
 
-import { NodoInterface, Token, NivelInterface, PesosNodos } from "@/interfaces";
+import { NodoInterface, Token, NivelInterface, PesosNodos, PDTInterface } from "@/interfaces";
 import { getNodosNivel, getColors } from '@/services/api';
 import { NodoForm, ColorForm, NodesList } from "@/components";
 import { getToken, decode } from "@/utils";
@@ -16,6 +16,7 @@ interface Props {
     Padre: (string | null);
     id: number;
     progress: boolean;
+    planData: PDTInterface | null;
 }
 
 type nodos = {
@@ -47,6 +48,17 @@ export const Content = ( props : Props ) => {
 
     useEffect(() => {
         const abortController = new AbortController()
+        let init_year = null;
+        if (props.planData) {
+            init_year = new Date(props.planData?.Fecha_inicio).getUTCFullYear();
+            console.log(init_year)
+            let temp_years = [];
+            for (var i = init_year; i <= init_year + 3; i++) {
+                temp_years.push(i);
+            }
+            console.log(temp_years);
+            setAños(temp_years);
+        }
         const gettoken = getToken()
         try {
             const {token} = gettoken ? gettoken : null

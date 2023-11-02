@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { getPDTid } from "../../services/api";
+import { getPDTLevelsById } from "../../services/api";
 import { NivelForm, Tablero, Frame } from "../../components";
 import { NivelInterface } from "../../interfaces";
 
@@ -16,8 +16,7 @@ export const PDTid = () => {
     const [data, setData] = useState<NivelInterface[]>([]);
 
     useEffect(() => {
-        const abortController = new AbortController()
-        getPDTid(id!)
+        getPDTLevelsById(id!)
             .then((res) => {
                 const resArr = [...res];
                 const temp = [] as NivelInterface[]
@@ -33,7 +32,6 @@ export const PDTid = () => {
             .catch((err) => {
                 console.log(err);
             })
-        return () => abortController.abort()
     }, []);
 
     return (
