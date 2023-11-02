@@ -37,7 +37,8 @@ export const ColorForm = ( props : Props ) => {
         <form className='tw-flex tw-flex-wrap tw-mb-2 tw-ml-4'>
             {value.map((value: number[], index: number) => {
                 return (
-                    <div className='tw-flex tw-mx-2'>
+                    <div className='tw-flex tw-mx-2'
+                        key={index}>
                         <Box sx={{ width:100 }}>
                             <Slider min={0}
                                     max={100}

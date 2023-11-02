@@ -73,13 +73,16 @@ export const NodesList = ( props : Props ) => {
 
     return (
         <ul className={`${props.index !== props.len ? '': 'tw-flex tw-flex-wrap'}`}>
-            {nodos.map((item: NodoInterface, index: number) => (
+            {nodos.map((item: NodoInterface, index: number) => {
+                console.log(progreso);
+                
+                return(
                 <div className="tw-my-5 tw-flex"
                     key={index}>
                     <button className={`tw-rounded
                                         tw-flex tw-justify-center tw-items-center
                                         tw-border-4
-                                        ${(progreso[index])*100 < props.colors[0] ? 'tw-border-redColory'   :
+                                        ${(progreso[index])*100 < props.colors[0] && (progreso[index])*100 >= 0 ? 'tw-border-redColory'   :
                                         (progreso[index])*100 <   props.colors[1] ? 'tw-border-yellowColory':
                                         (progreso[index])*100 <   props.colors[2] ? 'tw-border-greenColory' : 
                                         (progreso[index])*100 <=  props.colors[3] ? 'tw-border-blueColory'  : 'tw-border-gray-400'}
@@ -94,7 +97,7 @@ export const NodesList = ( props : Props ) => {
                     <button className={`${(progreso[index])*100 < props.colors[0] ? 'tw-bg-redColory'   :
                                         (progreso[index])*100 < props.colors[1]   ? 'tw-bg-yellowColory':
                                         (progreso[index])*100 < props.colors[2]   ? 'tw-bg-greenColory' : 
-                                        (progreso[index])*100 <= props.colors[3]  ? 'tw-bg-blueColory'  : 'tw-border-gray-400'}
+                                        (progreso[index])*100 <= props.colors[3]  ? 'tw-bg-blueColory'  : 'tw-bg-gray-400'}
                                         tw-h-8 tw-my-2
                                         tw-w-2/3
                                         tw-rounded-r-lg
@@ -106,7 +109,7 @@ export const NodesList = ( props : Props ) => {
                     </button>
                     :null}
                 </div>
-            ))}
+            )})}
         </ul>
     );
 }
