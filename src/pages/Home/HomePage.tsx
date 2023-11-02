@@ -18,6 +18,8 @@ export const HomePage = () => {
                 dispatch(thunkLogout())
                     .unwrap()
                     .then(() => navigate('/lobby'))
+            }else {
+                navigate('/lobby')
             }
         } catch (error) {}
     }
@@ -34,13 +36,13 @@ export const HomePage = () => {
             text='Funcionario' 
             src="\src\assets\images\Funcionario.png" 
             onClick={() => navigate('/login')}
-            bgColor="greenBtn"/>,
+            bgColor="tw-bg-greenBtn"/>,
         <ButtonComponent 
             inside={false} 
             text='Ciudadano' 
             src="\src\assets\images\Ciudadano.png" 
             onClick={handleBtnCiudadano}
-            bgColor="greenBtn"/>
+            bgColor="tw-bg-greenBtn"/>
     ]
 
     return (

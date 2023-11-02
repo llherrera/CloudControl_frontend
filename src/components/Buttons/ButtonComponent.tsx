@@ -14,7 +14,7 @@ export const ButtonComponent = ( props : Props ) => {
             <button type="submit"
                     onClick={props.onClick}
                     className={`hover:tw-bg-navBar
-                                tw-bg-${props.bgColor}
+                                ${props.bgColor}
                                 tw-border 
                                 tw-border-greenBtn
                                 tw-p-4 tw-rounded
@@ -33,7 +33,7 @@ export const ButtonComponent = ( props : Props ) => {
                                 tw-flex tw-flex-wrap 
                                 tw-font-montserrat 
                                 tw-self-center
-                                tw-text-${props.textColor}`}>
+                                ${props.textColor}`}>
                     {props.text}</p>
                 : null
                 }

@@ -5,7 +5,6 @@ type Props = {
 export const Header = ( {componentes}: Props) => {
     return (
         <main className="   tw-mx-auto tw-my-4
-                            tw-border
                             tw-grid tw-grid-cols-2
                             tw-items-center
                             tw-h-screen">

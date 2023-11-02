@@ -16,11 +16,13 @@ interface Props {
 export const Frame = (props: Props) => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch()
-    const logged = useAppSelector(store => store.auth.logged)
     
     const bgcolor='greenBtn'
     const logocolor='#FFFFFF'
     const textcolor='white'
+
+    const twbgcolor = `tw-border-${bgcolor}`
+    const twtextcolor = `tw-text-${textcolor}`
 
     const buttons = [
         {

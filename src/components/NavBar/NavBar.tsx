@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { useAppDispatch, useAppSelector } from '../../store'
+
 import { ButtonComponent } from '../Buttons';
 
 interface ButtonProps {
@@ -16,11 +18,11 @@ interface Props {
 }
 
 export const NavBar = ( props: Props) => {
-    const [index, setIndex] = useState(0);
+    const dispatch = useAppDispatch()
+    const { index } = useAppSelector(store => store.content)
 
     const handleClick = (i: number, action: ()=> void) => {
-        setIndex(i);
-        action();
+        
     };
 
     return (
@@ -35,8 +37,8 @@ export const NavBar = ( props: Props) => {
                         inside={button.inside}
                         onClick={() => handleClick(i, button['onClick'])}
                         icon={button.icon}
-                        bgColor={i=== index ? button.textColor : button.bgColor}
-                        textColor={i=== index ? button.bgColor : button.textColor}
+                        bgColor={i=== index ? `tw-bg-${button.textColor}` : `tw-bg-${button.bgColor}`}
+                        textColor={i=== index ? `tw-text-${button.bgColor}` : `tw-text-${button.textColor}`}
                     />
                 </li>
             ))}

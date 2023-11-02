@@ -14,6 +14,7 @@ export default {
       },
       colors: {
         'greenBtn': '#008432',
+        'redBtn': '#FE1700',
         'navBar': '#D9D9D9',
         'header': '#E7E6E8',
         'redColory': '#FE1700',

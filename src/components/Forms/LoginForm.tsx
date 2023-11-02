@@ -57,7 +57,7 @@ export const LoginForm = () => {
                     onChange={handleChange}
                     className='tw-border tw-rounded'
                     required/><br/>
-            <button className='tw-bg-[#008432] hover:tw-opacity-50
+            <button className='tw-bg-greenBtn hover:tw-opacity-50
                                 tw-rounded tw-py-2'>
                 Iniciar sesión</button><br />
             <input  type="button" 

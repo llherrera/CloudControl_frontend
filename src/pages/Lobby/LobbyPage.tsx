@@ -61,7 +61,7 @@ export const LobbyPage = () => {
             onClick={()=>{
                 dispatch(selectOption(0))
                 handleButton()}}
-            bgColor="greenBtn" />,
+            bgColor="tw-bg-greenBtn" />,
         <ButtonComponent
             inside={false}
             text='Banco de proyectos'
@@ -69,7 +69,7 @@ export const LobbyPage = () => {
             onClick={() => {
                 dispatch(selectOption(1))
                 navigate('/')}}
-            bgColor="greenBtn" />,
+            bgColor="tw-bg-greenBtn" />,
         <ButtonComponent
             inside={false}
             text='POAI'
@@ -77,7 +77,7 @@ export const LobbyPage = () => {
             onClick={() => {
                 dispatch(selectOption(2))
                 navigate('/')}}
-            bgColor="greenBtn" />,
+            bgColor="tw-bg-greenBtn" />,
         <ButtonComponent
             inside={false}
             text='Plan de acción'
@@ -85,7 +85,7 @@ export const LobbyPage = () => {
             onClick={() => {
                 dispatch(selectOption(3))
                 navigate('/')}}
-            bgColor="greenBtn" />,
+            bgColor="tw-bg-greenBtn" />,
     ]
 
     return (

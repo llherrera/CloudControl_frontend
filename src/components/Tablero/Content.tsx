@@ -243,7 +243,7 @@ export const Content = ( props : Props ) => {
                                                     ${(progresoAño[index]??0)*100 < colors[0] ? 'tw-border-redColory'   : 
                                                       (progresoAño[index]??0)*100 < colors[1] ? 'tw-border-yellowColory':
                                                       (progresoAño[index]??0)*100 < colors[2] ? 'tw-border-greenColory' : 'tw-border-blueColory'}
-                                                    ${añoSelect === año ? 'tw-ring' : null}
+                                                    ${añoSelect === año ? 'tw-ring-8' : null}
                                                     ${index%2 === 0 ? 'tw-row-start-1' : 'tw-row-start-3'}
                                                     tw-border-4
                                                     tw-w-12 tw-h-12
@@ -299,7 +299,7 @@ export const Content = ( props : Props ) => {
                                     tw-ring-1 tw-ring-gray-300
                                     tw-rounded
                                     tw-shadow-lg">
-                        <p>Cuaternio</p><br />
+                        <p>Cuatrenio</p><br />
                         <div className="tw-flex">
                         <svg width="489" height="59" viewBox="0 0 489 59" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M278.136 3.18734L460.447 1.18536L487.63 28.0992L461.017 53.1298L278.707 55.1318L278.136 3.18734Z" fill="#008DCC"/>
