@@ -74,8 +74,6 @@ export const NodesList = ( props : Props ) => {
     return (
         <ul className={`${props.index !== props.len ? '': 'tw-flex tw-flex-wrap'}`}>
             {nodos.map((item: NodoInterface, index: number) => {
-                console.log(progreso);
-                
                 return(
                 <div className="tw-my-5 tw-flex"
                     key={index}>

@@ -71,8 +71,7 @@ export const getPDTid = async (id: string) => {
 // Obtiene los niveles de un PDT 
 export const getPDTLevelsById = async (id: string) => {
     try {
-        const response = await api.get(`/plan-territorial/${id}/nivel`,
-        { headers: { authorization: `Bearer ${token}` } });
+        const response = await api.get(`/plan-territorial/${id}/nivel`);
         return response.data;
     } catch (error) {
         return error;
@@ -163,8 +162,8 @@ export const addPDT = async (pdt: PDTInterface) => {
             PlanName:     pdt.Nombre,
             TownHall:     pdt.Alcaldia,
             Municipality: pdt.Municipio,
-            StartDate:    pdt.Fecha_inicio.toISOString().slice(0, 19).replace('T', ' '),
-            EndDate:      pdt.Fecha_fin.toISOString().slice(0, 19).replace('T', ' '),
+            StartDate:    pdt.Fecha_inicio.slice(0, 19).replace('T', ' '),
+            EndDate:      pdt.Fecha_fin.slice(0, 19).replace('T', ' '),
             Description:  pdt.Descripcion,
         });
         return response.data;

@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+
+import { useAppSelector } from "@/store";
+
 import { addNodoUnidadYAños, getNombreNivel, getNodoUnidadYAños, getProgresoTotal } from "../../services/api";
 import { AñoInterface, UnidadInterface, DetalleAño, PesosNodos, Porcentaje } from "../../interfaces";
 
@@ -7,9 +10,23 @@ export const AñadirNodoUni = () => {
     const navigate = useNavigate()
     const { idPDT, idNodo } = useParams();
 
-    const [nombres, setNombres] = useState([[]]);
+    const { plan } = useAppSelector(store => store.plan)
+    
+    const [años, setAños] = useState<number[]>([]);
+    const [bool, setBool] = useState(false)
 
-    const años = [2020,2021,2022,2023];
+    const {Fecha_inicio} = plan
+    if (!bool) {
+        setBool(true)
+        setAños([
+            new Date(Fecha_inicio).getUTCFullYear(), 
+            new Date(Fecha_inicio).getUTCFullYear()+1, 
+            new Date(Fecha_inicio).getUTCFullYear()+2, 
+            new Date(Fecha_inicio).getUTCFullYear()+3
+        ])
+    }
+
+    const [nombres, setNombres] = useState([[]]);
     const [acum, setAcum] = useState(0);
     const [acumFinan, setAcumFinan] = useState(0);
     const [getProgress, setGetProgress] = useState(false);

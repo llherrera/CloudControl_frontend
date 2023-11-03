@@ -7,19 +7,22 @@ import { Input } from "../Inputs";
 import { addPDT } from "../../services/api";
 import { PDTInterface } from "../../interfaces";
 
+import { useAppDispatch } from '@/store';
+import { thunkAddPDT } from "@/store/plan/thunks";
+
 export const PDTForm = () => {
+    const dispatch = useAppDispatch()
     const navigate = useNavigate();
 
     const fechaInicio = new Date().getFullYear()
-    const fechaFin = fechaInicio + 4
 
     const [año, setAño] = useState<number>(fechaInicio)
     const [planData, setPlanData] = useState<PDTInterface>({
         Nombre: "",
         Alcaldia: "",
         Municipio: "",
-        Fecha_inicio: new Date(),
-        Fecha_fin: new Date(),
+        Fecha_inicio: '',
+        Fecha_fin: '',
         Descripcion: "",
     });
 
@@ -28,8 +31,8 @@ export const PDTForm = () => {
         setAño(parseInt(value));
         setPlanData({
             ...planData,
-            Fecha_inicio: new Date(parseInt(value), 0, 1),
-            Fecha_fin: new Date(parseInt(value) + 3, 11, 31),
+            Fecha_inicio: new Date(parseInt(value), 0, 1).toISOString(),
+            Fecha_fin: new Date(parseInt(value) + 3, 11, 31).toISOString(),
         });
     }
 
@@ -43,17 +46,14 @@ export const PDTForm = () => {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        try {
-            addPDT(planData)
+        await dispatch(thunkAddPDT(planData))
+            .unwrap()
             .then((res) => {
                 navigate(`/pdt/${res.id_plan}`)
             })
             .catch((err) => {
-                alert(err);
+                console.log(err);
             });
-        } catch (error) {
-            console.log(error);
-        }
     };
 
     const backIconButton = () => {
@@ -105,7 +105,7 @@ export const PDTForm = () => {
                     <label className="tw-mr-4">Fecha de inicio</label>
                     <select name="Fecha_inicio" id="Fecha_inicio" onChange={handleInputYearChange}>
                         {Array.from(Array(5).keys()).map((e) => {
-                            return <option value={fechaInicio + e}>{fechaInicio + e}</option>;
+                            return <option key={e} value={fechaInicio + e}>{fechaInicio + e}</option>;
                         })}
                     </select>
                 </div><br/>

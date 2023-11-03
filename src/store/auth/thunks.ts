@@ -1,6 +1,5 @@
 import { createAction, createAsyncThunk } from '@reduxjs/toolkit'
 
-import { apiLogin, apiLogout, apiRefreshToken } from '../../apis/authApi'
 import { AuthInterface, ErrorBasicInterface } from '../../interfaces'
 import { parseErrorAxios, setToken } from '../../utils'
 

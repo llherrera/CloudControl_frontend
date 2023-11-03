@@ -1,22 +1,23 @@
 import { useState, useEffect } from 'react'
+import { useParams, useNavigate } from 'react-router-dom';
+
 import { Content } from './Content';
-import { PesosNodos, Porcentaje, DetalleAño, NivelInterface, PDTInterface } from '../../interfaces';
-import { useParams } from 'react-router-dom';
-import { getPDTid, getProgresoTotal } from '../../services/api';
-import { useNavigate } from 'react-router-dom';
-import * as svg from '../../assets/icons';
+import { PesosNodos, Porcentaje, DetalleAño, NivelInterface } from '../../interfaces';
+import { getProgresoTotal } from '../../services/api';
+
+import { useAppDispatch } from '@/store';
+import { thunkGetPDTid } from '@/store/plan/thunks';
 
 interface Props {
     data: NivelInterface[];
 }
 
 export const Tablero = ( props : Props ) => {
-    const navigate = useNavigate();
+    const dispatch = useAppDispatch()
     const { id } = useParams();
 
     const [index, setIndex] = useState(0);
     const [Padre, setPadre] = useState<string | null>(null);
-    const [plan, setPlan] = useState<PDTInterface | null>(null);
 
     const [getProgress, setGetProgress] = useState(false);
 
@@ -32,14 +33,8 @@ export const Tablero = ( props : Props ) => {
         if (!id) return;
         const id_ = parseInt(id as string)
 
-        getPDTid(id)
-            .then((res: PDTInterface) => {
-                setPlan(res);
-            })
-            .catch((err) =>  {
-                console.log(err);
-            });
-
+        dispatch(thunkGetPDTid(id)).unwrap()
+        
         getProgresoTotal(id_)
             .then((res) => {
                 if (!res) return
@@ -100,45 +95,6 @@ export const Tablero = ( props : Props ) => {
         localStorage.setItem('pesosNodo', JSON.stringify(pesosNodo))
     }
 
-    const bgcolor='greenBtn'
-    const logocolor='#FFFFFF'
-    const textcolor='white'
-
-    const buttons = [
-        {
-            inside: true,
-            onClick: () => navigate('/'), 
-            text: 'Plan indicativo', 
-            bgColor: bgcolor,
-            textColor: textcolor,
-            icon: ()=>svg.PlanIndicativoIcon('#008432')
-        },
-        {
-            inside: true, 
-            onClick: () => navigate('/'), 
-            text: 'Banco de proyectos', 
-            bgColor: bgcolor,
-            textColor: textcolor,
-            icon: ()=>svg.BancoProyectoIcon(logocolor)
-        },
-        {
-            inside: true, 
-            onClick: () => navigate('/'), 
-            text: 'POAI', 
-            bgColor: bgcolor,
-            textColor: textcolor,
-            icon: ()=>svg.POAIIcon(logocolor)
-        },
-        {
-            inside: true, 
-            onClick: () => navigate('/'), 
-            text: 'Plan de accion', 
-            bgColor: bgcolor,
-            textColor: textcolor,
-            icon: ()=>svg.PlanAccionIcon(logocolor)
-        }
-    ]
-
     return (
         <Content    
             index={index+1} 
@@ -148,7 +104,6 @@ export const Tablero = ( props : Props ) => {
             Padre={Padre} 
             id={ parseInt(id as string) }
             progress={getProgress}
-            planData={plan}
         />
     )
 }

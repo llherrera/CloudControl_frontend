@@ -1,7 +1,9 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
 import IconButton from "@mui/material/IconButton";
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
-import { useNavigate } from "react-router-dom";
+import { useAppSelector } from "@/store";
 
 import { NodoInterface, Token, NivelInterface, PesosNodos, PDTInterface } from "@/interfaces";
 import { getNodosNivel, getColors } from '@/services/api';
@@ -16,7 +18,6 @@ interface Props {
     Padre: (string | null);
     id: number;
     progress: boolean;
-    planData: PDTInterface | null;
 }
 
 type nodos = {
@@ -29,13 +30,27 @@ type nodos = {
 
 export const Content = ( props : Props ) => {
     const navigate = useNavigate();
+    const { plan } = useAppSelector(store => store.plan)
+    
+    const [años, setAños] = useState<number[]>([]);
+    const [bool, setBool] = useState(false)
+
+    const {Fecha_inicio} = plan
+    if (!bool) {
+        setBool(true)
+        setAños([
+            new Date(Fecha_inicio).getUTCFullYear()+1,
+            new Date(Fecha_inicio).getUTCFullYear()+2, 
+            new Date(Fecha_inicio).getUTCFullYear()+3, 
+            new Date(Fecha_inicio).getUTCFullYear()+4
+        ])
+    }
 
     const [nodos, setNodos] = useState<NodoInterface[]>([]);
     const [shouldUpdate, setShouldUpdate] = useState(true);
     const [propPad, setPropPad] = useState(props.index);
 
-    const [años, setAños] = useState([2020, 2021, 2022, 2023]);
-    const [añoSelect, setAño] = useState(2023);
+    const [añoSelect, setAño] = useState<number>(años[0]);
     const [progresoAño, setProgresoAño] = useState<number[]>([])
     const [progress, setProgress] = useState(0);
 
@@ -48,17 +63,15 @@ export const Content = ( props : Props ) => {
 
     useEffect(() => {
         const abortController = new AbortController()
-        let init_year = null;
-        if (props.planData) {
-            init_year = new Date(props.planData?.Fecha_inicio).getUTCFullYear();
-            console.log(init_year)
-            let temp_years = [];
-            for (var i = init_year; i <= init_year + 3; i++) {
-                temp_years.push(i);
-            }
-            console.log(temp_years);
-            setAños(temp_years);
-        }
+        //let init_year = null;
+        //if (props.planData) {
+        //    init_year = new Date(props.planData?.Fecha_inicio).getUTCFullYear();
+        //    let temp_years = [];
+        //    for (var i = init_year; i <= init_year + 3; i++) {
+        //        temp_years.push(i);
+        //    }
+        //    setAños(temp_years);
+        //}
         const gettoken = getToken()
         try {
             const {token} = gettoken ? gettoken : null
@@ -104,10 +117,11 @@ export const Content = ( props : Props ) => {
             } catch (e) {
                 console.log(e)
             }
+            
             setShouldUpdate(false)
         }
         return () => abortController.abort()
-    }, [props.index, nodos, propPad, shouldUpdate])
+    }, [nodos, propPad, shouldUpdate])
 
     const getProgresoAños = () => {
         let pesosStr = localStorage.getItem('pesosNodo')
@@ -179,6 +193,7 @@ export const Content = ( props : Props ) => {
         setColor(!color);
     }
 
+    console.log(años, new Date(Fecha_inicio).getUTCFullYear())
     return (
         <div className="tw-h-full tw-border
                         tw-bg-[url('/src/assets/images/bg-plan-indicativo.png')]
@@ -221,7 +236,7 @@ export const Content = ( props : Props ) => {
                             </div>
                             }
                         </div>
-                        : <NodesList callback={callback}
+                        :<NodesList callback={callback}
                                     callback2={setShouldUpdate}
                                     nodos={nodos}
                                     id={props.id}

@@ -20,8 +20,8 @@ export interface PDTInterface {
     Alcaldia: string;
     Municipio: string;
     Descripcion: string;
-    Fecha_inicio: Date;
-    Fecha_fin: Date;
+    Fecha_inicio: string;
+    Fecha_fin: string;
 }
 
 export interface NivelInterface {
