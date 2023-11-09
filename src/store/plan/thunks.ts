@@ -3,7 +3,7 @@ import { createAction, createAsyncThunk } from '@reduxjs/toolkit'
 import { PDTInterface, ErrorBasicInterface } from '../../interfaces'
 import { parseErrorAxios } from '../../utils'
 
-import { getPDTid, addPDT } from '@/services/api'
+import { getPDTid, addPDT, getColors } from '@/services/api'
 
 export const thunkGetPDTid = createAsyncThunk<PDTInterface, string, { rejectValue: ErrorBasicInterface }>(
     'pdt/getPDTid',
@@ -30,6 +30,23 @@ export const thunkAddPDT = createAsyncThunk<PDTInterface, PDTInterface, { reject
                 const result = parseErrorAxios(res)
                 return rejectWithValue(result)
             }
+        } catch (err) {
+            const result = parseErrorAxios(err)
+            return rejectWithValue(result)
+        }
+    }
+)
+
+export const thunkGetColors = createAsyncThunk<number[], string, { rejectValue: ErrorBasicInterface }>(
+    'pdt/getColors',
+    async (props: string, { rejectWithValue }) => {
+        try {
+            const res = await getColors(props)
+            if (res.length === 0) {
+                const result = parseErrorAxios(res)
+                return rejectWithValue(result)
+            }
+            return [res[0].value1, res[0].value2, res[0].value3, res[0].value4]
         } catch (err) {
             const result = parseErrorAxios(err)
             return rejectWithValue(result)

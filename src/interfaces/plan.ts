@@ -5,4 +5,6 @@ export interface InitialStatePlanInterface {
     loading: boolean;
     errorLoading: ErrorTypeInterface;
     plan: PDTInterface;
+    colorimeter: number[];
+    color: boolean;
 }

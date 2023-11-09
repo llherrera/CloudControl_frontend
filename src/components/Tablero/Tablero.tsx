@@ -6,7 +6,7 @@ import { PesosNodos, Porcentaje, DetalleAño, NivelInterface } from '../../inter
 import { getProgresoTotal } from '../../services/api';
 
 import { useAppDispatch } from '@/store';
-import { thunkGetPDTid } from '@/store/plan/thunks';
+import { thunkGetPDTid, thunkGetColors } from '@/store/plan/thunks';
 
 interface Props {
     data: NivelInterface[];
@@ -33,10 +33,15 @@ export const Tablero = ( props : Props ) => {
         if (!id) return;
         const id_ = parseInt(id as string)
 
-        dispatch(thunkGetPDTid(id)).unwrap()
+        Promise.all([
+            dispatch(thunkGetPDTid(id)).unwrap(),
+            dispatch(thunkGetColors(id)).unwrap()
+        ])
         
         getProgresoTotal(id_)
             .then((res) => {
+                console.log(res);
+                
                 if (!res) return
                 localStorage.setItem('pesosNodo', JSON.stringify(res[0]))
                 localStorage.setItem('detalleAño', JSON.stringify(res[1]))

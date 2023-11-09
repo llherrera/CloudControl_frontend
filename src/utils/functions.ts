@@ -1,6 +1,6 @@
 import type { AxiosError } from 'axios'
 
-import { apiRefreshToken } from '../apis/authApi'
+import { doRefreshToken } from '@/services/api'
 import { AuthInterface, ErrorBasicInterface } from '../interfaces'
 
 import { setToken } from './storage'
@@ -26,7 +26,7 @@ export const parseErrorAxios = (err: unknown) => {
 }
 
 export const refreshToken = async () => {
-  const { data } = await apiRefreshToken()
+  const { data } = await doRefreshToken()
   const token: AuthInterface = data.data
   setToken(token)
   return token

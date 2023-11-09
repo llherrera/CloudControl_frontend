@@ -1,19 +1,25 @@
 import axios from "axios";
+import jwtDecode from "jwt-decode";
+
 import { AñoInterface, UnidadInterface, NodoInterface, 
     NivelInterface, RegisterInterface, PDTInterface, EvidenciaInterface } from "../interfaces";
-import { useAppSelector } from '../store';
+
 import { getToken, refreshToken } from "@/utils";
-import jwtDecode from "jwt-decode";
 
 const api = axios.create({
     baseURL: "http://localhost:8080"
 });
 
-//const gettoken = getToken();
-//let token: string;
-//if (gettoken) {
-//    token = gettoken.token;
-//}
+let isRefreshingToken = false
+let failedQueue: { resolve: (value?: unknown) => void; reject: (reason?: unknown) => void }[] = []
+
+const processFailedQueue = (error?: unknown) => {
+  failedQueue.forEach(promise => {
+    if (error) promise.reject(error)
+    else promise.resolve()
+  })
+  failedQueue = []
+}
 
 api.interceptors.request.use(
     async request => {
@@ -37,6 +43,7 @@ api.interceptors.request.use(
                     }
                 return request;
             }
+            return request;
         } catch (error) {
             console.log(error);
         }
@@ -210,11 +217,12 @@ export const addNivel = async (nivel: NivelInterface[], id : string) => {
 }
 
 // Obtiene todos los nodos de un nivel de un PDT
-export const getNodosNivel = async (id: number, Padre: (string | null)) => {
+export const getNodosNivel = async (id_plan: number, id_level: number, Padre: (string | null)) => {
     try {
         const response = await api.get(`/plan-territorial/nivel`, { 
-            params: { 
-                id_level: id, 
+            params: {
+                id_plan:  id_plan,
+                id_level: id_level,
                 Parent:   Padre 
             }
         });
@@ -394,7 +402,7 @@ export const addColor = async (id_plan: number, colors: number[]) => {
 }
 
 // Obtiene los valores de los porcentajes de cada rango de color
-export const getColors = async (id_plan: number) => {
+export const getColors = async (id_plan: string) => {
     try {
         const response = await api.get(`/plan-territorial/color`, {
             params: {

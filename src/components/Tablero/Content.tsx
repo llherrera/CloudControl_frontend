@@ -7,7 +7,7 @@ import { useAppSelector } from "@/store";
 
 import { NodoInterface, Token, NivelInterface, PesosNodos, PDTInterface } from "@/interfaces";
 import { getNodosNivel, getColors } from '@/services/api';
-import { NodoForm, ColorForm, NodesList } from "@/components";
+import { NodoForm, ColorForm, NodesList, TimeLine, Graph } from "@/components";
 import { getToken, decode } from "@/utils";
 
 interface Props {
@@ -39,10 +39,10 @@ export const Content = ( props : Props ) => {
     if (!bool) {
         setBool(true)
         setAños([
-            new Date(Fecha_inicio).getUTCFullYear()+1,
+            new Date(Fecha_inicio).getUTCFullYear(),
+            new Date(Fecha_inicio).getUTCFullYear()+1, 
             new Date(Fecha_inicio).getUTCFullYear()+2, 
-            new Date(Fecha_inicio).getUTCFullYear()+3, 
-            new Date(Fecha_inicio).getUTCFullYear()+4
+            new Date(Fecha_inicio).getUTCFullYear()+3
         ])
     }
 
@@ -62,16 +62,6 @@ export const Content = ( props : Props ) => {
     const [id, setId] = useState(0)
 
     useEffect(() => {
-        const abortController = new AbortController()
-        //let init_year = null;
-        //if (props.planData) {
-        //    init_year = new Date(props.planData?.Fecha_inicio).getUTCFullYear();
-        //    let temp_years = [];
-        //    for (var i = init_year; i <= init_year + 3; i++) {
-        //        temp_years.push(i);
-        //    }
-        //    setAños(temp_years);
-        //}
         const gettoken = getToken()
         try {
             const {token} = gettoken ? gettoken : null
@@ -85,23 +75,25 @@ export const Content = ( props : Props ) => {
         }
         if ( shouldUpdate ) {
             try{
-                getNodosNivel(props.data.id_nivel!, props.Padre)
-                    .then((res) => {
-                        const resArr = [...res];
-                        const temp = [] as NodoInterface[]
-                        resArr.forEach((item:nodos) => {
-                            temp.push({
-                                id_node: item.id_nodo,
-                                NodeName: item.Nombre,
-                                Description: item.Descripcion,
-                                Parent: item.Padre,
-                                id_level: item.id_nivel,
-                                Weight: 0,
+                if (nodos.length == 0) {
+                    getNodosNivel(props.id, props.data.id_nivel!, props.Padre)
+                        .then((res) => {
+                            const resArr = [...res];
+                            const temp = [] as NodoInterface[]
+                            resArr.forEach((item:nodos) => {
+                                temp.push({
+                                    id_node: item.id_nodo,
+                                    NodeName: item.Nombre,
+                                    Description: item.Descripcion,
+                                    Parent: item.Padre,
+                                    id_level: item.id_nivel,
+                                    Weight: 0,
+                                })
                             })
-                        })
-                        setNodos(temp)
-                })
-                getColors(props.id)
+                            setNodos(temp)
+                    })
+                }
+                getColors(props.id.toString())
                     .then((res) => {
                         if (res.length > 0) {
                             let temp = []
@@ -120,7 +112,6 @@ export const Content = ( props : Props ) => {
             
             setShouldUpdate(false)
         }
-        return () => abortController.abort()
     }, [nodos, propPad, shouldUpdate])
 
     const getProgresoAños = () => {
@@ -183,17 +174,11 @@ export const Content = ( props : Props ) => {
         )
     }
 
-    const handleAños = ( event: React.MouseEvent<HTMLButtonElement>, año: number ) => {
-        event.preventDefault();
-        setAño(año);
-    }
-
     const handleColor = ( event: React.MouseEvent<HTMLButtonElement> ) => {
         event.preventDefault();
         setColor(!color);
     }
 
-    console.log(años, new Date(Fecha_inicio).getUTCFullYear())
     return (
         <div className="tw-h-full tw-border
                         tw-bg-[url('/src/assets/images/bg-plan-indicativo.png')]
@@ -215,9 +200,8 @@ export const Content = ( props : Props ) => {
                 }
             </h1>
             <div className="tw-flex tw-h-5/6 tw-mt-4">
-                <div className="tw-rounded tw-drop-shadow-lg
+                <div className="tw-rounded tw-shadow-lg
                                 tw-bg-white
-                                tw-ring-1 tw-ring-gray-300
                                 tw-w-1/3 tw-mx-6">
                     <p className="tw-ml-4 tw-mt-3 tw-font-montserrat tw-font-bold">
                         {backIconButton()}
@@ -249,110 +233,25 @@ export const Content = ( props : Props ) => {
                     </div>
                 </div>
                 <div className="tw-w-2/3 
-                                tw-flex tw-flex-col 
-                                tw-justify-between 
                                 tw-mb-3 tw-mr-6">
                     <div className="tw-flex-wrap tw-grow
                                     tw-justify-around
                                     tw-h-1/2 tw-rounded
                                     tw-bg-white
-                                    tw-ring-1 tw-ring-gray-300
                                     tw-shadow-lg">
                         <p className="tw-font-montserrat tw-ml-4">
                             Plan de desarrollo. ¡Así vamos!
                         </p>
-                        <ol className="tw-flex tw-h-4/5 tw-justify-center tw-items-center tw-mx-4">
-                        {años.map((año: number, index: number) => (
-                            <li className="tw-grid tw-grid-rows-3 tw-w-full tw-justify-items-center"
-                                key={index}>
-                                <button className={`tw-rounded 
-                                                    tw-flex tw-justify-center tw-items-center
-                                                    ${(progresoAño[index]??0)*100 < colors[0] ? 'tw-border-redColory'   : 
-                                                      (progresoAño[index]??0)*100 < colors[1] ? 'tw-border-yellowColory':
-                                                      (progresoAño[index]??0)*100 < colors[2] ? 'tw-border-greenColory' : 'tw-border-blueColory'}
-                                                    ${añoSelect === año ? 'tw-ring-8' : null}
-                                                    ${index%2 === 0 ? 'tw-row-start-1' : 'tw-row-start-3'}
-                                                    tw-border-4
-                                                    tw-w-12 tw-h-12
-                                                    tw-font-bold`}
-                                        onClick={ (event) => handleAños(event, año)}>
-                                    {(progresoAño[index]*100)}%
-                                </button>
-                                <div className="tw-flex tw-items-center tw-w-full tw-relative tw-row-start-2">
-                                    <div className={`tw-w-full tw-h-2
-                                                    tw-px-3
-                                                    tw-z-10 tw-absolute 
-                                                    ${(progresoAño[index]??0)*100 < colors[0] ? 'tw-bg-redColory'   : 
-                                                      (progresoAño[index]??0)*100 < colors[1] ? 'tw-bg-yellowColory':
-                                                      (progresoAño[index]??0)*100 < colors[2] ? 'tw-bg-greenColory' : 'tw-bg-blueColory'}`}>
-                                    </div>
-                                    <div className={`tw-h-full
-                                                    tw-grow
-                                                    tw-flex tw-flex-col`}>
-                                        {index%2 === 0 ? 
-                                            <button className={`tw-grow tw-self-center
-                                                                tw-h-1/4 tw-w-2
-                                                                ${(progresoAño[index]??0)*100 < colors[0] ? 'tw-bg-redColory'   : 
-                                                                  (progresoAño[index]??0)*100 < colors[1] ? 'tw-bg-yellowColory':
-                                                                  (progresoAño[index]??0)*100 < colors[2] ? 'tw-bg-greenColory' : 'tw-bg-blueColory'}`}
-                                                    onClick={ (event) => handleAños(event, año)}>
-                                            </button>
-                                        : null}
-                                        <button className={`tw-self-center tw-font-bold tw-font-montserrat tw-text-[#222222]
-                                                            ${(progresoAño[index]??0)*100 < colors[0] ? 'tw-text-redColory'   : 
-                                                            (progresoAño[index]??0)*100 < colors[1] ? 'tw-text-yellowColory':
-                                                            (progresoAño[index]??0)*100 < colors[2] ? 'tw-text-greenColory' : 'tw-text-blueColory'}`}
-                                                onClick={ (event) => handleAños(event, año)}>
-                                            {año}
-                                        </button>
-                                        {index%2 === 1 ? 
-                                            <button className={`tw-grow tw-self-center
-                                                                tw-h-1/4 tw-w-2
-                                                                ${(progresoAño[index]??0)*100 < colors[0] ? 'tw-bg-redColory'   : 
-                                                                  (progresoAño[index]??0)*100 < colors[1] ? 'tw-bg-yellowColory':
-                                                                  (progresoAño[index]??0)*100 < colors[2] ? 'tw-bg-greenColory' : 'tw-bg-blueColory'}`}
-                                                    onClick={ (event) => handleAños(event, año)}>
-                                            </button>
-                                        : null}
-                                    </div>
-                                </div>
-                            </li>
-                        ))}
-                        </ol>
+                        <TimeLine   año={añoSelect}
+                                    progresoAño={progresoAño}/>
                     </div>
-                    <div className="tw-mt-2 tw-h-1/2
-                                    tw-px-4
+                    <div className="tw-mt-2 tw-h-1/2 tw-px-4 
+                                    tw-flex tw-flex-col tw-justify-start
                                     tw-bg-white
-                                    tw-ring-1 tw-ring-gray-300
                                     tw-rounded
                                     tw-shadow-lg">
-                        <p>Cuatrenio</p><br />
-                        <div className="tw-flex">
-                        <svg width="489" height="59" viewBox="0 0 489 59" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M278.136 3.18734L460.447 1.18536L487.63 28.0992L461.017 53.1298L278.707 55.1318L278.136 3.18734Z" fill="#008DCC"/>
-                            <path d="M278.136 3.18734L460.447 1.18536L487.63 28.0992L461.017 53.1298L278.707 55.1318L278.136 3.18734Z" stroke="#FCC623"/>
-                            <path d="M278.136 3.18734L460.447 1.18536L487.63 28.0992L461.017 53.1298L278.707 55.1318L278.136 3.18734Z" stroke="#008DCC"/>
-                            <path d="M226.047 3.75936L408.358 1.75738L435.541 28.6712L408.928 53.7019L226.618 55.7038L226.047 3.75936Z" fill="#119432" stroke="#119432"/>
-                            <path d="M133.632 4.77426L315.943 2.77227L343.126 29.6861L316.513 54.7168L134.203 56.7187L133.632 4.77426Z" fill="#FCC623" stroke="#FCC623"/>
-                            <path d="M0.890247 6.2319L183.2 4.22992L210.384 31.1437L183.771 56.1744L1.46066 58.1764L0.890247 6.2319Z" fill="#FE1700" stroke="#FE1700"/>
-                        </svg>
-                        <button className={`tw-rounded 
-                                            tw-flex tw-justify-center tw-items-center
-                                            tw-border-4
-                                            tw-self-center
-                                            tw-w-12 tw-h-12
-                                            ${progress < colors[0] ? 'tw-border-redColory'   : 
-                                              progress < colors[1] ? 'tw-border-yellowColory':
-                                              progress < colors[2] ? 'tw-border-greenColory' : 'tw-border-blueColory'}
-                                            tw-ml-3`}>
-                            <p className="tw-break-words tw-font-bold">
-                                {progress}%
-                            </p>
-                        </button>
-                        </div>
-                        <p>
-                            2020-2023
-                        </p>
+                        <p className="tw-border">Cuatrenio  {new Date(plan.Fecha_inicio).getUTCFullYear()} - {new Date(plan.Fecha_fin).getUTCFullYear()}</p><br />
+                        <Graph/>
                     </div>
                 </div>
             </div>

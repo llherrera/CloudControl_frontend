@@ -84,6 +84,7 @@ export const NodoForm = ( props : Props ) => {
         event.preventDefault();
         let sum: number=0;
         data.map((e) => sum += Number(e.Weight));
+        sum = parseFloat(sum.toFixed(2))
         
         if (sum !== 100) {
             alert('La suma de los pesos debe ser 100')

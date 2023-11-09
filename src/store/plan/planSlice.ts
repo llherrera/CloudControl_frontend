@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 import { InitialStatePlanInterface } from "@/interfaces";
 
-import { thunkGetPDTid, thunkAddPDT } from "./thunks";
+import { thunkGetPDTid, thunkAddPDT, thunkGetColors } from "./thunks";
 
 const getInitialState = (): InitialStatePlanInterface => {
     return {
@@ -17,6 +17,8 @@ const getInitialState = (): InitialStatePlanInterface => {
             Fecha_inicio: new Date().toISOString(),
             Fecha_fin: new Date().toISOString(),
         },
+        colorimeter: [],
+        color: false,
     };
 };
 
@@ -37,6 +39,7 @@ export const planSlice = createSlice({
             state.loading = false;
             state.errorLoading = action.payload;
         });
+
 
         builder.addCase(thunkAddPDT.pending, state => {
             if (!state.loading) state.loading = true;
@@ -64,6 +67,22 @@ export const planSlice = createSlice({
                         break;
                 }
             }
+        });
+
+
+        builder.addCase(thunkGetColors.pending, state => {
+            if (!state.loading) state.loading = true;
+            state.errorLoading = undefined;
+        });
+        builder.addCase(thunkGetColors.fulfilled, (state, action) => {
+            state.loading = false;
+            state.color = true;
+            state.colorimeter = action.payload;
+        });
+        builder.addCase(thunkGetColors.rejected, (state, action) => {
+            state.loading = false;
+            state.color = false;
+            state.errorLoading = action.payload;
         });
     }
 });
