@@ -1,47 +1,49 @@
 import React, { useState } from 'react'
+
+import { useAppSelector } from '@/store';
+
 import { NodoInterface } from '../../interfaces'
 import { addNodoNivel } from '../../services/api'
 
 interface Props {
     index: number;
     id: number;
-    Padre: string | null;
-    callback: (index: number, Padre: (string | null)) => void;
 }
 
 export const NodoForm = ( props : Props ) => {
+    const { parent } = useAppSelector(store => store.plan)
 
     let id_nodo_gen : number = 1;
     const [data, setData] = useState<NodoInterface[]>([
-        {   id_node: `${props.Padre ?? props.id}.${id_nodo_gen++}`,
+        {   id_node: `${parent ?? props.id}.${id_nodo_gen++}`,
             NodeName: "", 
             Description: "", 
             id_level: props.id, 
-            Parent: props.Padre,
+            Parent: parent,
             Weight: 33.33
         },
-        {   id_node: `${props.Padre ?? props.id}.${id_nodo_gen++}`, 
+        {   id_node: `${parent ?? props.id}.${id_nodo_gen++}`, 
             NodeName: "", 
             Description: "", 
             id_level: props.id, 
-            Parent: props.Padre,
+            Parent: parent,
             Weight: 33.33
         },
-        {   id_node: `${props.Padre ?? props.id}.${id_nodo_gen++}`, 
+        {   id_node: `${parent ?? props.id}.${id_nodo_gen++}`, 
             NodeName: "", 
             Description: "", 
             id_level: props.id, 
-            Parent: props.Padre,
+            Parent: parent,
             Weight: 33.33
         }
     ])
 
     let nodo: NodoInterface = ({
-        id_node: `${props.Padre ?? props.id}.${data.length + 1}`,
+        id_node: `${parent ?? props.id}.${data.length + 1}`,
         NodeName: "",
         Description: "",
         id_level: props.id,
-        Parent: props.Padre,
+        Parent: parent,
         Weight: 0
     })
 
@@ -49,11 +51,11 @@ export const NodoForm = ( props : Props ) => {
         const newData = [...data, nodo];
         setData(newData);
         nodo = ({ 
-            id_node: `${props.Padre ?? props.id}.${newData.length + 1}`, 
+            id_node: `${parent ?? props.id}.${newData.length + 1}`, 
             NodeName: "", 
             Description: "", 
             id_level: props.id, 
-            Parent: props.Padre,
+            Parent: parent,
             Weight: 100/data.length
         });
     }
@@ -63,11 +65,11 @@ export const NodoForm = ( props : Props ) => {
             const newData = data.slice(0, data.length - 1);
             setData(newData);
             nodo = ({ 
-                id_node: `${props.Padre ?? props.id}.${newData.length }`, 
+                id_node: `${parent ?? props.id}.${newData.length }`, 
                 NodeName: "", 
                 Description: "", 
                 id_level: props.id, 
-                Parent: props.Padre,
+                Parent: parent,
                 Weight: 100/data.length
             });
         }
@@ -91,8 +93,7 @@ export const NodoForm = ( props : Props ) => {
             return
         }
         try {
-            await addNodoNivel(data, props.Padre, props.id)
-            props.callback(props.index -1, props.Padre)
+            await addNodoNivel(data, parent, props.id)
         } catch (error) {
             console.log(error);
         }

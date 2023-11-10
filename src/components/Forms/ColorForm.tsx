@@ -1,14 +1,18 @@
 import React, { useState } from 'react';
 import Slider from '@mui/material/Slider';
 import Box from '@mui/material/Box';
+
+import { useAppDispatch, useAppSelector } from '@/store';
+import { thunkAddColors } from '@/store/plan/thunks';
 import { addColor } from '../../services/api';
 
 interface Props {
     id: number;
-    callback: (bool: boolean) => void;
 }
 
 export const ColorForm = ( props : Props ) => {
+    const dispatch = useAppDispatch();
+    const { colorimeter, color } = useAppSelector(store => store.plan)
 
     const [value, setValue] = useState([[0, 24], [25, 49], [50, 74], [75, 100]]);
 
@@ -24,13 +28,7 @@ export const ColorForm = ( props : Props ) => {
     const handleInput = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         event.preventDefault();
         const colors = value.map((item: number[]) => item[1])
-        addColor(props.id, colors)
-            .then((res) => {
-                props.callback(true)
-            })
-            .catch((err) => {
-                console.log(err);
-            })
+        dispatch(thunkAddColors({id_plan: props.id, colors: colors}))
     }
 
     return (

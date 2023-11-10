@@ -2,7 +2,7 @@ import axios from "axios";
 import jwtDecode from "jwt-decode";
 
 import { AñoInterface, UnidadInterface, NodoInterface, 
-    NivelInterface, RegisterInterface, PDTInterface, EvidenciaInterface } from "../interfaces";
+    NivelInterface, RegisterInterface, PDTInterface, EvidenciaInterface, GetNodeProps, AddColorsProps } from "../interfaces";
 
 import { getToken, refreshToken } from "@/utils";
 
@@ -217,13 +217,12 @@ export const addNivel = async (nivel: NivelInterface[], id : string) => {
 }
 
 // Obtiene todos los nodos de un nivel de un PDT
-export const getNodosNivel = async (id_plan: number, id_level: number, Padre: (string | null)) => {
+export const getNodosNivel = async (props: GetNodeProps) => {
     try {
         const response = await api.get(`/plan-territorial/nivel`, { 
             params: {
-                id_plan:  id_plan,
-                id_level: id_level,
-                Parent:   Padre 
+                id_level: props.id_level,
+                Parent:   props.parent
             }
         });
         return response.data;
@@ -389,11 +388,11 @@ export const deleteEvidencia = async (id_evidencia: number) => {
 }
 
 // Añade los valores de los porcentajes de cada rango de color
-export const addColor = async (id_plan: number, colors: number[]) => {
+export const addColor = async (props: AddColorsProps) => {
     try {
         const response = await api.post(`/plan-territorial/color`, {
-            id_plan:     id_plan,
-            percentages: colors
+            id_plan:     props.id_plan,
+            percentages: props.colors
         });
         return response.data;
     } catch (error) {

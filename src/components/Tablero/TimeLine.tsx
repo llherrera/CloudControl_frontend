@@ -1,74 +1,53 @@
-import React, { useState, useEffect } from 'react';
-import { useAppSelector } from "@/store";
+import React, { useEffect } from 'react';
+import { useAppSelector, useAppDispatch } from "@/store";
+import { selectYear } from '@/store/plan/planSlice'; 
 
 interface Props {
-    progresoAño: number[];
-    año: number;
+    yearProgress: number[];
+    colors: number[];
 }
 
 export const TimeLine = (props: Props) => {
-    const { plan } = useAppSelector(store => store.plan)
-    const { color } = useAppSelector(store => store.plan)
-    const { colorimeter } = useAppSelector(store => store.plan)
+    const dispatch = useAppDispatch();
 
-    const [años, setAños] = useState<number[]>([])
-    const [colors, setColors] = useState<number[]>([]);
-    const [bool, setBool] = useState(false)
-
-    const {Fecha_inicio} = plan
-    
-    if (!bool) {
-        setBool(true)
-        console.log(new Date(Fecha_inicio).getUTCFullYear());
-        
-        setAños([
-            new Date(Fecha_inicio).getUTCFullYear(),
-            new Date(Fecha_inicio).getUTCFullYear()+1, 
-            new Date(Fecha_inicio).getUTCFullYear()+2, 
-            new Date(Fecha_inicio).getUTCFullYear()+3
-        ])
-        if (color) {
-            setColors(colorimeter)
-        }
-    }
-
-    const [añoSelect, setAñoSelect] = useState<number>(props.año);
-    const [progresoAño, setProgresoAño] = useState<number[]>(props.progresoAño);
+    const { years, yearSelect } = useAppSelector(store => store.plan)
 
     useEffect(() => {
-        setProgresoAño(props.progresoAño)
-    }, [props.progresoAño])
+        if (years.length !== 0) {
+            dispatch(selectYear(years[0]))
+        }
+    }, [years])
 
-    const handleAños = ( event: React.MouseEvent<HTMLButtonElement>, año: number ) => {
+    const handleAños = ( event: React.MouseEvent<HTMLButtonElement>, year: number ) => {
         event.preventDefault();
-        setAñoSelect(año);
+        dispatch(selectYear(year))
     }
 
     return (
         <ol className="tw-flex tw-h-4/5 tw-justify-center tw-items-center tw-mx-4">
-        {años.map((año: number, index: number) => (
+        {years.map((year: number, index: number) => (
             <li className="tw-grid tw-grid-rows-3 tw-w-full tw-justify-items-center"
                 key={index}>
                 <button className={`tw-rounded 
                                     tw-flex tw-justify-center tw-items-center
-                                    ${(progresoAño[index]??0)*100 < colors[0] ? 'tw-border-redColory'   : 
-                                      (progresoAño[index]??0)*100 < colors[1] ? 'tw-border-yellowColory':
-                                      (progresoAño[index]??0)*100 < colors[2] ? 'tw-border-greenColory' : 'tw-border-blueColory'}
-                                    ${añoSelect === año ? 'tw-ring-8' : null}
+                                    ${(props.yearProgress[index]??0)*100 < props.colors[0] ? 'tw-border-redColory'   : 
+                                      (props.yearProgress[index]??0)*100 < props.colors[1] ? 'tw-border-yellowColory':
+                                      (props.yearProgress[index]??0)*100 < props.colors[2] ? 'tw-border-greenColory' : 'tw-border-blueColory'}
+                                    ${yearSelect === year ? 'tw-ring-8' : null}
                                     ${index%2 === 0 ? 'tw-row-start-1' : 'tw-row-start-3'}
                                     tw-border-4
                                     tw-w-12 tw-h-12
                                     tw-font-bold`}
-                        onClick={ (event) => handleAños(event, año)}>
-                    {(progresoAño[index]*100)}%
+                        onClick={ (event) => handleAños(event, year)}>
+                    { parseInt ( ((props.yearProgress[index]??0)*100).toString())}%
                 </button>
                 <div className="tw-flex tw-items-center tw-w-full tw-relative tw-row-start-2">
                     <div className={`tw-w-full tw-h-2
                                     tw-px-3
                                     tw-z-10 tw-absolute 
-                                    ${(progresoAño[index]??0)*100 < colors[0] ? 'tw-bg-redColory'   : 
-                                      (progresoAño[index]??0)*100 < colors[1] ? 'tw-bg-yellowColory':
-                                      (progresoAño[index]??0)*100 < colors[2] ? 'tw-bg-greenColory' : 'tw-bg-blueColory'}`}>
+                                    ${(props.yearProgress[index]??0)*100 < props.colors[0] ? 'tw-bg-redColory'   : 
+                                      (props.yearProgress[index]??0)*100 < props.colors[1] ? 'tw-bg-yellowColory':
+                                      (props.yearProgress[index]??0)*100 < props.colors[2] ? 'tw-bg-greenColory' : 'tw-bg-blueColory'}`}>
                     </div>
                     <div className={`tw-h-full
                                     tw-grow
@@ -76,26 +55,26 @@ export const TimeLine = (props: Props) => {
                         {index%2 === 0 ? 
                             <button className={`tw-grow tw-self-center
                                                 tw-h-1/4 tw-w-2
-                                                ${(progresoAño[index]??0)*100 < colors[0] ? 'tw-bg-redColory'   : 
-                                                  (progresoAño[index]??0)*100 < colors[1] ? 'tw-bg-yellowColory':
-                                                  (progresoAño[index]??0)*100 < colors[2] ? 'tw-bg-greenColory' : 'tw-bg-blueColory'}`}
-                                    onClick={ (event) => handleAños(event, año)}>
+                                                ${(props.yearProgress[index]??0)*100 < props.colors[0] ? 'tw-bg-redColory'   : 
+                                                  (props.yearProgress[index]??0)*100 < props.colors[1] ? 'tw-bg-yellowColory':
+                                                  (props.yearProgress[index]??0)*100 < props.colors[2] ? 'tw-bg-greenColory' : 'tw-bg-blueColory'}`}
+                                    onClick={ (event) => handleAños(event, year)}>
                             </button>
                         : null}
                         <button className={`tw-self-center tw-font-bold tw-font-montserrat tw-text-[#222222]
-                                            ${(progresoAño[index]??0)*100 < colors[0] ? 'tw-text-redColory'   : 
-                                            (progresoAño[index]??0)*100 < colors[1] ? 'tw-text-yellowColory':
-                                            (progresoAño[index]??0)*100 < colors[2] ? 'tw-text-greenColory' : 'tw-text-blueColory'}`}
-                                onClick={ (event) => handleAños(event, año)}>
-                            {año}
+                                            ${(props.yearProgress[index]??0)*100 < props.colors[0] ? 'tw-text-redColory'   : 
+                                            (props.yearProgress[index]??0)*100 < props.colors[1] ? 'tw-text-yellowColory':
+                                            (props.yearProgress[index]??0)*100 < props.colors[2] ? 'tw-text-greenColory' : 'tw-text-blueColory'}`}
+                                onClick={ (event) => handleAños(event, year)}>
+                            {year}
                         </button>
                         {index%2 === 1 ? 
                             <button className={`tw-grow tw-self-center
                                                 tw-h-1/4 tw-w-2
-                                                ${(progresoAño[index]??0)*100 < colors[0] ? 'tw-bg-redColory'   : 
-                                                  (progresoAño[index]??0)*100 < colors[1] ? 'tw-bg-yellowColory':
-                                                  (progresoAño[index]??0)*100 < colors[2] ? 'tw-bg-greenColory' : 'tw-bg-blueColory'}`}
-                                    onClick={ (event) => handleAños(event, año)}>
+                                                ${(props.yearProgress[index]??0)*100 < props.colors[0] ? 'tw-bg-redColory'   : 
+                                                  (props.yearProgress[index]??0)*100 < props.colors[1] ? 'tw-bg-yellowColory':
+                                                  (props.yearProgress[index]??0)*100 < props.colors[2] ? 'tw-bg-greenColory' : 'tw-bg-blueColory'}`}
+                                    onClick={ (event) => handleAños(event, year)}>
                             </button>
                         : null}
                     </div>

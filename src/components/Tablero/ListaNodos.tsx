@@ -1,33 +1,29 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 
-import { NodoInterface, PesosNodos, Porcentaje } from '@/interfaces';
+import { useAppSelector, useAppDispatch } from "@/store";
+import { thunkGetNodes } from '@/store/plan/thunks';
+import { incrementLevelIndex, setParent } from '@/store/plan/planSlice';
+
+import { Node, NodoInterface, PesosNodos, Porcentaje } from '@/interfaces';
 
 interface Props {
     id: number;
-    nodos: NodoInterface[];
-    año: number;
+    nodes: NodoInterface[];
     colors: number[];
-    index: number;
-    len: number;
-    callback: (id: number, Padre: (string | null)) => void;
-    callback2: (bool: boolean) => void;
 }
 
 export const NodesList = ( props : Props ) => {
     const navigate = useNavigate();
+    const dispatch = useAppDispatch();
+    const { nodes, yearSelect, levels, indexLevel, parent } = useAppSelector(store => store.plan)
 
-    const [nodos, setNodos] = useState<NodoInterface[]>([])
     const [progreso, setProgreso] = useState([] as number[])
-    const [programacion, setProgramacion] = useState([] as number[])
 
     useEffect(() => {
-        const abortController = new AbortController()
-        const ids = props.nodos.map((item: NodoInterface) => item.id_node)
+        const ids = nodes.map((item: Node) => item.id_nodo)
         getProgress(ids)
-        setNodos(props.nodos)
-        return () => abortController.abort()
-    }, [props.año, props.nodos, props.index])
+    }, [yearSelect, nodes])
 
     const getProgress = (ids: string[]) => {
         const pesosStr = localStorage.getItem('pesosNodo')
@@ -46,7 +42,7 @@ export const NodesList = ( props : Props ) => {
                 const { porcentajes } = item
                 if (porcentajes) {
                     porcentajes.forEach((porcentaje: Porcentaje) => {
-                        if (porcentaje.año === props.año) {
+                        if (porcentaje.año === yearSelect) {
                             progreso.push(porcentaje.progreso)
                             programacion.push(porcentaje.programacion)
                         }
@@ -58,22 +54,21 @@ export const NodesList = ( props : Props ) => {
             }
         })
         setProgreso(progreso)
-        setProgramacion(programacion)
     }
 
-    const handleButton = ( event: React.MouseEvent<HTMLButtonElement> , index: number ) => {
-        event.preventDefault();
-        if ( props.index !== props.len ) {
-            props.callback2(true)
-            props.callback(props.index, props.nodos[index].id_node)
+    const handleButton = ( index: number ) => {
+        if ( indexLevel !== levels.length-1 ) {
+            dispatch(setParent(nodes[index].id_nodo))
+            dispatch(incrementLevelIndex(indexLevel!+1))
+            dispatch(thunkGetNodes({id_level: nodes[index].id_nivel+1, parent:nodes[index].id_nodo}))
         } else {
-            navigate(`/pdt/${props.id}/${props.nodos[index].id_node}`)
+            navigate(`/pdt/${props.id}/${nodes[index].id_nodo}`)
         }
     }
 
     return (
-        <ul className={`${props.index !== props.len ? '': 'tw-flex tw-flex-wrap'}`}>
-            {nodos.map((item: NodoInterface, index: number) => {
+        <ul className={`tw-max-h-[32rem] tw-overflow-scroll ${indexLevel !== levels.length-1 ? '': 'tw-flex tw-flex-wrap'}`}>
+            {nodes.map((item: Node, index: number) => {
                 return(
                 <div className="tw-my-5 tw-flex"
                     key={index}>
@@ -87,23 +82,23 @@ export const NodesList = ( props : Props ) => {
                                         tw-ml-3
                                         tw-w-12 tw-h-12
                                         tw-font-bold`}
-                            onClick={ (event) => handleButton(event, index)}
-                            title={item.Description}>
-                        {(progreso[index]??0)*100}%
+                            onClick={ (event) => handleButton(index)}
+                            title={item.Descripcion}>
+                        { parseInt( ((progreso[index]??0)*100).toString())}%
                     </button>
-                    {props.index !== props.len ?
+                    {indexLevel !== levels.length-1 ?
                     <button className={`${(progreso[index])*100 < props.colors[0] ? 'tw-bg-redColory'   :
-                                        (progreso[index])*100 < props.colors[1]   ? 'tw-bg-yellowColory':
-                                        (progreso[index])*100 < props.colors[2]   ? 'tw-bg-greenColory' : 
-                                        (progreso[index])*100 <= props.colors[3]  ? 'tw-bg-blueColory'  : 'tw-bg-gray-400'}
+                                        (progreso[index])*100 <   props.colors[1] ? 'tw-bg-yellowColory':
+                                        (progreso[index])*100 <   props.colors[2] ? 'tw-bg-greenColory' : 
+                                        (progreso[index])*100 <=  props.colors[3] ? 'tw-bg-blueColory'  : 'tw-bg-gray-400'}
                                         tw-h-8 tw-my-2
                                         tw-w-2/3
                                         tw-rounded-r-lg
                                         tw-text-white tw-font-bold
                                         tw-font-montserrat`}
-                            onClick={ (event) => handleButton(event, index)}
-                            title={item.Description}>
-                        <p>{item.NodeName}</p>
+                            onClick={ (event) => handleButton(index)}
+                            title={item.Descripcion}>
+                        <p>{item.Nombre}</p>
                     </button>
                     :null}
                 </div>

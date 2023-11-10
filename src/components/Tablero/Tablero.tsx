@@ -7,6 +7,7 @@ import { getProgresoTotal } from '../../services/api';
 
 import { useAppDispatch } from '@/store';
 import { thunkGetPDTid, thunkGetColors } from '@/store/plan/thunks';
+import { useAppSelector } from "@/store";
 
 interface Props {
     data: NivelInterface[];
@@ -14,38 +15,25 @@ interface Props {
 
 export const Tablero = ( props : Props ) => {
     const dispatch = useAppDispatch()
+    const { plan } = useAppSelector(store => store.plan)
     const { id } = useParams();
 
-    const [index, setIndex] = useState(0);
-    const [Padre, setPadre] = useState<string | null>(null);
-
     const [getProgress, setGetProgress] = useState(false);
-
-    const setData = (index: number, padre: (string | null)) => {
-        if (index < props.data.length && index >= 0) {
-            setIndex(index)
-            setPadre(padre)
-        }
-    }
 
     useEffect(() => {
         const abortController = new AbortController()
         if (!id) return;
         const id_ = parseInt(id as string)
 
-        Promise.all([
-            dispatch(thunkGetPDTid(id)).unwrap(),
-            dispatch(thunkGetColors(id)).unwrap()
-        ])
+        dispatch(thunkGetPDTid(id)).unwrap()
+        dispatch(thunkGetColors(id)).unwrap()
         
         getProgresoTotal(id_)
             .then((res) => {
-                console.log(res);
-                
                 if (!res) return
                 localStorage.setItem('pesosNodo', JSON.stringify(res[0]))
                 localStorage.setItem('detalleAño', JSON.stringify(res[1]))
-                calcProgress()
+                calcProgress( res )
                 setGetProgress(true)
             })
             .catch((err) => {
@@ -54,18 +42,15 @@ export const Tablero = ( props : Props ) => {
         return () => abortController.abort()
     }, [])
 
-    const calcProgress = () => {
-        const pesosStr = localStorage.getItem('pesosNodo')
-        const detalleStr = localStorage.getItem('detalleAño')
-        if (pesosStr === null || pesosStr === undefined || detalleStr === null || detalleStr === undefined) 
-            return console.log('No hay datos')
-        let pesosNodo = JSON.parse(pesosStr ?? '[]')
-        let detalleAño = JSON.parse(detalleStr ?? '[]')
+    const calcProgress = ( res: [PesosNodos[],DetalleAño[]] ) => {
+        let pesosNodo = res[0]
+        let detalleAño = res[1]
         
         detalleAño.forEach((item: DetalleAño) => {
             let progreso = 0
             if (item.Programacion_fisica !== 0)
                 progreso = item.Ejecucion_Fisica / item.Programacion_fisica
+                if (progreso > 1) progreso = 1
                 progreso = parseFloat(progreso.toFixed(2))
             let peso = pesosNodo.find((peso: PesosNodos) => peso.id_nodo === item.id_nodo)
             if (peso) {
@@ -88,7 +73,7 @@ export const Tablero = ( props : Props ) => {
                             if (temp) {
                                 temp.progreso += progresoPeso
                             } else {
-                                padre.porcentajes.push({ progreso : progresoPeso, año: porcentaje.año })
+                                padre.porcentajes.push({ progreso : progresoPeso, año: porcentaje.año, programacion: 0 })
                             }
                         }
                     })
@@ -101,15 +86,12 @@ export const Tablero = ( props : Props ) => {
     }
 
     return (
+        (plan ? 
         <Content    
-            index={index+1} 
-            len={props.data.length}
-            data={props.data[index]} 
-            callback={setData} 
-            Padre={Padre} 
             id={ parseInt(id as string) }
             progress={getProgress}
-        />
+        /> : <p>Cargando</p>
+        )
     )
 }
  
