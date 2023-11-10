@@ -24,7 +24,7 @@ export const TimeLine = (props: Props) => {
     }
 
     return (
-        <ol className="tw-flex tw-h-4/5 tw-justify-center tw-items-center tw-mx-4">
+        <ol className="tw-flex lg:tw-h-4/5 tw-justify-center tw-items-center tw-mx-4">
         {years.map((year: number, index: number) => (
             <li className="tw-grid tw-grid-rows-3 tw-w-full tw-justify-items-center"
                 key={index}>

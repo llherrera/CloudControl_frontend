@@ -58,6 +58,7 @@ export const LoginForm = () => {
                     className='tw-border tw-rounded'
                     required/><br/>
             <button className='tw-bg-greenBtn hover:tw-opacity-50
+                                tw-text-white tw-font-montserrat
                                 tw-rounded tw-py-2'>
                 Iniciar sesión</button><br />
             <input  type="button" 

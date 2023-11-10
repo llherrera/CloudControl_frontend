@@ -1,7 +1,6 @@
 import { ButtonComponent } from "../../components"
 import { useNavigate } from "react-router-dom"
 import { Header } from "@/components/Header"
-import { removeToken } from "@/utils"
 import React from "react"
 import { thunkLogout } from "@/store/auth/thunks"
 
@@ -24,12 +23,6 @@ export const HomePage = () => {
         } catch (error) {}
     }
 
-    const handleSalir = () => {
-        try {
-            dispatch(thunkLogout())
-        } catch (error) {}
-    }
-
     const buttons: React.ReactNode[] = [
         <ButtonComponent 
             inside={false} 
@@ -48,7 +41,6 @@ export const HomePage = () => {
     return (
         <div>
             <Header componentes={buttons} />
-            <button onClick={thunkLogout}>Salir</button>
         </div>
     )
 }

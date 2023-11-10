@@ -67,10 +67,10 @@ export const NodesList = ( props : Props ) => {
     }
 
     return (
-        <ul className={`tw-max-h-[32rem] tw-overflow-scroll ${indexLevel !== levels.length-1 ? '': 'tw-flex tw-flex-wrap'}`}>
+        <ul className={`${indexLevel === levels.length-1 ? 'tw-flex tw-flex-row tw-flex-wrap': 'tw-flex-col tw-flex-wrap'} `}>
             {nodes.map((item: Node, index: number) => {
                 return(
-                <div className="tw-my-5 tw-flex"
+                <div className="tw-my-2 tw-flex"
                     key={index}>
                     <button className={`tw-rounded
                                         tw-flex tw-justify-center tw-items-center

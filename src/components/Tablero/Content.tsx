@@ -117,16 +117,18 @@ export const Content = ( props : Props ) => {
     }
 
     const handleBack = () => {
-        if (indexLevel === 0) navigate(-1)
+        if (indexLevel === 0) {
+            navigate(-1)
+            return
+        }
         try{
-            //dispatch(setParent(nodos[indexLevel!].Parent))
-            //dispatch(decrementLevelIndex(indexLevel!-1))
-            //const padre = props.Padre!.split('.')
-            //setPropPad(-1)
-            //padre.length > 2 ? 
-            //    props.callback(props.index-2, padre.slice(0, padre.length-1).join('.') )
-            //:   props.callback(props.index-2, null)
+            let temp = parent!.split('.')
+            let temp_ = temp.slice(0, temp.length-1)
+            temp.length === 2 ? 
+                dispatch(setParent(null))
+            : dispatch(setParent(temp_.join('.')))
 
+            dispatch(decrementLevelIndex(indexLevel!-1))
         } catch (e) {
             console.log(e);
         }
@@ -158,7 +160,9 @@ export const Content = ( props : Props ) => {
                             tw-text-[#222222] 
                             tw-font-bold
                             tw-text-lg
-                            tw-font-montserrat">
+                            tw-font-montserrat
+                            tw-text-center
+                            md:tw-text-left">
                 Plan de proyectos
                 {color ?
                 <div></div>
@@ -170,10 +174,87 @@ export const Content = ( props : Props ) => {
                 </button>
                 }
             </h1>
-            <div className="tw-flex tw-h-5/6 tw-mt-4">
+            <div className="tw-flex tw-flex-col tw-flex-wrap
+                            md:tw-flex-row lg:tw-flex-grow">
+
+                <div className="tw-hidden lg:tw-flex lg:tw-mb-6">
+                    <div className="tw-rounded tw-shadow-lg
+                                    tw-bg-white
+                                    tw-mx-6 tw-mt-6 
+                                    tw-overflow-scroll">
+                        <p className="tw-ml-4 tw-mt-3 tw-font-montserrat tw-font-bold">
+                            {backIconButton()}
+                            {levels[indexLevel!].LevelName}
+                        </p>
+                        <div className="tw-pb-1 tw-mb-2">
+                            {nodos.length === 0 ?
+                            <div>
+                                {(rol === "admin") || (rol === 'funcionario' && id === props.id) ?
+                                <NodoForm   index={indexLevel!}
+                                            id={levels[indexLevel!].id_nivel!}/>
+                                : <div>
+                                    <p className="tw-ml-4">De momemnto no hay contenido en este PDT</p>
+                                </div>
+                                }
+                            </div>
+                            :<NodesList nodes={nodos}
+                                        id={props.id}
+                                        colors={colors}
+                                        />
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div className="tw-hidden 
+                                lg:tw-flex lg:tw-flex-col 
+                                lg:tw-grow lg:tw-mr-6 tw-mt-6
+                                ">
+                    <div className="tw-flex tw-flex-wrap tw-grow lg:tw-flex-col
+                                    tw-justify-around
+                                    lg:tw-pb-3
+                                    lg:tw-h-1/3
+                                    tw-rounded tw-shadow-lg
+                                    tw-bg-white">
+                        <p className="tw-font-montserrat tw-ml-4 tw-mb-3">
+                            Plan de desarrollo. ¡Así vamos!
+                        </p>
+                        <TimeLine   yearProgress={yearProgress}
+                                    colors={colors}/>
+                    </div>
+                    <div className="tw-my-6 
+                                    tw-flex tw-flex-col
+                                    tw-bg-white lg:tw-h-2/3
+                                    tw-rounded tw-shadow-lg">
+                        <p className="tw-ml-5 tw-mt-2">Cuatrenio  {new Date(plan!.Fecha_inicio).getUTCFullYear()} - {new Date(plan!.Fecha_fin).getUTCFullYear()}</p><br />
+                        <Graph
+                            yearsProgress={yearsprogress}
+                            dataValues={yearProgress}/>
+                    </div>
+                </div>
+
+                <div className="tw-flex-wrap tw-grow
+                                tw-justify-around
+                                tw-mx-6 tw-py-3
+                                md:tw-ml-3
+                                lg:tw-hidden
+                                tw-rounded tw-shadow-lg
+                                tw-bg-white">
+                    <p className="tw-font-montserrat tw-ml-4 tw-mb-3">
+                        Plan de desarrollo. ¡Así vamos!
+                    </p>
+                    <TimeLine   yearProgress={yearProgress}
+                                colors={colors}/>
+                </div>
+
                 <div className="tw-rounded tw-shadow-lg
                                 tw-bg-white
-                                tw-w-1/3 tw-mx-6">
+                                tw-mx-6 tw-mt-6 
+                                md:tw-ml-6 md:tw-mr-3 md:tw-mt-0
+                                md:tw-order-first
+                                md:tw-h-[290px]
+                                md:tw-w-[270px]
+                                lg:tw-hidden
+                                tw-overflow-scroll">
                     <p className="tw-ml-4 tw-mt-3 tw-font-montserrat tw-font-bold">
                         {backIconButton()}
                         {levels[indexLevel!].LevelName}
@@ -196,27 +277,18 @@ export const Content = ( props : Props ) => {
                         }
                     </div>
                 </div>
-                <div className="tw-w-2/3 
-                                tw-mb-3 tw-mr-6">
-                    <div className="tw-flex-wrap tw-grow
-                                    tw-justify-around
-                                    tw-h-1/2 tw-rounded
-                                    tw-bg-white
-                                    tw-shadow-lg">
-                        <p className="tw-font-montserrat tw-ml-4">
-                            Plan de desarrollo. ¡Así vamos!
-                        </p>
-                        <TimeLine   yearProgress={yearProgress}
-                                    colors={colors}/>
-                    </div>
-                    <div className="tw-mt-2 tw-h-1/2 tw-px-4 
-                                    tw-flex tw-flex-col tw-justify-start
-                                    tw-bg-white
-                                    tw-rounded
-                                    tw-shadow-lg">
-                        <p className="tw-border">Cuatrenio  {new Date(plan!.Fecha_inicio).getUTCFullYear()} - {new Date(plan!.Fecha_fin).getUTCFullYear()}</p><br />
-                        <Graph/>
-                    </div>
+
+                <div className="tw-mt-6 tw-mx-6 tw-px-4
+                                tw-flex tw-flex-col tw-justify-start
+                                tw-bg-white
+                                tw-rounded
+                                tw-shadow-lg
+                                md:tw-w-full
+                                lg:tw-hidden">
+                    <p>Cuatrenio  {new Date(plan!.Fecha_inicio).getUTCFullYear()} - {new Date(plan!.Fecha_fin).getUTCFullYear()}</p><br />
+                    <Graph
+                        yearsProgress={yearsprogress}
+                        dataValues={yearProgress}/>
                 </div>
             </div>
             {color ?
@@ -230,3 +302,11 @@ export const Content = ( props : Props ) => {
         </div>
     );
 }
+
+/*
+    <div className="tw-w-2/3 
+                                tw-mb-3 tw-mr-6">
+                    
+                    
+                </div>
+*/

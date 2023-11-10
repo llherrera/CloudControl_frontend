@@ -18,7 +18,9 @@ export const ButtonComponent = ( props : Props ) => {
                                 tw-border 
                                 tw-border-greenBtn
                                 tw-p-4 tw-rounded
-                                tw-w-28 tw-h-28
+                                tw-w-16 tw-h-16
+                                md:tw-w-20 md:tw-h-20
+                                lg:tw-w-28 lg:tw-h-28
                                 tw-flex tw-flex-col
                                 tw-justify-center
                                 tw-items-center`}>
@@ -33,7 +35,9 @@ export const ButtonComponent = ( props : Props ) => {
                                 tw-flex tw-flex-wrap 
                                 tw-font-montserrat 
                                 tw-self-center
-                                ${props.textColor}`}>
+                                ${props.textColor}
+                                tw-hidden lg:tw-block
+                                `}>
                     {props.text}</p>
                 : null
                 }
@@ -41,7 +45,8 @@ export const ButtonComponent = ( props : Props ) => {
             {props.inside ? null :
             <p className="  tw-ml-3 
                             tw-font-montserrat 
-                            tw-self-center">
+                            tw-self-center
+                            tw-hidden md:tw-block">
                 {props.text}</p>
             }
         </div>

@@ -21,9 +21,6 @@ export const Frame = (props: Props) => {
     const logocolor='#FFFFFF'
     const textcolor='white'
 
-    const twbgcolor = `tw-border-${bgcolor}`
-    const twtextcolor = `tw-text-${textcolor}`
-
     const buttons = [
         {
             inside: true,
@@ -68,15 +65,15 @@ export const Frame = (props: Props) => {
     }
 
     return (
-        <div className='tw-h-screen'>
+        <div className='tw-min-h-screen tw-flex tw-flex-col'>
             <header className={`tw-flex tw-justify-between tw-bg-header tw-drop-shadow-xl`}>
                 <img src="\src\assets\images\Logo.png" alt="" width={100} height={100}/>
-                <img src="\src\assets\images\Logo-municipio.png" alt="" width={300} />
+                <img src="\src\assets\images\Logo-municipio.png" alt="" width={300} className='tw-hidden md:tw-block'/>
                 <IconButton onClick={handleBtn}>
                     <LogoutIcon sx={{color: 'green'}}/>
                 </IconButton>
             </header>
-            <div className='tw-flex tw-h-5/6'>
+            <div className='tw-flex tw-flex-col xl:tw-flex-row tw-flex-grow'>
                 <NavBar buttons={buttons}/>
                 <div className='tw-flex-grow'>
                     {props.data}
