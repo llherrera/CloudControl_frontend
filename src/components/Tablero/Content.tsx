@@ -174,71 +174,15 @@ export const Content = ( props : Props ) => {
                 </button>
                 }
             </h1>
-            <div className="tw-flex tw-flex-col tw-flex-wrap
-                            md:tw-flex-row lg:tw-flex-grow">
+            <div className="tw-grid tw-grid-cols-1 md:tw-grid-cols-3 tw-mb-2">
 
-                <div className="tw-hidden lg:tw-flex lg:tw-mb-6">
-                    <div className="tw-rounded tw-shadow-lg
-                                    tw-bg-white
-                                    tw-mx-6 tw-mt-6 
-                                    tw-overflow-scroll">
-                        <p className="tw-ml-4 tw-mt-3 tw-font-montserrat tw-font-bold">
-                            {backIconButton()}
-                            {levels[indexLevel!].LevelName}
-                        </p>
-                        <div className="tw-pb-1 tw-mb-2">
-                            {nodos.length === 0 ?
-                            <div>
-                                {(rol === "admin") || (rol === 'funcionario' && id === props.id) ?
-                                <NodoForm   index={indexLevel!}
-                                            id={levels[indexLevel!].id_nivel!}/>
-                                : <div>
-                                    <p className="tw-ml-4">De momemnto no hay contenido en este PDT</p>
-                                </div>
-                                }
-                            </div>
-                            :<NodesList nodes={nodos}
-                                        id={props.id}
-                                        colors={colors}
-                                        />
-                            }
-                        </div>
-                    </div>
-                </div>
-                <div className="tw-hidden 
-                                lg:tw-flex lg:tw-flex-col 
-                                lg:tw-grow lg:tw-mr-6 tw-mt-6
-                                ">
-                    <div className="tw-flex tw-flex-wrap tw-grow lg:tw-flex-col
-                                    tw-justify-around
-                                    lg:tw-pb-3
-                                    lg:tw-h-1/3
-                                    tw-rounded tw-shadow-lg
-                                    tw-bg-white">
-                        <p className="tw-font-montserrat tw-ml-4 tw-mb-3">
-                            Plan de desarrollo. ¡Así vamos!
-                        </p>
-                        <TimeLine   yearProgress={yearProgress}
-                                    colors={colors}/>
-                    </div>
-                    <div className="tw-my-6 
-                                    tw-flex tw-flex-col
-                                    tw-bg-white lg:tw-h-2/3
-                                    tw-rounded tw-shadow-lg">
-                        <p className="tw-ml-5 tw-mt-2">Cuatrenio  {new Date(plan!.Fecha_inicio).getUTCFullYear()} - {new Date(plan!.Fecha_fin).getUTCFullYear()}</p><br />
-                        <Graph
-                            yearsProgress={yearsprogress}
-                            dataValues={yearProgress}/>
-                    </div>
-                </div>
-
-                <div className="tw-flex-wrap tw-grow
-                                tw-justify-around
-                                tw-mx-6 tw-py-3
-                                md:tw-ml-3
-                                lg:tw-hidden
+                <div className="tw-mx-6 tw-py-3
+                                md:tw-ml-12
+                                lg:tw-ml-6
                                 tw-rounded tw-shadow-lg
-                                tw-bg-white">
+                                tw-bg-white
+                                md:tw-col-span-2
+                                xl:">
                     <p className="tw-font-montserrat tw-ml-4 tw-mb-3">
                         Plan de desarrollo. ¡Así vamos!
                     </p>
@@ -250,11 +194,12 @@ export const Content = ( props : Props ) => {
                                 tw-bg-white
                                 tw-mx-6 tw-mt-6 
                                 md:tw-ml-6 md:tw-mr-3 md:tw-mt-0
+                                tw-overflow-scroll
                                 md:tw-order-first
-                                md:tw-h-[290px]
-                                md:tw-w-[270px]
-                                lg:tw-hidden
-                                tw-overflow-scroll">
+                                md:tw-w-[290px]
+                                md:tw-h-[270px]
+                                lg:tw-w-4/5 lg:tw-h-full lg:tw-row-span-2
+                                xl:tw-row-span-2">
                     <p className="tw-ml-4 tw-mt-3 tw-font-montserrat tw-font-bold">
                         {backIconButton()}
                         {levels[indexLevel!].LevelName}
@@ -283,13 +228,14 @@ export const Content = ( props : Props ) => {
                                 tw-bg-white
                                 tw-rounded
                                 tw-shadow-lg
-                                md:tw-w-full
-                                lg:tw-hidden">
+                                md:tw-col-span-full
+                                lg:tw-col-start-2">
                     <p>Cuatrenio  {new Date(plan!.Fecha_inicio).getUTCFullYear()} - {new Date(plan!.Fecha_fin).getUTCFullYear()}</p><br />
                     <Graph
                         yearsProgress={yearsprogress}
                         dataValues={yearProgress}/>
                 </div>
+
             </div>
             {color ?
             <div></div>
@@ -302,11 +248,3 @@ export const Content = ( props : Props ) => {
         </div>
     );
 }
-
-/*
-    <div className="tw-w-2/3 
-                                tw-mb-3 tw-mr-6">
-                    
-                    
-                </div>
-*/

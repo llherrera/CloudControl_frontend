@@ -5,13 +5,15 @@ import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'
 import authReducer from './auth/authSlice'
 import contentReducer from './content/contentSlice'
 import planRedurcer from './plan/planSlice'
+import chartReducer from './chart/chartSlice'
 // En los reducers se definen las propiedades del estado global
 // To Do: Hacer mas reducers, los que sean necesarios, se hace la carpeta con el Slice y los thunks
 
 export const reducers = {
   auth: authReducer,
   content: contentReducer,
-  plan: planRedurcer
+  plan: planRedurcer,
+  chart: chartReducer
   // Aqui se agregan los reducers
 }
 
