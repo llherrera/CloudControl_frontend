@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { useAppSelector } from '@/store';
 
 import { NodoInterface } from '../../interfaces'
-import { addNodoNivel } from '../../services/api'
+import { addLevelNode } from '../../services/api'
 
 interface Props {
     index: number;
@@ -93,7 +93,7 @@ export const NodoForm = ( props : Props ) => {
             return
         }
         try {
-            await addNodoNivel(data, parent, props.id)
+            await addLevelNode(data, parent, props.id)
         } catch (error) {
             console.log(error);
         }

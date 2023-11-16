@@ -2,14 +2,16 @@ import { ErrorTypeInterface } from "./common";
 import { PDTInterface, NivelInterface } from "./formInterfaces";
 
 export interface InitialStatePlanInterface {
-    loading: boolean;
+    loadingPlan: boolean;
     loadingColors: boolean;
     loadingNodes: boolean;
-    loadingLevels: boolean
-    errorLoading: ErrorTypeInterface;
-    errorColors: ErrorTypeInterface;
-    errorNodes: ErrorTypeInterface;
-    errorLevels: ErrorTypeInterface;
+    loadingLevels: boolean;
+    loadingNamesTree: boolean;
+    errorLoadingPlan: ErrorTypeInterface;
+    errorLoadingColors: ErrorTypeInterface;
+    errorLoadingNodes: ErrorTypeInterface;
+    errorLoadingLevels: ErrorTypeInterface;
+    errorLoadingNamesTree: ErrorTypeInterface;
     plan?: PDTInterface;
     colorimeter: number[];
     color?: boolean;
@@ -19,6 +21,7 @@ export interface InitialStatePlanInterface {
     levels: NivelInterface[];
     indexLevel: number | undefined;
     parent: string | null;
+    namesTree: [string[]];
 }
 
 export interface GetNodeProps {

@@ -45,30 +45,30 @@ export interface UnidadInterface {
     indicator: string,
     base: number,
     goal: number,
-    years: AñoInterface[]
+    years: YearInterface[]
 }
 
-export interface AñoInterface {
+export interface YearInterface {
     year: number;
     programed: number;
     phisicalExecuted: number;
     finalcialExecuted: number;
 }
 
-export interface EvidenciaInterface {
-    Fecha: string;
-    DescripcionActividades: string;
-    Unidad: string;
-    Cantidad: number;
-    Comuna: string;
-    Barrio: string;
-    Correguimiento: string;
-    Vereda: string;
-    PoblacionBeneficiada: string;
-    NumeroPoblacionBeneficiada: number;
-    RecursosEjecutados: number;
-    FuenteRecursos: string;
-    NombreDocumento: string;
-    Lugar: string;
-    Fecha2: string;
+export interface EvidenceInterface {
+    fecha: string;
+    descripcionActividades: string;
+    unidad: string;
+    cantidad: number;
+    comuna: string;
+    barrio: string;
+    correguimiento: string;
+    vereda: string;
+    poblacionBeneficiada: string;
+    numeroPoblacionBeneficiada: number;
+    recursosEjecutados: number;
+    fuenteRecursos: string;
+    nombreDocumento: string;
+    lugar: string;
+    fechaArchivo: string;
 }

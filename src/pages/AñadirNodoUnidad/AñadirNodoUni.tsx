@@ -1,32 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
-import { useAppSelector } from "@/store";
+import { useAppSelector, useAppDispatch } from "@/store";
+import { thunkGetLevelName } from "@/store/plan/thunks";
 
-import { addNodoUnidadYAños, getNombreNivel, getNodoUnidadYAños, getProgresoTotal } from "../../services/api";
-import { AñoInterface, UnidadInterface, DetalleAño, PesosNodos, Porcentaje } from "../../interfaces";
+import { addUnitNodeAndYears, getUnitNodeAndYears, getTotalProgress } from "../../services/api";
+import { YearInterface, UnidadInterface, YearDetail, PesosNodos, Porcentaje } from "../../interfaces";
 
 export const AñadirNodoUni = () => {
+    const dispatch = useAppDispatch();
     const navigate = useNavigate()
+
     const { idPDT, idNodo } = useParams();
+    const { years, namesTree } = useAppSelector(store => store.plan)
 
-    const { plan } = useAppSelector(store => store.plan)
-    
-    const [años, setAños] = useState<number[]>([]);
-    const [bool, setBool] = useState(false)
-
-    const {Fecha_inicio} = plan
-    if (!bool) {
-        setBool(true)
-        setAños([
-            new Date(Fecha_inicio).getUTCFullYear(), 
-            new Date(Fecha_inicio).getUTCFullYear()+1, 
-            new Date(Fecha_inicio).getUTCFullYear()+2, 
-            new Date(Fecha_inicio).getUTCFullYear()+3
-        ])
-    }
-
-    const [nombres, setNombres] = useState([[]]);
     const [acum, setAcum] = useState(0);
     const [acumFinan, setAcumFinan] = useState(0);
     const [getProgress, setGetProgress] = useState(false);
@@ -40,7 +27,7 @@ export const AñadirNodoUni = () => {
         years: []
     });
 
-    const [añoForm, setañoForm] = useState<AñoInterface[]>([
+    const [añoForm, setañoForm] = useState<YearInterface[]>([
         {
             year: 0,
             programed: 0,
@@ -67,77 +54,79 @@ export const AñadirNodoUni = () => {
         }
     ]);
 
-    let añosTemp = [] as AñoInterface[];
+    let añosTemp = [] as YearInterface[];
 
     useEffect(() => {
-        try {
-            const ids = idNodo!.split('.');
-            let ids2 = ids.reduce((acumulator:string[], currentValue) => {
-                if (acumulator.length === 0) {
-                    return [currentValue];
-                } else {
-                    const ultimoElemento = acumulator[acumulator.length - 1];
-                    const concatenado = `${ultimoElemento}.${currentValue}`;
-                    return [...acumulator, concatenado];
-                }
-            }, []);
-            ids2 = ids2.slice(1);
-            getNombreNivel(ids2).then((res) => setNombres(res));
+        const ids = idNodo!.split('.');
+        let ids2 = ids.reduce((acumulator:string[], currentValue) => {
+            if (acumulator.length === 0) {
+                return [currentValue];
+            } else {
+                const ultimoElemento = acumulator[acumulator.length - 1];
+                const concatenado = `${ultimoElemento}.${currentValue}`;
+                return [...acumulator, concatenado];
+            }
+        }, []);
+        ids2 = ids2.slice(1);
+        dispatch(thunkGetLevelName(ids2))
+    }, [])
 
-            const id_ = parseInt(idPDT as string)
-            getProgresoTotal(id_)
-                .then((res) => {
-                    if (!res) return
-                    localStorage.setItem('pesosNodo', JSON.stringify(res[0]))
-                    localStorage.setItem('detalleAño', JSON.stringify(res[1]))
-                    calcProgress()
-                    setGetProgress(true)
-                })
-                .catch((err) => {
-                    console.log(err);
-                })
+    useEffect(() => {
+        const id_ = parseInt(idPDT as string)
+        getTotalProgress(id_)
+        .then((res) => {
+            if (!res) return
+            localStorage.setItem('pesosNodo', JSON.stringify(res[0]))
+            localStorage.setItem('detalleAño', JSON.stringify(res[1]))
+            calcProgress()
+            setGetProgress(true)
+        })
+        .catch((err) => {
+            console.log(err);
+        })
+    }, [])
 
-            getNodoUnidadYAños(idPDT!, idNodo!).then((res) => {
-                const { Node } = res;
-                
-                if (Node === undefined) return;
-                const { Codigo, Descripcion, Indicador, Linea_base, Meta } = Node;
-                if (Codigo === undefined || Descripcion === undefined || Indicador === undefined || Linea_base === undefined || Meta === undefined) return;
-                setUnidForm({code: Node.Codigo,
-                             description: Node.Descripcion,
-                             indicator: Node.Indicador,
-                             base: Node.Linea_base,
-                             goal: Node.Meta,
-                             years: []
-                });
-                const detalleAño = localStorage.getItem('detalleAño');
-                if (detalleAño === null) 
-                    return;
-                const detalleAñoJSON = JSON.parse(detalleAño);
-                const Años = detalleAñoJSON.filter((dato:DetalleAño) => dato.id_nodo === idNodo);
-                Años.forEach((dato:DetalleAño) => {
-                    const año = new Date(dato.Año).getFullYear();
-                    añosTemp.push({
-                        year: año,
-                        programed: dato.Programacion_fisica,
-                        phisicalExecuted: dato.Ejecucion_Fisica,
-                        finalcialExecuted: dato.Ejecucion_financiera,
-                    });
-                });
-                setañoForm(añosTemp);
-                const temp = calcularAcumulado( años, añosTemp);
-                setAcum(temp);
+    useEffect(() => {
+        getUnitNodeAndYears(idPDT!, idNodo!)
+        .then((res) => {
+            const { Node } = res;
+            if (Node === undefined) return;
+            const { Codigo, Descripcion, Indicador, Linea_base, Meta } = Node;
+            if (Codigo === undefined || Descripcion === undefined || Indicador === undefined || Linea_base === undefined || Meta === undefined) return;
+            setUnidForm({code: Node.Codigo,
+                         description: Node.Descripcion,
+                         indicator: Node.Indicador,
+                         base: Node.Linea_base,
+                         goal: Node.Meta,
+                         years: []
             });
-        } catch (error) {
-            console.log('err');
-        }
+            const detalleAño = localStorage.getItem('detalleAño');
+            if (detalleAño === null) return;
+            const detalleAñoJSON = JSON.parse(detalleAño);
+            const Años = detalleAñoJSON.filter((dato:YearDetail) => dato.id_nodo === idNodo);
+            Años.forEach((dato:YearDetail) => {
+                const año = new Date(dato.Año).getFullYear();
+                añosTemp.push({
+                    year: año,
+                    programed: dato.Programacion_fisica,
+                    phisicalExecuted: dato.Ejecucion_Fisica,
+                    finalcialExecuted: dato.Ejecucion_financiera,
+                });
+            });
+            setañoForm(añosTemp);
+            const temp = calcularAcumulado( years, añosTemp);
+            setAcum(temp);
+        })
+        .catch((err) => {
+            console.log(err);
+        });
     }, []);
 
-    const calcularAcumulado = (años: number[], añoForm: AñoInterface[]) => {
+    const calcularAcumulado = (years: number[], añoForm: YearInterface[]) => {
         let acumulado = 0;
         let acum = 0;
         let finan = 0;
-        años.map((año: number, index: number) => {
+        years.map((year: number, index: number) => {
             if (añoForm[index].programed !== 0) {
                 acum++;
                 acumulado += (añoForm[index].phisicalExecuted) / (añoForm[index].programed);
@@ -156,7 +145,7 @@ export const AñadirNodoUni = () => {
         let pesosNodo = JSON.parse(pesosStr as string)
         let detalleAño = JSON.parse(detalleStr as string)
         
-        detalleAño.forEach((item: DetalleAño) => {
+        detalleAño.forEach((item: YearDetail) => {
             let progreso = 0
             if (item.Programacion_fisica !== 0)
                 progreso = item.Ejecucion_Fisica / item.Programacion_fisica
@@ -212,7 +201,7 @@ export const AñadirNodoUni = () => {
             return alert('Faltan campos por llenar')
         
         try {
-            addNodoUnidadYAños(idPDT!, idNodo!, unidForm, añoForm).then((res) => {
+            addUnitNodeAndYears(idPDT!, idNodo!, unidForm, añoForm).then((res) => {
                 if (res === undefined)
                     return alert('No se pudo añadir la unidad')
                 alert('Unidad añadida con éxito');
@@ -229,7 +218,7 @@ export const AñadirNodoUni = () => {
         });
     }
 
-    const handleInputaño = (grupo: keyof AñoInterface, index: number, valor: string) => {
+    const handleInputaño = (grupo: keyof YearInterface, index: number, valor: string) => {
         setañoForm(añoForm.map((año, i) => {
             if (i === index) {
                 return {
@@ -312,7 +301,7 @@ export const AñadirNodoUni = () => {
     }
 
     const añosForm = () => {
-        años.forEach((año, index) => {
+        years.forEach((año, index) => {
             añoForm[index].year = año;
             añoForm[index].phisicalExecuted = añoForm[index].phisicalExecuted ?? 0;
             añoForm[index].programed = añoForm[index].programed ?? 0;
@@ -334,7 +323,7 @@ export const AñadirNodoUni = () => {
                                             tw-rounded'> 
                                 <button onClick={handleSubmitButton}>Añadir evidencia</button>
                             </th>
-                            {años.map((año, index) => {
+                            {years.map((año, index) => {
                                 return(
                                     <th className="tw-border tw-border-slate-600 tw-px-10 tw-bg-yellow-400 tw-rounded"
                                         key={index}>
@@ -348,7 +337,7 @@ export const AñadirNodoUni = () => {
                     <tbody>
                         <tr>
                             <td className="tw-border tw-border-slate-600 tw-font-bold tw-px-2 tw-rounded">Programación</td>
-                            {años.map((año, index) => {
+                            {years.map((año, index) => {
                                 return(
                                     <td className="tw-border tw-border-slate-600 tw-font-bold tw-rounded"
                                         key={index}>
@@ -365,7 +354,7 @@ export const AñadirNodoUni = () => {
                         </tr>
                         <tr>
                             <td className="tw-border tw-border-slate-600 tw-font-bold tw-px-2 tw-rounded">Ejecución física</td>
-                            {años.map((año, index) => {
+                            {years.map((año, index) => {
                                 return(
                                     <td className="tw-border tw-border-slate-600 tw-font-bold tw-rounded"
                                         key={index}>
@@ -385,12 +374,12 @@ export const AñadirNodoUni = () => {
                         </tr>
                         <tr>
                             <td className="tw-border tw-border-slate-600 tw-font-bold tw-px-2 tw-rounded">Ejecución financiera</td>
-                            {años.map((año, index) => {
+                            {years.map((year, index) => {
                                 return(
                                     <td className="tw-border tw-border-slate-600 tw-font-bold tw-rounded"
                                         key={index}>
                                         <input  type="text"
-                                                name={`ejecFinanciera-${año}`}
+                                                name={`ejecFinanciera-${year}`}
                                                 value={añoForm[index].finalcialExecuted}
                                                 className='tw-bg-gray-200'
                                                 onChange={(e) => handleInputaño("finalcialExecuted", index, e.target.value)}
@@ -426,11 +415,11 @@ export const AñadirNodoUni = () => {
                 <img src="/src/assets/images/Plan-indicativo.png" alt="" width={60} />
             </div>
             <div className="tw-col-start-1 tw-col-span-full tw-flex tw-justify-center">
-            {nombres.length > 0 && nombres.map((nombre, index) => {
+            {namesTree.length > 0 && namesTree.map((name, index) => {
                 return (
                     <div className="tw-flex mr-4" key={index}>
-                        <p className="tw-text-green-600 tw-font-bold">{nombre[1]}:</p> 
-                        <span className="tw-pr-1"/> <p>{nombre[0]}</p>
+                        <p className="tw-text-green-600 tw-font-bold">{name[1]}:</p> 
+                        <span className="tw-pr-1"/> <p>{name[0]}</p>
                     </div>
                 );
             })}

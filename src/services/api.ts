@@ -1,8 +1,8 @@
 import axios from "axios";
 import jwtDecode from "jwt-decode";
 
-import { AñoInterface, UnidadInterface, NodoInterface, 
-    NivelInterface, RegisterInterface, PDTInterface, EvidenciaInterface, GetNodeProps, AddColorsProps } from "../interfaces";
+import { YearInterface, UnidadInterface, NodoInterface, 
+    NivelInterface, RegisterInterface, PDTInterface, EvidenceInterface, GetNodeProps, AddColorsProps } from "../interfaces";
 
 import { getToken, refreshToken } from "@/utils";
 
@@ -207,7 +207,7 @@ export const deletePDT = async (id: number) => {
 }
 
 // Añade todos los niveles a un PDT
-export const addNivel = async (nivel: NivelInterface[], id : string) => {
+export const addLevel = async (nivel: NivelInterface[], id : string) => {
     try {
         const response = await api.post(`/plan-territorial/${id}`, { levels: nivel });
         return response.data;
@@ -217,7 +217,7 @@ export const addNivel = async (nivel: NivelInterface[], id : string) => {
 }
 
 // Obtiene todos los nodos de un nivel de un PDT
-export const getNodosNivel = async (props: GetNodeProps) => {
+export const getLevelNodes = async (props: GetNodeProps) => {
     try {
         const response = await api.get(`/plan-territorial/nivel`, { 
             params: {
@@ -232,7 +232,7 @@ export const getNodosNivel = async (props: GetNodeProps) => {
 }
 
 // Añade todos los nodos a un nivel de un PDT
-export const addNodoNivel = async (nodes: NodoInterface[], parent: (string|null), id_level: number) => {
+export const addLevelNode = async (nodes: NodoInterface[], parent: (string|null), id_level: number) => {
     try {
         const response = await api.post("/plan-territorial/nivel", { 
             nodes: nodes,
@@ -246,7 +246,7 @@ export const addNodoNivel = async (nodes: NodoInterface[], parent: (string|null)
 }
 
 // Borrar un nivel de un PDT
-export const deleteNivel = async (id: number) => {
+export const deleteLevel = async (id: number) => {
     try {
         const response = await api.delete(`/plan-territorial/nivel`, {
             params: {
@@ -260,7 +260,7 @@ export const deleteNivel = async (id: number) => {
 }
 
 // Obtiene los nombres de cada nivel que tienen los nodos
-export const getNombreNivel = async (ids: string[]) => {
+export const getLevelName = async (ids: string[]) => {
     try {
         const response = await api.get(`/nodo/nombres`, {
             params: { 
@@ -274,7 +274,7 @@ export const getNombreNivel = async (ids: string[]) => {
 }
 
 // Añade una unidad de nodo donde se registre la programacion financiera por años
-export const addNodoUnidadYAños = async (idPDT: string, idNodo: string, nodoUnidad: UnidadInterface, años: AñoInterface[]) => {
+export const addUnitNodeAndYears = async (idPDT: string, idNodo: string, nodoUnidad: UnidadInterface, años: YearInterface[]) => {
     try {
         const response = await api.post("/nodo", { 
             id_plan: idPDT,
@@ -289,7 +289,7 @@ export const addNodoUnidadYAños = async (idPDT: string, idNodo: string, nodoUni
 }
 
 // Obtiene una unidad de nodo donde se registre la programacion financiera por años
-export const getNodoUnidadYAños = async (idPDT: string, idNodo: string) => {
+export const getUnitNodeAndYears = async (idPDT: string, idNodo: string) => {
     try {
         const response = await api.get(`/nodo`, {
             params: { 
@@ -304,11 +304,19 @@ export const getNodoUnidadYAños = async (idPDT: string, idNodo: string) => {
 }
 
 // Añade una evidencia a una unidad de nodo
-export const addEvicenciaMeta = async (codigo: string, evidencia: EvidenciaInterface) => {
+export const addEvicenceGoal = async (codigo: string, evidencia: EvidenceInterface, file: File) => {
     try {
-        const response = await api.post("/nodo/evidencia", { 
-            code:     codigo,
-            evidence: evidencia
+        const formData = new FormData();
+        formData.append('file', file);
+        const response = await api.post("/nodo/evidencia", 
+        {
+            code: codigo,
+            evidence: evidencia,
+            file: file
+        },{
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
         });
         return response.data;
     } catch (error) {
@@ -317,7 +325,7 @@ export const addEvicenciaMeta = async (codigo: string, evidencia: EvidenciaInter
 }
 
 // Obtiene los porcentajes de avance de un año de una unidad de nodo
-export const getProgresoAño = async (ids_nodos: string[], año: number) => {
+export const getYearProgress = async (ids_nodos: string[], año: number) => {
     try {
         const response = await api.get(`/nodo/progreso`, {
             params: {
@@ -332,7 +340,7 @@ export const getProgresoAño = async (ids_nodos: string[], año: number) => {
 }
 
 // Obtiene la informacion de todos los nodos y el progreso de las metas
-export const getProgresoTotal = async (id_plan: number) => {
+export const getTotalProgress = async (id_plan: number) => {
     try {
         const response = await api.get(`/nodo/progreso-total`, {
             params: {
@@ -346,7 +354,7 @@ export const getProgresoTotal = async (id_plan: number) => {
 }
 
 // Actualizar una unidad de nodo
-export const updateNodo = async (idPDT: string, idNodo: string, nodo: UnidadInterface, años: AñoInterface) => {
+export const updateNode = async (idPDT: string, idNodo: string, nodo: UnidadInterface, años: YearInterface) => {
     try {
         const response = await api.put("/nodo", { 
             id_plan: idPDT,
@@ -361,7 +369,7 @@ export const updateNodo = async (idPDT: string, idNodo: string, nodo: UnidadInte
 }
 
 // Actualizar evidencia de una unidad de nodo
-export const updateEvidencia = async (codigo: string, evidencia: EvidenciaInterface) => {
+export const updateEvidence = async (codigo: string, evidencia: EvidenceInterface) => {
     try {
         const response = await api.put("/nodo/evidencia", { 
             code:      codigo,
@@ -374,7 +382,7 @@ export const updateEvidencia = async (codigo: string, evidencia: EvidenciaInterf
 }
 
 // Borrar evidencia de una unidad de nodo
-export const deleteEvidencia = async (id_evidencia: number) => {
+export const deleteEvidence = async (id_evidencia: number) => {
     try {
         const response = await api.delete("/nodo/evidencia", {
             params: {

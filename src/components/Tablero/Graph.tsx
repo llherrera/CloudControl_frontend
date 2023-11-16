@@ -37,9 +37,9 @@ export const Graph = ( props: Props ) => {
         }
     }, [color])
 
-    const options2: Highcharts.Options = {
+    const options: Highcharts.Options = {
         title: {
-            text: `Grafico de ${type}`
+            text: `Gráfico de ${type}`
         },
         plotOptions: {
             pie: {
@@ -49,6 +49,30 @@ export const Graph = ( props: Props ) => {
                 showInLegend: true,
             },
         },
+        annotations: [
+            {
+                labels: [
+                    {
+                        point: {
+                            x: 0,
+                            y: 0,
+                            xAxis: 0,
+                            yAxis: 0,
+                        },
+                        text: '0',
+                    },
+                    {
+                        point: {
+                            x: 0,
+                            y: 0,
+                            xAxis: 0,
+                            yAxis: 0,
+                        },
+                        text: '100',
+                    },
+                ],
+            },
+        ],
         series: [
             {
                 name: 'Porcentaje año',
@@ -110,10 +134,10 @@ export const Graph = ( props: Props ) => {
                     <option value="bar">Bar</option>
                 </select>
             </div>
-            <div className='tw-w-full md:tw-w-1/2'>
+            <div className='tw-w-full md:tw-w-1/2 tw-shadow'>
             <HighchartsReact
                 highcharts={Highcharts}
-                options={options2}
+                options={options}
                 ref={chartComponentRef}
                 containerProps={{ style: {width: '100%', height:'100%'} }}/>
             </div>

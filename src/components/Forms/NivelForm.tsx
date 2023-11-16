@@ -4,7 +4,7 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import { useNavigate } from "react-router-dom";
 
 import { Input } from "../Inputs";
-import { addNivel } from "@/services/api";
+import { addLevel } from "@/services/api";
 import { NivelInterface, Token } from "@/interfaces";
 import { getToken, decode } from "@/utils";
 
@@ -83,7 +83,7 @@ export const NivelForm = ( props: Props ) => {
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         try {
-            await addNivel(data, props.id)
+            await addLevel(data, props.id)
             window.location.reload();
         } catch (error) {
             console.log(error);

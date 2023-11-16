@@ -4,18 +4,21 @@ import { InitialStatePlanInterface } from "@/interfaces";
 
 import { thunkGetPDTid, thunkAddPDT, 
     thunkGetColors, thunkAddColors,
-    thunkGetNodes, thunkUpdateYears, thunkGetLevelsById } from "./thunks";
+    thunkGetNodes, thunkUpdateYears, 
+    thunkGetLevelsById, thunkGetLevelName } from "./thunks";
 
 const getInitialState = (): InitialStatePlanInterface => {
     return {
-        loading: false,
+        loadingPlan: false,
         loadingColors: false,
         loadingNodes: false,
         loadingLevels: false,
-        errorLoading: undefined,
-        errorColors: undefined,
-        errorNodes: undefined,
-        errorLevels: undefined,
+        loadingNamesTree: false,
+        errorLoadingPlan: undefined,
+        errorLoadingColors: undefined,
+        errorLoadingNodes: undefined,
+        errorLoadingLevels: undefined,
+        errorLoadingNamesTree: undefined,
         plan: undefined,
         colorimeter: [],
         color: undefined,
@@ -24,7 +27,8 @@ const getInitialState = (): InitialStatePlanInterface => {
         yearSelect: undefined,
         levels: [],
         indexLevel: undefined,
-        parent: null
+        parent: null,
+        namesTree: [['Dimension', 'Nivel']],
     };
 };
 
@@ -47,30 +51,30 @@ export const planSlice = createSlice({
     },
     extraReducers: builder => {
         builder.addCase(thunkGetPDTid.pending, state => {
-            if (!state.loading) state.loading = true;
-            state.errorLoading = undefined;
+            if (!state.loadingPlan) state.loadingPlan = true;
+            state.errorLoadingPlan = undefined;
         });
         builder.addCase(thunkGetPDTid.fulfilled, (state, action) => {
-            state.loading = false;
+            state.loadingPlan = false;
             state.plan = action.payload;
         });
         builder.addCase(thunkGetPDTid.rejected, (state, action) => {
-            state.loading = false;
-            state.errorLoading = action.payload;
+            state.loadingPlan = false;
+            state.errorLoadingPlan = action.payload;
         });
 
 
         builder.addCase(thunkAddPDT.pending, state => {
-            if (!state.loading) state.loading = true;
-            state.errorLoading = undefined;
+            if (!state.loadingPlan) state.loadingPlan = true;
+            state.errorLoadingPlan = undefined;
         });
         builder.addCase(thunkAddPDT.fulfilled, (state, action) => {
-            state.loading = false;
+            state.loadingPlan = false;
             state.plan = action.payload;
         });
         builder.addCase(thunkAddPDT.rejected, (state, action) => {
-            state.loading = false;
-            state.errorLoading = action.payload;
+            state.loadingPlan = false;
+            state.errorLoadingPlan = action.payload;
             if (action.payload) {
                 switch (action.payload.status) {
                     case 401:
@@ -90,7 +94,7 @@ export const planSlice = createSlice({
 
         builder.addCase(thunkAddColors.pending, state => {
             if (!state.loadingColors) state.loadingColors = true;
-            state.errorColors = undefined;
+            state.errorLoadingColors = undefined;
         });
         builder.addCase(thunkAddColors.fulfilled, (state, action) => {
             state.loadingColors = false;
@@ -100,12 +104,12 @@ export const planSlice = createSlice({
         builder.addCase(thunkAddColors.rejected, (state, action) => {
             state.loadingColors = false;
             state.color = false;
-            state.errorColors = action.payload;
+            state.errorLoadingColors = action.payload;
         });
 
         builder.addCase(thunkGetColors.pending, state => {
             if (!state.loadingColors) state.loadingColors = true;
-            state.errorColors = undefined;
+            state.errorLoadingColors = undefined;
         });
         builder.addCase(thunkGetColors.fulfilled, (state, action) => {
             state.loadingColors = false;
@@ -115,13 +119,13 @@ export const planSlice = createSlice({
         builder.addCase(thunkGetColors.rejected, (state, action) => {
             state.loadingColors = false;
             state.color = false;
-            state.errorColors = action.payload;
+            state.errorLoadingColors = action.payload;
         });
 
 
         builder.addCase(thunkGetNodes.pending, state => {
             if (!state.loadingNodes) state.loadingNodes = true;
-            state.errorNodes = undefined;
+            state.errorLoadingNodes = undefined;
         });
         builder.addCase(thunkGetNodes.fulfilled, (state, action) => {
             state.loadingNodes = false;
@@ -129,7 +133,7 @@ export const planSlice = createSlice({
         });
         builder.addCase(thunkGetNodes.rejected, (state, action) => {
             state.loadingNodes = false;
-            state.errorNodes = action.payload;
+            state.errorLoadingNodes = action.payload;
         });
 
 
@@ -140,13 +144,24 @@ export const planSlice = createSlice({
 
 
         builder.addCase(thunkGetLevelsById.pending, state => {
-            state.errorLoading = undefined;
+            state.errorLoadingLevels = undefined;
         });
         builder.addCase(thunkGetLevelsById.fulfilled, (state, action) => {
             state.levels = action.payload;
         });
         builder.addCase(thunkGetLevelsById.rejected, (state, action) => {
-            state.errorLoading = action.payload;
+            state.errorLoadingLevels = action.payload;
+        });
+
+
+        builder.addCase(thunkGetLevelName.pending, state => {
+            state.errorLoadingNamesTree = undefined;
+        });
+        builder.addCase(thunkGetLevelName.fulfilled, (state, action) => {
+            state.namesTree = action.payload;
+        });
+        builder.addCase(thunkGetLevelName.rejected, (state, action) => {
+            state.errorLoadingNamesTree = action.payload;
         });
     }
 });

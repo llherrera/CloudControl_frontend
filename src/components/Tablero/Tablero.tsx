@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 
 import { Content } from './Content';
 import { PesosNodos, Porcentaje, DetalleAño, NivelInterface } from '../../interfaces';
-import { getProgresoTotal } from '../../services/api';
+import { getTotalProgress } from '../../services/api';
 
 import { useAppDispatch } from '@/store';
 import { thunkGetPDTid, thunkGetColors } from '@/store/plan/thunks';
@@ -28,7 +28,7 @@ export const Tablero = ( props : Props ) => {
         dispatch(thunkGetPDTid(id)).unwrap()
         dispatch(thunkGetColors(id)).unwrap()
         
-        getProgresoTotal(id_)
+        getTotalProgress(id_)
             .then((res) => {
                 if (!res) return
                 localStorage.setItem('pesosNodo', JSON.stringify(res[0]))

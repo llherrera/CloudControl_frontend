@@ -12,7 +12,7 @@ export interface PesosNodos {
     porcentajes: Porcentaje[] | null;
 }
 
-export interface DetalleAño {
+export interface YearDetail {
     id_nodo: string;
     Año: number;
     Programacion_fisica: number;

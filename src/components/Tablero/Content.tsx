@@ -79,7 +79,7 @@ export const Content = ( props : Props ) => {
                 })
             })
             setNodos(temp)
-            getProgresoAños()
+            getYearProgresss()
         })
         .catch((err) => {console.log(err)})
     }, [years, indexLevel])
@@ -90,7 +90,7 @@ export const Content = ( props : Props ) => {
         }
     }, [color])
 
-    const getProgresoAños = () => {
+    const getYearProgresss = () => {
         let pesosStr = localStorage.getItem('pesosNodo')
         if (pesosStr == undefined) 
             pesosStr = '[]'
