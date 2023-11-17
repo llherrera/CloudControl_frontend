@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 
 import { Content } from './Content';
-import { PesosNodos, Porcentaje, DetalleAño, NivelInterface } from '../../interfaces';
+import { PesosNodos, Porcentaje, YearDetail, NivelInterface } from '../../interfaces';
 import { getTotalProgress } from '../../services/api';
 
 import { useAppDispatch } from '@/store';
@@ -42,14 +42,14 @@ export const Tablero = ( props : Props ) => {
         return () => abortController.abort()
     }, [])
 
-    const calcProgress = ( res: [PesosNodos[],DetalleAño[]] ) => {
+    const calcProgress = ( res: [PesosNodos[], YearDetail[]] ) => {
         let pesosNodo = res[0]
         let detalleAño = res[1]
         
-        detalleAño.forEach((item: DetalleAño) => {
+        detalleAño.forEach((item: YearDetail) => {
             let progreso = 0
             if (item.Programacion_fisica !== 0)
-                progreso = item.Ejecucion_Fisica / item.Programacion_fisica
+                progreso = item.Ejecucion_fisica / item.Programacion_fisica
                 if (progreso > 1) progreso = 1
                 progreso = parseFloat(progreso.toFixed(2))
             let peso = pesosNodo.find((peso: PesosNodos) => peso.id_nodo === item.id_nodo)

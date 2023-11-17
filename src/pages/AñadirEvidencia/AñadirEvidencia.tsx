@@ -112,7 +112,7 @@ export const AñadirEvidencia = () => {
         //            const año = new Date(dato.Año).getFullYear();
         //            añosTemp.año.push(año);
         //            añosTemp.programacion.push(dato.Programacion_fisica);
-        //            añosTemp.ejecFisica.push(dato.Ejecucion_Fisica);
+        //            añosTemp.ejecFisica.push(dato.Ejecucion_fisica);
         //            añosTemp.ejecFinanciera.push(dato.Ejecucion_financiera);
         //        });
         //        setañoForm(añosTemp);

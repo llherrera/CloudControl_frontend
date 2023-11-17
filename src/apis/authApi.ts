@@ -1,18 +1,17 @@
-//import { getEnvironment } from '../utils'
 import { getEnvironment } from '../utils/environment'
 
 import apis from './index'
 
-const { VITE_API_AUTH } = getEnvironment()
+const { BASE_URL } = getEnvironment()
 
 export const apiLogin = () => {
-  return apis.post(`${VITE_API_AUTH}/login`, {})
+  return apis.post(`${BASE_URL}/login`, {})
 }
 
 export const apiRefreshToken = () => {
-  return apis.post(`${VITE_API_AUTH}/refresh`, {})
+  return apis.post(`${BASE_URL}/refresh`, {})
 }
 
 export const apiLogout = () => {
-  return apis.post(`${VITE_API_AUTH}/logout`, {})
+  return apis.post(`${BASE_URL}/logout`, {})
 }

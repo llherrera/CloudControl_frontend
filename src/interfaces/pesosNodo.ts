@@ -16,6 +16,6 @@ export interface YearDetail {
     id_nodo: string;
     Año: number;
     Programacion_fisica: number;
-    Ejecucion_Fisica: number;
+    Ejecucion_fisica: number;
     Ejecucion_financiera: number;
 }

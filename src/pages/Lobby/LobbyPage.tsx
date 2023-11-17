@@ -41,6 +41,7 @@ export const LobbyPage = () => {
         }
         getLastPDT()
             .then((e) => {
+                console.log(e);
                 if (e.id_plan)
                     navigate(`/pdt/${e.id_plan}`)
                 else

@@ -1,8 +1,10 @@
 {
   "name": "react-app-with-typescript",
   "version": "0.1.0",
-  "proxy": "http://localhost:8080",
-  "type": "module",
+  "author": {
+    "name": "Leonardo Herrera",
+    "email": "leonardo.herrera.co@cloudappi.net"
+  },
   "scripts": {
     "build": "npm run typecheck && vite build",
     "dev": "vite",

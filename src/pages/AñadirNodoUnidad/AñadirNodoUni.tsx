@@ -109,7 +109,7 @@ export const AñadirNodoUni = () => {
                 añosTemp.push({
                     year: año,
                     programed: dato.Programacion_fisica,
-                    phisicalExecuted: dato.Ejecucion_Fisica,
+                    phisicalExecuted: dato.Ejecucion_fisica,
                     finalcialExecuted: dato.Ejecucion_financiera,
                 });
             });
@@ -148,7 +148,7 @@ export const AñadirNodoUni = () => {
         detalleAño.forEach((item: YearDetail) => {
             let progreso = 0
             if (item.Programacion_fisica !== 0)
-                progreso = item.Ejecucion_Fisica / item.Programacion_fisica
+                progreso = item.Ejecucion_fisica / item.Programacion_fisica
                 progreso = parseFloat(progreso.toFixed(2))
             let peso = pesosNodo.find((peso: PesosNodos) => peso.id_nodo === item.id_nodo)
             if (peso) {

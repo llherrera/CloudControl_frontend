@@ -21,7 +21,7 @@ export const PDTForm = () => {
         Nombre: "",
         Alcaldia: "",
         Municipio: "",
-        Fecha_inicio: '',
+        Fecha_inicio: new Date().getUTCFullYear().toString(),
         Fecha_fin: '',
         Descripcion: "",
     });

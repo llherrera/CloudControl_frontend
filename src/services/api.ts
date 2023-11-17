@@ -1,24 +1,28 @@
 import axios from "axios";
 import jwtDecode from "jwt-decode";
+import { getEnvironment } from '../utils/environment'
 
 import { YearInterface, UnidadInterface, NodoInterface, 
-    NivelInterface, RegisterInterface, PDTInterface, EvidenceInterface, GetNodeProps, AddColorsProps } from "../interfaces";
+    NivelInterface, RegisterInterface, PDTInterface, 
+    EvidenceInterface, GetNodeProps, AddColorsProps } from "../interfaces";
 
 import { getToken, refreshToken } from "@/utils";
 
+const { BASE_URL } = getEnvironment()
+console.log(BASE_URL);
 const api = axios.create({
-    baseURL: "http://localhost:8080"
+    baseURL: BASE_URL,
 });
 
 let isRefreshingToken = false
 let failedQueue: { resolve: (value?: unknown) => void; reject: (reason?: unknown) => void }[] = []
 
 const processFailedQueue = (error?: unknown) => {
-  failedQueue.forEach(promise => {
-    if (error) promise.reject(error)
-    else promise.resolve()
-  })
-  failedQueue = []
+    failedQueue.forEach(promise => {
+        if (error) promise.reject(error)
+        else promise.resolve()
+    })
+    failedQueue = []
 }
 
 api.interceptors.request.use(
@@ -55,7 +59,6 @@ api.interceptors.request.use(
     }
 );
 
-// Obtiene todos los PDTs
 export const getPDTs = async () => {
     try {
         const response = await api.get("/plan-territorial");
@@ -65,7 +68,6 @@ export const getPDTs = async () => {
     }
 }
 
-// Obtiene información de un PDT
 export const getPDTid = async (id: string) => {
     try {
         const response = await api.get(`/plan-territorial/${id}`);
@@ -75,7 +77,6 @@ export const getPDTid = async (id: string) => {
     }
 }
 
-// Obtiene los niveles de un PDT 
 export const getPDTLevelsById = async (id: string) => {
     try {
         const response = await api.get(`/plan-territorial/${id}/nivel`);
@@ -85,17 +86,15 @@ export const getPDTLevelsById = async (id: string) => {
     }
 }
 
-// Obtiene el ultimo PDT
 export const getLastPDT = async () => {
     try {
         const response = await api.get("/plan-territorial/ultimo");
-        return response.data;
+        return response.data[0];
     } catch (error) {
         return error;
     }
 }
 
-// Hace login con el usuario y contraseña
 interface LoginProps {
     username: string
     password: string
@@ -113,7 +112,6 @@ export const doLogin = async (data:LoginProps) => {
     }
 }
 
-// Hacer logout
 export const doLogout = async () => {
     try {
         const response = await api.post('/usuarios/cerrar');
@@ -132,7 +130,6 @@ export const doRefreshToken = async () => {
     }
 }
 
-// Crea un usuario funcionario para un PDT especifico
 export const doRegister = async (id: number, userData: RegisterInterface) => {
     try {
         const response = await api.post('/usuarios/registrar', {
@@ -149,7 +146,6 @@ export const doRegister = async (id: number, userData: RegisterInterface) => {
     }
 }
 
-// Cambiar permisos de un usuario
 export const changePermissions = async (id: number, rol: string) => {
     try {
         const response = await api.put('/usuarios/actualizar', {
@@ -162,7 +158,6 @@ export const changePermissions = async (id: number, rol: string) => {
     }
 }
 
-// Añade un nuevo PDT
 export const addPDT = async (pdt: PDTInterface) => {
     try {
         const response = await api.post("/plan-territorial", {
@@ -179,7 +174,6 @@ export const addPDT = async (pdt: PDTInterface) => {
     }
 };
 
-// Actualiza un PDT
 export const updatePDT = async (id: number, pdt: PDTInterface) => {
     try {
         const response = await api.put(`/plan-territorial/${id}`, {
@@ -196,7 +190,6 @@ export const updatePDT = async (id: number, pdt: PDTInterface) => {
     }
 }
 
-// Borrar un PDT
 export const deletePDT = async (id: number) => {
     try {
         const response = await api.delete(`/plan-territorial/${id}`);
@@ -206,7 +199,6 @@ export const deletePDT = async (id: number) => {
     }
 }
 
-// Añade todos los niveles a un PDT
 export const addLevel = async (nivel: NivelInterface[], id : string) => {
     try {
         const response = await api.post(`/plan-territorial/${id}`, { levels: nivel });
@@ -216,7 +208,6 @@ export const addLevel = async (nivel: NivelInterface[], id : string) => {
     }
 }
 
-// Obtiene todos los nodos de un nivel de un PDT
 export const getLevelNodes = async (props: GetNodeProps) => {
     try {
         const response = await api.get(`/plan-territorial/nivel`, { 
@@ -231,7 +222,6 @@ export const getLevelNodes = async (props: GetNodeProps) => {
     }
 }
 
-// Añade todos los nodos a un nivel de un PDT
 export const addLevelNode = async (nodes: NodoInterface[], parent: (string|null), id_level: number) => {
     try {
         const response = await api.post("/plan-territorial/nivel", { 
@@ -245,7 +235,6 @@ export const addLevelNode = async (nodes: NodoInterface[], parent: (string|null)
     }
 }
 
-// Borrar un nivel de un PDT
 export const deleteLevel = async (id: number) => {
     try {
         const response = await api.delete(`/plan-territorial/nivel`, {
@@ -259,7 +248,6 @@ export const deleteLevel = async (id: number) => {
     }
 }
 
-// Obtiene los nombres de cada nivel que tienen los nodos
 export const getLevelName = async (ids: string[]) => {
     try {
         const response = await api.get(`/nodo/nombres`, {
@@ -273,7 +261,6 @@ export const getLevelName = async (ids: string[]) => {
     }
 }
 
-// Añade una unidad de nodo donde se registre la programacion financiera por años
 export const addUnitNodeAndYears = async (idPDT: string, idNodo: string, nodoUnidad: UnidadInterface, años: YearInterface[]) => {
     try {
         const response = await api.post("/nodo", { 
@@ -288,7 +275,6 @@ export const addUnitNodeAndYears = async (idPDT: string, idNodo: string, nodoUni
     }
 }
 
-// Obtiene una unidad de nodo donde se registre la programacion financiera por años
 export const getUnitNodeAndYears = async (idPDT: string, idNodo: string) => {
     try {
         const response = await api.get(`/nodo`, {
@@ -303,7 +289,6 @@ export const getUnitNodeAndYears = async (idPDT: string, idNodo: string) => {
     }
 }
 
-// Añade una evidencia a una unidad de nodo
 export const addEvicenceGoal = async (codigo: string, evidencia: EvidenceInterface, file: File) => {
     try {
         const response = await api.post("/nodo/evidencia", 
@@ -322,7 +307,6 @@ export const addEvicenceGoal = async (codigo: string, evidencia: EvidenceInterfa
     }
 }
 
-// Obtiene los porcentajes de avance de un año de una unidad de nodo
 export const getYearProgress = async (ids_nodos: string[], año: number) => {
     try {
         const response = await api.get(`/nodo/progreso`, {
@@ -337,7 +321,6 @@ export const getYearProgress = async (ids_nodos: string[], año: number) => {
     }
 }
 
-// Obtiene la informacion de todos los nodos y el progreso de las metas
 export const getTotalProgress = async (id_plan: number) => {
     try {
         const response = await api.get(`/nodo/progreso-total`, {
@@ -351,7 +334,6 @@ export const getTotalProgress = async (id_plan: number) => {
     }
 }
 
-// Actualizar una unidad de nodo
 export const updateNode = async (idPDT: string, idNodo: string, nodo: UnidadInterface, años: YearInterface) => {
     try {
         const response = await api.put("/nodo", { 
@@ -366,7 +348,6 @@ export const updateNode = async (idPDT: string, idNodo: string, nodo: UnidadInte
     }
 }
 
-// Actualizar evidencia de una unidad de nodo
 export const updateEvidence = async (codigo: string, evidencia: EvidenceInterface) => {
     try {
         const response = await api.put("/nodo/evidencia", { 
@@ -379,7 +360,6 @@ export const updateEvidence = async (codigo: string, evidencia: EvidenceInterfac
     }
 }
 
-// Borrar evidencia de una unidad de nodo
 export const deleteEvidence = async (id_evidencia: number) => {
     try {
         const response = await api.delete("/nodo/evidencia", {
@@ -393,7 +373,6 @@ export const deleteEvidence = async (id_evidencia: number) => {
     }
 }
 
-// Añade los valores de los porcentajes de cada rango de color
 export const addColor = async (props: AddColorsProps) => {
     try {
         const response = await api.post(`/plan-territorial/color`, {
@@ -406,7 +385,6 @@ export const addColor = async (props: AddColorsProps) => {
     }
 }
 
-// Obtiene los valores de los porcentajes de cada rango de color
 export const getColors = async (id_plan: string) => {
     try {
         const response = await api.get(`/plan-territorial/color`, {
@@ -420,7 +398,6 @@ export const getColors = async (id_plan: string) => {
     }
 }
 
-// Actualiza los valores de los porcentajes de cada rango de color
 export const updateColor = async (id_plan: number, colors: number[]) => {
     try {
         const response = await api.put(`/plan-territorial/color`, {
