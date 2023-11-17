@@ -306,8 +306,6 @@ export const getUnitNodeAndYears = async (idPDT: string, idNodo: string) => {
 // Añade una evidencia a una unidad de nodo
 export const addEvicenceGoal = async (codigo: string, evidencia: EvidenceInterface, file: File) => {
     try {
-        const formData = new FormData();
-        formData.append('file', file);
         const response = await api.post("/nodo/evidencia", 
         {
             code: codigo,

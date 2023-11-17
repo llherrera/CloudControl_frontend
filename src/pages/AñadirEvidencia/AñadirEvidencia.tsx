@@ -127,14 +127,26 @@ export const AñadirEvidencia = () => {
         setData({ ...data, [name]: value });
     }
 
-    const handleInputChangeFile = (event: FileList | null) => {
-        setDocumento(event);
+    const handleInputChangeFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files;
+        if (file) {
+            if (file[0].type !== 'application/pdf') {
+                alert('El archivo debe ser pdf');
+                e.target.value = '';
+                return;
+            }
+            if (file[0].size > 1024 * 1024 * 5) {
+                alert('El archivo es demasiado grande');
+                e.target.value = '';
+                return;
+            }
+            setDocumento(file);
+        }
     }
 
     const handleSubmitEvidencia = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault()
         const res = await addEvicenceGoal(unidForm.code, data, documento![0])
-        console.log(res)
         //setCargar(!cargar)
     }
 
@@ -420,7 +432,7 @@ export const AñadirEvidencia = () => {
                                 type="file" 
                                 name="documento" 
                                 id="documento" 
-                                onChange={(e) => handleInputChangeFile(e.target.files)}/><br />
+                                onChange={(e) => handleInputChangeFile(e)}/><br />
                         </div>
                         <div className="tw-flex tw-flex-col tw-ml-3">
                             <label>Nombre documento</label>
