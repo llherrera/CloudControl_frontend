@@ -164,14 +164,14 @@ export const Content = ( props : Props ) => {
                             tw-text-center
                             md:tw-text-left">
                 Plan de proyectos
-                {color ?
-                <div></div>
-                :<button className="tw-mt-2 tw-ml-2 tw-p-2
+                {!color && ((rol === "admin") || (rol === 'funcionario' && id === props.id)) ?
+                <button className="tw-mt-2 tw-ml-2 tw-p-2
                                     tw-bg-blueColory
                                     tw-rounded"
                           onClick={handleColor}>
                     <p className="tw-break-words tw-font-montserrat">Definir colorimetria</p>
                 </button>
+                :null
                 }
             </h1>
             <div className="tw-grid tw-grid-cols-1 md:tw-grid-cols-3 tw-mb-2">
@@ -211,7 +211,7 @@ export const Content = ( props : Props ) => {
                             <NodoForm   index={indexLevel!}
                                         id={levels[indexLevel!].id_nivel!}/>
                             : <div>
-                                <p className="tw-ml-4">De momemnto no hay contenido en este PDT</p>
+                                <p className="tw-mx-4 tw-text-center">De momemnto no hay contenido en este Plan</p>
                             </div>
                             }
                         </div>

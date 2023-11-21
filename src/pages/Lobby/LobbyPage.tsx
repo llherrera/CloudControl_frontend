@@ -58,7 +58,7 @@ export const LobbyPage = () => {
         <ButtonComponent
             inside={false}
             text='Plan indicativo'
-            src="/src/assets/images/plan-indicativo.png"
+            src="/src/assets/icons/plan-indicativo.svg"
             onClick={()=>{
                 dispatch(selectOption(0))
                 handleButton()}}
@@ -66,7 +66,7 @@ export const LobbyPage = () => {
         <ButtonComponent
             inside={false}
             text='Banco de proyectos'
-            src="/src/assets/images/Banco-proyectos.png"
+            src="/src/assets/icons/Banco-proyectos.svg"
             onClick={() => {
                 dispatch(selectOption(1))
                 navigate('/')}}
@@ -74,7 +74,7 @@ export const LobbyPage = () => {
         <ButtonComponent
             inside={false}
             text='POAI'
-            src="/src/assets/images/POAI.png"
+            src="/src/assets/icons/POAI.svg"
             onClick={() => {
                 dispatch(selectOption(2))
                 navigate('/')}}
@@ -82,7 +82,7 @@ export const LobbyPage = () => {
         <ButtonComponent
             inside={false}
             text='Plan de acción'
-            src="/src/assets/images/Plan-accion.png"
+            src="/src/assets/icons/Plan-accion.svg"
             onClick={() => {
                 dispatch(selectOption(3))
                 navigate('/')}}

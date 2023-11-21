@@ -141,7 +141,7 @@ export const NivelForm = ( props: Props ) => {
                                     tw-rounded
                                     tw-mt-5 tw-mx-6 tw-py-2"/>
             </form>
-            : <div>No tiene permisos suficientes</div>}
+            : <p className="tw-text-center tw-text-2xl">Plan en proceso</p>}
         </div>
         
     )

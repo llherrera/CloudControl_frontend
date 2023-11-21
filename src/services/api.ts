@@ -2,14 +2,13 @@ import axios from "axios";
 import jwtDecode from "jwt-decode";
 import { getEnvironment } from '../utils/environment'
 
-import { YearInterface, UnidadInterface, NodoInterface, 
+import { YearInterface, UnitInterface, NodoInterface, 
     NivelInterface, RegisterInterface, PDTInterface, 
     EvidenceInterface, GetNodeProps, AddColorsProps } from "../interfaces";
 
 import { getToken, refreshToken } from "@/utils";
 
 const { BASE_URL } = getEnvironment()
-console.log(BASE_URL);
 const api = axios.create({
     baseURL: BASE_URL,
 });
@@ -261,7 +260,7 @@ export const getLevelName = async (ids: string[]) => {
     }
 }
 
-export const addUnitNodeAndYears = async (idPDT: string, idNodo: string, nodoUnidad: UnidadInterface, años: YearInterface[]) => {
+export const addUnitNodeAndYears = async (idPDT: string, idNodo: string, nodoUnidad: UnitInterface, años: YearInterface[]) => {
     try {
         const response = await api.post("/nodo", { 
             id_plan: idPDT,
@@ -327,14 +326,14 @@ export const getTotalProgress = async (id_plan: number) => {
             params: {
                 id_plan: id_plan
             }
-        });
+        });        
         return response.data;
     } catch (error) {
         return error;
     }
 }
 
-export const updateNode = async (idPDT: string, idNodo: string, nodo: UnidadInterface, años: YearInterface) => {
+export const updateNode = async (idPDT: string, idNodo: string, nodo: UnitInterface, años: YearInterface) => {
     try {
         const response = await api.put("/nodo", { 
             id_plan: idPDT,

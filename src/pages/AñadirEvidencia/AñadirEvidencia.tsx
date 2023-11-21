@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from "@/store"
 import { thunkGetLevelName } from "@/store/plan/thunks"
 
 import { addEvicenceGoal, getUnitNodeAndYears } from "../../services/api"
-import { YearInterface, UnidadInterface, YearDetail, EvidenceInterface } from "../../interfaces"
+import { YearInterface, UnitInterface, YearDetail, EvidenceInterface } from "../../interfaces"
 
 export const AñadirEvidencia = () => {
     const dispatch = useAppDispatch()
@@ -34,7 +34,7 @@ export const AñadirEvidencia = () => {
     })
     const [documento, setDocumento] = useState<FileList | null>(null)
 
-    const [unidForm, setUnidForm] = useState<UnidadInterface>({
+    const [unidForm, setUnidForm] = useState<UnitInterface>({
         code: '',
         description: '',
         indicator: '',

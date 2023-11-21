@@ -1,10 +1,11 @@
-import { ButtonComponent } from "../../components"
-import { useNavigate } from "react-router-dom"
-import { Header } from "@/components/Header"
 import React from "react"
-import { thunkLogout } from "@/store/auth/thunks"
+import { useNavigate } from "react-router-dom"
 
+import { ButtonComponent, Header } from "../../components"
+
+import { thunkLogout } from "@/store/auth/thunks"
 import { useAppDispatch, useAppSelector } from '../../store'
+
 
 export const HomePage = () => {
     const dispatch = useAppDispatch()
@@ -27,13 +28,13 @@ export const HomePage = () => {
         <ButtonComponent 
             inside={false} 
             text='Funcionario' 
-            src="\src\assets\images\Funcionario.png" 
+            src="\src\assets\icons\Funcionario.svg" 
             onClick={() => navigate('/login')}
             bgColor="tw-bg-greenBtn"/>,
         <ButtonComponent 
             inside={false} 
             text='Ciudadano' 
-            src="\src\assets\images\Ciudadano.png" 
+            src="\src\assets\icons\Ciudadanos.svg" 
             onClick={handleBtnCiudadano}
             bgColor="tw-bg-greenBtn"/>
     ]

@@ -39,7 +39,7 @@ export interface NodoInterface {
     Weight: number;
 }
 
-export interface UnidadInterface {
+export interface UnitInterface {
     code: string,
     description: string,
     indicator: string,

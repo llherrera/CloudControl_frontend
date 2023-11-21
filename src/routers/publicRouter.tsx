@@ -10,7 +10,7 @@ export const PublicRouter = () => {
             <Route path='/pdt' element={<pages.PDT/>} />
             <Route path='/pdt/:id' element={<pages.PDTid/>} />
             <Route path="/pdt/:idPDT/:idNodo" element={<pages.AñadirNodoUni/>} />
-            <Route path="/pdt/:idPDT/:idNodo/añadirEvidencia" element={<pages.AñadirEvidencia/>} />
+            <Route path="/pdt/:idPDT/:idNodo" element={<pages.AñadirEvidencia/>} />
         </Routes>
     )
 }
