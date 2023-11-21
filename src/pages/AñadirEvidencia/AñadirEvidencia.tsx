@@ -13,10 +13,12 @@ export const AñadirEvidencia = () => {
 
     const { idPDT, idNodo } = useParams();
     const { namesTree } = useAppSelector((state) => state.plan);
+    const { unit } = useAppSelector((state) => state.unit);
     
     const [cargar, setCargar] = useState(false)
+    const [loading, setLoading] = useState(false)
     const [data, setData] = useState<EvidenceInterface>({
-        fecha: "",
+        fecha: new Date().toISOString(),
         descripcionActividades: "",
         unidad: "num",
         cantidad: 0,
@@ -33,94 +35,6 @@ export const AñadirEvidencia = () => {
         fechaArchivo: "",
     })
     const [documento, setDocumento] = useState<FileList | null>(null)
-
-    const [unidForm, setUnidForm] = useState<UnitInterface>({
-        code: '',
-        description: '',
-        indicator: '',
-        base: 0,
-        goal: 0,
-        years: []
-    });
-
-    useEffect(() => {
-        const ids = idNodo!.split('.');
-        let ids2 = ids.reduce((acumulator:string[], currentValue) => {
-            if (acumulator.length === 0) {
-                return [currentValue];
-            } else {
-                const ultimoElemento = acumulator[acumulator.length - 1];
-                const concatenado = `${ultimoElemento}.${currentValue}`;
-                return [...acumulator, concatenado];
-            }
-        }, []);
-        ids2 = ids2.slice(1);
-        dispatch(thunkGetLevelName(ids2))
-    }, []);
-
-    useEffect(() => {
-        getUnitNodeAndYears(idPDT!, idNodo!)
-        .then((res) => {
-            const { Node } = res;
-            if (Node === undefined) return;
-            const { Codigo, Descripcion, Indicador, Linea_base, Meta } = Node;
-            if (Codigo === undefined || Descripcion === undefined || Indicador === undefined || Linea_base === undefined || Meta === undefined) return;
-            setUnidForm({code: Node.Codigo,
-                         description: Node.Descripcion,
-                         indicator: Node.Indicador,
-                         base: Node.Linea_base,
-                         goal: Node.Meta,
-                         years: []
-            });
-        })
-        .catch((err) => {
-            console.log(err);
-        });
-    }, []);
-
-    useEffect(() => {
-        //try {
-        //    const ids = idNodo!.split('.');
-        //    let ids2 = ids.reduce((acumulator:string[], currentValue) => {
-        //        if (acumulator.length === 0) {
-        //            return [currentValue];
-        //        } else {
-        //            const ultimoElemento = acumulator[acumulator.length - 1];
-        //            const concatenado = `${ultimoElemento}.${currentValue}`;
-        //            return [...acumulator, concatenado];
-        //        }
-        //    }, []);
-        //    ids2 = ids2.slice(1);
-        //    getLevelName(ids2).then((res) => {
-        //        setNombres(res);
-        //    });
-//
-        //    getNodoUnidadYAños(idPDT!, idNodo!).then((res) => {
-        //        const { Nodo, Años } = res;
-        //        if (Nodo === undefined) {
-        //            return;
-        //        }
-        //        setUnidForm({code: Nodo.Codigo,
-        //                     description: Nodo.Descripcion,
-        //                     indicator: Nodo.Indicador,
-        //                     base: Nodo.Linea_base,
-        //                     goal: Nodo.Meta,
-        //                     years: Años
-        //        });
-//
-        //        Años.forEach((dato:YearDetail) => {
-        //            const año = new Date(dato.Año).getFullYear();
-        //            añosTemp.año.push(año);
-        //            añosTemp.programacion.push(dato.Programacion_fisica);
-        //            añosTemp.ejecFisica.push(dato.Ejecucion_fisica);
-        //            añosTemp.ejecFinanciera.push(dato.Ejecucion_financiera);
-        //        });
-        //        setañoForm(añosTemp);
-        //    });
-        //} catch (error) {
-        //    console.log(error);
-        //}
-    }, []);
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = event.target;
@@ -144,9 +58,30 @@ export const AñadirEvidencia = () => {
         }
     }
 
-    const handleSubmitEvidencia = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const handleSubmitEvidence = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault()
-        const res = await addEvicenceGoal(unidForm.code, data, documento![0])
+        if (unit === undefined) return alert('No se ha seleccionado una meta');
+        if (documento === null) return alert('No se ha seleccionado un documento');
+        if (data.barrio === "") return alert('No se ha seleccionado un barrio');
+        if (data.cantidad <= 0) return alert('No se ha seleccionado una cantidad');
+        if (data.comuna === "") return alert('No se ha seleccionado una comuna');
+        if (data.correguimiento === "") return alert('No se ha seleccionado un correguimiento');
+        if (data.descripcionActividades === "") return alert('No se ha seleccionado una descripcion de actividades');
+        if (data.fecha === "") return alert('No se ha seleccionado una fecha');
+        if (data.fechaArchivo === "") return alert('No se ha seleccionado una fecha de archivo');
+        if (data.fuenteRecursos === "") return alert('No se ha seleccionado una fuente de recursos');
+        if (data.lugar === "") return alert('No se ha seleccionado un lugar');
+        if (data.nombreDocumento === "") return alert('No se ha seleccionado un nombre de documento');
+        if (data.numeroPoblacionBeneficiada === 0) return alert('No se ha seleccionado un numero de poblacion beneficiada');
+        if (data.poblacionBeneficiada === "") return alert('No se ha seleccionado una poblacion beneficiada');
+        if (data.recursosEjecutados <= 0) return alert('No se ha seleccionado un recurso ejecutado');
+        if (data.unidad === "") return alert('No se ha seleccionado una unidad');
+        if (data.vereda === "") return alert('No se ha seleccionado una vereda');
+        setLoading(true)
+        await addEvicenceGoal(unit.code, data, documento![0]).then(() => {
+            setLoading(false)
+            alert('Evidencia añadida con exito')
+        })
         //setCargar(!cargar)
     }
 
@@ -159,6 +94,7 @@ export const AñadirEvidencia = () => {
     }
 
     const memorias = () =>{
+        if (unit === undefined) return;
         return(
             <div className="tw-mx-3 tw-mt-2 tw-grid tw-grid-cols-4 md:tw-grid-cols-12">
                 <header className=" tw-col-start-1 tw-col-span-full
@@ -174,13 +110,13 @@ export const AñadirEvidencia = () => {
                                 <label className="tw-font-bold">Código de la meta</label>
                             </th>
                             <th className="tw-border-4 tw-border-double tw-border-gray-500 ">
-                                <label className="tw-font-bold">{ unidForm.code }</label>
+                                <label className="tw-font-bold">{ unit.code }</label>
                             </th>
                             <th className="tw-hidden md:tw-table-cell tw-border-4 tw-border-double tw-border-gray-500">
                                 <label className="tw-font-bold">Descripción de la meta</label>
                             </th>
                             <th className="tw-hidden md:tw-table-cell tw-border-4 tw-border-double tw-border-gray-500 ">
-                                <label className="tw-font-bold">{ unidForm.description }</label>
+                                <label className="tw-font-bold">{ unit.description }</label>
                             </th>
                         </tr>
                     </thead>
@@ -197,7 +133,7 @@ export const AñadirEvidencia = () => {
                                     <label className="tw-font-bold">{ index === 0 ? 'Linea base': index === 1 ? 'Meta' : null }</label>
                                 </td>
                                 <td className="tw-hidden md:tw-table-cell tw-border-4 tw-border-double tw-border-gray-500">
-                                    <label className="tw-font-bold">{ index === 0 ? unidForm.base: index === 1 ? unidForm.goal : null }</label>
+                                    <label className="tw-font-bold">{ index === 0 ? unit.base: index === 1 ? unit.goal : null }</label>
                                 </td>
                             </tr>
                         ))}
@@ -266,6 +202,7 @@ export const AñadirEvidencia = () => {
     }
 
     const evidencias = () =>{
+        if (unit === undefined) return;
         return(
             <div className="tw-mx-3 tw-mt-2 tw-grid tw-grid-cols-12 ">
                 <header className=" tw-col-span-full tw-flex tw-flex-col
@@ -285,14 +222,15 @@ export const AñadirEvidencia = () => {
                     
                     <div className="tw-mt-2">
                         <label >Código meta:</label>
-                        <label className="tw-ml-3 tw-border tw-border-red-500 tw-px-3">{unidForm.code}</label>
+                        <label className="tw-ml-3 tw-border tw-border-red-500 tw-px-3">{unit.code}</label>
                     </div>
 
                     <label className="tw-mt-2">Descripcion Actividades:</label>
                     <textarea 
                         name="descripcionActividades" 
                         id="descripcionActividades" 
-                        className="tw-border"
+                        required
+                        className="tw-border tw-resize-none"
                         onChange={(e) => handleInputChange(e)}/>
 
                     <label className="tw-mt-4">Numero de actividades:</label>
@@ -304,6 +242,7 @@ export const AñadirEvidencia = () => {
                                 id="unidad"
                                 className="tw-border"
                                 onChange={(e) => handleInputChange(e)}
+                                required
                                 value={data.unidad}
                                 >
                                 <option value="num">Personas</option>
@@ -319,6 +258,7 @@ export const AñadirEvidencia = () => {
                                 name="cantidad" 
                                 id="cantidad" 
                                 className="tw-border"
+                                required
                                 onChange={(e)=> handleInputChange(e)}/>
                         </div>
                     </div>
@@ -332,6 +272,7 @@ export const AñadirEvidencia = () => {
                                 id="comuna"
                                 className="tw-border"
                                 onChange={(e)=> handleInputChange(e)}
+                                required
                                 value={data.comuna}
                                 >
                                 <option value="Tubara">Tubara</option>
@@ -345,6 +286,7 @@ export const AñadirEvidencia = () => {
                                 id="barrio"
                                 className="tw-border"
                                 onChange={(e)=> handleInputChange(e)}
+                                required
                                 value={data.barrio}
                                 >
                                 <option value="Soledad">Soledad</option>
@@ -358,6 +300,7 @@ export const AñadirEvidencia = () => {
                                 id="correguimiento" 
                                 className="tw-border"
                                 onChange={(e)=> handleInputChange(e)}
+                                required
                                 value={data.correguimiento}
                                 >
                                 <option value="Carrizal">Carrizal</option>
@@ -372,6 +315,7 @@ export const AñadirEvidencia = () => {
                                 className="tw-border"
                                 onChange={(e)=> handleInputChange(e)}
                                 value={data.vereda}
+                                required
                                 >
                                 <option value="Eden">El Eden</option>
                                 <option value="Morrito">El Morrito</option>
@@ -387,6 +331,7 @@ export const AñadirEvidencia = () => {
                                 id="poblacionBeneficiada" 
                                 className="tw-border"
                                 onChange={(e)=> handleInputChange(e)}
+                                required
                                 value={data.poblacionBeneficiada}
                                 >
                                 <option value="AdultoMayor">Adulto Mayor</option>
@@ -400,6 +345,7 @@ export const AñadirEvidencia = () => {
                                 name="numeroPoblacionBeneficiada" 
                                 id="numeroPoblacionBeneficiada" 
                                 className="tw-border"
+                                required
                                 onChange={(e)=> handleInputChange(e)}/>
                         </div>
                         <div className="tw-flex tw-flex-col tw-ml-3">
@@ -409,6 +355,7 @@ export const AñadirEvidencia = () => {
                                 name="recursosEjecutados" 
                                 id="recursosEjecutados" 
                                 className="tw-border"
+                                required
                                 onChange={(e)=> handleInputChange(e)}/>
                         </div>
                         <div className="tw-flex tw-flex-col tw-ml-3">
@@ -418,6 +365,7 @@ export const AñadirEvidencia = () => {
                                 id="fuenteRecursos" 
                                 className="tw-border"
                                 onChange={(e)=> handleInputChange(e)}
+                                required
                                 value={data.fuenteRecursos}>
                                 <option value="Privado">Sector privado</option>
                                 <option value="Publico">Sector publico</option>
@@ -432,6 +380,7 @@ export const AñadirEvidencia = () => {
                                 type="file" 
                                 name="documento" 
                                 id="documento" 
+                                required
                                 onChange={(e) => handleInputChangeFile(e)}/><br />
                         </div>
                         <div className="tw-flex tw-flex-col tw-ml-3">
@@ -441,6 +390,7 @@ export const AñadirEvidencia = () => {
                                 name="nombreDocumento" 
                                 id="nombreDocumento" 
                                 className="tw-border"
+                                required
                                 onChange={(e) => handleInputChange(e)}/><br />
                         </div>
                         <div className="tw-flex tw-flex-col tw-ml-3">
@@ -450,6 +400,7 @@ export const AñadirEvidencia = () => {
                                 name="lugar" 
                                 id="lugar" 
                                 className="tw-border"
+                                required
                                 onChange={(e) => handleInputChange(e)}/><br />
                         </div>
                         <div className="tw-flex tw-flex-col tw-ml-3">
@@ -458,6 +409,7 @@ export const AñadirEvidencia = () => {
                                 type="date" 
                                 name="fechaArchivo" 
                                 id="fechaArchivo" 
+                                required
                                 onChange={(e) => handleInputChange(e)}/><hr />
                         </div>
                     </div>
@@ -468,8 +420,9 @@ export const AñadirEvidencia = () => {
                                             tw-py-4 tw-mt-4
                                             tw-rounded
                                             tw-text-white tw-font-bold"
-                                onClick={handleSubmitEvidencia}>
+                                onClick={handleSubmitEvidence}>
                             Añadir evidencia
+                            {loading && <span className="tw-ml-3 tw-spinner tw-spinner-white"></span>}
                         </button>
                     </div>
                 </form>
