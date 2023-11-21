@@ -1,6 +1,6 @@
 import { PDTForm, Frame } from "../../components"
 
-export const AñadirPDT = () => {
+export const AddPDTPage = () => {
     return (
         <Frame data={
             <PDTForm/>

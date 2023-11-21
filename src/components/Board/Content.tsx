@@ -187,6 +187,7 @@ export const Content = ( props : Props ) => {
                         Plan de desarrollo. ¡Así vamos!
                     </p>
                     <TimeLine   yearProgress={yearProgress}
+                                yearsProgress={yearsprogress}
                                 colors={colors}/>
                 </div>
 
@@ -232,7 +233,6 @@ export const Content = ( props : Props ) => {
                                 lg:tw-col-start-2">
                     <p>Cuatrenio  {new Date(plan!.Fecha_inicio).getUTCFullYear()} - {new Date(plan!.Fecha_fin).getUTCFullYear()}</p><br />
                     <Graph
-                        yearsProgress={yearsprogress}
                         dataValues={yearProgress}/>
                 </div>
 

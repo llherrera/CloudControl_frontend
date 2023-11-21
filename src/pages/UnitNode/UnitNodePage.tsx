@@ -9,7 +9,7 @@ import { addUnitNodeAndYears } from "../../services/api";
 import { Token } from "../../interfaces";
 import { getToken, decode } from "@/utils";
 
-export const AñadirNodoUni = () => {
+export const UnitNodePage = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
@@ -69,7 +69,7 @@ export const AñadirNodoUni = () => {
     }, []);
 
     const handleSubmitButton = () => {
-        navigate(`/pdt/${idPDT}/${idNodo}/añadirEvidencia`)
+        navigate(`/pdt/${idPDT}/${idNodo}/evidencia`)
     }
 
     const handleInput = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {

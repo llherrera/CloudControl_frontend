@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from "@/store";
 import { thunkGetLevelsById } from "@/store/plan/thunks";
 import { incrementLevelIndex } from "@/store/plan/planSlice";
 
-import { NivelForm, Tablero, Frame } from "../../components";
+import { NivelForm, Board, Frame } from "../../components";
 
 export const PDTid = () => {
     const dispatch = useAppDispatch()
@@ -20,7 +20,7 @@ export const PDTid = () => {
 
     return (
         <Frame
-            data={levels.length === 0 ? <NivelForm id={id!} /> : <Tablero data={levels} />}
+            data={levels.length === 0 ? <NivelForm id={id!} /> : <Board data={levels} />}
         />
     )
 }

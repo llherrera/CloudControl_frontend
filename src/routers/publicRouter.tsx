@@ -9,8 +9,8 @@ export const PublicRouter = () => {
             <Route path="/login" element={<pages.LoginPage/>} />
             <Route path='/pdt' element={<pages.PDT/>} />
             <Route path='/pdt/:id' element={<pages.PDTid/>} />
-            <Route path="/pdt/:idPDT/:idNodo" element={<pages.AñadirNodoUni/>} />
-            <Route path="/pdt/:idPDT/:idNodo" element={<pages.AñadirEvidencia/>} />
+            <Route path="/pdt/:idPDT/:idNodo" element={<pages.UnitNodePage/>} />
+            <Route path="/pdt/:idPDT/:idNodo" element={<pages.EvidencePage/>} />
         </Routes>
     )
 }

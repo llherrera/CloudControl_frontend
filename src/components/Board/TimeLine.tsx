@@ -1,16 +1,20 @@
 import React, { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+
 import { useAppSelector, useAppDispatch } from "@/store";
 import { selectYear } from '@/store/plan/planSlice'; 
 
 interface Props {
     yearProgress: number[];
+    yearsProgress: number;
     colors: number[];
 }
 
 export const TimeLine = (props: Props) => {
     const dispatch = useAppDispatch();
+    const navigate = useNavigate();
 
-    const { years, yearSelect } = useAppSelector(store => store.plan)
+    const { years, yearSelect } = useAppSelector(store => store.plan);
 
     useEffect(() => {
         if (years.length !== 0) {
@@ -21,6 +25,11 @@ export const TimeLine = (props: Props) => {
     const handleAños = ( event: React.MouseEvent<HTMLButtonElement>, year: number ) => {
         event.preventDefault();
         dispatch(selectYear(year))
+    }
+
+    const handleBtnEvidence = ( event: React.MouseEvent<HTMLButtonElement> ) => {
+        event.preventDefault();
+        navigate('/evidencias')
     }
 
     return (
@@ -81,6 +90,20 @@ export const TimeLine = (props: Props) => {
                 </div>
             </li>
         ))}
+        <button className={`tw-rounded 
+                            tw-flex tw-justify-center tw-items-center
+                            tw-border-4
+                            tw-self-center
+                            tw-w-12 tw-h-12
+                            ${props.yearsProgress < props.colors[0] ? 'tw-border-redColory'   : 
+                              props.yearsProgress < props.colors[1] ? 'tw-border-yellowColory':
+                              props.yearsProgress < props.colors[2] ? 'tw-border-greenColory' : 'tw-border-blueColory'}
+                            tw-ml-3 tw-px-2`}
+                onClick={handleBtnEvidence}>
+            <p className="tw-break-words tw-font-bold">
+                {props.yearsProgress}%
+            </p>
+        </button>
         </ol>
     );
 }

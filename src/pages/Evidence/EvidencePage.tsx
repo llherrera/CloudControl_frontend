@@ -7,7 +7,7 @@ import { thunkGetLevelName } from "@/store/plan/thunks"
 import { addEvicenceGoal, getUnitNodeAndYears } from "../../services/api"
 import { YearInterface, UnitInterface, YearDetail, EvidenceInterface } from "../../interfaces"
 
-export const AñadirEvidencia = () => {
+export const EvidencePage = () => {
     const dispatch = useAppDispatch()
     const navigate = useNavigate()
 
@@ -78,7 +78,7 @@ export const AñadirEvidencia = () => {
         if (data.unidad === "") return alert('No se ha seleccionado una unidad');
         if (data.vereda === "") return alert('No se ha seleccionado una vereda');
         setLoading(true)
-        await addEvicenceGoal(unit.code, data, documento![0]).then(() => {
+        await addEvicenceGoal(parseInt(idPDT!), unit.code, data, documento![0]).then(() => {
             setLoading(false)
             alert('Evidencia añadida con exito')
         })

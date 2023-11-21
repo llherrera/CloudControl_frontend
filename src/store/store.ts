@@ -7,6 +7,7 @@ import contentReducer from './content/contentSlice'
 import planRedurcer from './plan/planSlice'
 import chartReducer from './chart/chartSlice'
 import unitReducer from './unit/unitSlice'
+import { evidenceReducer } from './evidence/evidenceSlice'
 // En los reducers se definen las propiedades del estado global
 // To Do: Hacer mas reducers, los que sean necesarios, se hace la carpeta con el Slice y los thunks
 
@@ -16,6 +17,7 @@ export const reducers = {
   plan: planRedurcer,
   chart: chartReducer,
   unit: unitReducer,
+  evidence: evidenceReducer,
   // Aqui se agregan los reducers
 }
 

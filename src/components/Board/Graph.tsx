@@ -6,7 +6,6 @@ import { useAppSelector, useAppDispatch } from "@/store";
 import { setType } from '@/store/chart/chartSlice';
 
 interface Props {
-    yearsProgress: number;
     dataValues: number[];
 }
 
@@ -14,11 +13,8 @@ export const Graph = ( props: Props ) => {
     const dispatch = useAppDispatch();
     const chartComponentRef = useRef<HighchartsReact.RefObject>(null);
 
-    const { color, years, colorimeter } = useAppSelector(store => store.plan)
+    const { years, colorimeter } = useAppSelector(store => store.plan)
     const { type } = useAppSelector(store => store.chart)
-
-    const [progress, setProgress] = useState(0);
-    const [colors, setColors] = useState<number[]>([]);
 
     const categories = years.map((year) => year.toString())
     const pieValues = props.dataValues.map((value, index) => {
@@ -27,15 +23,6 @@ export const Graph = ( props: Props ) => {
             y: value,
         }
     })
-    const colorsPie = props.dataValues.map((value) => value*100 < colorimeter[0] ? '#FE1700' : 
-                                                    value*100 < colorimeter[1] ? '#FCC623' : 
-                                                    value*100 < colorimeter[2] ? '#119432' : '#008DCC')
-
-    useEffect(() => {
-        if (color) {
-            setColors(colorimeter)
-        }
-    }, [color])
 
     const options: Highcharts.Options = {
         title: {
@@ -144,19 +131,3 @@ export const Graph = ( props: Props ) => {
         </div>
     );
 }
-
-/*
-<button className={`tw-rounded 
-                                tw-flex tw-justify-center tw-items-center
-                                tw-border-4
-                                tw-self-center
-                                tw-w-12 tw-h-12
-                                ${progress < colors[0] ? 'tw-border-redColory'   : 
-                                  progress < colors[1] ? 'tw-border-yellowColory':
-                                  progress < colors[2] ? 'tw-border-greenColory' : 'tw-border-blueColory'}
-                                tw-ml-3`}>
-                <p className="tw-break-words tw-font-bold">
-                    {props.yearsProgress}%
-                </p>
-            </button>
- */

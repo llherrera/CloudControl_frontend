@@ -13,7 +13,7 @@ interface Props {
     data: NivelInterface[];
 }
 
-export const Tablero = ( props : Props ) => {
+export const Board = ( props : Props ) => {
     const dispatch = useAppDispatch()
     const { plan } = useAppSelector(store => store.plan)
     const { id } = useParams();

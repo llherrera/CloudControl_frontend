@@ -10,9 +10,10 @@ export const PrivateRouter = () => {
             <Route path="/lobby" element={<pages.LobbyPage/>} />
             <Route path='/pdt' element={<pages.PDT/>} />
             <Route path='/pdt/:id' element={<pages.PDTid/>} />
-            <Route path="/pdt/:idPDT/:idNodo" element={<pages.AñadirNodoUni/>} />
-            <Route path="/pdt/:idPDT/:idNodo/añadirEvidencia" element={<pages.AñadirEvidencia/>} />
-            <Route path="/anadirPDT" element={<pages.AñadirPDT/>} />
+            <Route path="/pdt/:idPDT/:idNodo" element={<pages.UnitNodePage/>} />
+            <Route path="/pdt/:idPDT/:idNodo/evidencia" element={<pages.EvidencePage/>} />
+            <Route path="/anadirPDT" element={<pages.AddPDTPage/>} />
+            <Route path="/evidencias" element={<pages.ListEvidence/>} />
         </Routes>
   )
 }
