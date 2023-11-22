@@ -14,6 +14,7 @@ export const PrivateRouter = () => {
             <Route path="/pdt/:idPDT/:idNodo/evidencia" element={<pages.EvidencePage/>} />
             <Route path="/anadirPDT" element={<pages.AddPDTPage/>} />
             <Route path="/evidencias" element={<pages.ListEvidence/>} />
+            <Route path="/evidencia" element={<pages.EvidenceDetail/>} />
         </Routes>
   )
 }

@@ -56,6 +56,8 @@ export interface YearInterface {
 }
 
 export interface EvidenceInterface {
+    id_evidencia: number;
+    codigo: string;
     fecha: string;
     descripcionActividades: string;
     unidad: string;
@@ -71,4 +73,5 @@ export interface EvidenceInterface {
     nombreDocumento: string;
     lugar: string;
     fechaArchivo: string;
+    url: string;
 }

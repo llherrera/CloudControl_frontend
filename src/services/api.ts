@@ -321,9 +321,23 @@ export const getEvidence = async (id_plan: number, codigo: string) => {
     }
 }
 
-export const getEvidences = async (id_plan: number) => {
+export const getEvidences = async (id_plan: number, page: number) => {
     try {
         const response = await api.get("/nodo/evidencias", {
+            params: {
+                id_plan: id_plan,
+                page: page
+            }
+        });
+        return response.data;
+    } catch (error) {
+        return error;
+    }
+}
+
+export const getEvidenceCount = async (id_plan: number) => {
+    try {
+        const response = await api.get("/nodo/evidenciascount", {
             params: {
                 id_plan: id_plan
             }

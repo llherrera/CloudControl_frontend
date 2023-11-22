@@ -2,13 +2,14 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 import { InitialStateEvidenceInterface } from "@/interfaces";
 
-import { thunkGetEvidence, thunkGetEvidences } from "./thunk";
+import { thunkGetEvidence, thunkGetEvidences, thunkGetEvidenceCount } from "./thunk";
 
 const getInitialState = (): InitialStateEvidenceInterface => {
     return {
         loadingEvidence: false,
         errorLoadingEvidence: undefined,
         evidence: undefined,
+        eviCount: 0
     };
 };
 
@@ -29,6 +30,8 @@ export const evidenceSlice = createSlice({
             state.loadingEvidence = false;
             state.errorLoadingEvidence = action.payload;
         });
+
+
         builder.addCase(thunkGetEvidences.pending, state => {
             if (!state.loadingEvidence) state.loadingEvidence = true;
             state.errorLoadingEvidence = undefined;
@@ -38,6 +41,20 @@ export const evidenceSlice = createSlice({
             state.evidence = action.payload;
         });
         builder.addCase(thunkGetEvidences.rejected, (state, action) => {
+            state.loadingEvidence = false;
+            state.errorLoadingEvidence = action.payload;
+        });
+
+
+        builder.addCase(thunkGetEvidenceCount.pending, state => {
+            if (!state.loadingEvidence) state.loadingEvidence = true;
+            state.errorLoadingEvidence = undefined;
+        });
+        builder.addCase(thunkGetEvidenceCount.fulfilled, (state, action) => {
+            state.loadingEvidence = false;
+            state.eviCount = action.payload;
+        });
+        builder.addCase(thunkGetEvidenceCount.rejected, (state, action) => {
             state.loadingEvidence = false;
             state.errorLoadingEvidence = action.payload;
         });

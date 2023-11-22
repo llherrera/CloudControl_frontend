@@ -5,9 +5,15 @@ export interface InitialStateEvidenceInterface {
     loadingEvidence: boolean;
     errorLoadingEvidence: ErrorTypeInterface;
     evidence?: EvidenceInterface[];
+    eviCount: number;
 }
 
-export interface getEvidenceProps {
+export interface GetEvidenceProps {
     id_plan: number;
     codigo: string;
+}
+
+export interface GetEvidencesProps {
+    id_plan: number;
+    page: number;
 }
