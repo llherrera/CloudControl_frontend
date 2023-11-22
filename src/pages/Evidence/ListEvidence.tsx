@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 import { useAppSelector, useAppDispatch } from "@/store";
 import { thunkGetEvidence, thunkGetEvidences, thunkGetEvidenceCount } from "@/store/evidence/thunk";
 
 import { EvidenceInterface } from '@/interfaces';
-import { Frame } from "@/components";
+import { Frame, EvidenceDetail } from "@/components";
 
 export const ListEvidence = () => {
     return (
@@ -16,6 +16,7 @@ export const ListEvidence = () => {
 const Evidence = () => {
     const dispatch = useAppDispatch()
     const navigate = useNavigate()
+    const { id } = useParams()
 
     const { plan } = useAppSelector(store => store.plan)
     const { evidence, eviCount } = useAppSelector(store => store.evidence)
@@ -26,6 +27,8 @@ const Evidence = () => {
         if (plan) {
             const { id_plan } = plan
             if (id_plan) dispatch(thunkGetEvidenceCount(id_plan))
+        }else{
+            dispatch(thunkGetEvidenceCount(parseInt(id!)))
         }
     }, [])
 
@@ -33,15 +36,14 @@ const Evidence = () => {
         if (plan) {
             const { id_plan } = plan
             if (id_plan) dispatch(thunkGetEvidences({id_plan, page}))
+        }else{
+            let id_plan = parseInt(id!)
+            dispatch(thunkGetEvidences( {id_plan, page}))
         }
     }, [page])
 
     const handlePage = (page: number) => {
         setPage(page)
-    }
-
-    const handleBtnEvidence = (evidence: EvidenceInterface) => {
-        navigate(`/evidencia`, { state: { evidence } })
     }
 
     return (
@@ -50,18 +52,9 @@ const Evidence = () => {
                             tw-flex tw-flex-col
                             tw-mt-4">
                 {evidence?.length === 0 || evidence ? evidence.map((evi, index) => (
-                    <button key={index} 
-                            className=" tw-border tw-rounded
-                                        tw-flex tw-flex-col
-                                        tw-my-1 tw-pl-2 tw-py-2
-                                        tw-bg-slate-300 hover:tw-bg-slate-500
-                                        tw-relative"
-                            onClick={()=>handleBtnEvidence(evi)}>
-                        <p className="tw-font-bold">{evi.codigo}</p>
-                        <p className="tw-text-xs">{evi.descripcionActividades}</p>
-                        <p className="tw-text-xs tw-hidden md:tw-block md:tw-absolute md:tw-right-2">{evi.nombreDocumento}</p>
-                        <p className="tw-text-xs tw-hidden lg:tw-block lg:tw-absolute lg:tw-inset-y-8 lg:tw-right-2">{ new Date(evi.fecha).getFullYear()}/{ new Date(evi.fecha).getMonth()}/{ new Date(evi.fecha).getDay()}</p>
-                    </button>
+                    <li key={index} className="tw-bg-blue-200 tw-rounded tw-my-1">
+                        <EvidenceDetail eviden={evi}/>
+                    </li>
                 )) : <span>No hay evidencias</span>}
             </ol>
             {evidence?.length === 0 || evidence ? 

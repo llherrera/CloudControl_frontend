@@ -55,7 +55,7 @@ export const Board = ( props : Props ) => {
             let peso = pesosNodo.find((peso: PesosNodos) => peso.id_nodo === item.id_nodo)
             if (peso) {
                 peso.porcentajes = peso.porcentajes ? peso.porcentajes : []
-                peso.porcentajes.push({ progreso : progreso, año: item.Año, programacion: item.Programacion_fisica })
+                peso.porcentajes.push({ progreso : progreso, año: item.Año, programacion: item.Programacion_fisica, ejecucionFinanciera: item.Ejecucion_financiera })
             }
         })
 
@@ -68,18 +68,19 @@ export const Board = ( props : Props ) => {
                         if (padre) {
                             let progresoPeso = porcentaje.progreso * (item.Peso / 100)
                             progresoPeso = parseFloat(progresoPeso.toFixed(2))
+                            let financiado = porcentaje.ejecucionFinanciera
                             padre.porcentajes = padre.porcentajes ? padre.porcentajes : []
                             const temp = padre.porcentajes.find((e: Porcentaje) => e.año === porcentaje.año)
                             if (temp) {
                                 temp.progreso += progresoPeso
+                                temp.progreso = parseFloat(temp.progreso.toFixed(2))
+                                temp.ejecucionFinanciera += financiado
                             } else {
-                                padre.porcentajes.push({ progreso : progresoPeso, año: porcentaje.año, programacion: 0 })
+                                padre.porcentajes.push({ progreso : progresoPeso, año: porcentaje.año, programacion: 0, ejecucionFinanciera: financiado })
                             }
                         }
                     })
                 }
-            } else {
-
             }
         })
         localStorage.setItem('pesosNodo', JSON.stringify(pesosNodo))

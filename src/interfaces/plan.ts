@@ -21,7 +21,10 @@ export interface InitialStatePlanInterface {
     levels: NivelInterface[];
     indexLevel: number | undefined;
     parent: string | null;
+    progressNodes: number[];
+    financial: number[];
     namesTree: [string[]];
+    radioBtn: string;
 }
 
 export interface GetNodeProps {

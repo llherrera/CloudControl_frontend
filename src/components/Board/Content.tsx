@@ -8,7 +8,7 @@ import { thunkGetNodes, thunkUpdateYears } from "@/store/plan/thunks";
 import { decrementLevelIndex, setParent } from "@/store/plan/planSlice";
 
 import { NodoInterface, Token, PesosNodos } from "@/interfaces";
-import { NodoForm, ColorForm, NodesList, TimeLine, Graph } from "@/components";
+import { NodeForm, ColorForm, NodesList, TimeLine, Graph } from "@/components";
 import { getToken, decode, getYears } from "@/utils";
 
 interface Props {
@@ -28,7 +28,8 @@ export const Content = ( props : Props ) => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
 
-    const { plan, colorimeter, color, years, indexLevel, levels, parent } = useAppSelector(store => store.plan)
+    const { plan, colorimeter, color, years, 
+        indexLevel, levels, parent, progressNodes, financial, radioBtn } = useAppSelector(store => store.plan)
 
     const [nodos, setNodos] = useState<NodoInterface[]>([]);
 
@@ -79,7 +80,7 @@ export const Content = ( props : Props ) => {
                 })
             })
             setNodos(temp)
-            getYearProgresss()
+            getYearProgress()
         })
         .catch((err) => {console.log(err)})
     }, [years, indexLevel])
@@ -90,7 +91,7 @@ export const Content = ( props : Props ) => {
         }
     }, [color])
 
-    const getYearProgresss = () => {
+    const getYearProgress = () => {
         let pesosStr = localStorage.getItem('pesosNodo')
         if (pesosStr == undefined) 
             pesosStr = '[]'
@@ -209,7 +210,7 @@ export const Content = ( props : Props ) => {
                         {nodos.length === 0 ?
                         <div>
                             {(rol === "admin") || (rol === 'funcionario' && id === props.id) ?
-                            <NodoForm   index={indexLevel!}
+                            <NodeForm   index={indexLevel!}
                                         id={levels[indexLevel!].id_nivel!}/>
                             : <div>
                                 <p className="tw-mx-4 tw-text-center">De momemnto no hay contenido en este Plan</p>
@@ -233,7 +234,7 @@ export const Content = ( props : Props ) => {
                                 lg:tw-col-start-2">
                     <p>Cuatrenio  {new Date(plan!.Fecha_inicio).getUTCFullYear()} - {new Date(plan!.Fecha_fin).getUTCFullYear()}</p><br />
                     <Graph
-                        dataValues={yearProgress}/>
+                        dataValues={ radioBtn === 'fisica' ? progressNodes : financial}/>
                 </div>
 
             </div>

@@ -12,7 +12,7 @@ interface Props {
     id: string;
 }
 
-export const NivelForm = ( props: Props ) => {
+export const LevelForm = ( props: Props ) => {
     const navigate = useNavigate()
 
     const [data, setData] = useState<NivelInterface[]>([

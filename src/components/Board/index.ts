@@ -1,4 +1,4 @@
 export * from "./Board";
-export * from './ListaNodos'
+export * from './NodesList'
 export * from './TimeLine'
 export * from './Graph'

@@ -3,6 +3,7 @@ import * as Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 
 import { useAppSelector, useAppDispatch } from "@/store";
+import { setRadioBtn } from '@/store/plan/planSlice';
 import { setType } from '@/store/chart/chartSlice';
 
 interface Props {
@@ -13,7 +14,7 @@ export const Graph = ( props: Props ) => {
     const dispatch = useAppDispatch();
     const chartComponentRef = useRef<HighchartsReact.RefObject>(null);
 
-    const { years, colorimeter } = useAppSelector(store => store.plan)
+    const { years, colorimeter, radioBtn } = useAppSelector(store => store.plan)
     const { type } = useAppSelector(store => store.chart)
 
     const categories = years.map((year) => year.toString())
@@ -120,6 +121,21 @@ export const Graph = ( props: Props ) => {
                     <option value="line">Line</option>
                     <option value="bar">Bar</option>
                 </select>
+            </div>
+            <div className='tw-w-full tw-flex tw-flex-col md:tw-w-1/2 md:tw-self-start'>
+                <label>
+                    <input type="radio" name='fisica' value='fisica'
+                            onChange={ ()=> dispatch(setRadioBtn('fisica'))}
+                            checked={radioBtn === 'fisica'}/>
+                    Ejecución fisica
+                </label>
+                
+                <label htmlFor="">
+                    <input type="radio" name='financiera' value='financiera'
+                            onChange={ ()=> dispatch(setRadioBtn('financiera'))}
+                            checked={radioBtn === 'financiera'}/>
+                    Ejecución financiera
+                </label>
             </div>
             <div className='tw-w-full md:tw-w-1/2 tw-shadow'>
             <HighchartsReact

@@ -14,7 +14,7 @@ export const TimeLine = (props: Props) => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
-    const { years, yearSelect } = useAppSelector(store => store.plan);
+    const { years, yearSelect, plan } = useAppSelector(store => store.plan);
 
     useEffect(() => {
         if (years.length !== 0) {
@@ -29,7 +29,10 @@ export const TimeLine = (props: Props) => {
 
     const handleBtnEvidence = ( event: React.MouseEvent<HTMLButtonElement> ) => {
         event.preventDefault();
-        navigate('/evidencias')
+        if (plan) {
+            const { id_plan } = plan
+            navigate(`/${id_plan}/evidencias`)
+        }
     }
 
     return (
@@ -39,9 +42,9 @@ export const TimeLine = (props: Props) => {
                 key={index}>
                 <button className={`tw-rounded 
                                     tw-flex tw-justify-center tw-items-center
-                                    ${(props.yearProgress[index]??0)*100 < props.colors[0] ? 'tw-border-redColory'   : 
-                                      (props.yearProgress[index]??0)*100 < props.colors[1] ? 'tw-border-yellowColory':
-                                      (props.yearProgress[index]??0)*100 < props.colors[2] ? 'tw-border-greenColory' : 'tw-border-blueColory'}
+                                    ${parseInt ( ((props.yearProgress[index]??0)*100).toString()) < props.colors[0] ? 'tw-border-redColory'   : 
+                                    parseInt ( ((props.yearProgress[index]??0)*100).toString()) < props.colors[1] ? 'tw-border-yellowColory':
+                                    parseInt ( ((props.yearProgress[index]??0)*100).toString()) < props.colors[2] ? 'tw-border-greenColory' : 'tw-border-blueColory'}
                                     ${yearSelect === year ? 'tw-ring-8' : null}
                                     ${index%2 === 0 ? 'tw-row-start-1' : 'tw-row-start-3'}
                                     tw-border-4
@@ -54,9 +57,9 @@ export const TimeLine = (props: Props) => {
                     <div className={`tw-w-full tw-h-2
                                     tw-px-3
                                     tw-z-10 tw-absolute 
-                                    ${(props.yearProgress[index]??0)*100 < props.colors[0] ? 'tw-bg-redColory'   : 
-                                      (props.yearProgress[index]??0)*100 < props.colors[1] ? 'tw-bg-yellowColory':
-                                      (props.yearProgress[index]??0)*100 < props.colors[2] ? 'tw-bg-greenColory' : 'tw-bg-blueColory'}`}>
+                                    ${parseInt ( ((props.yearProgress[index]??0)*100).toString()) < props.colors[0] ? 'tw-bg-redColory'   : 
+                                      parseInt ( ((props.yearProgress[index]??0)*100).toString()) < props.colors[1] ? 'tw-bg-yellowColory':
+                                      parseInt ( ((props.yearProgress[index]??0)*100).toString()) < props.colors[2] ? 'tw-bg-greenColory' : 'tw-bg-blueColory'}`}>
                     </div>
                     <div className={`tw-h-full
                                     tw-grow

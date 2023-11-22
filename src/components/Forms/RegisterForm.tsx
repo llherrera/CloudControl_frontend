@@ -14,31 +14,36 @@ interface Props {
 export const RegisterForm = (props: Props) => {
     const navigate = useNavigate();
 
+    const regexp = new RegExp(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
+
     const [form, setForm] = useState<RegisterInterface>({
         usuario: '',
         apellido: '',
         correo: '',
         contraseña: '',
         confirmarContraseña: '',
-        rol: 'funcionario'
+        rol: 'sectorialista'
     });
 
-    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = event.target;
         setForm({ ...form, [name]: value });
     }
 
+    const handleChangeRol = (value: string) => {
+        setForm({ ...form, ['rol']: value });
+    }
+
     const submitForm = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        if (form.contraseña !== form.confirmarContraseña) {
-            alert("Las contraseñas no coinciden");
-            return;
-        }
+        if (form.contraseña !== form.confirmarContraseña) return alert("Las contraseñas no coinciden");
+        if (form.usuario === '' || form.apellido === '' || form.correo === '' || form.contraseña === '') return alert("Por favor llene todos los campos");
+        if (!regexp.test(form.correo)) return alert("El correo no es válido");
         doRegister(props.id, form)
-            .then((res) => {
+            .then(() => {
                 navigate(`/pdt/${props.id}`, { replace: true})
             })
-            .catch((err) => {
+            .catch(() => {
                 alert("Error al registrar usuario");
             })
     }
@@ -91,9 +96,32 @@ export const RegisterForm = (props: Props) => {
                         id={"confirmarContraseña"}
                         name={"confirmarContraseña"}
                         value={form.confirmarContraseña}
-                        onChange={ (event) => handleInputChange(event)}/><br />    
+                        onChange={ (event) => handleInputChange(event)}/><br /> 
+                <div className="tw-flex tw-justify-center tw-mb-3">
+                    <button
+                        className={`${form.rol === 'funcionario' ? 'tw-bg-red-300 hover:tw-bg-red-400':'tw-bg-gray-300 hover:tw-bg-gray-400'}
+                                    tw-p-1 tw-rounded tw-mx-1`}
+                        name="rol"
+                        value={'funcionario'}
+                        type="button"
+                        onClick={()=>handleChangeRol('funcionario')}>Funcionario</button>
+                    <button
+                        className={`${form.rol === 'planeacion' ? 'tw-bg-red-300 hover:tw-bg-red-400':'tw-bg-gray-300 hover:tw-bg-gray-400'}
+                                    tw-p-1 tw-rounded tw-mx-1`}
+                        name="rol"
+                        value={'planeacion'}
+                        type="button"
+                        onClick={()=>handleChangeRol('planeacion')}>Planeación</button>
+                    <button
+                        className={`${form.rol === 'sectorialista' ? 'tw-bg-red-300 hover:tw-bg-red-400':'tw-bg-gray-300 hover:tw-bg-gray-400'}
+                                    tw-p-1 tw-rounded tw-mx-1`}
+                        name="rol"
+                        value={'sectorialista'}
+                        type="button"
+                        onClick={()=>handleChangeRol('sectorialista')}>Sectorialista</button>
+                </div>
                 <button type="submit"
-                        className=' tw-bg-green-300 
+                        className=' tw-bg-green-300 hover:tw-bg-green-400
                                     tw-py-2
                                     tw-rounded 
                                     tw-w-full

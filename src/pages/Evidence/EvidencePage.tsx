@@ -18,6 +18,8 @@ export const EvidencePage = () => {
     const [cargar, setCargar] = useState(false)
     const [loading, setLoading] = useState(false)
     const [data, setData] = useState<EvidenceInterface>({
+        id_evidencia: 0,
+        codigo: unit!.code,
         fecha: new Date().toISOString(),
         descripcionActividades: "",
         unidad: "num",
@@ -33,6 +35,7 @@ export const EvidencePage = () => {
         nombreDocumento: "",
         lugar: "",
         fechaArchivo: "",
+        url: "",
     })
     const [documento, setDocumento] = useState<FileList | null>(null)
 

@@ -10,7 +10,7 @@ interface Props {
     id: number;
 }
 
-export const NodoForm = ( props : Props ) => {
+export const NodeForm = ( props : Props ) => {
     const { parent } = useAppSelector(store => store.plan)
 
     let id_nodo_gen : number = 1;

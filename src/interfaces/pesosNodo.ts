@@ -2,6 +2,7 @@ export interface Porcentaje {
     progreso: number;
     año: number;
     programacion: number;
+    ejecucionFinanciera: number;
 }
 
 export interface PesosNodos {

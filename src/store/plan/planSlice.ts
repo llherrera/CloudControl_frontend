@@ -28,7 +28,10 @@ const getInitialState = (): InitialStatePlanInterface => {
         levels: [],
         indexLevel: undefined,
         parent: null,
+        progressNodes: [],
+        financial: [],
         namesTree: [['Dimension', 'Nivel']],
+        radioBtn: 'fisica',
     };
 };
 
@@ -47,7 +50,16 @@ export const planSlice = createSlice({
         },
         setParent: (state, action: PayloadAction<string | null>) => {
             state.parent = action.payload
-        }
+        },
+        setRadioBtn: (state, action: PayloadAction<string>) => {
+            state.radioBtn = action.payload
+        },
+        setProgressNodes: (state, action: PayloadAction<number[]>) => {
+            state.progressNodes = action.payload
+        },
+        setFinancial: (state, action: PayloadAction<number[]>) => {
+            state.financial = action.payload
+        },
     },
     extraReducers: builder => {
         builder.addCase(thunkGetPDTid.pending, state => {
@@ -165,5 +177,6 @@ export const planSlice = createSlice({
         });
     }
 });
-export const { selectYear, incrementLevelIndex, decrementLevelIndex, setParent } = planSlice.actions;
+export const { selectYear, incrementLevelIndex, decrementLevelIndex, 
+        setParent, setRadioBtn, setProgressNodes, setFinancial } = planSlice.actions;
 export default planSlice.reducer;
