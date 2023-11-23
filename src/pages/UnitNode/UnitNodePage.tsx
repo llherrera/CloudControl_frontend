@@ -4,10 +4,13 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "@/store";
 import { thunkGetLevelName } from "@/store/plan/thunks";
 import { thunkGetUnit } from "@/store/unit/thunks";
+import { thunkGetEvidence } from '@/store/evidence/thunk'
+import { resetEvidence } from "@/store/evidence/evidenceSlice";
 
 import { addUnitNodeAndYears } from "../../services/api";
 import { Token } from "../../interfaces";
 import { getToken, decode } from "@/utils";
+import { EvidenceDetail, BackBtn } from "@/components";
 
 export const UnitNodePage = () => {
     const dispatch = useAppDispatch();
@@ -16,6 +19,7 @@ export const UnitNodePage = () => {
     const { idPDT, idNodo } = useParams();
     const { namesTree } = useAppSelector(store => store.plan);
     const { unit } = useAppSelector(store => store.unit);
+    const { evidence } = useAppSelector(store => store.evidence);
 
     const [acum, setAcum] = useState(0);
     const [acumFinan, setAcumFinan] = useState(0);
@@ -97,10 +101,122 @@ export const UnitNodePage = () => {
         }
     }
 
+    const handleEvidence = () => {
+        const id_ = parseInt(idPDT!)
+        dispatch(thunkGetEvidence({id_plan: id_, codigo: unit!.code}))
+        .unwrap()
+        .then((res) => {
+            if (res.length === 0) {
+                alert('No hay evidencias para esta unidad')
+            }
+        })
+    }
+
+    const handleBack = () => {
+        dispatch(resetEvidence())
+        navigate(`/pdt/${idPDT}`)
+    }
+
     const unidadForm = () => {
         if (unit === undefined || unit === null) return;
         return (
-            <form className="tw-mt-5">
+            <div className="tw-border tw-border-gray-400 tw-bg-white tw-mx-2 md:tw-mx-10">
+                <div className="tw-px-1">
+                    <p className="tw-text-2xl tw-font-bold">Codigo: {unit.code}</p>
+                </div>
+                <div className="tw-px-1 tw-mt-2 tw-border-y tw-border-black">
+                    <p className="tw-text-2xl tw-font-bold tw-text-justify">Descripcion: {unit.description}</p>
+                </div>
+                <div className="tw-mx-1 tw-mt-2">
+                    <p className="tw-text-2xl tw-font-bold tw-text-justify">Indicador: {unit.indicator}</p>
+                </div>
+                <div className="tw-px-1 tw-mt-2 tw-border-y tw-border-black">
+                    <p className="tw-text-2xl tw-font-bold">Línea base: {unit.base}</p>
+                </div>
+                <div className="tw-px-1 tw-mt-2">
+                    <p className="tw-text-2xl tw-font-bold">Meta: {unit.goal}</p>
+                </div>
+            </div>
+        )
+    }
+
+    const añosForm = () => {
+        if (unit === undefined || unit === null) return;
+        return(
+            <div className="tw-border tw-border-slate-500 tw-rounded
+                            tw-bg-white 
+                            tw-px-2 tw-mt-3 tw-mx-2 md:tw-mx-10">
+                <div className="tw-flex tw-justify-center tw-mt-2">
+                {(rol === "admin") || (rol === 'funcionario' && id === parseInt(idPDT!)) ?
+                <button onClick={handleSubmitButton}
+                        className="tw-bg-slate-400 tw-rounded tw-p-2">
+                    Añadir evidencia
+                </button>
+                : null
+                }
+                </div>
+                <div className="tw-flex tw-flex-wrap tw-justify-center">
+                {unit.years.map((item, index) => {
+                    return(
+                        <div key={index}
+                            className="tw-my-2">
+                            <p className="  tw-mx-2 
+                                            tw-border-x tw-border-t tw-border-black 
+                                            tw-text-xl tw-text-center
+                                            tw-bg-yellow-300
+                                            tw-rounded-t">{item.year}</p>
+                            <div className="tw-flex tw-justify-between 
+                                            tw-mx-2 
+                                            tw-bg-gray-200
+                                            tw-border tw-border-black">
+                                <div className="tw-flex tw-flex-col tw-justify-center 
+                                                tw-border-r tw-border-black
+                                                tw-px-2
+                                                tw-relative
+                                                md:tw-block">
+                                    <p className="  tw-text-center">
+                                        Programación
+                                    </p>
+                                    <p className="  tw-text-center
+                                                    tw-border-t tw-border-black
+                                                    tw-mx-2
+                                                    tw-absolute
+                                                    tw-bottom-0 tw-inset-x-0">
+                                        {unit.years[index].programed}
+                                    </p>
+                                </div>
+                                <div className="tw-flex tw-flex-col tw-justify-center 
+                                                tw-border-r tw-border-black
+                                                tw-px-2">
+                                    <p className="  tw-text-center ">
+                                        Ejecución física
+                                    </p>
+                                    <p className="  tw-text-center
+                                                    tw-border-t tw-border-black">
+                                        {unit.years[index].phisicalExecuted}
+                                    </p>
+                                </div>
+                                <div className="tw-flex tw-flex-col tw-justify-center
+                                                tw-px-2">
+                                    <p className="tw-text-center">
+                                        Ejecución financiera
+                                    </p>
+                                    <p className="  tw-text-center
+                                                    tw-border-t tw-border-black">
+                                        {unit.years[index].finalcialExecuted}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    )
+                })}
+                </div>
+            </div>
+        );
+    }
+
+/*
+<form className="tw-mt-5">
                 <table className="  tw-border-separate 
                                     tw-border-spacing-2 
                                     tw-border 
@@ -159,13 +275,8 @@ export const UnitNodePage = () => {
                     </tbody>
                 </table>
             </form>
-        )
-    }
 
-    const añosForm = () => {
-        if (unit === undefined || unit === null) return;
-        return(
-            <form className="tw-mt-5">
+<form className="tw-mt-5">
                 <table className="  tw-border-separate 
                                     tw-border-spacing-2
                                     tw-border 
@@ -252,8 +363,7 @@ export const UnitNodePage = () => {
                     </tbody>
                 </table>
             </form>
-        );
-    }
+*/
 
     return (
         <div className="tw-container tw-mx-auto tw-my-3
@@ -268,10 +378,11 @@ export const UnitNodePage = () => {
                             tw-border-b-2 tw-border-gray-400
                             tw-z-40'>
                 <img src="/src/assets/images/Logo.png" alt="" width={100} />
-                <img src="/src/assets/images/Logo-Municipio.png" alt="" width={250} />
+                <img src="/src/assets/images/Logo-Municipio.png" alt="" width={250} className="tw-hidden md:tw-block" />
                 <img src="/src/assets/images/Plan-indicativo.png" alt="" width={60} />
             </div>
-            <ol className="tw-col-start-1 tw-col-span-full tw-flex tw-justify-center">
+            <BackBtn handleBack={handleBack} id={parseInt(idPDT!)}/>
+            <ol className="tw-col-start-1 tw-col-span-full tw-flex tw-justify-center tw-flex-wrap">
             {namesTree.length > 0 && namesTree.map((name, index) => {
                 return (
                     <li className="tw-flex tw-mx-3" key={index}>
@@ -295,10 +406,21 @@ export const UnitNodePage = () => {
                                     tw-text-white tw-font-bold 
                                     tw-py-2 tw-px-4 tw-my-5
                                     tw-rounded"
-                        onClick={(e) => handleInput(e)}>
-                    Guardar <br /> cambios
+                        onClick={handleEvidence}>
+                    Cargar <br /> evidencias
                 </button>
             </div>
+            <ol className="tw-w-full md:tw-w-1/2
+                            tw-flex tw-flex-col tw-justify-center
+                            tw-mt-4">
+                {evidence.length > 0 ? evidence.map((item, index) => {
+                    return (
+                        <li>
+                            <EvidenceDetail eviden={item} index={index}/>
+                        </li>
+                    )
+                }) : null}
+            </ol>
         </div>
     );
 }

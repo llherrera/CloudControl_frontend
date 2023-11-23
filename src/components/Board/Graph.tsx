@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useRef } from 'react';
 import * as Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 
@@ -6,11 +6,9 @@ import { useAppSelector, useAppDispatch } from "@/store";
 import { setRadioBtn } from '@/store/plan/planSlice';
 import { setType } from '@/store/chart/chartSlice';
 
-interface Props {
-    dataValues: number[];
-}
+import { GraphProps } from '@/interfaces';
 
-export const Graph = ( props: Props ) => {
+export const Graph = ( props: GraphProps ) => {
     const dispatch = useAppDispatch();
     const chartComponentRef = useRef<HighchartsReact.RefObject>(null);
 

@@ -1,14 +1,12 @@
-import React, { useState, useEffect } from "react"
+import React, { useState } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 
-import { useAppDispatch, useAppSelector } from "@/store"
-import { thunkGetLevelName } from "@/store/plan/thunks"
+import { useAppSelector } from "@/store"
 
-import { addEvicenceGoal, getUnitNodeAndYears } from "../../services/api"
-import { YearInterface, UnitInterface, YearDetail, EvidenceInterface } from "../../interfaces"
+import { addEvicenceGoal } from "../../services/api"
+import { EvidenceInterface } from "../../interfaces"
 
 export const EvidencePage = () => {
-    const dispatch = useAppDispatch()
     const navigate = useNavigate()
 
     const { idPDT, idNodo } = useParams();

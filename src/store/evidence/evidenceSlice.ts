@@ -8,7 +8,7 @@ const getInitialState = (): InitialStateEvidenceInterface => {
     return {
         loadingEvidence: false,
         errorLoadingEvidence: undefined,
-        evidence: undefined,
+        evidence: [],
         eviCount: 0
     };
 };
@@ -16,7 +16,12 @@ const getInitialState = (): InitialStateEvidenceInterface => {
 export const evidenceSlice = createSlice({
     name: "evidence",
     initialState: getInitialState,
-    reducers: {},
+    reducers: {
+        removeEvidence: (state, action: PayloadAction<number>) => {
+            state.evidence = state.evidence?.slice(action.payload, 1);
+        },
+        resetEvidence: () => getInitialState()
+    },
     extraReducers: builder => {
         builder.addCase(thunkGetEvidence.pending, state => {
             if (!state.loadingEvidence) state.loadingEvidence = true;
@@ -61,4 +66,5 @@ export const evidenceSlice = createSlice({
     }
 });
 
+export const { removeEvidence, resetEvidence } = evidenceSlice.actions;
 export const evidenceReducer = evidenceSlice.reducer;

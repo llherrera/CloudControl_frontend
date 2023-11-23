@@ -1,30 +1,16 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import IconButton from "@mui/material/IconButton";
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 
 import { useAppDispatch, useAppSelector } from "@/store";
 import { thunkGetNodes, thunkUpdateYears } from "@/store/plan/thunks";
 import { decrementLevelIndex, setParent } from "@/store/plan/planSlice";
 
-import { NodoInterface, Token, PesosNodos } from "@/interfaces";
-import { NodeForm, ColorForm, NodesList, TimeLine, Graph } from "@/components";
+import { NodoInterface, Token, PesosNodos, Node, ContentProps } from "@/interfaces";
+import { NodeForm, ColorForm, NodesList, 
+        TimeLine, Graph, BackBtn } from "@/components";
 import { getToken, decode, getYears } from "@/utils";
 
-interface Props {
-    id: number;
-    progress: boolean;
-}
-
-type nodos = {
-    id_nodo: string;
-    Nombre: string;
-    Descripcion: string;
-    Padre: (string | null);
-    id_nivel: number;
-}
-
-export const Content = ( props : Props ) => {
+export const Content = ( props : ContentProps ) => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
 
@@ -69,7 +55,7 @@ export const Content = ( props : Props ) => {
         .then((res) => {
             const resArr = [...res];
             const temp = [] as NodoInterface[]
-            resArr.forEach((item:nodos) => {
+            resArr.forEach((item:Node) => {
                 temp.push({
                     id_node: item.id_nodo,
                     NodeName: item.Nombre,
@@ -135,19 +121,6 @@ export const Content = ( props : Props ) => {
         }
     }
 
-    const backIconButton = () => {
-        return (
-            <IconButton aria-label="delete"
-                        size="small"
-                        color="secondary"
-                        onClick={handleBack}
-                        title="Regresar"
-                        key={props.id}>
-                <ArrowBackIosIcon/>
-            </IconButton>
-        )
-    }
-
     const handleColor = ( event: React.MouseEvent<HTMLButtonElement> ) => {
         event.preventDefault();
         setShowColorForm(!showColorForm)
@@ -203,7 +176,7 @@ export const Content = ( props : Props ) => {
                                 lg:tw-w-4/5 lg:tw-h-full lg:tw-row-span-2
                                 xl:tw-row-span-2">
                     <p className="tw-ml-4 tw-mt-3 tw-font-montserrat tw-font-bold">
-                        {backIconButton()}
+                        <BackBtn handleBack={handleBack} id={props.id}/>
                         {levels[indexLevel!].LevelName}
                     </p>
                     <div className="tw-pb-1 tw-mb-2">

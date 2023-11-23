@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+
 import { getLastPDT } from '../../services/api';
 import { Header, ButtonComponent } from '../../components';
 import { decode } from '../../utils/decode';
-import { Token } from '../../interfaces';
-import { getToken, removeToken } from '@/utils';
-import { thunkLogout } from '@/store/auth/thunks';
+import { Token } from '@/interfaces';
+import { getToken } from '@/utils';
+
 import { useAppDispatch, useAppSelector } from '@/store';
 import { selectOption } from '@/store/content/contentSlice';
 

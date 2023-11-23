@@ -4,7 +4,6 @@ import IconButton from "@mui/material/IconButton";
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 
 import { Input } from "../Inputs";
-import { addPDT } from "../../services/api";
 import { PDTInterface } from "../../interfaces";
 
 import { useAppDispatch } from '@/store';

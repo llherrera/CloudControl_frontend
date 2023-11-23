@@ -36,7 +36,7 @@ export interface Node {
     id_nodo: string;
     Nombre: string;
     Descripcion: string;
-    Padre: number | null;
+    Padre: string | null;
     id_nivel: number;
 }
 

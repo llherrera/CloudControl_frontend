@@ -1,24 +1,10 @@
-import React, { useState } from 'react';
-import { useAppDispatch, useAppSelector } from '../../store'
+import React from 'react';
+import { useAppSelector } from '../../store'
 
 import { ButtonComponent } from '../Buttons';
+import { NavBarProps } from '@/interfaces';
 
-interface ButtonProps {
-    text: string,
-    inside: boolean,
-    onClick: () => void,
-    bgColor?: string,
-    textColor?: string,
-    icon?: ()=>JSX.Element
-}
-
-interface Props {
-    buttons: ButtonProps[],
-    bgColor?: string
-}
-
-export const NavBar = ( props: Props) => {
-    const dispatch = useAppDispatch()
+export const NavBar = ( props: NavBarProps) => {
     const { index } = useAppSelector(store => store.content)
 
     const handleClick = (i: number, action: ()=> void) => {

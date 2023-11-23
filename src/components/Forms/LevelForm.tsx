@@ -5,14 +5,10 @@ import { useNavigate } from "react-router-dom";
 
 import { Input } from "../Inputs";
 import { addLevel } from "@/services/api";
-import { NivelInterface, Token } from "@/interfaces";
+import { NivelInterface, Token, LevelFormProps } from "@/interfaces";
 import { getToken, decode } from "@/utils";
 
-interface Props {
-    id: string;
-}
-
-export const LevelForm = ( props: Props ) => {
+export const LevelForm = ( props: LevelFormProps ) => {
     const navigate = useNavigate()
 
     const [data, setData] = useState<NivelInterface[]>([

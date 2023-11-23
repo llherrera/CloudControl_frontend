@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 
 import { useAppSelector, useAppDispatch } from "@/store";
-import { thunkGetEvidence, thunkGetEvidences, thunkGetEvidenceCount } from "@/store/evidence/thunk";
+import { thunkGetEvidences, thunkGetEvidenceCount } from "@/store/evidence/thunk";
+import { resetEvidence } from "@/store/evidence/evidenceSlice";
 
-import { EvidenceInterface } from '@/interfaces';
-import { Frame, EvidenceDetail } from "@/components";
+import { Frame, EvidenceDetail, BackBtn } from "@/components";
 
 export const ListEvidence = () => {
     return (
@@ -16,6 +16,7 @@ export const ListEvidence = () => {
 const Evidence = () => {
     const dispatch = useAppDispatch()
     const navigate = useNavigate()
+
     const { id } = useParams()
 
     const { plan } = useAppSelector(store => store.plan)
@@ -23,14 +24,14 @@ const Evidence = () => {
 
     const [page, setPage] = useState(1)
 
-    useEffect(() => {
+    useEffect(() => {        
         if (plan) {
             const { id_plan } = plan
             if (id_plan) dispatch(thunkGetEvidenceCount(id_plan))
-        }else{
+        } else {
             dispatch(thunkGetEvidenceCount(parseInt(id!)))
         }
-    }, [])
+    }, [evidence])
 
     useEffect(() => {
         if (plan) {
@@ -40,20 +41,29 @@ const Evidence = () => {
             let id_plan = parseInt(id!)
             dispatch(thunkGetEvidences( {id_plan, page}))
         }
-    }, [page])
+    }, [page, eviCount])
 
     const handlePage = (page: number) => {
         setPage(page)
     }
 
+    const handleBack = () => {
+        dispatch(resetEvidence())
+        navigate(`/pdt/${id}`)
+    }
+
     return (
         <div className="tw-flex tw-flex-col tw-items-center tw-mx-3">
+            <p className="tw-ml-4 tw-mt-3 tw-font-montserrat tw-font-bold">
+                <BackBtn handleBack={handleBack} id={parseInt(id!)}/>
+                Evidencias por aprobar
+            </p>
             <ol className=" tw-w-full md:tw-w-1/2
                             tw-flex tw-flex-col
                             tw-mt-4">
                 {evidence?.length === 0 || evidence ? evidence.map((evi, index) => (
                     <li key={index} className="tw-bg-blue-200 tw-rounded tw-my-1">
-                        <EvidenceDetail eviden={evi}/>
+                        <EvidenceDetail eviden={evi} index={index}/>
                     </li>
                 )) : <span>No hay evidencias</span>}
             </ol>
@@ -69,7 +79,7 @@ const Evidence = () => {
                                     tw-rounded tw-border">{'<'}</button>
                 : <div></div>
                 }
-                {parseInt((eviCount/2 +1).toString()) > page ?
+                {page*10 < eviCount ?
                 <button onClick={()=>handlePage(page+1)}
                         className=" tw-py-2 tw-px-3
                                     tw-font-bold tw-text-xl

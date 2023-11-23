@@ -1,8 +1,6 @@
-type Props = {
-    componentes: React.ReactNode[]
-}
+import { HeaderProps } from "@/interfaces";
 
-export const Header = ( {componentes}: Props) => {
+export const Header = ( {componentes}: HeaderProps) => {
     return (
         <main className="   tw-mx-auto tw-my-4
                             tw-grid 

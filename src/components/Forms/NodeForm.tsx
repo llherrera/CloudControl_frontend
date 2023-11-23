@@ -2,15 +2,10 @@ import React, { useState } from 'react'
 
 import { useAppSelector } from '@/store';
 
-import { NodoInterface } from '../../interfaces'
+import { NodoInterface, NodeFormProps } from '../../interfaces'
 import { addLevelNode } from '../../services/api'
 
-interface Props {
-    index: number;
-    id: number;
-}
-
-export const NodeForm = ( props : Props ) => {
+export const NodeForm = ( props : NodeFormProps ) => {
     const { parent } = useAppSelector(store => store.plan)
 
     let id_nodo_gen : number = 1;

@@ -4,13 +4,9 @@ import { useNavigate } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from "@/store";
 import { selectYear } from '@/store/plan/planSlice'; 
 
-interface Props {
-    yearProgress: number[];
-    yearsProgress: number;
-    colors: number[];
-}
+import { TimeLineProps } from '@/interfaces';
 
-export const TimeLine = (props: Props) => {
+export const TimeLine = (props: TimeLineProps) => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 

@@ -20,7 +20,7 @@ export const PDTid = () => {
 
     return (
         <Frame
-            data={levels.length === 0 ? <LevelForm id={id!} /> : <Board data={levels} />}
+            data={levels.length === 0 ? <LevelForm id={id!} /> : <Board/>}
         />
     )
 }

@@ -2,18 +2,14 @@ import React, { useState } from 'react';
 import Slider from '@mui/material/Slider';
 import Box from '@mui/material/Box';
 
-import { useAppDispatch, useAppSelector } from '@/store';
+import { useAppDispatch } from '@/store';
 import { thunkAddColors } from '@/store/plan/thunks';
-import { addColor } from '../../services/api';
 
-interface Props {
-    id: number;
-}
+import { ColorFromProps } from '@/interfaces';
 
-export const ColorForm = ( props : Props ) => {
+export const ColorForm = ( props : ColorFromProps ) => {
     const dispatch = useAppDispatch();
-    const { colorimeter, color } = useAppSelector(store => store.plan)
-
+    
     const [value, setValue] = useState([[0, 24], [25, 49], [50, 74], [75, 100]]);
 
     const handleChange = (index: number) => (event: Event, newValue: number | number[]) => {

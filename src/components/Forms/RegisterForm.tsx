@@ -1,17 +1,13 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import IconButton from "@mui/material/IconButton";
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 
 import { Input } from "../Inputs";
 import { doRegister } from "../../services/api";
-import { useNavigate } from "react-router-dom";
-import { RegisterInterface } from "../../interfaces";
+import { RegisterInterface, RegisterFormProps } from "@/interfaces";
 
-interface Props {
-    id: number;
-}
-
-export const RegisterForm = (props: Props) => {
+export const RegisterForm = (props: RegisterFormProps) => {
     const navigate = useNavigate();
 
     const regexp = new RegExp(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);

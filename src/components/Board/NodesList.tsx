@@ -1,19 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from "react-router-dom";
 
 import { useAppSelector, useAppDispatch } from "@/store";
 import { thunkGetNodes } from '@/store/plan/thunks';
 import { incrementLevelIndex, setParent, setProgressNodes, setFinancial } from '@/store/plan/planSlice';
 
-import { Node, NodoInterface, PesosNodos, Porcentaje } from '@/interfaces';
+import { Node, PesosNodos, Porcentaje, NodeListProps } from '@/interfaces';
 
-interface Props {
-    id: number;
-    nodes: NodoInterface[];
-    colors: number[];
-}
-
-export const NodesList = ( props : Props ) => {
+export const NodesList = ( props : NodeListProps ) => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
     const { nodes, yearSelect, levels, indexLevel, progressNodes } = useAppSelector(store => store.plan)

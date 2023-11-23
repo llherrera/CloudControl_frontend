@@ -2,17 +2,11 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import IconButton from "@mui/material/IconButton";
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 
 import { getPDTs } from "../../services/api";
-import { Token, PDTInterface } from "../../interfaces";
+import { Token, PDTInterface, PDTPageProps } from "../../interfaces";
 import { getToken, decode } from "@/utils";
-import { Frame } from "@/components";
-
-interface Props {
-    data: PDTInterface[],
-    rol: string
-}
+import { Frame, BackBtn } from "@/components";
 
 export const PDT = () => {
     const [data, setData] = useState<PDTInterface[]>([])
@@ -46,7 +40,7 @@ export const PDT = () => {
     )
 }
 
-const ListPDT = ( props: Props ) => {
+const ListPDT = ( props: PDTPageProps ) => {
     const navigate = useNavigate();
 
     const handleAddPdt = () => {
@@ -61,23 +55,10 @@ const ListPDT = ( props: Props ) => {
         navigate(`/${id}/register`)
     }
 
-    const backIconButton = () => {
-        return (
-            <IconButton aria-label="delete"
-                        size="small"
-                        color="secondary"
-                        onClick={()=>navigate(-1)}
-                        title="Regresar"
-                        key={props.data!.length}>
-                <ArrowBackIosIcon/>
-            </IconButton>
-        )
-    }
-
     return (
         <div className="tw-flex tw-relative tw-justify-center tw-mt-10">
             <div className="tw-absolute tw-left-1">
-                {backIconButton()}
+                <BackBtn handleBack={()=>navigate(-1)} id={props.data!.length}/>
             </div>
             {props.rol === "admin" ? 
             <ul className="tw-shadow-2xl tw-p-4 tw-rounded">

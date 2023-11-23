@@ -9,11 +9,7 @@ import { useAppDispatch } from '@/store';
 import { thunkGetPDTid, thunkGetColors } from '@/store/plan/thunks';
 import { useAppSelector } from "@/store";
 
-interface Props {
-    data: NivelInterface[];
-}
-
-export const Board = ( props : Props ) => {
+export const Board = () => {
     const dispatch = useAppDispatch()
     const { plan } = useAppSelector(store => store.plan)
     const { id } = useParams();

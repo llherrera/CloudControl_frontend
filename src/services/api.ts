@@ -453,7 +453,7 @@ export const updateColor = async (id_plan: number, colors: number[]) => {
 
 export const approveEvidence = async (id_evidence: number, approve: number) => {
     try {
-        const response = await api.put(`/nodo/evidencia/aprobar`, {
+        const response = await api.put(`/nodo/evidencia`, {
             id_evidence: id_evidence,
             approve:     approve
         });

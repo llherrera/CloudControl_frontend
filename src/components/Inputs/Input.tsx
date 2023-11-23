@@ -1,14 +1,6 @@
-interface Props {
-    type: string;
-    label: string;
-    id: string;
-    name: string;
-    value: string;
-    onChange: (e: React.ChangeEvent<HTMLInputElement>, index:(number | void)) => void;
-    isRequired?: boolean;
-}
+import { InputProps } from "@/interfaces";
 
-export const Input = (props: Props) => {
+export const Input = (props: InputProps) => {
     return(
         <div className="tw-flex tw-justify-center">
             <label htmlFor={props.id}>{props.label}</label>

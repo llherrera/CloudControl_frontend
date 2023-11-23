@@ -8,12 +8,9 @@ import { thunkLogout } from '@/store/auth/thunks';
 
 import { NavBar } from '..'
 import * as svg from '../../assets/icons'
+import { FrameProps } from '@/interfaces';
 
-interface Props {
-    data: React.ReactNode;
-}
-
-export const Frame = (props: Props) => {
+export const Frame = (props: FrameProps) => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch()
     

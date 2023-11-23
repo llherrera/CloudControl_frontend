@@ -1,14 +1,6 @@
-interface Props {
-    text: string,
-    src?: string,
-    inside: boolean,
-    icon?: ()=>JSX.Element,
-    onClick: () => void,
-    bgColor?: string,
-    textColor?: string
-}
+import { BtnProps } from "@/interfaces";
 
-export const ButtonComponent = ( props : Props ) => {
+export const ButtonComponent = ( props : BtnProps ) => {
     return (
         <div className="tw-flex">
             <button type="submit"

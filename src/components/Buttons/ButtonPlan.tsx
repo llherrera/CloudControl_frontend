@@ -1,11 +1,6 @@
-interface Props {
-    handleButton: (e: React.MouseEvent<HTMLButtonElement>) => void;
-    text: string;
-    x: number;
-    y: number;
-}
+import { BtnPlanProps } from '@/interfaces'
 
-export const ButtonPlan = (props: Props) => {
+export const ButtonPlan = (props: BtnPlanProps) => {
     return (
         <button className=""
                 onClick={props.handleButton}>
