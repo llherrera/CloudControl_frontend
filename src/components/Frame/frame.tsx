@@ -13,6 +13,8 @@ import { FrameProps } from '@/interfaces';
 export const Frame = (props: FrameProps) => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch()
+
+    const urlLogo = useAppSelector(state => state.plan.url)
     
     const bgcolor='greenBtn'
     const logocolor='#FFFFFF'
@@ -65,7 +67,7 @@ export const Frame = (props: FrameProps) => {
         <div className='tw-min-h-screen tw-flex tw-flex-col'>
             <header className={`tw-flex tw-justify-between tw-bg-header tw-drop-shadow-xl`}>
                 <img src="\src\assets\images\Logo.png" alt="" width={100} height={100}/>
-                <img src="\src\assets\images\Logo-municipio.png" alt="" width={300} className='tw-hidden md:tw-block'/>
+                {urlLogo && <img src={urlLogo} alt="" width={300} height={100} className='tw-hidden md:tw-block'/> }
                 <IconButton onClick={handleBtn}>
                     <LogoutIcon sx={{color: 'green'}}/>
                 </IconButton>

@@ -3,7 +3,7 @@ import { createAction, createAsyncThunk } from '@reduxjs/toolkit'
 import { PDTInterface, ErrorBasicInterface, GetNodeProps, AddColorsProps, NivelInterface, Nivel } from '../../interfaces'
 import { parseErrorAxios } from '../../utils'
 
-import { getPDTid, addPDT, getColors, getLevelNodes, addColor, getPDTLevelsById, getLevelName } from '@/services/api'
+import { getPDTid, addPDT, getColors, getLevelNodes, addColor, getPDTLevelsById, getLevelName, getLogoPlan } from '@/services/api'
 
 export const thunkGetPDTid = createAsyncThunk<PDTInterface, string, { rejectValue: ErrorBasicInterface }>(
     'pdt/getPDTid',
@@ -114,6 +114,19 @@ export const thunkGetLevelName = createAsyncThunk<[[]], string[], { rejectValue:
         try {
             const res = await getLevelName(props)
             return res
+        } catch (err) {
+            const result = parseErrorAxios(err)
+            return rejectWithValue(result)
+        }
+    }
+)
+
+export const thunkGetLogo = createAsyncThunk<string, number, { rejectValue: ErrorBasicInterface }>(
+    'pdt/getLogo',
+    async (props: number, { rejectWithValue }) => {
+        try {
+            const res = await getLogoPlan(props)
+            return res[0].UrlLogo
         } catch (err) {
             const result = parseErrorAxios(err)
             return rejectWithValue(result)

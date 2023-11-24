@@ -10,7 +10,7 @@ import { Node, PesosNodos, Porcentaje, NodeListProps } from '@/interfaces';
 export const NodesList = ( props : NodeListProps ) => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
-    const { nodes, yearSelect, levels, indexLevel, progressNodes } = useAppSelector(store => store.plan)
+    const { nodes, yearSelect, levels, indexLevel, progressNodes, colorimeter } = useAppSelector(store => store.plan)
 
     useEffect(() => {
         const ids = nodes.map((item: Node) => item.id_nodo)
@@ -42,9 +42,9 @@ export const NodesList = ( props : NodeListProps ) => {
                         }
                     })
                 }else {
-                    progreso.push(0)
-                    programacion.push(0)
-                    financiacion.push(0)
+                    progreso.push(-1)
+                    programacion.push(-1)
+                    financiacion.push(-1)
                 }
             }
         })
@@ -58,7 +58,7 @@ export const NodesList = ( props : NodeListProps ) => {
             dispatch(incrementLevelIndex(indexLevel!+1))
             dispatch(thunkGetNodes({id_level: nodes[index].id_nivel+1, parent:nodes[index].id_nodo}))
         } else {
-            navigate(`/pdt/${props.id}/${nodes[index].id_nodo}`)
+            navigate(`/pdt/PlanIndicativo/Meta`, {state: {idPDT: props.id, idNodo: nodes[index].id_nodo}})
         }
     }
 
@@ -71,22 +71,26 @@ export const NodesList = ( props : NodeListProps ) => {
                     <button className={`tw-rounded
                                         tw-flex tw-justify-center tw-items-center
                                         tw-border-4
-                                        ${(progressNodes[index])*100 < props.colors[0] && (progressNodes[index])*100 >= 0 ? 'tw-border-redColory'   :
-                                        (progressNodes[index])*100 <   props.colors[1] ? 'tw-border-yellowColory':
-                                        (progressNodes[index])*100 <   props.colors[2] ? 'tw-border-greenColory' : 
-                                        (progressNodes[index])*100 <=  props.colors[3] ? 'tw-border-blueColory'  : 'tw-border-gray-400'}
+                                        ${
+                                        progressNodes[index] < 0 ? 'tw-border-gray-400' :
+                                        (progressNodes[index])*100 < colorimeter[0] ? 'tw-border-redColory'   :
+                                        (progressNodes[index])*100 < colorimeter[1] ? 'tw-border-yellowColory':
+                                        (progressNodes[index])*100 < colorimeter[2] ? 'tw-border-greenColory' :
+                                        'tw-border-blueColory'}
                                         tw-ml-3
                                         tw-w-12 tw-h-12
                                         tw-font-bold`}
                             onClick={ () => handleButton(index)}
                             title={item.Descripcion}>
-                        { parseInt( ((progressNodes[index]??0)*100).toString())}%
+                        { parseInt( ((progressNodes[index] === undefined || progressNodes[index] < 0 ? 0 : progressNodes[index])*100).toString())}%
                     </button>
                     {indexLevel !== levels.length-1 ?
-                    <button className={`${(progressNodes[index])*100 < props.colors[0] ? 'tw-bg-redColory'   :
-                                        (progressNodes[index])*100 <   props.colors[1] ? 'tw-bg-yellowColory':
-                                        (progressNodes[index])*100 <   props.colors[2] ? 'tw-bg-greenColory' : 
-                                        (progressNodes[index])*100 <=  props.colors[3] ? 'tw-bg-blueColory'  : 'tw-bg-gray-400'}
+                    <button className={`${
+                                        progressNodes[index] < 0 ? 'tw-bg-gray-400' :
+                                        (progressNodes[index])*100 < colorimeter[0] ? 'tw-bg-redColory'   :
+                                        (progressNodes[index])*100 < colorimeter[1] ? 'tw-bg-yellowColory':
+                                        (progressNodes[index])*100 < colorimeter[2] ? 'tw-bg-greenColory' : 
+                                        'tw-bg-blueColory'}
                                         tw-h-8 tw-my-2
                                         tw-w-2/3
                                         tw-rounded-r-lg

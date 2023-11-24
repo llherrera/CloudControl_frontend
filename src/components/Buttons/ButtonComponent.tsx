@@ -4,6 +4,7 @@ export const ButtonComponent = ( props : BtnProps ) => {
     return (
         <div className="tw-flex">
             <button type="submit"
+                    title={props.text}
                     onClick={props.onClick}
                     className={`hover:tw-bg-navBar
                                 ${props.bgColor}

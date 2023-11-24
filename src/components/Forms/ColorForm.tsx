@@ -54,7 +54,7 @@ export const ColorForm = ( props : ColorFromProps ) => {
                     </div>
                 )
             })}
-            <button className=' tw-bg-greenColory
+            <button className=' tw-bg-greenColory hover:tw-bg-green-400
                                 tw-px-2
                                 tw-rounded
                                 tw-font-bold'

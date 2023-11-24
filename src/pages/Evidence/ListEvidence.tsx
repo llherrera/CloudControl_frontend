@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 
 import { useAppSelector, useAppDispatch } from "@/store";
 import { thunkGetEvidences, thunkGetEvidenceCount } from "@/store/evidence/thunk";
@@ -14,15 +14,16 @@ export const ListEvidence = () => {
 }
 
 const Evidence = () => {
-    const dispatch = useAppDispatch()
-    const navigate = useNavigate()
+    const dispatch = useAppDispatch();
+    const navigate = useNavigate();
+    const location = useLocation();
 
-    const { id } = useParams()
+    const id = location.state?.id;
 
-    const { plan } = useAppSelector(store => store.plan)
-    const { evidence, eviCount } = useAppSelector(store => store.evidence)
+    const { plan } = useAppSelector(store => store.plan);
+    const { evidence, eviCount } = useAppSelector(store => store.evidence);
 
-    const [page, setPage] = useState(1)
+    const [page, setPage] = useState(1);
 
     useEffect(() => {        
         if (plan) {
@@ -49,13 +50,13 @@ const Evidence = () => {
 
     const handleBack = () => {
         dispatch(resetEvidence())
-        navigate(`/pdt/${id}`)
+        navigate(`/pdt/PlanIndicativo`, {state: {id}})
     }
 
     return (
         <div className="tw-flex tw-flex-col tw-items-center tw-mx-3">
             <p className="tw-ml-4 tw-mt-3 tw-font-montserrat tw-font-bold">
-                <BackBtn handleBack={handleBack} id={parseInt(id!)}/>
+                <BackBtn handle={handleBack} id={parseInt(id!)}/>
                 Evidencias por aprobar
             </p>
             <ol className=" tw-w-full md:tw-w-1/2

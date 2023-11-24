@@ -8,11 +8,10 @@ export interface ContentProps {
 export interface NodeListProps {
     id: number;
     nodes: NodoInterface[];
-    colors: number[];
 }
 
 export interface BackBtnProps {
-    handleBack: () => void;
+    handle: () => void;
     id: number;
 }
 
@@ -23,7 +22,6 @@ export interface GraphProps {
 export interface TimeLineProps {
     yearProgress: number[];
     yearsProgress: number;
-    colors: number[];
 }
 
 export interface BtnProps {

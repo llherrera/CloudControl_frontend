@@ -1,30 +1,30 @@
 import { useState, useEffect } from 'react'
-import { useParams } from 'react-router-dom';
 
 import { Content } from './Content';
-import { PesosNodos, Porcentaje, YearDetail, NivelInterface } from '../../interfaces';
+import { PesosNodos, Porcentaje, YearDetail } from '../../interfaces';
 import { getTotalProgress } from '../../services/api';
 
 import { useAppDispatch } from '@/store';
 import { thunkGetPDTid, thunkGetColors } from '@/store/plan/thunks';
 import { useAppSelector } from "@/store";
 
-export const Board = () => {
+interface Props {
+    id: number
+}
+
+export const Board = ( {id}:Props ) => {
     const dispatch = useAppDispatch()
     const { plan } = useAppSelector(store => store.plan)
-    const { id } = useParams();
 
     const [getProgress, setGetProgress] = useState(false);
 
     useEffect(() => {
         const abortController = new AbortController()
-        if (!id) return;
-        const id_ = parseInt(id as string)
 
-        dispatch(thunkGetPDTid(id)).unwrap()
-        dispatch(thunkGetColors(id)).unwrap()
+        dispatch(thunkGetPDTid(id.toString())).unwrap()
+        dispatch(thunkGetColors(id.toString())).unwrap()
         
-        getTotalProgress(id_)
+        getTotalProgress(id)
             .then((res) => {
                 if (!res) return
                 localStorage.setItem('pesosNodo', JSON.stringify(res[0]))
@@ -85,7 +85,7 @@ export const Board = () => {
     return (
         (plan ? 
         <Content    
-            id={ parseInt(id as string) }
+            id={ parseInt(id.toString()) }
             progress={getProgress}
         /> : <p>Cargando</p>
         )

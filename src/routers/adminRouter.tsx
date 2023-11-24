@@ -1,4 +1,4 @@
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom';
 import * as pages from '../pages';
 
 export const PrivateRouter = () => {
@@ -6,14 +6,15 @@ export const PrivateRouter = () => {
         <Routes>
             <Route path="/" element={<pages.HomePage/>} />
             <Route path="/login" element={<pages.LoginPage/>} />
-            <Route path='/:id/register' element={<pages.RegisterPage/>} />
+            <Route path='/register' element={<pages.RegisterPage/>} />
             <Route path="/lobby" element={<pages.LobbyPage/>} />
             <Route path='/pdt' element={<pages.PDT/>} />
-            <Route path='/pdt/:id' element={<pages.PDTid/>} />
-            <Route path="/pdt/:idPDT/:idNodo" element={<pages.UnitNodePage/>} />
-            <Route path="/pdt/:idPDT/:idNodo/evidencia" element={<pages.EvidencePage/>} />
+            <Route path='/pdt/PlanIndicativo' element={<pages.PDTid/>} />
+            <Route path='/pdt/PlanIndicativo/configuracion' element={<pages.SettingPage/>} />
+            <Route path="/pdt/PlanIndicativo/Meta" element={<pages.UnitNodePage/>} />
+            <Route path="/pdt/PlanIndicativo/Meta/evidencia" element={<pages.EvidencePage/>} />
             <Route path="/anadirPDT" element={<pages.AddPDTPage/>} />
-            <Route path="/:id/evidencias" element={<pages.ListEvidence/>} />
+            <Route path="/PlanIndicativo/evidencias" element={<pages.ListEvidence/>} />
         </Routes>
   )
 }

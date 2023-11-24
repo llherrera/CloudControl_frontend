@@ -5,7 +5,8 @@ import { InitialStatePlanInterface } from "@/interfaces";
 import { thunkGetPDTid, thunkAddPDT, 
     thunkGetColors, thunkAddColors,
     thunkGetNodes, thunkUpdateYears, 
-    thunkGetLevelsById, thunkGetLevelName } from "./thunks";
+    thunkGetLevelsById, thunkGetLevelName,
+    thunkGetLogo } from "./thunks";
 
 const getInitialState = (): InitialStatePlanInterface => {
     return {
@@ -14,11 +15,13 @@ const getInitialState = (): InitialStatePlanInterface => {
         loadingNodes: false,
         loadingLevels: false,
         loadingNamesTree: false,
+        loadingLogo: false,
         errorLoadingPlan: undefined,
         errorLoadingColors: undefined,
         errorLoadingNodes: undefined,
         errorLoadingLevels: undefined,
         errorLoadingNamesTree: undefined,
+        errorLoadingLogo: undefined,
         plan: undefined,
         colorimeter: [],
         color: undefined,
@@ -32,6 +35,7 @@ const getInitialState = (): InitialStatePlanInterface => {
         financial: [],
         namesTree: [['Dimension', 'Nivel']],
         radioBtn: 'fisica',
+        url: undefined,
     };
 };
 
@@ -152,7 +156,6 @@ export const planSlice = createSlice({
         builder.addCase(thunkUpdateYears, (state, action) => {
             state.years = action.payload;
         })
-        //builder.addCase()
 
 
         builder.addCase(thunkGetLevelsById.pending, state => {
@@ -174,6 +177,17 @@ export const planSlice = createSlice({
         });
         builder.addCase(thunkGetLevelName.rejected, (state, action) => {
             state.errorLoadingNamesTree = action.payload;
+        });
+
+
+        builder.addCase(thunkGetLogo.pending, state => {
+            state.errorLoadingLogo = undefined;
+        });
+        builder.addCase(thunkGetLogo.fulfilled, (state, action) => {
+            state.url = action.payload;
+        });
+        builder.addCase(thunkGetLogo.rejected, (state, action) => {
+            state.errorLoadingLogo = action.payload;
         });
     }
 });

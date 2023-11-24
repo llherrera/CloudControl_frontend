@@ -7,11 +7,10 @@ import { decode } from '../../utils/decode';
 import { Token } from '@/interfaces';
 import { getToken } from '@/utils';
 
-import { useAppDispatch, useAppSelector } from '@/store';
+import { useAppDispatch } from '@/store';
 import { selectOption } from '@/store/content/contentSlice';
 
 export const LobbyPage = () => {
-    const index = useAppSelector((state) => state.content.index);
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
@@ -37,14 +36,14 @@ export const LobbyPage = () => {
             navigate('/pdt')
             return
         }else if (rol === "funcionario") {
-            navigate(`/pdt/${id}`)
+            navigate(`/pdt/PlanIndicativo`, {state: {id}})
             return
         }
         getLastPDT()
             .then((e) => {
                 console.log(e);
                 if (e.id_plan)
-                    navigate(`/pdt/${e.id_plan}`)
+                    navigate(`/pdt/PlanIndicativo`, {state: {id: e.id_plan}})
                 else
                     alert("No hay un PDT disponible")             
             })

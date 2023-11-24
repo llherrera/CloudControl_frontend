@@ -1,6 +1,6 @@
 import axios from "axios";
 import jwtDecode from "jwt-decode";
-import { getEnvironment } from '../utils/environment'
+import { getEnvironment } from '../utils/environment';
 
 import { YearInterface, UnitInterface, NodoInterface, 
     NivelInterface, RegisterInterface, PDTInterface, 
@@ -8,13 +8,13 @@ import { YearInterface, UnitInterface, NodoInterface,
 
 import { getToken, refreshToken } from "@/utils";
 
-const { BASE_URL } = getEnvironment()
+const { BASE_URL } = getEnvironment();
 const api = axios.create({
     baseURL: BASE_URL,
-});
+})
 
-let isRefreshingToken = false
-let failedQueue: { resolve: (value?: unknown) => void; reject: (reason?: unknown) => void }[] = []
+let isRefreshingToken = false;
+let failedQueue: { resolve: (value?: unknown) => void; reject: (reason?: unknown) => void }[] = [];
 
 const processFailedQueue = (error?: unknown) => {
     failedQueue.forEach(promise => {
@@ -56,7 +56,7 @@ api.interceptors.request.use(
         
         return Promise.reject(error);
     }
-);
+)
 
 export const getPDTs = async () => {
     try {
@@ -171,7 +171,7 @@ export const addPDT = async (pdt: PDTInterface) => {
     } catch (error) {
         return error;
     }
-};
+}
 
 export const updatePDT = async (id: number, pdt: PDTInterface) => {
     try {
@@ -182,6 +182,36 @@ export const updatePDT = async (id: number, pdt: PDTInterface) => {
             StartDate:    pdt.Fecha_inicio,
             EndDate:      pdt.Fecha_fin,
             Description:  pdt.Descripcion,
+        });
+        return response.data;
+    } catch (error) {
+        return error;
+    }
+}
+
+export const getLogoPlan = async (id: number) => {
+    try {
+        const response = await api.get(`/plan-territorial/logo`, {
+            params: {
+                id_plan: id
+            }
+        });
+        return response.data;
+    } catch (error) {
+        return error;
+    }
+}
+
+export const uploadLogoPlan = async ( id: number, logo: File ) => {
+    try {
+        const response = await api.post("/plan-territorial/logo", 
+        {
+            id_plan: id,
+            file: logo
+        },{
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
         });
         return response.data;
     } catch (error) {
@@ -456,6 +486,20 @@ export const approveEvidence = async (id_evidence: number, approve: number) => {
         const response = await api.put(`/nodo/evidencia`, {
             id_evidence: id_evidence,
             approve:     approve
+        });
+        return response.data;
+    } catch (error) {
+        return error;
+    }
+}
+
+export const getDataFromPrograms = async (id_plan: number, type: number) => {
+    try {
+        const response = await api.get(`/pdt/informe`, {
+            params: {
+                id_plan: id_plan,
+                type:   type
+            }
         });
         return response.data;
     } catch (error) {

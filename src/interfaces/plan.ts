@@ -7,11 +7,13 @@ export interface InitialStatePlanInterface {
     loadingNodes: boolean;
     loadingLevels: boolean;
     loadingNamesTree: boolean;
+    loadingLogo: boolean;
     errorLoadingPlan: ErrorTypeInterface;
     errorLoadingColors: ErrorTypeInterface;
     errorLoadingNodes: ErrorTypeInterface;
     errorLoadingLevels: ErrorTypeInterface;
     errorLoadingNamesTree: ErrorTypeInterface;
+    errorLoadingLogo: ErrorTypeInterface;
     plan?: PDTInterface;
     colorimeter: number[];
     color?: boolean;
@@ -25,6 +27,7 @@ export interface InitialStatePlanInterface {
     financial: number[];
     namesTree: [string[]];
     radioBtn: string;
+    url?: string;
 }
 
 export interface GetNodeProps {

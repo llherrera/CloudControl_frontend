@@ -6,13 +6,17 @@ import { useAppSelector, useAppDispatch } from "@/store";
 import { setRadioBtn } from '@/store/plan/planSlice';
 import { setType } from '@/store/chart/chartSlice';
 
+import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
+import IconButton from "@mui/material/IconButton";
+
 import { GraphProps } from '@/interfaces';
+import { getDataFromPrograms } from '@/services/api';
 
 export const Graph = ( props: GraphProps ) => {
     const dispatch = useAppDispatch();
     const chartComponentRef = useRef<HighchartsReact.RefObject>(null);
 
-    const { years, colorimeter, radioBtn } = useAppSelector(store => store.plan)
+    const { years, colorimeter, radioBtn, plan } = useAppSelector(store => store.plan)
     const { type } = useAppSelector(store => store.chart)
 
     const categories = years.map((year) => year.toString())
@@ -106,10 +110,22 @@ export const Graph = ( props: GraphProps ) => {
         }
     }
 
+    const handleDownload = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, index: number) => {
+        e.preventDefault()
+        getDataFromPrograms(plan?.id_plan!, index)
+        .then((res) => { //TO DO
+            alert('Reporte generado')
+        })
+        .catch((err) => {
+            alert('Error al generar el reporte')
+        })
+    }
+
     return (
         <div className="tw-flex tw-flex-col 
                         tw-items-center 
-                        md:tw-flex-row 
+                        md:tw-flex-row
+                        md:tw-flex-wrap
                         md:tw-justify-around
                         ">
             <div className='tw-w-full md:tw-w-1/2 md:tw-self-start'>
@@ -134,6 +150,29 @@ export const Graph = ( props: GraphProps ) => {
                             checked={radioBtn === 'financiera'}/>
                     Ejecución financiera
                 </label>
+            </div>
+            <div className=''>
+                <IconButton aria-label="delete" 
+                            size="large" 
+                            color='primary' 
+                            title='Generar reporte por Programas'
+                            onClick={(e)=>handleDownload(e, 0)}>
+                    <LibraryBooksIcon />
+                </IconButton>
+                <IconButton aria-label="delete" 
+                            size="large" 
+                            color='secondary' 
+                            title='Generar reporte por Secretarias'
+                            onClick={(e)=>handleDownload(e, 1)}>
+                    <LibraryBooksIcon />
+                </IconButton>
+                <IconButton aria-label="delete" 
+                            size="large" 
+                            color='inherit' 
+                            title='Generar reporte del Plan Indicativo Total'
+                            onClick={(e)=>handleDownload(e, 1)}>
+                    <LibraryBooksIcon />
+                </IconButton>
             </div>
             <div className='tw-w-full md:tw-w-1/2 tw-shadow'>
             <HighchartsReact

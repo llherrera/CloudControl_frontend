@@ -48,17 +48,17 @@ const ListPDT = ( props: PDTPageProps ) => {
     }
 
     const handlePdtid = ( id: number ) => {
-        navigate(`/pdt/${id}`)
+        navigate(`/pdt/PlanIndicativo`, {state: {id}})
     }
 
     const handleAdd = (id: number) => {
-        navigate(`/${id}/register`)
+        navigate(`/register`, {state: {id}})
     }
 
     return (
         <div className="tw-flex tw-relative tw-justify-center tw-mt-10">
             <div className="tw-absolute tw-left-1">
-                <BackBtn handleBack={()=>navigate(-1)} id={props.data!.length}/>
+                <BackBtn handle={()=>navigate(-1)} id={props.data!.length}/>
             </div>
             {props.rol === "admin" ? 
             <ul className="tw-shadow-2xl tw-p-4 tw-rounded">
@@ -71,14 +71,14 @@ const ListPDT = ( props: PDTPageProps ) => {
                 <li className="tw-flex"
                     key={index}>
                     <button className="tw-flex tw-justify-between tw-w-full tw-mb-4 tw-p-2 tw-rounded tw-bg-gray-200"
-                            onClick={(event) => handlePdtid(e.id_plan!)}
+                            onClick={() => handlePdtid(e.id_plan!)}
                             title={e.Descripcion}>
                         <p className="tw-mr-4">{e.Nombre}</p>
                         <p className="tw-ml-4">{e.Alcaldia}</p>
                     </button>
                     <IconButton color="success"
                                 aria-label="delete"
-                                onClick={(event) => handleAdd(e.id_plan!)}
+                                onClick={() => handleAdd(e.id_plan!)}
                                 title="Agregar funcionario al plan">
                         <PersonAddAltIcon/>
                     </IconButton>

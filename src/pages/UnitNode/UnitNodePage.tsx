@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 import { useAppSelector, useAppDispatch } from "@/store";
 import { thunkGetLevelName } from "@/store/plan/thunks";
@@ -15,8 +15,11 @@ import { EvidenceDetail, BackBtn } from "@/components";
 export const UnitNodePage = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
+    const location = useLocation();
 
-    const { idPDT, idNodo } = useParams();
+    const idPDT = location.state?.idPDT;
+    const idNodo = location.state?.idNodo;
+
     const { namesTree } = useAppSelector(store => store.plan);
     const { unit } = useAppSelector(store => store.unit);
     const { evidence } = useAppSelector(store => store.evidence);
@@ -43,7 +46,7 @@ export const UnitNodePage = () => {
 
     useEffect(() => {
         const ids = idNodo!.split('.');
-        let ids2 = ids.reduce((acumulator:string[], currentValue) => {
+        let ids2 = ids.reduce((acumulator:string[], currentValue: string) => {
             if (acumulator.length === 0) {
                 return [currentValue];
             } else {
@@ -73,7 +76,7 @@ export const UnitNodePage = () => {
     }, []);
 
     const handleSubmitButton = () => {
-        navigate(`/pdt/${idPDT}/${idNodo}/evidencia`)
+        navigate(`/pdt/PlanIndicativo/Meta/evidencia`)
     }
 
     const handleInput = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -114,7 +117,7 @@ export const UnitNodePage = () => {
 
     const handleBack = () => {
         dispatch(resetEvidence())
-        navigate(`/pdt/${idPDT}`)
+        navigate(`/pdt/PlanIndicativo`, {state: {id: idPDT}})
     }
 
     const unidadForm = () => {
@@ -381,7 +384,7 @@ export const UnitNodePage = () => {
                 <img src="/src/assets/images/Logo-Municipio.png" alt="" width={250} className="tw-hidden md:tw-block" />
                 <img src="/src/assets/images/Plan-indicativo.png" alt="" width={60} />
             </div>
-            <BackBtn handleBack={handleBack} id={parseInt(idPDT!)}/>
+            <BackBtn handle={handleBack} id={parseInt(idPDT!)}/>
             <ol className="tw-col-start-1 tw-col-span-full tw-flex tw-justify-center tw-flex-wrap">
             {namesTree.length > 0 && namesTree.map((name, index) => {
                 return (

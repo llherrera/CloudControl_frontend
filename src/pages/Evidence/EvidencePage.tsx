@@ -1,15 +1,17 @@
-import React, { useState } from "react"
-import { useParams, useNavigate } from "react-router-dom"
+import React, { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 
-import { useAppSelector } from "@/store"
+import { useAppSelector } from "@/store";
 
-import { addEvicenceGoal } from "../../services/api"
-import { EvidenceInterface } from "../../interfaces"
+import { addEvicenceGoal } from "../../services/api";
+import { EvidenceInterface } from "../../interfaces";
 
 export const EvidencePage = () => {
-    const navigate = useNavigate()
+    const navigate = useNavigate();
+    const location = useLocation();
 
-    const { idPDT, idNodo } = useParams();
+    const idPDT = location.state?.idPDT;
+
     const { namesTree } = useAppSelector((state) => state.plan);
     const { unit } = useAppSelector((state) => state.unit);
     
@@ -79,11 +81,16 @@ export const EvidencePage = () => {
         if (data.unidad === "") return alert('No se ha seleccionado una unidad');
         if (data.vereda === "") return alert('No se ha seleccionado una vereda');
         setLoading(true)
-        await addEvicenceGoal(parseInt(idPDT!), unit.code, data, documento![0]).then(() => {
+        await addEvicenceGoal(parseInt(idPDT!), unit.code, data, documento![0])
+        .then(() => {
             setLoading(false)
             alert('Evidencia añadida con exito')
         })
-        //setCargar(!cargar)
+        .catch((err) => {
+            setLoading(false)
+            console.log(err);
+            alert('Error al añadir evidencia')
+        })
     }
 
     const handleBack = () => {
