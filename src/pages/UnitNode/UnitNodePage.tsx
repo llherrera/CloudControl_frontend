@@ -4,7 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { useAppSelector, useAppDispatch } from "@/store";
 import { thunkGetLevelName } from "@/store/plan/thunks";
 import { thunkGetUnit } from "@/store/unit/thunks";
-import { thunkGetEvidence } from '@/store/evidence/thunk'
+import { thunkGetEvidence } from '@/store/evidence/thunks'
 import { resetEvidence } from "@/store/evidence/evidenceSlice";
 
 import { addUnitNodeAndYears } from "../../services/api";

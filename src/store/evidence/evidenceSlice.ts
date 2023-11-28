@@ -2,7 +2,7 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 import { InitialStateEvidenceInterface } from "@/interfaces";
 
-import { thunkGetEvidence, thunkGetEvidences, thunkGetEvidenceCount } from "./thunk";
+import { thunkGetEvidence, thunkGetEvidences, thunkGetEvidenceCount } from "./thunks";
 
 const getInitialState = (): InitialStateEvidenceInterface => {
     return {

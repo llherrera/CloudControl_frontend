@@ -492,17 +492,3 @@ export const approveEvidence = async (id_evidence: number, approve: number) => {
         return error;
     }
 }
-
-export const getDataFromPrograms = async (id_plan: number, type: number) => {
-    try {
-        const response = await api.get(`/pdt/informe`, {
-            params: {
-                id_plan: id_plan,
-                type:   type
-            }
-        });
-        return response.data;
-    } catch (error) {
-        return error;
-    }
-}

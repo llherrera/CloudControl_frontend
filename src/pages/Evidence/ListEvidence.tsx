@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 
 import { useAppSelector, useAppDispatch } from "@/store";
-import { thunkGetEvidences, thunkGetEvidenceCount } from "@/store/evidence/thunk";
+import { thunkGetEvidences, thunkGetEvidenceCount } from "@/store/evidence/thunks";
 import { resetEvidence } from "@/store/evidence/evidenceSlice";
 
 import { Frame, EvidenceDetail, BackBtn } from "@/components";

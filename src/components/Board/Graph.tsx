@@ -1,6 +1,7 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import * as Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
+import Modal from 'react-modal';
 
 import { useAppSelector, useAppDispatch } from "@/store";
 import { setRadioBtn } from '@/store/plan/planSlice';
@@ -9,16 +10,18 @@ import { setType } from '@/store/chart/chartSlice';
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 import IconButton from "@mui/material/IconButton";
 
-import { GraphProps } from '@/interfaces';
-import { getDataFromPrograms } from '@/services/api';
+import { GraphProps, Node } from '@/interfaces';
+import {  } from '@/services/api';
+import { ModalTotalPDT, ModalSecretary, ModalProgram } from '../Models'
+
 
 export const Graph = ( props: GraphProps ) => {
     const dispatch = useAppDispatch();
     const chartComponentRef = useRef<HighchartsReact.RefObject>(null);
 
-    const { years, colorimeter, radioBtn, plan } = useAppSelector(store => store.plan)
+    const { years, colorimeter, radioBtn } = useAppSelector(store => store.plan)
     const { type } = useAppSelector(store => store.chart)
-
+    
     const categories = years.map((year) => year.toString())
     const pieValues = props.dataValues.map((value, index) => {
         return {
@@ -110,17 +113,6 @@ export const Graph = ( props: GraphProps ) => {
         }
     }
 
-    const handleDownload = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, index: number) => {
-        e.preventDefault()
-        getDataFromPrograms(plan?.id_plan!, index)
-        .then((res) => { //TO DO
-            alert('Reporte generado')
-        })
-        .catch((err) => {
-            alert('Error al generar el reporte')
-        })
-    }
-
     return (
         <div className="tw-flex tw-flex-col 
                         tw-items-center 
@@ -152,27 +144,10 @@ export const Graph = ( props: GraphProps ) => {
                 </label>
             </div>
             <div className=''>
-                <IconButton aria-label="delete" 
-                            size="large" 
-                            color='primary' 
-                            title='Generar reporte por Programas'
-                            onClick={(e)=>handleDownload(e, 0)}>
-                    <LibraryBooksIcon />
-                </IconButton>
-                <IconButton aria-label="delete" 
-                            size="large" 
-                            color='secondary' 
-                            title='Generar reporte por Secretarias'
-                            onClick={(e)=>handleDownload(e, 1)}>
-                    <LibraryBooksIcon />
-                </IconButton>
-                <IconButton aria-label="delete" 
-                            size="large" 
-                            color='inherit' 
-                            title='Generar reporte del Plan Indicativo Total'
-                            onClick={(e)=>handleDownload(e, 1)}>
-                    <LibraryBooksIcon />
-                </IconButton>
+                <ModalProgram />
+                <ModalSecretary />
+                <ModalTotalPDT />
+                
             </div>
             <div className='tw-w-full md:tw-w-1/2 tw-shadow'>
             <HighchartsReact
@@ -184,3 +159,13 @@ export const Graph = ( props: GraphProps ) => {
         </div>
     );
 }
+/**
+ * <select value={program} 
+                                onChange={(e)=>handleChangeProgram(e)}
+                                className='tw-border tw-border-gray-300 tw-rounded'>
+                            {nodes.map((node, index) => (<option value={node.Nombre} key={index}>{node.Nombre}</option>))}
+                        </select>
+                        
+ * 
+ * 
+ */
