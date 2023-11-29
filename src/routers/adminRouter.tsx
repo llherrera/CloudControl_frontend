@@ -12,6 +12,7 @@ export const PrivateRouter = () => {
             <Route path='/pdt/PlanIndicativo' element={<pages.PDTid/>} />
             <Route path='/pdt/PlanIndicativo/configuracion' element={<pages.SettingPage/>} />
             <Route path="/pdt/PlanIndicativo/Meta" element={<pages.UnitNodePage/>} />
+            <Route path='/pdt/PlanIndicativo/Meta/configuracion' element={<pages.SettingsPage/>} />
             <Route path="/pdt/PlanIndicativo/Meta/evidencia" element={<pages.EvidencePage/>} />
             <Route path="/anadirPDT" element={<pages.AddPDTPage/>} />
             <Route path="/PlanIndicativo/evidencias" element={<pages.ListEvidence/>} />

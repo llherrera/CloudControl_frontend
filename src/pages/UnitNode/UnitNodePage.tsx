@@ -10,7 +10,7 @@ import { resetEvidence } from "@/store/evidence/evidenceSlice";
 import { addUnitNodeAndYears } from "../../services/api";
 import { Token } from "../../interfaces";
 import { getToken, decode } from "@/utils";
-import { EvidenceDetail, BackBtn } from "@/components";
+import { EvidenceDetail, BackBtn, SettingsBtn } from "@/components";
 
 export const UnitNodePage = () => {
     const dispatch = useAppDispatch();
@@ -118,6 +118,10 @@ export const UnitNodePage = () => {
     const handleBack = () => {
         dispatch(resetEvidence())
         navigate(`/pdt/PlanIndicativo`, {state: {id: idPDT}})
+    }
+
+    const handleSettings = () => {
+        navigate(`/pdt/PlanIndicativo/Meta/configuracion`, {state: {id_plan: idPDT, id_nodo: idNodo}})
     }
 
     const unidadForm = () => {
@@ -385,6 +389,7 @@ export const UnitNodePage = () => {
                 <img src="/src/assets/images/Plan-indicativo.png" alt="" width={60} />
             </div>
             <BackBtn handle={handleBack} id={parseInt(idPDT!)}/>
+            <SettingsBtn handle={handleSettings} id={idPDT}/>
             <ol className="tw-col-start-1 tw-col-span-full tw-flex tw-justify-center tw-flex-wrap">
             {namesTree.length > 0 && namesTree.map((name, index) => {
                 return (

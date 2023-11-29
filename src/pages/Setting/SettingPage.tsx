@@ -5,7 +5,7 @@ import { useAppSelector, useAppDispatch } from '@/store';
 
 
 import { uploadLogoPlan } from '@/services/api';
-import { Frame, BackBtn, ColorForm } from '@/components'
+import { Frame, BackBtn, ColorForm, SecretaryForm } from '@/components'
 import { getToken, decode } from "@/utils";
 import { Token } from '@/interfaces';
 
@@ -86,33 +86,37 @@ const SettingPageWrapper = () => {
     }
 
     return (
-        <form   id='logoForm'
-                encType='multipart/form-data'
-                onSubmit={handleSaveLogo}
-                className=' tw-mt-2 tw-ml-2 
-                            '>
-            <BackBtn handle={handleBack} id={id}/>
-            <label htmlFor="">Subir logo: </label>
-            <input 
-                type="file"
-                name='logo'
-                onChange={(e)=>handleInputLogo(e)}
-                required/>
-            <button className='tw-bg-greenColory hover:tw-bg-green-400 tw-rounded tw-p-2 tw-ml-3'>Guardar</button> <hr />
+        <div>
+            <form   id='logoForm'
+                    encType='multipart/form-data'
+                    onSubmit={handleSaveLogo}
+                    className=' tw-mt-2 tw-ml-2 
+                    '>
+                <BackBtn handle={handleBack} id={id}/>
+                <label htmlFor="">Subir logo: </label>
+                <input 
+                    type="file"
+                    name='logo'
+                    onChange={(e)=>handleInputLogo(e)}
+                    required/>
+                <button className='tw-bg-greenColory hover:tw-bg-green-400 tw-rounded tw-p-2 tw-ml-3'>Guardar</button> <hr />
+            </form>
+                
             {((rol === "admin") || (rol === 'funcionario' && id === plan!.id_plan!)) ?
                 <button className="tw-mt-2 tw-ml-2 tw-p-2
-                                    tw-bg-blueColory hover:tw-bg-blue-400
+                tw-bg-blueColory hover:tw-bg-blue-400
                                     tw-rounded"
-                          onClick={handleColor}>
+                                    onClick={handleColor}>
                     <p className="tw-break-words tw-font-montserrat">Definir colorimetria</p>
                 </button>
                 :null
-                }
+            }
             <div>
                 {showColorForm ? 
                 <div></div> 
                 : <ColorForm id={plan!.id_plan!}/>}
             </div>
-        </form>
+            <SecretaryForm/>
+        </div>
     )
 }

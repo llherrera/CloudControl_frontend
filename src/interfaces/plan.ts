@@ -8,12 +8,14 @@ export interface InitialStatePlanInterface {
     loadingLevels: boolean;
     loadingNamesTree: boolean;
     loadingLogo: boolean;
+    loadingSecretaries: boolean;
     errorLoadingPlan: ErrorTypeInterface;
     errorLoadingColors: ErrorTypeInterface;
     errorLoadingNodes: ErrorTypeInterface;
     errorLoadingLevels: ErrorTypeInterface;
     errorLoadingNamesTree: ErrorTypeInterface;
     errorLoadingLogo: ErrorTypeInterface;
+    errorLoadingSecretaries: ErrorTypeInterface;
     plan?: PDTInterface;
     colorimeter: number[];
     color?: boolean;
@@ -28,6 +30,7 @@ export interface InitialStatePlanInterface {
     namesTree: [string[]];
     radioBtn: string;
     url?: string;
+    secretaries: string[];
 }
 
 export interface GetNodeProps {
@@ -53,4 +56,8 @@ export interface Nivel {
     Nombre: string;
     Descripcion: string;
     id_nivel: number;
+}
+
+export interface SecretaryResponse {
+    Nombre: string;
 }

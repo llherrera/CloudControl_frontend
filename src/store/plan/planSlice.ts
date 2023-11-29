@@ -6,7 +6,7 @@ import { thunkGetPDTid, thunkAddPDT,
     thunkGetColors, thunkAddColors,
     thunkGetNodes, thunkUpdateYears, 
     thunkGetLevelsById, thunkGetLevelName,
-    thunkGetLogo } from "./thunks";
+    thunkGetLogo, thunkGetSecretaries } from "./thunks";
 
 const getInitialState = (): InitialStatePlanInterface => {
     return {
@@ -16,12 +16,14 @@ const getInitialState = (): InitialStatePlanInterface => {
         loadingLevels: false,
         loadingNamesTree: false,
         loadingLogo: false,
+        loadingSecretaries: false,
         errorLoadingPlan: undefined,
         errorLoadingColors: undefined,
         errorLoadingNodes: undefined,
         errorLoadingLevels: undefined,
         errorLoadingNamesTree: undefined,
         errorLoadingLogo: undefined,
+        errorLoadingSecretaries: undefined,
         plan: undefined,
         colorimeter: [],
         color: undefined,
@@ -36,6 +38,7 @@ const getInitialState = (): InitialStatePlanInterface => {
         namesTree: [['Dimension', 'Nivel']],
         radioBtn: 'fisica',
         url: undefined,
+        secretaries: [],
     };
 };
 
@@ -155,39 +158,62 @@ export const planSlice = createSlice({
 
         builder.addCase(thunkUpdateYears, (state, action) => {
             state.years = action.payload;
-        })
+        });
 
 
         builder.addCase(thunkGetLevelsById.pending, state => {
+            if (!state.loadingLevels) state.loadingLevels = true;
             state.errorLoadingLevels = undefined;
         });
         builder.addCase(thunkGetLevelsById.fulfilled, (state, action) => {
+            state.loadingLevels = false;
             state.levels = action.payload;
         });
         builder.addCase(thunkGetLevelsById.rejected, (state, action) => {
+            state.loadingLevels = false;
             state.errorLoadingLevels = action.payload;
         });
 
 
         builder.addCase(thunkGetLevelName.pending, state => {
+            if (!state.loadingNamesTree) state.loadingNamesTree = true;
             state.errorLoadingNamesTree = undefined;
         });
         builder.addCase(thunkGetLevelName.fulfilled, (state, action) => {
+            state.loadingNamesTree = false;
             state.namesTree = action.payload;
         });
         builder.addCase(thunkGetLevelName.rejected, (state, action) => {
+            state.loadingNamesTree = false;
             state.errorLoadingNamesTree = action.payload;
         });
 
 
         builder.addCase(thunkGetLogo.pending, state => {
+            if (!state.loadingLogo) state.loadingLogo = true;
             state.errorLoadingLogo = undefined;
         });
         builder.addCase(thunkGetLogo.fulfilled, (state, action) => {
+            state.loadingLogo = false;
             state.url = action.payload;
         });
         builder.addCase(thunkGetLogo.rejected, (state, action) => {
+            state.loadingLogo = false;
             state.errorLoadingLogo = action.payload;
+        });
+
+
+        builder.addCase(thunkGetSecretaries.pending, state => {
+            if (!state.loadingSecretaries) state.loadingSecretaries = true;
+            state.errorLoadingSecretaries = undefined;
+        });
+        builder.addCase(thunkGetSecretaries.fulfilled, (state, action) => {
+            state.loadingSecretaries = false;
+            state.secretaries = action.payload;
+        });
+        builder.addCase(thunkGetSecretaries.rejected, (state, action) => {
+            state.loadingSecretaries = false;
+            state.errorLoadingSecretaries = action.payload;
         });
     }
 });

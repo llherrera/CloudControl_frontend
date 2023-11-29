@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Modal from 'react-modal';
+import * as XLSX from 'xlsx';
 
 import { useAppSelector, useAppDispatch } from "@/store";
 
@@ -29,25 +30,24 @@ export const ModalTotalPDT = () => {
 
 const ModalPDT = ( props: any ) => {
     const { years, levels, plan } = useAppSelector((state) => state.plan);
-
-    const [data, setData] = useState<any[]>([]);
+    const [data, setData] = useState<ReportPDTInterface[]>([]);
 
     useEffect(() => {
-        
+        genReport().then((data) => setData(data))
     }, []);
 
-    const genReport = () => {
+    const genReport = async () => {
         const pesosStr = localStorage.getItem('pesosNodo')
         const detalleStr = localStorage.getItem('detalleAño')
         const pesos = pesosStr ? JSON.parse(pesosStr) : []
         const detalle = detalleStr ? JSON.parse(detalleStr) : []
         const data: ReportPDTInterface[] = []
 
-        pesos.forEach(async (peso: PesosNodos) => {
+        await Promise.all(pesos.map(async (peso: PesosNodos) => {
             const { id_nodo, porcentajes } = peso
-            const percentages = porcentajes?.map((porcentaje: Porcentaje) => porcentaje.progreso*100)
-            
             const ids = id_nodo.split('.');
+            if (ids.length !== levels.length + 1) return
+            const percentages = porcentajes?.map((porcentaje: Porcentaje) => porcentaje.progreso*100)
             let ids2 = ids.reduce((acumulator:string[], currentValue: string) => {
                 if (acumulator.length === 0) {
                     return [currentValue];
@@ -58,25 +58,42 @@ const ModalPDT = ( props: any ) => {
                 }
             }, []);
             ids2 = ids2.slice(1);
-            const root = await getLevelName(ids2)
-        
-            const nodeYears = detalle.filter((item: YearDetail) => item.id_nodo === id_nodo)
+            let root = await getLevelName(ids2)
+            root = root.map((item: any) => item[0])
+            const nodeYears = detalle.filter((item: YearDetail) => item.id_nodo === id_nodo) as YearDetail[]
+
             const executed = nodeYears.map((item: YearDetail) => item.Ejecucion_fisica)
             const programed = nodeYears.map((item: YearDetail) => item.Programacion_fisica)
             
             const item: ReportPDTInterface = {
-                responsible: '',
+                responsible: nodeYears[0].responsable??'',
                 goalCode: id_nodo,
-                goalDescription: '',
+                goalDescription: nodeYears[0].Descripcion,
                 percentExecuted: percentages!,
                 planSpecific: root,
-                indicator: '',
-                base: '',
+                indicator: nodeYears[0].Indicador,
+                base: nodeYears[0].Linea_base,
                 executed: executed,
                 programed: programed
             }
             data.push(item)
-        })
+        }))
+        return data
+    }
+
+    const exportFile = () => {
+        const table = document.getElementById('miTabla');
+        const wb = XLSX.utils.table_to_book(table!);
+        XLSX.writeFile(wb, 'PlanIndicativoTotal.xlsx');
+        const blob = new Blob([table!.innerHTML], {
+            type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"
+        });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'PlanIndicativoTotal.xlsx';
+        a.click();
+        document.body.removeChild(a);
     }
 
     return (
@@ -86,7 +103,8 @@ const ModalPDT = ( props: any ) => {
             <h1>Plan</h1>
             <button className='tw-bg-gray-300 hover:tw-bg-gray-200 
                                     tw-rounded tw-border tw-border-black 
-                                    tw-px-2 tw-py-1 tw-ml-3'>
+                                    tw-px-2 tw-py-1 tw-ml-3'
+                    onClick={exportFile}>
                 Exportar
             </button>
             <button className='tw-bg-red-300 hover:tw-bg-red-200 
@@ -94,7 +112,7 @@ const ModalPDT = ( props: any ) => {
                                     tw-px-3 tw-py-1 tw-mt-3
                                     tw-right-0 tw-absolute'
                     onClick={() => props.callback(false)}>X</button>
-            <table>
+            <table id="miTabla">
                 <thead>
                     <tr>
                         <th className='tw-border tw-bg-gray-400 tw-p-2'>Responsable</th>
@@ -133,15 +151,15 @@ const ModalPDT = ( props: any ) => {
                 <tbody>
                     {data.map((item, index) => (
                         <tr key={index}>
-                            <td className='tw-border tw-p-2'>{item.Responsable}</td>
-                            <td className='tw-border tw-p-2'>{item.CodigoMetaProducto}</td>
-                            <td className='tw-border tw-p-2'>{item.DescripcionMetaProducto}</td>
-                            {years.map((year, index) => (<td className='tw-border tw-p-2' key={index}>{item[`PorcentajeEjecucion${year}`]}</td>))}
-                            {levels.map((level, index) => (<td className='tw-border tw-p-2' key={index}>{item[`PorcentajeEjecucion${level.LevelName}`]}</td>))}
-                            <td className='tw-border tw-p-2'>{item.Indicador}</td>
-                            <td className='tw-border tw-p-2'>{item.LineaBase}</td>
-                            {years.map((year, index) => (<td className='tw-border tw-p-2' key={index}>{item[`Programado${year}`]}</td>))}
-                            {years.map((year, index) => (<td className='tw-border tw-p-2' key={index}>{item[`Ejecutado${year}`]}</td>))}
+                            <td className='tw-border tw-p-2'>{item.responsible}</td>
+                            <td className='tw-border tw-p-2'>{item.goalCode}</td>
+                            <td className='tw-border tw-p-2'>{item.goalDescription}</td>
+                            {years.map((year, index) => (<td className='tw-border tw-p-2' key={index}>{item['percentExecuted'][index]}</td>))}
+                            {levels.map((level, index) => (<td className='tw-border tw-p-2' key={index}>{item['planSpecific'][index]}</td>))}
+                            <td className='tw-border tw-p-2'>{item.indicator}</td>
+                            <td className='tw-border tw-p-2'>{item.base}</td>
+                            {years.map((year, index) => (<td className='tw-border tw-p-2' key={index}>{item['programed'][index]}</td>))}
+                            {years.map((year, index) => (<td className='tw-border tw-p-2' key={index}>{item['executed'][index]}</td>))}
                         </tr>
                     ))}
                 </tbody>

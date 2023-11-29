@@ -4,3 +4,4 @@ export * from './LevelForm';
 export * from './NodeForm';
 export * from './ColorForm';
 export * from './RegisterForm';
+export * from './SecretaryForm'

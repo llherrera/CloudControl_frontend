@@ -45,6 +45,7 @@ export interface UnitInterface {
     indicator: string,
     base: number,
     goal: number,
+    responsible: string,
     years: YearInterface[]
 }
 

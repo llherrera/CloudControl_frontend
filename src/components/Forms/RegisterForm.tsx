@@ -6,11 +6,10 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import { Input } from "../Inputs";
 import { doRegister } from "../../services/api";
 import { RegisterInterface, RegisterFormProps } from "@/interfaces";
+import { validateEmail } from "@/utils";
 
 export const RegisterForm = (props: RegisterFormProps) => {
     const navigate = useNavigate();
-
-    const regexp = new RegExp(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
 
     const [form, setForm] = useState<RegisterInterface>({
         usuario: '',
@@ -34,10 +33,10 @@ export const RegisterForm = (props: RegisterFormProps) => {
         event.preventDefault();
         if (form.contraseña !== form.confirmarContraseña) return alert("Las contraseñas no coinciden");
         if (form.usuario === '' || form.apellido === '' || form.correo === '' || form.contraseña === '') return alert("Por favor llene todos los campos");
-        if (!regexp.test(form.correo)) return alert("El correo no es válido");
+        if (!validateEmail(form.correo)) return alert("El correo no es válido");
         doRegister(props.id, form)
             .then(() => {
-                navigate(`/pdt/${props.id}`, { replace: true})
+                navigate(`/pdt/PlanIndicativo`, { state:{ id:props.id }, replace: true})
             })
             .catch(() => {
                 alert("Error al registrar usuario");

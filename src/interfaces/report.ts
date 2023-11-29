@@ -13,7 +13,7 @@ export interface ReportPDTInterface {
     percentExecuted: number[];
     planSpecific: string[];
     indicator: string;
-    base: string;
+    base: number;
     executed: number[];
     programed: number[];
 }

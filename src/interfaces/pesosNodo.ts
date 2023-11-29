@@ -16,6 +16,12 @@ export interface PesosNodos {
 export interface YearDetail {
     id_nodo: string;
     Año: number;
+    Codigo: string;
+    Descripcion: string;
+    Indicador: string;
+    Linea_base: number;
+    Meta: number;
+    responsable: string|null;
     Programacion_fisica: number;
     Ejecucion_fisica: number;
     Ejecucion_financiera: number;

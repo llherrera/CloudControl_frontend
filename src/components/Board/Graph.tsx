@@ -12,7 +12,7 @@ import IconButton from "@mui/material/IconButton";
 
 import { GraphProps, Node } from '@/interfaces';
 import {  } from '@/services/api';
-import { ModalTotalPDT, ModalSecretary, ModalProgram } from '../Models'
+import { ModalTotalPDT, ModalSecretary, ModalProgram } from '../Modals'
 
 
 export const Graph = ( props: GraphProps ) => {

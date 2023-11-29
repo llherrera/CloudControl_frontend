@@ -4,7 +4,7 @@ import { getEnvironment } from '../utils/environment';
 
 import { YearInterface, UnitInterface, NodoInterface, 
     NivelInterface, RegisterInterface, PDTInterface, 
-    EvidenceInterface, GetNodeProps, AddColorsProps } from "../interfaces";
+    EvidenceInterface, GetNodeProps, AddColorsProps, Secretary } from "../interfaces";
 
 import { getToken, refreshToken } from "@/utils";
 
@@ -481,11 +481,37 @@ export const updateColor = async (id_plan: number, colors: number[]) => {
     }
 }
 
-export const approveEvidence = async (id_evidence: number, approve: number) => {
+export const approveEvidence = async (id_evidence: number, approve: number, code: string) => {
     try {
         const response = await api.put(`/nodo/evidencia`, {
             id_evidence: id_evidence,
-            approve:     approve
+            approve:     approve,
+            code:        code
+        });
+        return response.data;
+    } catch (error) {
+        return error;
+    }
+}
+
+export const addSecretaries = async (id_plan: number, secretaries: Secretary[]) => {
+    try {
+        const response = await api.post(`/plan-territorial/secretarias`, {
+            id_plan:     id_plan,
+            secretaries: secretaries
+        });
+        return response.data;
+    } catch (error) {
+        return error;
+    }
+}
+
+export const getSecretaries = async (id_plan: number) => {
+    try {
+        const response = await api.get(`/plan-territorial/secretarias`, {
+            params: {
+                id_plan: id_plan
+            }
         });
         return response.data;
     } catch (error) {

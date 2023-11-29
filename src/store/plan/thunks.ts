@@ -1,9 +1,11 @@
 import { createAction, createAsyncThunk } from '@reduxjs/toolkit'
 
-import { PDTInterface, ErrorBasicInterface, GetNodeProps, AddColorsProps, NivelInterface, Nivel } from '../../interfaces'
+import { PDTInterface, ErrorBasicInterface, GetNodeProps, 
+        AddColorsProps, NivelInterface, Nivel, SecretaryResponse } from '../../interfaces'
 import { parseErrorAxios } from '../../utils'
 
-import { getPDTid, addPDT, getColors, getLevelNodes, addColor, getPDTLevelsById, getLevelName, getLogoPlan } from '@/services/api'
+import { getPDTid, addPDT, getColors, getLevelNodes, addColor, 
+        getPDTLevelsById, getLevelName, getLogoPlan, getSecretaries } from '@/services/api'
 
 export const thunkGetPDTid = createAsyncThunk<PDTInterface, string, { rejectValue: ErrorBasicInterface }>(
     'pdt/getPDTid',
@@ -127,6 +129,19 @@ export const thunkGetLogo = createAsyncThunk<string, number, { rejectValue: Erro
         try {
             const res = await getLogoPlan(props)
             return res[0].UrlLogo
+        } catch (err) {
+            const result = parseErrorAxios(err)
+            return rejectWithValue(result)
+        }
+    }
+)
+
+export const thunkGetSecretaries = createAsyncThunk<string[], number, { rejectValue: ErrorBasicInterface }>(
+    'pdt/getSecretaries',
+    async (props: number, { rejectWithValue }) => {
+        try {
+            const res = await getSecretaries(props)
+            return res.map((item: SecretaryResponse) => item.Nombre)
         } catch (err) {
             const result = parseErrorAxios(err)
             return rejectWithValue(result)
