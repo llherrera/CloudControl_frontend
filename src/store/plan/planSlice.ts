@@ -1,6 +1,6 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
-import { InitialStatePlanInterface } from "@/interfaces";
+import { InitialStatePlanInterface, NodoInterface, Node } from "@/interfaces";
 
 import { thunkGetPDTid, thunkAddPDT, 
     thunkGetColors, thunkAddColors,
@@ -17,6 +17,7 @@ const getInitialState = (): InitialStatePlanInterface => {
         loadingNamesTree: false,
         loadingLogo: false,
         loadingSecretaries: false,
+        loadingReport: false,
         errorLoadingPlan: undefined,
         errorLoadingColors: undefined,
         errorLoadingNodes: undefined,
@@ -28,6 +29,7 @@ const getInitialState = (): InitialStatePlanInterface => {
         colorimeter: [],
         color: undefined,
         nodes: [],
+        nodesReport: [],
         years: [],
         yearSelect: undefined,
         levels: [],
@@ -66,6 +68,12 @@ export const planSlice = createSlice({
         },
         setFinancial: (state, action: PayloadAction<number[]>) => {
             state.financial = action.payload
+        },
+        setLoadingReport: (state, action: PayloadAction<boolean>) => {
+            state.loadingReport = action.payload
+        },
+        setNodesReport: (state, action: PayloadAction<Node[]>) => {
+            state.nodesReport = action.payload
         },
     },
     extraReducers: builder => {
@@ -148,7 +156,18 @@ export const planSlice = createSlice({
         });
         builder.addCase(thunkGetNodes.fulfilled, (state, action) => {
             state.loadingNodes = false;
-            state.nodes = action.payload;
+            const temp = [] as NodoInterface[]
+            action.payload.forEach((item:Node) => {
+                temp.push({
+                    id_node: item.id_nodo,
+                    NodeName: item.Nombre,
+                    Description: item.Descripcion,
+                    Parent: item.Padre,
+                    id_level: item.id_nivel,
+                    Weight: 0,
+                })
+            })
+            state.nodes = temp;
         });
         builder.addCase(thunkGetNodes.rejected, (state, action) => {
             state.loadingNodes = false;
@@ -218,5 +237,6 @@ export const planSlice = createSlice({
     }
 });
 export const { selectYear, incrementLevelIndex, decrementLevelIndex, 
-        setParent, setRadioBtn, setProgressNodes, setFinancial } = planSlice.actions;
+        setParent, setRadioBtn, setProgressNodes, setFinancial, 
+        setLoadingReport, setNodesReport } = planSlice.actions;
 export default planSlice.reducer;

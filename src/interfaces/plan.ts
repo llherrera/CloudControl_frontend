@@ -1,5 +1,5 @@
 import { ErrorTypeInterface } from "./common";
-import { PDTInterface, NivelInterface } from "./formInterfaces";
+import { PDTInterface, NivelInterface, NodoInterface } from "./formInterfaces";
 
 export interface InitialStatePlanInterface {
     loadingPlan: boolean;
@@ -9,6 +9,7 @@ export interface InitialStatePlanInterface {
     loadingNamesTree: boolean;
     loadingLogo: boolean;
     loadingSecretaries: boolean;
+    loadingReport: boolean;
     errorLoadingPlan: ErrorTypeInterface;
     errorLoadingColors: ErrorTypeInterface;
     errorLoadingNodes: ErrorTypeInterface;
@@ -19,7 +20,8 @@ export interface InitialStatePlanInterface {
     plan?: PDTInterface;
     colorimeter: number[];
     color?: boolean;
-    nodes: Node[];
+    nodes: NodoInterface[];
+    nodesReport: Node[];
     years: number[];
     yearSelect?: number;
     levels: NivelInterface[];

@@ -22,3 +22,11 @@ export interface PropsGetReport {
     id_plan: number;
     type: number;
 }
+
+export interface ModalPDTProps {
+    modalIsOpen: boolean,
+    callback: React.Dispatch<React.SetStateAction<boolean>>,
+    callback2?: ()=>void,
+    data: ReportPDTInterface[]
+
+}

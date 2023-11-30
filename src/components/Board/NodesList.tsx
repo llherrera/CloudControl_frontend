@@ -5,7 +5,7 @@ import { useAppSelector, useAppDispatch } from "@/store";
 import { thunkGetNodes } from '@/store/plan/thunks';
 import { incrementLevelIndex, setParent, setProgressNodes, setFinancial } from '@/store/plan/planSlice';
 
-import { Node, PesosNodos, Porcentaje, NodeListProps } from '@/interfaces';
+import { NodoInterface, PesosNodos, Porcentaje, NodeListProps } from '@/interfaces';
 
 export const NodesList = ( props : NodeListProps ) => {
     const navigate = useNavigate();
@@ -13,7 +13,7 @@ export const NodesList = ( props : NodeListProps ) => {
     const { nodes, yearSelect, levels, indexLevel, progressNodes, colorimeter } = useAppSelector(store => store.plan)
 
     useEffect(() => {
-        const ids = nodes.map((item: Node) => item.id_nodo)
+        const ids = nodes.map((item: NodoInterface) => item.id_node)
         getProgress(ids)
     }, [yearSelect, nodes])
 
@@ -54,17 +54,17 @@ export const NodesList = ( props : NodeListProps ) => {
 
     const handleButton = ( index: number ) => {
         if ( indexLevel !== levels.length-1 ) {
-            dispatch(setParent(nodes[index].id_nodo))
+            dispatch(setParent(nodes[index].id_node))
             dispatch(incrementLevelIndex(indexLevel!+1))
-            dispatch(thunkGetNodes({id_level: nodes[index].id_nivel+1, parent:nodes[index].id_nodo}))
+            dispatch(thunkGetNodes({id_level: nodes[index].id_level+1, parent:nodes[index].id_node}))
         } else {
-            navigate(`/pdt/PlanIndicativo/Meta`, {state: {idPDT: props.id, idNodo: nodes[index].id_nodo}})
+            navigate(`/pdt/PlanIndicativo/Meta`, {state: {idPDT: props.id, idNodo: nodes[index].id_node}})
         }
     }
 
     return (
         <ul className={`${indexLevel === levels.length-1 ? 'tw-flex tw-flex-row tw-flex-wrap': 'tw-flex-col tw-flex-wrap'} `}>
-            {nodes.map((item: Node, index: number) => {
+            {nodes.map((item: NodoInterface, index: number) => {
                 return(
                 <div className="tw-my-2 tw-flex"
                     key={index}>
@@ -81,7 +81,7 @@ export const NodesList = ( props : NodeListProps ) => {
                                         tw-w-12 tw-h-12
                                         tw-font-bold`}
                             onClick={ () => handleButton(index)}
-                            title={item.Descripcion}>
+                            title={item.Description}>
                         { parseInt( ((progressNodes[index] === undefined || progressNodes[index] < 0 ? 0 : progressNodes[index])*100).toString())}%
                     </button>
                     {indexLevel !== levels.length-1 ?
@@ -97,8 +97,8 @@ export const NodesList = ( props : NodeListProps ) => {
                                         tw-text-white tw-font-bold
                                         tw-font-montserrat`}
                             onClick={ () => handleButton(index)}
-                            title={item.Descripcion}>
-                        <p>{item.Nombre}</p>
+                            title={item.Description}>
+                        <p>{item.NodeName}</p>
                     </button>
                     :null}
                 </div>

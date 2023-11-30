@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from "@/store";
 import { thunkGetNodes, thunkUpdateYears } from "@/store/plan/thunks";
 import { decrementLevelIndex, setParent } from "@/store/plan/planSlice";
 
-import { NodoInterface, Token, PesosNodos, Node, ContentProps } from "@/interfaces";
+import { NodoInterface, Token, PesosNodos, ContentProps } from "@/interfaces";
 import { NodeForm, NodesList, 
         TimeLine, Graph, BackBtn, SettingsBtn } from "@/components";
 import { getToken, decode, getYears } from "@/utils";
@@ -51,19 +51,7 @@ export const Content = ( props : ContentProps ) => {
         dispatch(thunkGetNodes({id_level: levels[indexLevel!].id_nivel!, parent: parent}))
         .unwrap()
         .then((res) => {
-            const resArr = [...res];
-            const temp = [] as NodoInterface[]
-            resArr.forEach((item:Node) => {
-                temp.push({
-                    id_node: item.id_nodo,
-                    NodeName: item.Nombre,
-                    Description: item.Descripcion,
-                    Parent: item.Padre,
-                    id_level: item.id_nivel,
-                    Weight: 0,
-                })
-            })
-            setNodos(temp)
+            setNodos(res)
             getYearProgress()
         })
         .catch((err) => {console.log(err)})

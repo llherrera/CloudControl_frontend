@@ -1,16 +1,12 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef } from 'react';
 import * as Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
-import Modal from 'react-modal';
 
 import { useAppSelector, useAppDispatch } from "@/store";
 import { setRadioBtn } from '@/store/plan/planSlice';
 import { setType } from '@/store/chart/chartSlice';
 
-import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
-import IconButton from "@mui/material/IconButton";
-
-import { GraphProps, Node } from '@/interfaces';
+import { GraphProps } from '@/interfaces';
 import {  } from '@/services/api';
 import { ModalTotalPDT, ModalSecretary, ModalProgram } from '../Modals'
 
@@ -130,24 +126,25 @@ export const Graph = ( props: GraphProps ) => {
             </div>
             <div className='tw-w-full tw-flex tw-flex-col md:tw-w-1/2 md:tw-self-start'>
                 <label>
-                    <input type="radio" name='fisica' value='fisica'
+                    <input  type="radio" name='fisica' value='fisica'
+                            className='tw-mr-2'
                             onChange={ ()=> dispatch(setRadioBtn('fisica'))}
                             checked={radioBtn === 'fisica'}/>
                     Ejecución fisica
                 </label>
                 
                 <label htmlFor="">
-                    <input type="radio" name='financiera' value='financiera'
+                    <input  type="radio" name='financiera' value='financiera'
+                            className='tw-mr-2'
                             onChange={ ()=> dispatch(setRadioBtn('financiera'))}
                             checked={radioBtn === 'financiera'}/>
                     Ejecución financiera
                 </label>
             </div>
-            <div className=''>
+            <div className='tw-flex'>
                 <ModalProgram />
                 <ModalSecretary />
                 <ModalTotalPDT />
-                
             </div>
             <div className='tw-w-full md:tw-w-1/2 tw-shadow'>
             <HighchartsReact
@@ -159,13 +156,3 @@ export const Graph = ( props: GraphProps ) => {
         </div>
     );
 }
-/**
- * <select value={program} 
-                                onChange={(e)=>handleChangeProgram(e)}
-                                className='tw-border tw-border-gray-300 tw-rounded'>
-                            {nodes.map((node, index) => (<option value={node.Nombre} key={index}>{node.Nombre}</option>))}
-                        </select>
-                        
- * 
- * 
- */

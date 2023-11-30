@@ -1,4 +1,5 @@
 import type { AxiosError } from 'axios'
+import * as XLSX from 'xlsx';
 
 import { doRefreshToken } from '@/services/api'
 import { AuthInterface, ErrorBasicInterface } from '../interfaces'
@@ -46,4 +47,19 @@ export const getYears = (fecha_inicio: string= '') => {
 export const validateEmail = (email: string) => {
   const regexp = new RegExp(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
   return regexp.test(email)
+}
+
+export const exportFile = (tabla: string, name: string) => {
+  const table = document.getElementById(tabla);
+  const wb = XLSX.utils.table_to_book(table!);
+  XLSX.writeFile(wb, `${name}.xlsx`);
+  const blob = new Blob([table!.innerHTML], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"
+  });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${name}.xlsx`;
+  a.click();
+  document.body.removeChild(a);
 }
