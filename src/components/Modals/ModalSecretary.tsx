@@ -21,7 +21,7 @@ export const ModalSecretary = () => {
                         size="large" 
                         color='secondary' 
                         title='Generar reporte por Secretarias'
-                        //onClick={(e)=>handleDownload(e, 1)}>
+                        className="tw-transition hover:tw--translate-y-1 hover:tw-scale-[1.4]"
                         onClick={()=>setModalSecretaryIsOpen(true)}>
                 <LibraryBooksIcon />
             </IconButton>

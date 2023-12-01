@@ -87,30 +87,30 @@ export const LevelForm = ( props: LevelFormProps ) => {
     }
 
     return (
-        <div>
+        <div className="tw-bg-[url('/src/assets/images/bg-plan-indicativo.png')]">
             {backIconButton()}
             {(rol === "admin") || (rol === 'funcionario' && id_ === parseInt(props.id)) ?
             <form   onSubmit={ handleSubmit}
                     className="tw-grid tw-grid-cols-12 tw-mt-5">
                 <ul className="tw-col-start-5 tw-col-span-4 tw-gap-3">
                 {data.map(( e:NivelInterface, index: number )=> 
-                    <li className="tw-mb-3 tw-p-2 tw-bg-cyan-200 tw-rounded"
+                    <li className="tw-mb-3 tw-p-2 tw-bg-white tw-shadow-lg tw-border tw-rounded"
                         key={index}>
                         <Input  type={"text"}
                                 label="Nombre del Nivel:"
                                 id={"LevelName"}
                                 name={"LevelName"}
                                 value={e.LevelName}
-                                onChange={ (event) => handleInputFormChange(event, index) }/><br/>
+                                onChange={ (event) => handleInputFormChange(event, index) }/>
                         <Input  type={"text"}
                                 label="Descripción:"
                                 id={"Description"}
                                 name={"Description"}
                                 value={e.Description}
-                                onChange={ (event) => handleInputFormChange(event, index) }/><br/>
+                                onChange={ (event) => handleInputFormChange(event, index) }/>
                     </li>
                 )}
-                <div className="tw-w-full tw-flex tw-justify-around tw-py-2 tw-bg-cyan-200 tw-rounded">
+                <div className="tw-w-full tw-flex tw-justify-around tw-py-2 tw-bg-white tw-shadow-lg tw-border tw-rounded">
                     <button className=" tw-bg-green-500
                                         hover:tw-bg-green-300 
                                         tw-text-white tw-font-bold          

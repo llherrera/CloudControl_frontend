@@ -61,8 +61,10 @@ const ListPDT = ( props: PDTPageProps ) => {
                 <BackBtn handle={()=>navigate(-1)} id={props.data!.length}/>
             </div>
             {props.rol === "admin" ? 
-            <ul className="tw-shadow-2xl tw-p-4 tw-rounded">
-                <button className="tw-bg-green-300 tw-rounded tw-w-full tw-py-2 tw-mb-4"
+            <ul className="tw-shadow-2xl tw-p-4 tw-border-2 tw-rounded">
+                <button className=" tw-bg-greenBtn hover:tw-bg-green-300 
+                                    tw-text-white hover:tw-text-black tw-font-bold
+                                    tw-rounded tw-w-full tw-py-2 tw-mb-4"
                         onClick={handleAddPdt}
                         title="Agregar un nuevo plan">
                     Añadir Plan +
@@ -70,7 +72,10 @@ const ListPDT = ( props: PDTPageProps ) => {
                 { props.data!.map(( e:PDTInterface, index: number )=>
                 <li className="tw-flex"
                     key={index}>
-                    <button className="tw-flex tw-justify-between tw-w-full tw-mb-4 tw-p-2 tw-rounded tw-bg-gray-200"
+                    <button className=" tw-flex tw-justify-between tw-w-full 
+                                        tw-mb-4 tw-p-2 tw-rounded 
+                                        tw-bg-gray-200 hover:tw-bg-gray-300
+                                        tw-border-4 tw-border-gray-400"
                             onClick={() => handlePdtid(e.id_plan!)}
                             title={e.Descripcion}>
                         <p className="tw-mr-4">{e.Nombre}</p>

@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import { useAppSelector, useAppDispatch } from '@/store';
+import { useAppSelector } from '@/store';
 
-
-import { uploadLogoPlan } from '@/services/api';
-import { Frame, BackBtn, ColorForm, SecretaryForm } from '@/components'
+import { Frame, BackBtn, ColorForm, 
+        SecretaryForm, UploadImage } from '@/components'
 import { getToken, decode } from "@/utils";
 import { Token } from '@/interfaces';
 
@@ -23,12 +22,9 @@ const SettingPageWrapper = () => {
 
     const id = location.state?.id
 
-    const { color, plan } = useAppSelector(store => store.plan)
-
-    const [logo, setLogo] = useState<FileList | null>(null)
+    const { plan } = useAppSelector(store => store.plan)
     
     const [showColorForm, setShowColorForm] = useState(false);
-    const [colors, setColors] = useState<number[]>([]);
 
     const [rol, setRol] = useState("")
     const [id_, setId] = useState(0)
@@ -47,35 +43,6 @@ const SettingPageWrapper = () => {
         }
     }, [])
 
-    const handleInputLogo = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const logo = e.target.files
-        if(logo)
-            if (logo[0].type === 'image/png' ||
-                logo[0].type === 'image/jpeg' || 
-                logo[0].type === 'image/jpg') {
-                setLogo(e.target.files)
-            }
-            else {
-                e.target.value = ''
-                alert('Archivo incorrecto')
-            }
-    }
-
-    const handleSaveLogo = async () => {
-        if (logo === null) {
-            alert('No hay archivo')
-            return
-        }
-        await uploadLogoPlan( id, logo[0])
-        .then(() => {
-            alert('Logo subido')
-        })
-        .catch((err) => {
-            console.log(err);
-            alert('error al subir logo')
-        })
-    }
-
     const handleBack = () => {
         navigate(-1)
     }
@@ -87,35 +54,32 @@ const SettingPageWrapper = () => {
 
     return (
         <div>
-            <form   id='logoForm'
-                    encType='multipart/form-data'
-                    onSubmit={handleSaveLogo}
-                    className=' tw-mt-2 tw-ml-2 
-                    '>
-                <BackBtn handle={handleBack} id={id}/>
-                <label htmlFor="">Subir logo: </label>
-                <input 
-                    type="file"
-                    name='logo'
-                    onChange={(e)=>handleInputLogo(e)}
-                    required/>
-                <button className='tw-bg-greenColory hover:tw-bg-green-400 tw-rounded tw-p-2 tw-ml-3'>Guardar</button> <hr />
-            </form>
-                
-            {((rol === "admin") || (rol === 'funcionario' && id === plan!.id_plan!)) ?
-                <button className="tw-mt-2 tw-ml-2 tw-p-2
-                tw-bg-blueColory hover:tw-bg-blue-400
-                                    tw-rounded"
-                                    onClick={handleColor}>
-                    <p className="tw-break-words tw-font-montserrat">Definir colorimetria</p>
-                </button>
-                :null
-            }
+            <BackBtn handle={handleBack} id={id}/><br />
+            <UploadImage id={id_}/>
             <div>
-                {showColorForm ? 
-                <div></div> 
-                : <ColorForm id={plan!.id_plan!}/>}
+                {((rol === "admin") || (rol === 'funcionario' && id === plan!.id_plan!)) ?
+                    <div className='tw-flex tw-justify-center'>
+                        <button className=" tw-mt-2 tw-ml-2 tw-p-2
+                                            tw-bg-blueColory hover:tw-bg-blue-400
+                                            tw-text-white hover:tw-text-black tw-font-bold
+                                            tw-rounded"
+                                            onClick={handleColor}>
+                            <p className="tw-break-words tw-font-montserrat">
+                                Definir colorimetria
+                            </p>
+                        </button>
+                    </div>
+                    :null
+                }
+                <div>
+                    {showColorForm ? 
+                    <div></div> 
+                    : <div className='tw-flex tw-justify-center tw-pt-2'>
+                        <ColorForm id={plan!.id_plan!}/>
+                        </div>}
+                </div>
             </div>
+            
             <SecretaryForm/>
         </div>
     )

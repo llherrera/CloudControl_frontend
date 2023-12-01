@@ -105,7 +105,7 @@ export const SettingsPage = () => {
             <div className="tw-p-3 tw-justify-center">
                 <p className='tw-block'>Información de la meta:</p>
                 <form   action=""
-                        className=' tw-shadow-2xl tw-rounded
+                        className=' tw-shadow-2xl tw-rounded tw-border-2
                                     tw-flex tw-flex-wrap tw-gap-3 
                                     tw-p-2 
                                     tw-bg-white'>
@@ -137,7 +137,7 @@ export const SettingsPage = () => {
             <div className="tw-p-3 tw-justify-center">
                 <p>Información de la programación</p>
                 <form   action=""
-                        className=' tw-shadow-2xl tw-rounded
+                        className=' tw-shadow-2xl tw-rounded tw-border-2
                                     tw-flex tw-flex-wrap tw-gap-3 
                                     tw-p-2 
                                     tw-bg-white'>

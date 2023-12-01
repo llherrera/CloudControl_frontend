@@ -38,14 +38,15 @@ export const TimeLine = (props: TimeLineProps) => {
                 key={index}>
                 <button className={`tw-rounded 
                                     tw-flex tw-justify-center tw-items-center
+                                    tw-transition hover:tw-scale-110
                                     ${
-                                    parseInt( ((props.yearProgress[index]??0)*100).toString()) < 0 ? 'tw-border-gray-400' :
-                                    parseInt( ((props.yearProgress[index]??0)*100).toString()) < colorimeter[0] ? 'tw-border-redColory'   : 
-                                    parseInt( ((props.yearProgress[index]??0)*100).toString()) < colorimeter[1] ? 'tw-border-yellowColory':
-                                    parseInt( ((props.yearProgress[index]??0)*100).toString()) < colorimeter[2] ? 'tw-border-greenColory' :
-                                    'tw-border-blueColory'}
+                                    parseInt( ((props.yearProgress[index]??0)*100).toString()) < 0 ? 'tw-border-gray-400 hover:tw-ring-4 hover:tw-ring-gray-200' :
+                                    parseInt( ((props.yearProgress[index]??0)*100).toString()) < colorimeter[0] ? 'tw-border-redColory hover:tw-ring-4 hover:tw-ring-red-200'      : 
+                                    parseInt( ((props.yearProgress[index]??0)*100).toString()) < colorimeter[1] ? 'tw-border-yellowColory hover:tw-ring-4 hover:tw-ring-yellow-200':
+                                    parseInt( ((props.yearProgress[index]??0)*100).toString()) < colorimeter[2] ? 'tw-border-greenColory hover:tw-ring-4 hover:tw-ring-green-200'  :
+                                    'tw-border-blueColory hover:tw-ring-4 hover:tw-ring-blue-200'}
                                     ${yearSelect === year ? 'tw-ring-8' : null}
-                                    ${index%2 === 0 ? 'tw-row-start-1' : 'tw-row-start-3'}
+                                    ${index%2 === 0 ? 'tw-row-start-1 hover:tw--translate-y-1' : 'tw-row-start-3 hover:tw-translate-y-1'}
                                     tw-border-4
                                     tw-w-12 tw-h-12
                                     tw-font-bold`}
@@ -54,16 +55,17 @@ export const TimeLine = (props: TimeLineProps) => {
                     { parseInt ( ((props.yearProgress[index] === undefined || props.yearProgress[index] < 0 ? 0 : props.yearProgress[index])*100).toString())}%
                 </button>
                 <div className="tw-flex tw-items-center tw-w-full tw-relative tw-row-start-2">
-                    <div className={`tw-w-full tw-h-2
+                    <button className={`tw-w-full tw-h-2
                                     tw-px-3
                                     tw-z-10 tw-absolute 
+                                    tw-transition hover:tw--translate-y-1 hover:tw-scale-110
                                     ${
-                                    parseInt ( ((props.yearProgress[index]??0)*100).toString()) < 0 ? 'tw-bg-gray-400' :
-                                    parseInt ( ((props.yearProgress[index]??0)*100).toString()) < colorimeter[0] ? 'tw-bg-redColory'   : 
-                                    parseInt ( ((props.yearProgress[index]??0)*100).toString()) < colorimeter[1] ? 'tw-bg-yellowColory':
-                                    parseInt ( ((props.yearProgress[index]??0)*100).toString()) < colorimeter[2] ? 'tw-bg-greenColory' :
-                                    'tw-bg-blueColory'}`}>
-                    </div>
+                                    parseInt ( ((props.yearProgress[index]??0)*100).toString()) < 0 ? 'tw-bg-gray-400 hover:tw-ring-4 hover:tw-ring-gray-200' :
+                                    parseInt ( ((props.yearProgress[index]??0)*100).toString()) < colorimeter[0] ? 'tw-bg-redColory hover:tw-ring-4 hover:tw-ring-red-200'      : 
+                                    parseInt ( ((props.yearProgress[index]??0)*100).toString()) < colorimeter[1] ? 'tw-bg-yellowColory hover:tw-ring-4 hover:tw-ring-yellow-200':
+                                    parseInt ( ((props.yearProgress[index]??0)*100).toString()) < colorimeter[2] ? 'tw-bg-greenColory hover:tw-ring-4 hover:tw-ring-green-200'  :
+                                    'tw-bg-blueColory hover:tw-ring-4 hover:tw-ring-blue-200'}`}>
+                    </button>
                     <div className={`tw-h-full
                                     tw-grow
                                     tw-flex tw-flex-col`}>
@@ -80,6 +82,9 @@ export const TimeLine = (props: TimeLineProps) => {
                             </button>
                         : null}
                         <button className={`tw-self-center tw-font-bold tw-font-montserrat tw-text-[#222222]
+                                            tw-transition 
+                                            ${index%2 === 0 ? 'hover:tw-translate-y-1' : 'hover:tw--translate-y-1'} 
+                                            hover:tw-scale-110
                                             ${
                                             (props.yearProgress[index]??0)*100 < 0 ? 'tw-text-gray-400' :
                                             (props.yearProgress[index]??0)*100 < colorimeter[0] ? 'tw-text-redColory'   : 
@@ -110,12 +115,13 @@ export const TimeLine = (props: TimeLineProps) => {
                             tw-border-4
                             tw-self-center
                             tw-w-12 tw-h-12
+                            tw-transition hover:tw--translate-y-1 hover:tw-scale-110
                             ${
-                            props.yearsProgress < 0 ? 'tw-border-gray-400' :
-                            props.yearsProgress < colorimeter[0] ? 'tw-border-redColory'   : 
-                            props.yearsProgress < colorimeter[1] ? 'tw-border-yellowColory':
-                            props.yearsProgress < colorimeter[2] ? 'tw-border-greenColory' :
-                            'tw-border-blueColory'}
+                            props.yearsProgress < 0 ? 'tw-border-gray-400 hover:tw-ring-4 hover:tw-ring-gray-200' :
+                            props.yearsProgress < colorimeter[0] ? 'tw-border-redColory hover:tw-ring-4 hover:tw-ring-red-200'      : 
+                            props.yearsProgress < colorimeter[1] ? 'tw-border-yellowColory hover:tw-ring-4 hover:tw-ring-yellow-200':
+                            props.yearsProgress < colorimeter[2] ? 'tw-border-greenColory hover:tw-ring-4 hover:tw-ring-green-200'  :
+                            'tw-border-blueColory hover:tw-ring-4 hover:tw-ring-blue-200'}
                             tw-ml-3 tw-px-2`}
                 onClick={handleBtnEvidence}>
             <p className="tw-break-words tw-font-bold">

@@ -88,3 +88,78 @@ export const Spinner = () => {
         </svg>
     )
 }
+
+export const LoadIcon = () => {
+    return(
+        <svg 
+            viewBox="0 0 100 100" 
+            y="0" x="0" 
+            xmlns="http://www.w3.org/2000/svg" 
+            id="圖層_1" 
+            version="1.1" 
+            width="200px" 
+            height="200px" >
+            <g >
+                <g>
+                    <g>
+                        <path 
+                            d="M90 86.5V90h-3.5" 
+                            stroke-miterlimit="10"
+                            stroke-width="6" 
+                            stroke="#e0e0e0" 
+                            fill="none"></path>
+                        <path 
+                            d="M77.912 90H17.794" 
+                            stroke-dasharray="7.5147,8.5882" 
+                            stroke-miterlimit="10" 
+                            stroke-width="6" 
+                            stroke="#e0e0e0" 
+                            fill="none"></path>
+                        <path 
+                            d="M13.5 90H10v-3.5" 
+                            stroke-miterlimit="10" 
+                            stroke-width="6" 
+                            stroke="#e0e0e0" 
+                            fill="none"></path>
+                        <path 
+                            d="M10 77.912V17.794" 
+                            stroke-dasharray="7.5147,8.5882" 
+                            stroke-miterlimit="10" 
+                            stroke-width="6" 
+                            stroke="#e0e0e0" 
+                            fill="none"></path>
+                        <path 
+                            d="M10 13.5V10h3.5" 
+                            stroke-miterlimit="10" 
+                            stroke-width="6" 
+                            stroke="#e0e0e0" 
+                            fill="none"></path>
+                        <path 
+                            d="M22.088 10h60.118" 
+                            stroke-dasharray="7.5147,8.5882" 
+                            stroke-miterlimit="10" 
+                            stroke-width="6" 
+                            stroke="#e0e0e0" 
+                            fill="none"></path>
+                        <path 
+                            d="M86.5 10H90v3.5" 
+                            stroke-miterlimit="10" 
+                            stroke-width="6" 
+                            stroke="#e0e0e0" 
+                            fill="none"></path>
+                        <path 
+                            d="M90 22.088v60.118" 
+                            stroke-dasharray="7.5147,8.5882" 
+                            stroke-miterlimit="10" 
+                            stroke-width="6" 
+                            stroke="#e0e0e0" 
+                            fill="none"></path>    
+                    </g>
+                </g>
+                <path 
+                    fill="#333" 
+                    d="M70 48H53V31a3 3 0 1 0-6 0v17H30a3 3 0 1 0 0 6h17v17a3 3 0 1 0 6 0V54h17a3 3 0 1 0 0-6z" ></path>
+            </g>
+        </svg>
+    )
+}

@@ -28,7 +28,9 @@ export const ColorForm = ( props : ColorFromProps ) => {
     }
 
     return (
-        <form className='tw-flex tw-flex-wrap tw-mb-2 tw-ml-4'>
+        <form className='tw-flex tw-flex-col md:tw-flex-row 
+                        tw-flex-wrap 
+                        tw-mb-2 tw-ml-4'>
             {value.map((value: number[], index: number) => {
                 return (
                     <div className='tw-flex tw-mx-2'
@@ -47,7 +49,7 @@ export const ColorForm = ( props : ColorFromProps ) => {
                                         (index === 2 ? 'tw-bg-greenColory' : 
                                         'tw-bg-blueColory'))}
                                         tw-rounded-full`}>
-                            <p className='tw-mt-3 tw-font-bold tw-text-center'>
+                            <p className='tw-mt-3 tw-font-bold tw-text-center tw-text-white'>
                                 {value[1]}
                             </p>
                         </div>
@@ -55,6 +57,7 @@ export const ColorForm = ( props : ColorFromProps ) => {
                 )
             })}
             <button className=' tw-bg-greenColory hover:tw-bg-green-400
+                                tw-text-white hover:tw-text-black
                                 tw-px-2
                                 tw-rounded
                                 tw-font-bold'

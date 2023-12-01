@@ -1,13 +1,12 @@
 import React, { useState } from "react";
 
-import { useAppSelector, useAppDispatch } from "@/store";
+import { useAppSelector } from "@/store";
 
 import { Secretary } from "@/interfaces";
 import { validateEmail } from "@/utils";
 import { addSecretaries } from "@/services/api";
 
 export const SecretaryForm = () => {
-    const dispatch = useAppDispatch();
     const { plan } = useAppSelector((state) => state.plan);
 
     const [data, setData] = useState<Secretary[]>([

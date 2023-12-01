@@ -131,7 +131,7 @@ export const Content = ( props : ContentProps ) => {
                 <div className="tw-mx-6 tw-py-3
                                 md:tw-ml-12
                                 lg:tw-ml-6
-                                tw-rounded tw-shadow-lg
+                                tw-rounded tw-shadow-lg tw-border
                                 tw-bg-white
                                 md:tw-col-span-2
                                 xl:">
@@ -142,7 +142,7 @@ export const Content = ( props : ContentProps ) => {
                                 yearsProgress={yearsprogress}/>
                 </div>
 
-                <div className="tw-rounded tw-shadow-lg
+                <div className="tw-rounded tw-shadow-lg tw-border
                                 tw-bg-white
                                 tw-mx-6 tw-mt-6 
                                 md:tw-ml-6 md:tw-mr-3 md:tw-mt-0
@@ -176,11 +176,13 @@ export const Content = ( props : ContentProps ) => {
                 <div className="tw-mt-6 tw-mx-6 tw-px-4
                                 tw-flex tw-flex-col tw-justify-start
                                 tw-bg-white
-                                tw-rounded
+                                tw-rounded tw-border
                                 tw-shadow-lg
                                 md:tw-col-span-full
                                 lg:tw-col-start-2">
-                    <p>Cuatrenio  {new Date(plan!.Fecha_inicio).getUTCFullYear()} - {new Date(plan!.Fecha_fin).getUTCFullYear()}</p><br />
+                    <p className="tw-font-montserrat tw-mt-3">
+                        Cuatrenio  {new Date(plan!.Fecha_inicio).getUTCFullYear()} - {new Date(plan!.Fecha_fin).getUTCFullYear()}
+                    </p><br />
                     <Graph
                         dataValues={ radioBtn === 'fisica' ? progressNodes : financial}/>
                 </div>

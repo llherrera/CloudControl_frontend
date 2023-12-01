@@ -78,6 +78,7 @@ export const ModalTotalPDT = () => {
                         size="large" 
                         color='inherit' 
                         title='Generar reporte del Plan Indicativo Total'
+                        className="tw-transition hover:tw--translate-y-1 hover:tw-scale-[1.4]"
                         onClick={(e)=>handleBtn(e)}>
                 <LibraryBooksIcon />
             </IconButton>

@@ -99,7 +99,7 @@ export const NodeForm = ( props : NodeFormProps ) => {
                 className='tw-mx-4'>
             <ul className=''>
                 {data.map(( e: NodoInterface, index: number )=> 
-                <div className='tw-mb-3 tw-p-1 tw-relative tw-bg-cyan-200 tw-flex tw-rounded'
+                <div className='tw-mb-3 tw-p-1 tw-relative tw-shadow-lb tw-bg-gray-300 tw-border tw-flex tw-rounded'
                     key={e.id_node}>
                     <li className="tw-ml-3">
                         <input  type={"text"}
@@ -107,14 +107,14 @@ export const NodeForm = ( props : NodeFormProps ) => {
                                 id={"NodeName"}
                                 name={"NodeName"}
                                 value={e.NodeName}
-                                className='tw-rounded tw-my-1 tw-w-5/6'
+                                className='tw-rounded tw-my-1 tw-w-5/6 tw-border '
                                 onChange={ (event) => handleInputFormChange(event, index) }/><br/>
                         <input  type={"text"}
                                 placeholder="Descripción del Nodo"
                                 id={"Description"}
                                 name={"Description"}
                                 value={e.Description}
-                                className='rounded my-1 tw-w-5/6'
+                                className='rounded my-1 tw-w-5/6 tw-border'
                                 onChange={ (event) => handleInputFormChange(event, index) }/><br/>
                     </li>
                     <input  type="number"
@@ -122,7 +122,7 @@ export const NodeForm = ( props : NodeFormProps ) => {
                             id='Weight'
                             name='Weight'
                             value={e.Weight}
-                            className=' tw-w-1/6 tw-absolute tw-right-4 tw-h-7 tw-rounded'
+                            className=' tw-w-1/6 tw-absolute tw-border tw-right-4 tw-h-7 tw-rounded'
                             onChange={ (event) => handleInputFormChange(event, index) } />
                 </div>
                 )}

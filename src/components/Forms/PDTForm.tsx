@@ -21,7 +21,7 @@ export const PDTForm = () => {
         Alcaldia: "",
         Municipio: "",
         Fecha_inicio: new Date().getUTCFullYear().toString(),
-        Fecha_fin: '',
+        Fecha_fin: (new Date().getUTCFullYear() + 3).toString(),
         Descripcion: "",
     });
 
@@ -45,10 +45,12 @@ export const PDTForm = () => {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        console.log(planData);
+        
         await dispatch(thunkAddPDT(planData))
             .unwrap()
             .then((res) => {
-                navigate(`/pdt/${res.id_plan}`)
+                navigate(`/pdt/PlanIndicativo`, { state: { id: res.id_plan } })
             })
             .catch((err) => {
                 console.log(err);
@@ -76,7 +78,7 @@ export const PDTForm = () => {
                                 tw-rounded tw-shadow-2xl
                                 tw-p-10">
                 <Input  type={"text"}
-                        label="Nombre del Plan:"
+                        label="Nombre:"
                         id={"Nombre"}
                         name={"Nombre"}
                         value={planData.Nombre}
@@ -100,9 +102,12 @@ export const PDTForm = () => {
                         value={planData.Descripcion}
                         onChange={handleInputChange}/><br/>
 
-                <div className="tw-flex">
-                    <label className="tw-mr-4">Fecha de inicio</label>
-                    <select name="Fecha_inicio" id="Fecha_inicio" onChange={handleInputYearChange}>
+                <div>
+                    <label className="tw-mr-4">Fecha de inicio:</label>
+                    <select name="Fecha_inicio" 
+                            id="Fecha_inicio" 
+                            onChange={handleInputYearChange}
+                            className="tw-mb-3 tw-p-2 tw-rounded tw-border-2 tw-border-gray-400">
                         {Array.from(Array(5).keys()).map((e) => {
                             return <option key={e} value={fechaInicio + e}>{fechaInicio + e}</option>;
                         })}
@@ -111,8 +116,8 @@ export const PDTForm = () => {
                 <input  type="submit"
                         value="Registrar Plan"
                         title="Añadir plan"
-                        className=" tw-bg-green-500
-                                    hover:tw-bg-green-300
+                        className=" tw-bg-green-500 hover:tw-bg-green-300
+                                    tw-text-white tw-font-bold hover:tw-text-black
                                     tw-rounded
                                     tw-p-2"
                 />

@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import * as Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 
@@ -8,27 +8,46 @@ import { setType } from '@/store/chart/chartSlice';
 
 import { GraphProps } from '@/interfaces';
 import {  } from '@/services/api';
-import { ModalTotalPDT, ModalSecretary, ModalProgram } from '../Modals'
+import { ModalTotalPDT, ModalSecretary, ModalProgram } from '../Modals';
 
 
 export const Graph = ( props: GraphProps ) => {
     const dispatch = useAppDispatch();
     const chartComponentRef = useRef<HighchartsReact.RefObject>(null);
 
-    const { years, colorimeter, radioBtn } = useAppSelector(store => store.plan)
-    const { type } = useAppSelector(store => store.chart)
-    
-    const categories = years.map((year) => year.toString())
+    const { colorimeter, radioBtn, nodes } = useAppSelector(store => store.plan);
+    const { type } = useAppSelector(store => store.chart);
+    const [indexType, setIndexType] = useState(0);
+    const typeList = [
+        {
+            type: 'Dona',
+            value: 'donut'
+        },
+        {
+            type: 'Torta',
+            value: 'pie'
+        },
+        {
+            type: 'Linea',
+            value: 'line'
+        },
+        {
+            type: 'Barras',
+            value: 'bar'
+        },
+    ];
+
+    const categories = nodes.map((node) => node.NodeName);
     const pieValues = props.dataValues.map((value, index) => {
         return {
             name: categories[index],
             y: value,
         }
-    })
+    });
 
     const options: Highcharts.Options = {
         title: {
-            text: `Gráfico de ${type}`
+            text: `Gráfico de ${typeList[indexType].type}`
         },
         plotOptions: {
             pie: {
@@ -92,21 +111,13 @@ export const Graph = ( props: GraphProps ) => {
                 }
             },
         ],
-    }
+    };
 
     const onChangeType = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const value = e.target.value
-        if (value === 'pie') {
-            dispatch(setType('pie'))
-        } else if (value === 'line') {
-            dispatch(setType('line'))
-        } else if (value === 'donut') {
-            dispatch(setType('donut'))
-        } else if (value === 'bar') {
-            dispatch(setType('bar'))
-        } else {
-            dispatch(setType('pie'))
-        }
+        const newIndex = e.target.selectedIndex;
+        const value = typeList[newIndex].value;
+        dispatch(setType(value));
+        setIndexType(newIndex);
     }
 
     return (
@@ -116,43 +127,44 @@ export const Graph = ( props: GraphProps ) => {
                         md:tw-flex-wrap
                         md:tw-justify-around
                         ">
-            <div className='tw-w-full md:tw-w-1/2 md:tw-self-start'>
-                <select name="type" id="type" onChange={onChangeType} value={type}>
-                    <option value="donut">Donut</option>
-                    <option value="pie">Pie</option>
-                    <option value="line">Line</option>
-                    <option value="bar">Bar</option>
+            <div className='tw-flex tw-flex-col 
+                            tw-w-full md:tw-w-1/3 tw-h-full 
+                            tw-justify-around'>
+                <select name="type" id="type" 
+                        onChange={onChangeType} 
+                        value={typeList[indexType].value}
+                        className='tw-border tw-self-start tw-p-2 tw-m-2'>
+                    {typeList.map((type, index)=>(<option value={type.value} key={index}>{type.type}</option>))}
                 </select>
-            </div>
-            <div className='tw-w-full tw-flex tw-flex-col md:tw-w-1/2 md:tw-self-start'>
-                <label>
-                    <input  type="radio" name='fisica' value='fisica'
-                            className='tw-mr-2'
-                            onChange={ ()=> dispatch(setRadioBtn('fisica'))}
-                            checked={radioBtn === 'fisica'}/>
-                    Ejecución fisica
-                </label>
-                
-                <label htmlFor="">
-                    <input  type="radio" name='financiera' value='financiera'
-                            className='tw-mr-2'
-                            onChange={ ()=> dispatch(setRadioBtn('financiera'))}
-                            checked={radioBtn === 'financiera'}/>
-                    Ejecución financiera
-                </label>
-            </div>
-            <div className='tw-flex'>
-                <ModalProgram />
-                <ModalSecretary />
-                <ModalTotalPDT />
+                <div className='tw-flex tw-flex-col tw-ml-10 tw-mt-3'>
+                    <label>
+                        <input  type="radio" name='fisica' value='fisica'
+                                className='tw-mr-2'
+                                onChange={ ()=> dispatch(setRadioBtn('fisica'))}
+                                checked={radioBtn === 'fisica'}/>
+                        Ejecución fisica
+                    </label>
+                    <label htmlFor="">
+                        <input  type="radio" name='financiera' value='financiera'
+                                className='tw-mr-2'
+                                onChange={ ()=> dispatch(setRadioBtn('financiera'))}
+                                checked={radioBtn === 'financiera'}/>
+                        Ejecución financiera
+                    </label>
+                </div>
+                <div className='tw-flex tw-justify-around'>
+                    <ModalProgram />
+                    <ModalSecretary />
+                    <ModalTotalPDT />
+                </div>
             </div>
             <div className='tw-w-full md:tw-w-1/2 tw-shadow'>
-            <HighchartsReact
-                highcharts={Highcharts}
-                options={options}
-                ref={chartComponentRef}
-                containerProps={{ style: {width: '100%', height:'100%'} }}/>
+                <HighchartsReact
+                    highcharts={Highcharts}
+                    options={options}
+                    ref={chartComponentRef}
+                    containerProps={{ style: {width: '100%', height:'100%'} }}/>
             </div>
         </div>
-    );
+    )
 }

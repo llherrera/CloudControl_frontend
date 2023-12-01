@@ -209,6 +209,7 @@ export const ModalProgram = () => {
                         size="large" 
                         color='primary' 
                         title='Generar reporte por Programas'
+                        className="tw-transition hover:tw--translate-y-1 hover:tw-scale-[1.4]"
                         onClick={(e)=>handleProgramBtn(e)}>
                 <LibraryBooksIcon />
             </IconButton>

@@ -104,14 +104,12 @@ export const EvidencePage = () => {
     const memorias = () =>{
         if (unit === undefined) return;
         return(
-            <div className="tw-mx-3 tw-mt-2 tw-grid tw-grid-cols-4 md:tw-grid-cols-12">
-                <header className=" tw-col-start-1 tw-col-span-full
-                                    md:tw-col-start-2 md:tw-col-span-10
-                                    tw-border-4 tw-border-double tw-border-gray-500">
+            <div className="tw-mx-3 tw-mt-2 
+            tw-bg-[url('/src/assets/images/bg-plan-indicativo.png')]">
+                <header className=" tw-border-4 tw-border-double tw-border-gray-500">
                     <h1 className=" tw-text-3xl tw-text-center tw-font-bold tw-text-blue-700">Memoria de avance del Plan</h1>
                 </header>
-                <table className="  tw-col-start-1 tw-col-span-full tw-mt-3 
-                                    md:tw-col-start-2 md:tw-col-span-10 tw-text-center">
+                <table className="tw-mt-3 tw-w-full tw-text-center">
                     <thead>
                         <tr>
                             <th className="tw-border-4 tw-border-double tw-border-gray-500">
@@ -147,58 +145,45 @@ export const EvidencePage = () => {
                         ))}
                     </tbody>
                 </table>
-                <p className="  tw-col-start-1 tw-col-span-2 tw-mt-4
-                                tw-justify-self-start
-                                md:tw-col-start-2">
+                <p className="tw-mt-4">
                     Fecha: { new Date().toLocaleDateString()}
                 </p>
-                <p className="  tw-font-bold tw-col-start-5 tw-mt-4
-                                tw-justify-self-start">
+                <p className="tw-font-bold tw-mt-4">
                     Lugar:
                 </p>
                 <input  className=" tw-ml-4 tw-py-4 tw-mt-4
-                                    tw-grow tw-border
-                                    tw-col-start-8 tw-col-span-full
-                                    md:tw-col-start-7 md:tw-col-end-12"
+                                    tw-grow tw-border"
                         type="text" 
                         name="" 
                         id="" 
                 />
-                <p className="  tw-col-start-1 tw-col-span-2 tw-mt-4
-                                tw-justify-self-start
-                                md:tw-col-start-2">
+                <p className="  tw-mt-4
+                                tw-justify-self-start">
                     Hora: { new Date().toLocaleTimeString()}
                 </p>
                 <p className="  tw-font-bold tw-mt-4 
-                                tw-col-start-5 tw-col-span-2 
                                 tw-justify-self-start
                                 tw-break-words ">
                     Responsable del cargo:
                 </p>
                 <input  className=" tw-ml-4 tw-py-4 tw-mt-4
-                                    tw-grow tw-border
-                                    tw-col-start-8 tw-col-span-full
-                                    md:tw-col-start-7 md:tw-col-end-12" 
+                                    tw-grow tw-border" 
                         type="text" 
                         name="" 
                         id="" 
                 />
-                <p className="  tw-font-bold tw-mt-4 tw-col-start-5 
+                <p className="  tw-font-bold tw-mt-4
                                 tw-justify-self-start
                                 tw-break-words">
                     Descripción:
                 </p>
                 <input  className=" tw-ml-4 tw-py-4 tw-mt-4
-                                    tw-grow tw-border
-                                    tw-col-start-8 tw-col-span-full
-                                    md:tw-col-start-7 md:tw-col-end-12" 
+                                    tw-grow tw-border" 
                         type="text" 
                         name="" 
                         id="" 
                 />
-                <button className=" tw-col-span-full
-                                    md:tw-col-start-2 md:tw-col-end-12
-                                    tw-bg-blue-500
+                <button className=" tw-bg-blue-500
                                     tw-py-4 tw-mt-4
                                     tw-rounded
                                     tw-text-white tw-font-bold"
