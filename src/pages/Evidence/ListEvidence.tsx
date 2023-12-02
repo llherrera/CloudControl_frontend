@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams, useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 import { useAppSelector, useAppDispatch } from "@/store";
 import { thunkGetEvidences, thunkGetEvidenceCount } from "@/store/evidence/thunks";
@@ -59,15 +59,52 @@ const Evidence = () => {
                 <BackBtn handle={handleBack} id={parseInt(id!)}/>
                 Evidencias por aprobar
             </p>
-            <ol className=" tw-w-full md:tw-w-1/2
-                            tw-flex tw-flex-col
-                            tw-mt-4">
-                {evidence?.length === 0 || evidence ? evidence.map((evi, index) => (
-                    <li key={index} className="tw-bg-blue-200 tw-rounded tw-my-1">
-                        <EvidenceDetail eviden={evi} index={index}/>
-                    </li>
-                )) : <span>No hay evidencias</span>}
-            </ol>
+            <table>
+                <thead>
+                    <tr>
+                        <th className="tw-bg-black tw-border">
+                            <label className="tw-text-white">Fecha de seguimiento</label>
+                        </th>
+                        <th className="tw-bg-black tw-border">
+                            <label className="tw-text-white">Descripción</label>
+                        </th>
+                        <th className="tw-bg-black tw-border">
+                            <label className="tw-text-white">Comuna o Corregimiento</label>
+                        </th>
+                        <th className="tw-bg-black tw-border">
+                            <label className="tw-text-white">Barrio o Vereda</label>
+                        </th>
+                        <th className="tw-bg-black tw-border">
+                            <label className="tw-text-white">Unidad</label>
+                        </th>
+                        <th className="tw-bg-black tw-border">
+                            <label className="tw-text-white">Cantidad</label>
+                        </th>
+                        <th className="tw-bg-black tw-border">
+                            <label className="tw-text-white">Grupo poblacional</label>
+                        </th>
+                        <th className="tw-bg-black tw-border">
+                            <label className="tw-text-white">Población beneficiada</label>
+                        </th>
+                        <th className="tw-bg-black tw-border">
+                            <label className="tw-text-white">Fecha archivo</label>
+                        </th>
+                        <th className="tw-bg-black tw-border">
+                            <label className="tw-text-white">Enlace</label>
+                        </th>
+                        <th className="tw-bg-black tw-border">
+                            <label className="tw-text-white">Acción</label>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {evidence?.length === 0 || evidence ? evidence.map((evi, index) => (
+                        <EvidenceDetail evi={evi} index={index} key={index}/>
+                        
+                    )) : <span>No hay evidencias</span>}
+                </tbody>
+            </table>
+            
             {evidence?.length === 0 || evidence ? 
             <div className="tw-w-full md:tw-w-1/2
                             tw-flex tw-justify-between

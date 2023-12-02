@@ -42,7 +42,7 @@ export interface BtnPlanProps {
 }
 
 export interface EvidenceDetailProps {
-    eviden: EvidenceInterface,
+    evi: EvidenceInterface,
     index: number
 };
 

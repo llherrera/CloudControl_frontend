@@ -7,7 +7,6 @@ import { thunkGetUnit } from "@/store/unit/thunks";
 import { thunkGetEvidence } from '@/store/evidence/thunks'
 import { resetEvidence } from "@/store/evidence/evidenceSlice";
 
-import { addUnitNodeAndYears } from "../../services/api";
 import { Token } from "../../interfaces";
 import { getToken, decode } from "@/utils";
 import { EvidenceDetail, BackBtn, SettingsBtn } from "@/components";
@@ -61,19 +60,20 @@ export const UnitNodePage = () => {
 
     useEffect(() => {
         dispatch(thunkGetUnit({idPDT:idPDT!, idNode:idNodo!}))
-        if (unit) {
-            let acumProgramed = 0;
-            let acumPhisical = 0;
-            let acumFinalcial = 0;
-            for (let i = 0; i < unit.years.length; i++) {
-                acumProgramed += unit.years[i].programed;
-                acumPhisical += unit.years[i].phisicalExecuted;
-                acumFinalcial += unit.years[i].finalcialExecuted;
-            }
-            setAcum( acumPhisical/acumProgramed );
-            setAcumFinan( acumFinalcial );
-        }
     }, []);
+
+    useEffect(() => {
+        let acumProgramed = 0;
+        let acumPhisical = 0;
+        let acumFinalcial = 0;
+        for (let i = 0; i < unit!.years.length; i++) {
+            acumProgramed += unit!.years[i].programed;
+            acumPhisical += unit!.years[i].phisicalExecuted;
+            acumFinalcial += unit!.years[i].finalcialExecuted;
+        }
+        setAcum( acumPhisical/acumProgramed );
+        setAcumFinan( acumFinalcial );
+    }, [unit]);
 
     const handleSubmitButton = () => {
         navigate(`/pdt/PlanIndicativo/Meta/evidencia`)
@@ -187,7 +187,7 @@ export const UnitNodePage = () => {
                                     </p>
                                     <p className="  tw-text-center
                                                     tw-border-t tw-border-black">
-                                        {unit.years[index].finalcialExecuted}
+                                        ${unit.years[index].finalcialExecuted}
                                     </p>
                                 </div>
                             </div>
@@ -212,7 +212,7 @@ export const UnitNodePage = () => {
                             </p>
                             <p className="  tw-text-center
                                             tw-border-t tw-border-black">
-                                {parseInt(acum.toString())*100}
+                                {parseInt(acum.toString())*100}%
                             </p>
                         </div>
                         <div className="tw-flex tw-flex-col tw-justify-center
@@ -222,7 +222,7 @@ export const UnitNodePage = () => {
                             </p>
                             <p className="  tw-text-center
                                             tw-border-t tw-border-black">
-                                {acumFinan}
+                                ${acumFinan}
                             </p>
                         </div>
                     </div>
@@ -278,17 +278,54 @@ export const UnitNodePage = () => {
                     Cargar <br /> evidencias
                 </button>
             </div>
-            <ol className="tw-w-full md:tw-w-1/2
-                            tw-flex tw-flex-col tw-justify-center
-                            tw-mt-4">
-                {evidence.length > 0 ? evidence.map((item, index) => {
-                    return (
-                        <li>
-                            <EvidenceDetail eviden={item} index={index}/>
-                        </li>
-                    )
-                }) : null}
-            </ol>
+            {evidence.length > 0 ?
+            <div className="tw-col-start-2 tw-col-end-12 tw-mb-4">
+                <p className="tw-text-2xl tw-font-bold tw-flex tw-justify-center">Evidencias</p>
+                <table>
+                    <thead>
+                        <tr>
+                            <th className="tw-bg-black tw-border">
+                                <label className="tw-text-white">Fecha de seguimiento</label>
+                            </th>
+                            <th className="tw-bg-black tw-border">
+                                <label className="tw-text-white">Descripción</label>
+                            </th>
+                            <th className="tw-bg-black tw-border">
+                                <label className="tw-text-white">Comuna o Corregimiento</label>
+                            </th>
+                            <th className="tw-bg-black tw-border">
+                                <label className="tw-text-white">Barrio o Vereda</label>
+                            </th>
+                            <th className="tw-bg-black tw-border">
+                                <label className="tw-text-white">Unidad</label>
+                            </th>
+                            <th className="tw-bg-black tw-border">
+                                <label className="tw-text-white">Cantidad</label>
+                            </th>
+                            <th className="tw-bg-black tw-border">
+                                <label className="tw-text-white">Grupo poblacional</label>
+                            </th>
+                            <th className="tw-bg-black tw-border">
+                                <label className="tw-text-white">Población beneficiada</label>
+                            </th>
+                            <th className="tw-bg-black tw-border">
+                                <label className="tw-text-white">Fecha archivo</label>
+                            </th>
+                            <th className="tw-bg-black tw-border">
+                                <label className="tw-text-white">Enlace</label>
+                            </th>
+                            <th className="tw-bg-black tw-border">
+                                <label className="tw-text-white">Acción</label>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {evidence.map((evi, index) => (
+                            <EvidenceDetail evi={evi} index={index}/>
+                        ))}
+                    </tbody>
+                </table>
+                </div> : null}
         </div>
     );
 }

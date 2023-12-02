@@ -1,5 +1,6 @@
 import { ErrorTypeInterface } from "./common";
 import { PDTInterface, NivelInterface, NodoInterface } from "./formInterfaces";
+import { Secretary } from "./secretary";
 
 export interface InitialStatePlanInterface {
     loadingPlan: boolean;

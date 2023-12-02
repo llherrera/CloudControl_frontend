@@ -4,3 +4,8 @@ export interface Secretary {
     email: string;
     phone: string;
 }
+
+export interface PropsSecretary {
+    id_plan: number;
+    secretaries: Secretary[];
+}

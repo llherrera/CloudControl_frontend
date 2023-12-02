@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 
-import { useAppSelector } from "@/store";
+import { useAppSelector, useAppDispatch } from "@/store";
+import { thunkAddSecretaries } from "@/store/plan/thunks";
 
 import { Secretary } from "@/interfaces";
 import { validateEmail } from "@/utils";
-import { addSecretaries } from "@/services/api";
 
 export const SecretaryForm = () => {
+    const dispatch = useAppDispatch();
     const { plan } = useAppSelector((state) => state.plan);
 
     const [data, setData] = useState<Secretary[]>([
@@ -42,18 +43,11 @@ export const SecretaryForm = () => {
                 return;
             }
         })
-        addSecretaries(plan?.id_plan!, data)
-        .then((res) => {
-            alert("Se agregaron las secretarias correctamente");
-        })
-        .catch((err) => {
-            console.log(err)
-            alert("Hubo un error al agregar las secretarias");
-        });
+        dispatch(thunkAddSecretaries({ id_plan: plan?.id_plan!, secretaries: data}));
     }
 
     return (
-        <div className="tw-flex tw-justify-center tw-border-t-4 tw-pt-2">
+        <div className="tw-flex tw-justify-center tw-border-t-4 tw-mt-4 tw-pt-2">
             <form   
                 onSubmit={ handleSubmit }
                 className="tw-shadow-2xl tw-p-2">

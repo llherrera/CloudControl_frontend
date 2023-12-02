@@ -1,20 +1,9 @@
 import { createAction, createAsyncThunk } from "@reduxjs/toolkit";
 
-import { UnitInterface, ErrorBasicInterface, YearInterface } from "@/interfaces";
+import { UnitInterface, ErrorBasicInterface, GetUnitProps, AddUnitProps } from "@/interfaces";
 import { parseErrorAxios } from "@/utils";
 
 import { getUnitNodeAndYears, addUnitNodeAndYears } from "@/services/api";
-
-interface GetUnitProps {
-    idPDT: string;
-    idNode: string;
-}
-interface AddUnitProps {
-    idPDT: string;
-    idNode: string;
-    unit: UnitInterface;
-    years: YearInterface[];
-}
 
 export const thunkGetUnit = createAsyncThunk<UnitInterface, GetUnitProps, { rejectValue: ErrorBasicInterface}>(
     "unit/getUnit", 
@@ -32,13 +21,14 @@ export const thunkGetUnit = createAsyncThunk<UnitInterface, GetUnitProps, { reje
                 }
             });
             res.years = years;
-            const {Codigo, Descripcion, Indicador, Linea_base, Meta} = res.Node;
+            const {Codigo, Descripcion, Indicador, Linea_base, Meta, responsable} = res.Node;
             const para = {
                 code: Codigo,
                 description: Descripcion,
                 indicator: Indicador,
                 base: Linea_base,
-                goal: Meta
+                goal: Meta,
+                responsible: responsable,
             }
             const result: UnitInterface = {...para, years};
 

@@ -66,7 +66,7 @@ export const NodesList = ( props : NodeListProps ) => {
         <ul className={`${indexLevel === levels.length-1 ? 'tw-flex tw-flex-row tw-flex-wrap': 'tw-flex-col tw-flex-wrap'} `}>
             {nodes.map((item: NodoInterface, index: number) => {
                 return(
-                <div className="tw-my-2 tw-flex"
+                <div className="tw-my-2 tw-flex tw-transition hover:tw-scale-110"
                     key={index}>
                     <button className={`tw-rounded
                                         tw-flex tw-justify-center tw-items-center
@@ -86,11 +86,11 @@ export const NodesList = ( props : NodeListProps ) => {
                     </button>
                     {indexLevel !== levels.length-1 ?
                     <button className={`${
-                                        progressNodes[index] < 0 ? 'tw-bg-gray-400 hover:tw-ring-8 hover:tw-ring-gray-200' :
-                                        (progressNodes[index])*100 < colorimeter[0] ? 'tw-bg-redColory hover:tw-ring-8 hover:tw-ring-red-200'      :
-                                        (progressNodes[index])*100 < colorimeter[1] ? 'tw-bg-yellowColory hover:tw-ring-8 hover:tw-ring-yellow-200':
-                                        (progressNodes[index])*100 < colorimeter[2] ? 'tw-bg-greenColory hover:tw-ring-8 hover:tw-ring-green-200'  : 
-                                        'tw-bg-blueColory hover:tw-ring-8 hover:tw-ring-blue-200'}
+                                        progressNodes[index] < 0 ? 'tw-bg-gray-400 hover:tw-bg-gray-200' :
+                                        (progressNodes[index])*100 < colorimeter[0] ? 'tw-bg-redColory hover:tw-bg-red-200'      :
+                                        (progressNodes[index])*100 < colorimeter[1] ? 'tw-bg-yellowColory hover:tw-bg-yellow-200':
+                                        (progressNodes[index])*100 < colorimeter[2] ? 'tw-bg-greenColory hover:tw-bg-green-200'  : 
+                                        'tw-bg-blueColory hover:tw-ring-blue-200'}
                                         tw-h-8 tw-my-2
                                         tw-w-2/3
                                         tw-rounded-r-lg

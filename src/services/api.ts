@@ -4,7 +4,8 @@ import { getEnvironment } from '../utils/environment';
 
 import { YearInterface, UnitInterface, NodoInterface, 
     NivelInterface, RegisterInterface, PDTInterface, 
-    EvidenceInterface, GetNodeProps, AddColorsProps, Secretary } from "../interfaces";
+    EvidenceInterface, GetNodeProps, AddColorsProps, 
+    Secretary, LoginProps } from "../interfaces";
 
 import { getToken, refreshToken } from "@/utils";
 
@@ -94,10 +95,6 @@ export const getLastPDT = async () => {
     }
 }
 
-interface LoginProps {
-    username: string
-    password: string
-}
 export const doLogin = async (data:LoginProps) => {
     const { username, password } = data;
     try {

@@ -73,6 +73,11 @@ export interface EvidenceInterface {
     fuenteRecursos: string;
     nombreDocumento: string;
     lugar: string;
-    fechaArchivo: string;
+    fecha2: string;
     url: string;
+}
+
+export interface LoginProps {
+    username: string
+    password: string
 }

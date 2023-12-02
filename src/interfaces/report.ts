@@ -28,5 +28,10 @@ export interface ModalPDTProps {
     callback: React.Dispatch<React.SetStateAction<boolean>>,
     callback2?: ()=>void,
     data: ReportPDTInterface[]
-
 }
+
+export interface ModalsecretaryProps {
+    modalIsOpen: boolean
+    callback: React.Dispatch<React.SetStateAction<boolean>>,
+}
+

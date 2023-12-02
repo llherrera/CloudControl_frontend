@@ -6,12 +6,12 @@ import { removeEvidence } from "@/store/evidence/evidenceSlice";
 import { approveEvidence } from "@/services/api";
 import { EvidenceDetailProps } from '@/interfaces';
 
-export const EvidenceDetail = ( {eviden, index}: EvidenceDetailProps ) => {
+export const EvidenceDetail = ( {evi, index}: EvidenceDetailProps ) => {
     const dispatch = useAppDispatch()
 
     const handleBtnApprove = async (approve: number) => {
         try {
-            await approveEvidence(eviden.id_evidencia, approve, eviden.codigo);
+            await approveEvidence(evi.id_evidencia, approve, evi.codigo);
             dispatch(removeEvidence(index));
         } catch (error) {
             console.log(error);
@@ -19,25 +19,49 @@ export const EvidenceDetail = ( {eviden, index}: EvidenceDetailProps ) => {
     };
     
     return (
-        <div className="tw-flex tw-justify-between tw-py-2">
-            <p className="tw-border-r-4 tw-border-black tw-py-1 tw-pr-1 tw-border-double tw-ml-2">
-                {eviden.codigo}
-            </p>
-            <p className="tw-border-r-4 tw-border-black tw-py-1 tw-pr-1 tw-border-double">
-                {eviden.cantidad}
-            </p>
-            <p className="tw-border-r-4 tw-border-black tw-py-1 tw-pr-1 tw-border-double">
-                { new Date(eviden.fecha).getFullYear()}/{ new Date(eviden.fecha).getMonth()}/{ new Date(eviden.fecha).getDay()}
-            </p>
-            <p className="tw-border-r-4 tw-border-black tw-py-1 tw-pr-1 tw-border-double">
-                <a href={eviden.url} target="_blank">url</a>
-            </p>
-            <div className="tw-mr-2">
-                <button className="tw-bg-green-300 hover:tw-bg-green-400 tw-rounded tw-mr-1 tw-py-1 tw-px-2"
+        <tr>
+            <th key={index} className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
+                {new Date(evi.fecha).getDate()}/{new Date(evi.fecha).getMonth()}/{new Date(evi.fecha).getFullYear()}
+            </th>
+            <th key={index} className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
+                {evi.descripcionActividades}
+            </th>
+            <th key={index} className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
+                {evi.comuna}
+            </th>
+            <th key={index} className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
+                {evi.barrio}
+            </th>
+            <th key={index} className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
+                {evi.unidad}
+            </th>
+            <th key={index} className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
+                {evi.cantidad}
+            </th>
+            <th key={index} className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
+                {evi.poblacionBeneficiada}
+            </th>
+            <th key={index} className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
+                {evi.numeroPoblacionBeneficiada}
+            </th>
+            <th key={index} className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
+                {new Date(evi.fecha2).getDate()}/{new Date(evi.fecha2).getMonth()}/{new Date(evi.fecha2).getFullYear()}
+            </th>
+            <th key={index} className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
+                <a href={evi.url}>Visitar</a>
+            </th>
+            <th key={index} className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
+                <button className="tw-bg-greenBtn hover:tw-bg-green-400 
+                                    tw-text-white hover:tw-text-black
+                                    tw-rounded 
+                                    tw-py-1 tw-px-2"
                         onClick={()=>handleBtnApprove(1)}>Aprobar</button>
-                <button className="tw-bg-red-300 hover:tw-bg-red-400 tw-rounded tw-py-1 tw-px-2"
+                <button className="tw-bg-redBtn hover:tw-bg-red-400 
+                                    tw-text-white hover:tw-text-black
+                                    tw-rounded 
+                                    tw-py-1 tw-px-2 tw-mt-1"
                         onClick={()=>handleBtnApprove(0)}>Rechazar</button>
-            </div>
-        </div>
+            </th>
+        </tr>
     );
 }

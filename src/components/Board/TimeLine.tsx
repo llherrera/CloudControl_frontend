@@ -58,7 +58,8 @@ export const TimeLine = (props: TimeLineProps) => {
                     <button className={`tw-w-full tw-h-2
                                     tw-px-3
                                     tw-z-10 tw-absolute 
-                                    tw-transition hover:tw--translate-y-1 hover:tw-scale-110
+                                    tw-transition hover:tw-scale-110
+                                    ${index%2 === 1 ? 'hover:tw-translate-y-1' : 'hover:tw--translate-y-1'}
                                     ${
                                     parseInt ( ((props.yearProgress[index]??0)*100).toString()) < 0 ? 'tw-bg-gray-400 hover:tw-ring-4 hover:tw-ring-gray-200' :
                                     parseInt ( ((props.yearProgress[index]??0)*100).toString()) < colorimeter[0] ? 'tw-bg-redColory hover:tw-ring-4 hover:tw-ring-red-200'      : 

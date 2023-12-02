@@ -46,14 +46,14 @@ export const UploadImage = ( {id}:{id:number} ) => {
                 <input {...getInputProps()} />
                 {isDragActive ? (
                     <div>
-                        <p className='tw-text-center'>Guardar logo</p>
+                        <p className='tw-text-center tw-bg-blue-400'>Guardar logo</p>
                         <div className='tw-flex tw-justify-center'>
                             <LoadIcon/>
                         </div>
                     </div>
                 ) : (
                     <div>
-                        <p className='tw-text-center'>Cargar logo</p>
+                        <p className='tw-text-2xl tw-text-center tw-font-bold'>Cargar logo</p>
                         <div className='tw-flex tw-justify-center'>
                             <LoadIcon/>
                         </div>

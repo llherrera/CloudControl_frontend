@@ -7,6 +7,7 @@ import { thunkGetLevelName } from "@/store/plan/thunks";
 
 import { BackBtn } from '@/components';
 import { UnitInterface, YearInterface } from '@/interfaces';
+import { thunkGetUnit } from '@/store/unit/thunks';
 
 export const SettingsPage = () => {
     const dispatch = useAppDispatch();
@@ -17,29 +18,20 @@ export const SettingsPage = () => {
     const id_nodo = location.state?.id_nodo;
 
     const { plan, years, namesTree, secretaries } = useAppSelector(store => store.plan);
+    const { unit } = useAppSelector(store => store.unit);
 
-    const [nodeUnit, setNodeUnit] = useState<UnitInterface>(
-        {
-            code: "",
-            description: "",
-            indicator: "",
-            base: 0,
-            goal: 0,
-            responsible: "",
-            years: []
-        }
-    );
+    const [nodeUnit, setNodeUnit] = useState<UnitInterface>(unit!);
 
-    const [nodeYear, setNodeYear] = useState<YearInterface[]>(
-        years.map((year) => {
-            return {
-                year: year,
-                programed: 0,
-                phisicalExecuted: 0,
-                finalcialExecuted: 0,
-            }
-        })
-    );
+    const [nodeYear, setNodeYear] = useState<YearInterface[]>(unit!.years!);
+
+    useEffect(() => {
+        dispatch(thunkGetUnit({idPDT: id_plan, idNode: id_nodo}))
+    }, []);
+
+    useEffect(() => {
+        setNodeUnit(unit!);
+        setNodeYear(unit!.years!);
+    }, [unit]);
 
     useEffect(() => {
         const ids = id_nodo!.split('.');

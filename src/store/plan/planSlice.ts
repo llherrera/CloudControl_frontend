@@ -1,12 +1,10 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
-import { InitialStatePlanInterface, NodoInterface, Node } from "@/interfaces";
+import { InitialStatePlanInterface, NodoInterface, Node, Secretary, SecretaryResponse } from "@/interfaces";
 
-import { thunkGetPDTid, thunkAddPDT, 
-    thunkGetColors, thunkAddColors,
-    thunkGetNodes, thunkUpdateYears, 
-    thunkGetLevelsById, thunkGetLevelName,
-    thunkGetLogo, thunkGetSecretaries } from "./thunks";
+import { thunkGetPDTid, thunkAddPDT, thunkGetColors, thunkAddColors,
+    thunkGetNodes, thunkUpdateYears, thunkGetLevelsById, thunkGetLevelName,
+    thunkGetLogo, thunkGetSecretaries, thunkAddSecretaries } from "./thunks";
 
 const getInitialState = (): InitialStatePlanInterface => {
     return {
@@ -219,6 +217,37 @@ export const planSlice = createSlice({
         builder.addCase(thunkGetLogo.rejected, (state, action) => {
             state.loadingLogo = false;
             state.errorLoadingLogo = action.payload;
+        });
+
+
+        builder.addCase(thunkAddSecretaries.pending, state => {
+            if (!state.loadingSecretaries) state.loadingSecretaries = true;
+            state.errorLoadingSecretaries = undefined;
+        });
+        builder.addCase(thunkAddSecretaries.fulfilled, (state, action) => {
+            state.loadingSecretaries = false;
+            const temp = action.payload.map((item: Secretary) => (item.name));
+            state.secretaries = temp;
+            alert("Se han agregado las secretarías correctamente.");
+        });
+        builder.addCase(thunkAddSecretaries.rejected, (state, action) => {
+            state.loadingSecretaries = false;
+            state.errorLoadingSecretaries = action.payload;
+            if (action.payload) {
+                switch (action.payload.status) {
+                    case 401:
+                        alert("No está permitido acceder aquí.");
+                        break;
+                    case 404:
+                        alert("Usuario o contraseña incorrecto.");
+                        break;
+                    case 500:
+                        alert("Ha habido un error, pruebe más tarde.");
+                        break;
+                    default:
+                        break;
+                }
+            }
         });
 
 

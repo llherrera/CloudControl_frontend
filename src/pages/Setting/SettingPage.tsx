@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import { useAppSelector } from '@/store';
+import { useAppSelector, useAppDispatch } from '@/store';
+import { thunkGetSecretaries } from '@/store/plan/thunks';
 
-import { Frame, BackBtn, ColorForm, 
-        SecretaryForm, UploadImage } from '@/components'
+import { Frame, BackBtn, ColorForm, SecretaryForm, 
+        UploadImage } from '@/components'
 import { getToken, decode } from "@/utils";
 import { Token } from '@/interfaces';
 
@@ -19,12 +20,14 @@ export const SettingPage = () => {
 const SettingPageWrapper = () => {
     const location = useLocation()
     const navigate = useNavigate()
+    const dispatch = useAppDispatch()
 
     const id = location.state?.id
 
-    const { plan } = useAppSelector(store => store.plan)
+    const { plan, secretaries } = useAppSelector(store => store.plan)
     
     const [showColorForm, setShowColorForm] = useState(false);
+    const [hasSecretaries, setHasSecretaries] = useState(false);
 
     const [rol, setRol] = useState("")
     const [id_, setId] = useState(0)
@@ -43,6 +46,18 @@ const SettingPageWrapper = () => {
         }
     }, [])
 
+    useEffect(() => {
+        if (id) {
+            dispatch(thunkGetSecretaries(id))
+        }
+    }, [])
+
+    useEffect(() => {
+        if (secretaries.length > 0) {
+            setHasSecretaries(true)
+        }
+    }, [secretaries])
+
     const handleBack = () => {
         navigate(-1)
     }
@@ -56,7 +71,7 @@ const SettingPageWrapper = () => {
         <div>
             <BackBtn handle={handleBack} id={id}/><br />
             <UploadImage id={id_}/>
-            <div>
+            <div className='tw-border-t-4 tw-mt-4'>
                 {((rol === "admin") || (rol === 'funcionario' && id === plan!.id_plan!)) ?
                     <div className='tw-flex tw-justify-center'>
                         <button className=" tw-mt-2 tw-ml-2 tw-p-2
@@ -80,7 +95,9 @@ const SettingPageWrapper = () => {
                 </div>
             </div>
             
+            {((rol === "admin") || (rol === 'funcionario' && id === plan!.id_plan!)) ?
             <SecretaryForm/>
+            : null}
         </div>
     )
 }

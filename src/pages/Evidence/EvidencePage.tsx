@@ -5,6 +5,7 @@ import { useAppSelector } from "@/store";
 
 import { addEvicenceGoal } from "../../services/api";
 import { EvidenceInterface } from "../../interfaces";
+import { BackBtn } from "@/components";
 
 export const EvidencePage = () => {
     const navigate = useNavigate();
@@ -34,7 +35,7 @@ export const EvidencePage = () => {
         fuenteRecursos: "Privado",
         nombreDocumento: "",
         lugar: "",
-        fechaArchivo: "",
+        fecha2: "",
         url: "",
     })
     const [documento, setDocumento] = useState<FileList | null>(null)
@@ -71,7 +72,7 @@ export const EvidencePage = () => {
         if (data.correguimiento === "") return alert('No se ha seleccionado un correguimiento');
         if (data.descripcionActividades === "") return alert('No se ha seleccionado una descripcion de actividades');
         if (data.fecha === "") return alert('No se ha seleccionado una fecha');
-        if (data.fechaArchivo === "") return alert('No se ha seleccionado una fecha de archivo');
+        if (data.fecha2 === "") return alert('No se ha seleccionado una fecha de archivo');
         if (data.fuenteRecursos === "") return alert('No se ha seleccionado una fuente de recursos');
         if (data.lugar === "") return alert('No se ha seleccionado un lugar');
         if (data.nombreDocumento === "") return alert('No se ha seleccionado un nombre de documento');
@@ -104,12 +105,20 @@ export const EvidencePage = () => {
     const memorias = () =>{
         if (unit === undefined) return;
         return(
-            <div className="tw-mx-3 tw-mt-2 
-            tw-bg-[url('/src/assets/images/bg-plan-indicativo.png')]">
-                <header className=" tw-border-4 tw-border-double tw-border-gray-500">
-                    <h1 className=" tw-text-3xl tw-text-center tw-font-bold tw-text-blue-700">Memoria de avance del Plan</h1>
+            <div className="tw-mx-3 tw-mt-2">
+                <header className=" tw-border-4 tw-border-double
+                                    tw-border-gray-500 
+                                    tw-flex tw-bg-slate-200">
+                    <BackBtn handle={handleBack} id={idPDT}/>
+                    <h1 className=" tw-text-3xl tw-text-center 
+                                    tw-font-bold tw-text-blue-700
+                                    tw-grow">
+                        Memoria de avance del Plan
+                    </h1>
                 </header>
-                <table className="tw-mt-3 tw-w-full tw-text-center">
+                <table className="  tw-mt-3 tw-w-full 
+                                    tw-text-center
+                                    tw-bg-slate-200">
                     <thead>
                         <tr>
                             <th className="tw-border-4 tw-border-double tw-border-gray-500">
@@ -145,51 +154,70 @@ export const EvidencePage = () => {
                         ))}
                     </tbody>
                 </table>
-                <p className="tw-mt-4">
-                    Fecha: { new Date().toLocaleDateString()}
-                </p>
-                <p className="tw-font-bold tw-mt-4">
-                    Lugar:
-                </p>
-                <input  className=" tw-ml-4 tw-py-4 tw-mt-4
-                                    tw-grow tw-border"
-                        type="text" 
-                        name="" 
-                        id="" 
-                />
-                <p className="  tw-mt-4
-                                tw-justify-self-start">
-                    Hora: { new Date().toLocaleTimeString()}
-                </p>
-                <p className="  tw-font-bold tw-mt-4 
-                                tw-justify-self-start
-                                tw-break-words ">
-                    Responsable del cargo:
-                </p>
-                <input  className=" tw-ml-4 tw-py-4 tw-mt-4
-                                    tw-grow tw-border" 
-                        type="text" 
-                        name="" 
-                        id="" 
-                />
-                <p className="  tw-font-bold tw-mt-4
-                                tw-justify-self-start
-                                tw-break-words">
-                    Descripción:
-                </p>
-                <input  className=" tw-ml-4 tw-py-4 tw-mt-4
-                                    tw-grow tw-border" 
-                        type="text" 
-                        name="" 
-                        id="" 
-                />
-                <button className=" tw-bg-blue-500
-                                    tw-py-4 tw-mt-4
-                                    tw-rounded
-                                    tw-text-white tw-font-bold"
-                        onClick={handleSubmitButton}>
-                    cargar evidencias de esta meta
-                </button>
+                <section className="tw-bg-slate-200
+                                    tw-border-4 tw-border-double
+                                    tw-border-gray-500
+                                    tw-mt-3 tw-px-3">
+                    <p className="tw-mt-3">
+                        Fecha: { new Date().toLocaleDateString()} &nbsp;&nbsp;&nbsp;&nbsp;
+                        Hora: { new Date().toLocaleTimeString()}
+                    </p>
+                    <div className="tw-flex tw-flex-col md:tw-flex-row">
+                        <p className="tw-font-bold tw-mt-4">
+                            Lugar:
+                        </p>
+                        <input  className=" tw-py-4 tw-px-2 tw-mt-4
+                                            tw-grow 
+                                            tw-border-4 tw-border-gray-400
+                                            tw-rounded
+                                            md:tw-ml-2"
+                                type="text" 
+                                value={unit.indicator??""}
+                                name="" 
+                                id=""/>
+                    </div>
+                    <div className="tw-flex">
+                        <p className="  tw-font-bold tw-mt-4 
+                                        tw-justify-self-start
+                                        tw-break-words ">
+                            Responsable del cargo:
+                        </p>
+                        <input  className=" tw-py-4 tw-px-2 tw-mt-4
+                                            tw-grow 
+                                            tw-border-4 tw-border-gray-400
+                                            tw-rounded
+                                            md:tw-ml-2" 
+                                type="text"
+                                value={unit.responsible??"Por asignar"}
+                                name="" 
+                                id="" />
+                    </div>
+                    <div className="tw-flex">
+                        <p className="  tw-font-bold tw-mt-4
+                                        tw-justify-self-start
+                                        tw-break-words">
+                            Descripción:
+                        </p>
+                        <input  className=" tw-py-4 tw-px-2 tw-mt-4
+                                            tw-grow 
+                                            tw-border-4 tw-border-gray-400
+                                            tw-rounded
+                                            md:tw-ml-2" 
+                                type="text"
+                                value={unit.description??"Por asignar"}
+                                name="" 
+                                id=""/>
+                    </div>
+                    <div className="tw-flex tw-justify-center tw-my-4">
+                        <button className=" tw-bg-blue-500
+                                            tw-p-4
+                                            tw-rounded
+                                            tw-text-white tw-font-bold"
+                                            onClick={handleSubmitButton}>
+                            cargar evidencias de esta meta
+                        </button>
+                    </div>
+                </section>
             </div>
         )
     }
@@ -197,48 +225,55 @@ export const EvidencePage = () => {
     const evidencias = () =>{
         if (unit === undefined) return;
         return(
-            <div className="tw-mx-3 tw-mt-2 tw-grid tw-grid-cols-12 ">
-                <header className=" tw-col-span-full tw-flex tw-flex-col
-                                    md:tw-col-start-2 md:tw-col-end-12
-                                    tw-border-4 tw-border-double tw-border-gray-500">
+            <div className="tw-mx-3 tw-mt-2">
+                <header className=" tw-flex tw-flex-col
+                                    tw-border-4 tw-border-double
+                                    tw-border-gray-500 tw-bg-slate-200">
                     <h1 className=" tw-text-3xl tw-font-bold tw-text-center tw-text-blue-700">Evidencias de la meta</h1>
-                    <button className="inline-block" onClick={ (e) => handleSubmitButton(e)} >
-                        return
-                    </button>
+                    <button className="inline-block" onClick={ (e) => handleSubmitButton(e)} >return</button>
                 </header>
                 <form
                     id="formEvidencia"
                     encType="multipart/form-data"
-                    className="tw-col-span-full tw-flex tw-flex-col 
-                                md:tw-col-start-2 md:tw-col-end-12">
-                    <label className="tw-text-center md:tw-text-left">Fecha {new Date().toLocaleDateString()} </label>
+                    className=" tw-flex tw-flex-col 
+                                tw-mt-3 tw-p-3
+                                tw-border-4 tw-border-double
+                                tw-border-gray-500 tw-bg-slate-200">
+                    <label className="tw-text-center md:tw-text-left">Fecha: {new Date().toLocaleDateString()} </label>
                     
                     <div className="tw-mt-2">
                         <label >Código meta:</label>
-                        <label className="tw-ml-3 tw-border tw-border-red-500 tw-px-3">{unit.code}</label>
+                        <label className="  tw-m-3 tw-p-2 tw-rounded
+                                            tw-border-2 tw-border-gray-400
+                                            tw-bg-white ">{unit.code}</label>
                     </div>
 
-                    <label className="tw-mt-2">Descripcion Actividades:</label>
+                    <label className="tw-mt-4">Descripcion Actividades:</label>
                     <textarea 
                         name="descripcionActividades" 
                         id="descripcionActividades" 
                         required
-                        className="tw-border tw-resize-none"
+                        className=" tw-p-2 tw-rounded
+                                    tw-border-2 tw-border-gray-400
+                                    tw-bg-white tw-resize-none"
                         onChange={(e) => handleInputChange(e)}/>
 
                     <label className="tw-mt-4">Numero de actividades:</label>
-                    <div className="tw-flex tw-border">
+                    <div className="tw-flex tw-flex-wrap
+                                    tw-rounded tw-p-2
+                                    tw-border-2 tw-border-gray-400">
                         <div className="tw-flex tw-flex-col">
                             <label>Unidad</label>
                             <select
                                 name="unidad"
                                 id="unidad"
-                                className="tw-border"
+                                className="tw-p-2 tw-rounded
+                                tw-border-2 tw-border-gray-400
+                                tw-bg-white"
                                 onChange={(e) => handleInputChange(e)}
                                 required
-                                value={data.unidad}
-                                >
-                                <option value="num">Personas</option>
+                                value={data.unidad}>
+                                <option value="num">num</option>
                                 <option value="num">Kg</option>
                                 <option value="num">Pesos</option>
                                 <option value="char">Km</option>
@@ -250,20 +285,26 @@ export const EvidencePage = () => {
                                 type="number" 
                                 name="cantidad" 
                                 id="cantidad" 
-                                className="tw-border"
+                                className=" tw-p-2 tw-rounded
+                                            tw-border-2 tw-border-gray-400
+                                            tw-bg-white"
                                 required
                                 onChange={(e)=> handleInputChange(e)}/>
                         </div>
                     </div>
 
                     <label className="tw-mt-4">Ubicacion</label>
-                    <div className="tw-flex tw-border">
+                    <div className="tw-flex tw-flex-wrap
+                                    tw-rounded tw-p-2
+                                    tw-border-2 tw-border-gray-400">
                         <div className="tw-flex tw-flex-col">
                             <label>Comuna</label>
                             <select 
                                 name="comuna"
                                 id="comuna"
-                                className="tw-border"
+                                className=" tw-p-2 tw-rounded
+                                            tw-border-2 tw-border-gray-400
+                                            tw-bg-white"
                                 onChange={(e)=> handleInputChange(e)}
                                 required
                                 value={data.comuna}
@@ -277,7 +318,9 @@ export const EvidencePage = () => {
                             <select 
                                 name="barrio"
                                 id="barrio"
-                                className="tw-border"
+                                className=" tw-p-2 tw-rounded
+                                            tw-border-2 tw-border-gray-400
+                                            tw-bg-white"
                                 onChange={(e)=> handleInputChange(e)}
                                 required
                                 value={data.barrio}
@@ -291,7 +334,9 @@ export const EvidencePage = () => {
                             <select 
                                 name="correguimiento" 
                                 id="correguimiento" 
-                                className="tw-border"
+                                className=" tw-p-2 tw-rounded
+                                            tw-border-2 tw-border-gray-400
+                                            tw-bg-white"
                                 onChange={(e)=> handleInputChange(e)}
                                 required
                                 value={data.correguimiento}
@@ -305,7 +350,9 @@ export const EvidencePage = () => {
                             <select 
                                 name="vereda" 
                                 id="vereda" 
-                                className="tw-border"
+                                className=" tw-p-2 tw-rounded
+                                            tw-border-2 tw-border-gray-400
+                                            tw-bg-white"
                                 onChange={(e)=> handleInputChange(e)}
                                 value={data.vereda}
                                 required
@@ -316,17 +363,20 @@ export const EvidencePage = () => {
                         </div>
                     </div>
 
-                    <div className="tw-flex tw-mt-4 tw-border">
+                    <div className="tw-flex tw-flex-wrap
+                                    tw-mt-4 tw-p-2 tw-rounded
+                                    tw-border-2 tw-border-gray-400">
                         <div className="tw-flex tw-flex-col">
                             <label>Poblacion beneficiada</label>
                             <select 
                                 name="poblacionBeneficiada" 
                                 id="poblacionBeneficiada" 
-                                className="tw-border"
+                                className=" tw-p-2 tw-rounded
+                                            tw-border-2 tw-border-gray-400
+                                            tw-bg-white"
                                 onChange={(e)=> handleInputChange(e)}
                                 required
-                                value={data.poblacionBeneficiada}
-                                >
+                                value={data.poblacionBeneficiada}>
                                 <option value="AdultoMayor">Adulto Mayor</option>
                                 <option value="Infantes">Infantes</option>
                             </select>
@@ -336,8 +386,11 @@ export const EvidencePage = () => {
                             <input  
                                 type="number" 
                                 name="numeroPoblacionBeneficiada" 
-                                id="numeroPoblacionBeneficiada" 
-                                className="tw-border"
+                                id="numeroPoblacionBeneficiada"
+                                placeholder="Numero de beneficiados"
+                                className=" tw-p-2 tw-rounded
+                                            tw-border-2 tw-border-gray-400
+                                            tw-bg-white"
                                 required
                                 onChange={(e)=> handleInputChange(e)}/>
                         </div>
@@ -346,8 +399,11 @@ export const EvidencePage = () => {
                             <input  
                                 type="number" 
                                 name="recursosEjecutados" 
-                                id="recursosEjecutados" 
-                                className="tw-border"
+                                id="recursosEjecutados"
+                                placeholder="Recursos ejecutados"
+                                className=" tw-p-2 tw-rounded
+                                            tw-border-2 tw-border-gray-400
+                                            tw-bg-white"
                                 required
                                 onChange={(e)=> handleInputChange(e)}/>
                         </div>
@@ -356,7 +412,9 @@ export const EvidencePage = () => {
                             <select 
                                 name="fuenteRecursos" 
                                 id="fuenteRecursos" 
-                                className="tw-border"
+                                className=" tw-p-2 tw-rounded
+                                            tw-border-2 tw-border-gray-400
+                                            tw-bg-white"
                                 onChange={(e)=> handleInputChange(e)}
                                 required
                                 value={data.fuenteRecursos}>
@@ -366,13 +424,18 @@ export const EvidencePage = () => {
                         </div>
                     </div>
 
-                    <div className="tw-flex tw-mt-4">
+                    <div className="tw-flex tw-flex-wrap
+                                    tw-mt-4 tw-p-2 tw-rounded
+                                    tw-border-2 tw-border-gray-400">
                         <div className="tw-flex tw-flex-col">
                             <label>Archivo de meta</label>
                             <input  
                                 type="file" 
                                 name="documento" 
-                                id="documento" 
+                                id="documento"
+                                className=" tw-p-2 tw-rounded
+                                            tw-border-2 tw-border-gray-400
+                                            tw-bg-white"
                                 required
                                 onChange={(e) => handleInputChangeFile(e)}/><br />
                         </div>
@@ -381,8 +444,11 @@ export const EvidencePage = () => {
                             <input  
                                 type="text" 
                                 name="nombreDocumento" 
-                                id="nombreDocumento" 
-                                className="tw-border"
+                                id="nombreDocumento"
+                                placeholder="Nombre del documento"
+                                className=" tw-p-2 tw-rounded
+                                            tw-border-2 tw-border-gray-400
+                                            tw-bg-white"
                                 required
                                 onChange={(e) => handleInputChange(e)}/><br />
                         </div>
@@ -391,8 +457,11 @@ export const EvidencePage = () => {
                             <input  
                                 type="text" 
                                 name="lugar" 
-                                id="lugar" 
-                                className="tw-border"
+                                id="lugar"
+                                placeholder="Lugar de las actividades"
+                                className=" tw-p-2 tw-rounded
+                                            tw-border-2 tw-border-gray-400
+                                            tw-bg-white"
                                 required
                                 onChange={(e) => handleInputChange(e)}/><br />
                         </div>
@@ -400,8 +469,11 @@ export const EvidencePage = () => {
                             <label>Fecha del archivo</label>
                             <input  
                                 type="date" 
-                                name="fechaArchivo" 
-                                id="fechaArchivo" 
+                                name="fecha2" 
+                                id="fecha2"
+                                className=" tw-p-2 tw-rounded
+                                            tw-border-2 tw-border-gray-400
+                                            tw-bg-white"
                                 required
                                 onChange={(e) => handleInputChange(e)}/><hr />
                         </div>
@@ -409,10 +481,11 @@ export const EvidencePage = () => {
 
                     <div className="tw-flex tw-justify-center">
                         <button className=" tw-grow
-                                            tw-bg-blue-500
+                                            tw-bg-blue-500 hover:tw-bg-blue-300
                                             tw-py-4 tw-mt-4
                                             tw-rounded
-                                            tw-text-white tw-font-bold"
+                                            tw-text-white hover:tw-text-black
+                                            tw-font-bold"
                                 onClick={handleSubmitEvidence}>
                             Añadir evidencia
                             {loading && <span className="tw-ml-3 tw-spinner tw-spinner-white"></span>}
