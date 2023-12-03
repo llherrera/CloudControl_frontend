@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import Modal from 'react-modal';
 
 import { useAppSelector, useAppDispatch } from "@/store";
-import { setLoadingReport, setNodesReport } from "@/store/plan/planSlice";
+import { setLoadingReport } from "@/store/plan/planSlice";
 import { thunkGetSecretaries } from "@/store/plan/thunks";
 
 import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
@@ -10,9 +10,7 @@ import IconButton from "@mui/material/IconButton";
 import { Spinner } from "@/assets/icons";
 
 import { exportFile } from "@/utils";
-import { getLevelName } from "@/services/api";
-import { PesosNodos, Porcentaje, ReportPDTInterface, 
-        YearDetail, ModalsecretaryProps, Node } from "@/interfaces";
+import { ReportPDTInterface, YearDetail, ModalsecretaryProps } from "@/interfaces";
 
 export const ModalSecretary = () => {
     const [modalSecretaryIsOpen, setModalSecretaryIsOpen] = useState(false);
@@ -36,78 +34,60 @@ const ModalPDT = ( props: ModalsecretaryProps ) => {
     const dispatch = useAppDispatch();
 
     const { years, levels, plan, secretaries, 
-            loadingReport, nodesReport } = useAppSelector((state) => state.plan);
+            loadingReport } = useAppSelector((state) => state.plan);
 
     const [data, setData] = useState<ReportPDTInterface[]>([]);
-    const [secretary, setSecretary] = useState<string>(secretaries[0])
+    const [secretary, setSecretary] = useState<string>('');
     const [indexYear, setIndexYear] = useState<number>(0);
 
     useEffect(() => {
-        dispatch(thunkGetSecretaries(plan?.id_plan!));
+        dispatch(thunkGetSecretaries(plan?.id_plan!))
     }, []);
 
     useEffect(() => {
+        setSecretary(secretaries[0])
+    }, [secretaries]);
 
-    }, [secretary, indexYear]);
+    useEffect(() => {
+        genReport();
+    }, [secretary, indexYear, props.modalIsOpen]);
 
-    const genReport = async () => {
-        const pesosStr = localStorage.getItem('pesosNodo')
-        const detalleStr = localStorage.getItem('detalleAño')
-        let pesos = pesosStr ? JSON.parse(pesosStr) : [];
-        const nodesReport_ = nodesReport.map((item: Node) => item.id_nodo);
-        pesos = pesos.filter((item:PesosNodos)=> nodesReport_.includes(item.id_nodo) );
-        const detalle = detalleStr ? JSON.parse(detalleStr) : []
-        const data: ReportPDTInterface[] = []
-
-        await Promise.all(pesos.map(async (peso: PesosNodos) => {
-            const { id_nodo, porcentajes } = peso
-            const ids = id_nodo.split('.');
-            if (ids.length !== levels.length + 1) return
-            const percentages = porcentajes?.map((porcentaje: Porcentaje) => porcentaje.progreso*100)
-            let ids2 = ids.reduce((acumulator:string[], currentValue: string) => {
-                if (acumulator.length === 0) {
-                    return [currentValue];
-                } else {
-                    const ultimoElemento = acumulator[acumulator.length - 1];
-                    const concatenado = `${ultimoElemento}.${currentValue}`;
-                    return [...acumulator, concatenado];
-                }
-            }, []);
-            ids2 = ids2.slice(1);
-            let root = await getLevelName(ids2)
-            root = root.map((item: any) => item[0])
-            const nodeYears = detalle.filter((item: YearDetail) => item.id_nodo === id_nodo) as YearDetail[]
-
-            const executed = nodeYears.map((item: YearDetail) => item.Ejecucion_fisica)
-            const programed = nodeYears.map((item: YearDetail) => item.Programacion_fisica)
-            
-            const item: ReportPDTInterface = {
-                responsible: nodeYears[0].responsable??'',
-                goalCode: id_nodo,
-                goalDescription: nodeYears[0].Descripcion,
-                percentExecuted: percentages!,
-                planSpecific: root,
-                indicator: nodeYears[0].Indicador,
-                base: nodeYears[0].Linea_base,
-                executed: executed,
-                programed: programed
+    const genReport = () => {
+        const detalleStr = localStorage.getItem('detalleAño');
+        const detalle = detalleStr ? JSON.parse(detalleStr) : [];
+        const nodes = detalle.filter((item: YearDetail) => (item.responsable === secretary && item.Año === years[indexYear]));
+        
+        const data: ReportPDTInterface[] = [];
+        nodes.forEach((item: YearDetail) => {
+            let percent = (item.Ejecucion_fisica/item.Programacion_fisica)*100;
+            percent = percent ? percent : 0;
+            percent = Math.round(percent*100)/100;
+            const item_: ReportPDTInterface = {
+                responsible: item.responsable??'',
+                goalCode: item.id_nodo,
+                goalDescription: item.Descripcion,
+                percentExecuted: [percent],
+                planSpecific: [item.id_nodo],
+                indicator: item.Indicador,
+                base: item.Linea_base,
+                executed: [item.Ejecucion_fisica],
+                programed: [item.Programacion_fisica]
             }
-            data.push(item)
-        }))
-        dispatch(setLoadingReport(false))
-        return data
+            data.push(item_)
+        });
+        dispatch(setLoadingReport(false));
+        setData(data);
     }
 
     const handleChangeSecretary = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setSecretary(e.target.value)
         dispatch(setLoadingReport(true))
+        setSecretary(e.target.value)
     }
 
     const handleBtn = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, index:number) => {
         e.preventDefault()
-        setIndexYear(index)
         dispatch(setLoadingReport(true))
-        //genReport().then((data) => setData(data))
+        setIndexYear(index)
     }
 
     return (
@@ -115,8 +95,8 @@ const ModalPDT = ( props: ModalsecretaryProps ) => {
                 onRequestClose={()=>props.callback(false)}
                 contentLabel='Modal de secretarias'>
             {loadingReport ? <Spinner />: <div>
-            <div className='tw-flex'>
-                <div>
+            <div className='tw-flex tw-flex-col md:tw-flex-row'>
+                <div className="tw-mb-2">
                     <h1 className='tw-bg-slate-300 tw-rounded tw-p-1 tw-mr-3 tw-mb-2 tw-text-center'>Escoger Año</h1>
                     {years.map((year, index) => (
                         <button className={`
@@ -132,16 +112,19 @@ const ModalPDT = ( props: ModalsecretaryProps ) => {
                         </button>
                     ))}
                 </div>
-                <div className='tw-ml-6'>
-                    <h1 className='tw-bg-slate-300 tw-rounded tw-p-1 tw-mr-3 tw-mb-2'>Secretarias</h1>
-                    <select name="" value={secretary} onChange={(e)=>handleChangeSecretary(e)}>
+                <div className='md:tw-ml-6'>
+                    <h1 className='tw-bg-slate-300 tw-rounded tw-p-1 tw-mr-3 tw-mb-2 tw-text-center'>Secretarias</h1>
+                    <select name="" 
+                            value={secretary} 
+                            onChange={(e)=>handleChangeSecretary(e)}
+                            className="tw-border-2 tw-p-1 tw-mb-2 tw-rounded">
                         {secretaries.map((sec, index) => (<option value={sec} key={index}>{sec}</option>))}
                     </select>
                 </div>
-                <button className='tw-bg-gray-300 hover:tw-bg-gray-500
+                <button className=' tw-bg-gray-300 hover:tw-bg-gray-500
                                     hover:tw-text-white
                                     tw-rounded tw-border tw-border-black 
-                                    tw-px-2 tw-py-1 tw-ml-3'
+                                    tw-px-2 tw-py-1 md:tw-ml-3 tw-mr-3'
                         onClick={()=>exportFile('TablaSecretarias','InformeSecretarias')}>
                     Exportar
                 </button>
@@ -188,7 +171,7 @@ const ModalPDT = ( props: ModalsecretaryProps ) => {
                             <td className='tw-border tw-p-2'>{item.responsible}</td>
                             <td className='tw-border tw-p-2'>{item.goalCode}</td>
                             <td className='tw-border tw-p-2'>{item.goalDescription}</td>
-                            <td className='tw-border tw-p-2' >{item['percentExecuted'][indexYear]}</td>
+                            <td className='tw-border tw-p-2' >{item['percentExecuted'][0]}</td>
                             {levels.map((level, index) => (
                                 <td className='tw-border tw-p-2' 
                                     key={index}>
@@ -197,8 +180,8 @@ const ModalPDT = ( props: ModalsecretaryProps ) => {
                             ))}
                             <td className='tw-border tw-p-2'>{item.indicator}</td>
                             <td className='tw-border tw-p-2'>{item.base}</td>
-                            <td className='tw-border tw-p-2'>{item['programed'][indexYear]}</td>
-                            <td className='tw-border tw-p-2'>{item['executed'][indexYear]}</td>
+                            <td className='tw-border tw-p-2'>{item['programed'][0]}</td>
+                            <td className='tw-border tw-p-2'>{item['executed'][0]}</td>
                         </tr>
                     ))}
                 </tbody>
