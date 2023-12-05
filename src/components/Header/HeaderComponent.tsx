@@ -10,8 +10,8 @@ export const Header = ( {componentes}: HeaderProps) => {
             <div className="tw-border-r md:tw-border-black
                             tw-pr-4 tw-m-6
                             tw-justify-self-end">
-                <img src="\src\assets\images\Logo.png" alt="" />
-                <img src="\src\assets\images\Logo-Municipio.png" alt="" /><br />
+                <img src="\src\assets\images\Logo.png" alt="" className="tw-invisible"/>
+                <img src="\src\assets\images\Logo-Municipio.png" alt="" className="tw-invisible"/><br />
                 <p className="tw-font-montserrat tw-font-bold">
                     Selecciona un usuario en la derecha para comenzar</p>
             </div>

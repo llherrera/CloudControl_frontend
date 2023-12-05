@@ -45,8 +45,6 @@ export const PDTForm = () => {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        console.log(planData);
-        
         await dispatch(thunkAddPDT(planData))
             .unwrap()
             .then((res) => {

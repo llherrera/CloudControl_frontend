@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { getLastPDT } from '../../services/api';
 import { Header, ButtonComponent } from '../../components';
-import { decode } from '../../utils/decode';
+import { MapICon } from '@/assets/icons';
 import { Token } from '@/interfaces';
+
+import { getLastPDT } from '../../services/api';
+import { decode } from '../../utils/decode';
 import { getToken } from '@/utils';
 
 import { useAppDispatch } from '@/store';
@@ -49,11 +51,6 @@ export const LobbyPage = () => {
             })
     }
 
-    //const handleLogout = () => {
-    //    dispatch(thunkLogout())
-    //    navigate('/')
-    //}
-
     const buttons: React.ReactNode[] = [
         <ButtonComponent
             inside={false}
@@ -69,7 +66,7 @@ export const LobbyPage = () => {
             src="/src/assets/icons/Banco-proyectos.svg"
             onClick={() => {
                 dispatch(selectOption(1))
-                navigate('/')}}
+                navigate('/PlanIndicativo/Banco-proyectos')}}
             bgColor="tw-bg-greenBtn" />,
         <ButtonComponent
             inside={false}
@@ -77,16 +74,16 @@ export const LobbyPage = () => {
             src="/src/assets/icons/POAI.svg"
             onClick={() => {
                 dispatch(selectOption(2))
-                navigate('/')}}
+                navigate('/PlanIndicativo/POAI')}}
             bgColor="tw-bg-greenBtn" />,
         <ButtonComponent
             inside={false}
             text='Plan de acción'
-            src="/src/assets/icons/Plan-accion.svg"
             onClick={() => {
                 dispatch(selectOption(3))
-                navigate('/')}}
-            bgColor="tw-bg-greenBtn" />,
+                navigate('/PlanIndicativo/Mapa')}}
+            bgColor="tw-bg-greenBtn"
+            icon={<MapICon color='white'/>}/>,
     ]
 
     return (

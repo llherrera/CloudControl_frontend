@@ -1,5 +1,6 @@
 import type { AxiosError } from 'axios'
 import * as XLSX from 'xlsx';
+import { useNavigate } from 'react-router-dom';
 
 import { doRefreshToken } from '@/services/api'
 import { AuthInterface, ErrorBasicInterface } from '../interfaces'
@@ -62,4 +63,15 @@ export const exportFile = (tabla: string, name: string) => {
   a.download = `${name}.xlsx`;
   a.click();
   document.body.removeChild(a);
+}
+
+export const handleUser = (rol: string, id: number) => {
+  const navigate = useNavigate()
+  if (rol === "admin") {
+    navigate('/pdt')
+    return
+  }else if (rol === "funcionario") {
+    navigate(`/pdt/PlanIndicativo`, {state: {id}})
+    return
+  }
 }

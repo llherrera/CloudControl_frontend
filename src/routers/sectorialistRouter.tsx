@@ -1,7 +1,7 @@
 import { Route, Routes } from 'react-router-dom'
 import * as pages from '../pages';
 
-export const OfficerRouter = () => {
+export const SectorialistRouter = () => {
     return (
         <Routes>
             <Route path="/" element={<pages.HomePage/>} />

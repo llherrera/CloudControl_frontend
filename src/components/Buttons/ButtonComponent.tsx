@@ -21,7 +21,7 @@ export const ButtonComponent = ( props : BtnProps ) => {
                     <img src={props.src} alt="icon" className="tw-w-10 tw-h-10" />
                     : null}
                     {props.icon ?
-                    props.icon()
+                    props.icon
                     : null}
                 {props.inside ? 
                 <p className={` tw-ml-3 

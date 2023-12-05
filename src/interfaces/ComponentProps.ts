@@ -28,7 +28,7 @@ export interface BtnProps {
     text: string,
     src?: string,
     inside: boolean,
-    icon?: ()=>JSX.Element,
+    icon?: JSX.Element,
     onClick: () => void,
     bgColor?: string,
     textColor?: string

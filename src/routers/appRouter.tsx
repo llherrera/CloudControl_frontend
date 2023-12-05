@@ -6,7 +6,6 @@ import { PrivateRouter } from './adminRouter'
 import { PublicRouter } from './publicRouter'
 
 export const AppRouter = () => {
-//    const logged = false;
     const { logged } = useAppSelector(store => store.auth)
 
     return logged ? (

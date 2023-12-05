@@ -89,12 +89,18 @@ export const LevelForm = ( props: LevelFormProps ) => {
     return (
         <div className="tw-bg-[url('/src/assets/images/bg-plan-indicativo.png')]">
             {backIconButton()}
+            <p>Definir niveles del plan</p>
             {(rol === "admin") || (rol === 'funcionario' && id_ === parseInt(props.id)) ?
             <form   onSubmit={ handleSubmit}
                     className="tw-grid tw-grid-cols-12 tw-mt-5">
-                <ul className="tw-col-start-5 tw-col-span-4 tw-gap-3">
+                <ul className=" tw-col-start-5 tw-col-span-4
+                                md:tw-col-start-4 md:tw-col-span-6 
+                                lg:tw-col-start-4 lg:tw-col-span-6 
+                                tw-gap-3">
                 {data.map(( e:NivelInterface, index: number )=> 
-                    <li className="tw-mb-3 tw-p-2 tw-bg-white tw-shadow-lg tw-border tw-rounded"
+                    <li className=" tw-mb-3 tw-p-2 
+                                    tw-bg-white 
+                                    tw-shadow-lg tw-border tw-rounded"
                         key={index}>
                         <Input  type={"text"}
                                 label="Nombre del Nivel:"

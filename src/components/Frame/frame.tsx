@@ -1,59 +1,61 @@
-import React from 'react'
-import { useNavigate } from 'react-router-dom'
-import { IconButton } from '@mui/material'
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { IconButton } from '@mui/material';
 import LogoutIcon from '@mui/icons-material/Logout';
 
-import { useAppDispatch, useAppSelector } from '../../store'
+import { useAppDispatch, useAppSelector } from '../../store';
 import { thunkLogout } from '@/store/auth/thunks';
 
-import { NavBar } from '..'
-import * as svg from '../../assets/icons'
+import { NavBar } from '..';
+import { BancoProyectoIcon, PlanIndicativoIcon, 
+        POAIIcon, MapICon } from '../../assets/icons';
 import { FrameProps } from '@/interfaces';
 
 export const Frame = (props: FrameProps) => {
     const navigate = useNavigate();
-    const dispatch = useAppDispatch()
+    const dispatch = useAppDispatch();
 
-    const urlLogo = useAppSelector(state => state.plan.url)
+    const urlLogo = useAppSelector(state => state.plan.url);
+    const { index } = useAppSelector(store => store.content);
     
-    const bgcolor='greenBtn'
-    const logocolor='#FFFFFF'
-    const textcolor='white'
+    const bgcolor='greenBtn';
+    const logocolor='#008432';
+    const textcolor='white';
 
     const buttons = [
         {
             inside: true,
-            onClick: () => navigate('/'), 
+            onClick: () => navigate('/pdt/PlanIndicativo'), 
             text: 'Plan indicativo', 
             bgColor: bgcolor,
             textColor: textcolor,
-            icon: ()=>svg.PlanIndicativoIcon('#008432')
+            icon: <PlanIndicativoIcon color={ index === 0 ? logocolor : textcolor}/>
         },
         {
             inside: true, 
-            onClick: () => navigate('/'), 
+            onClick: () => navigate('/PlanIndicativo/Banco-proyectos'), 
             text: 'Banco de proyectos', 
             bgColor: bgcolor,
             textColor: textcolor,
-            icon: ()=>svg.BancoProyectoIcon(logocolor)
+            icon: <BancoProyectoIcon color={ index === 1 ? logocolor : textcolor}/>
         },
         {
             inside: true, 
-            onClick: () => navigate('/'), 
+            onClick: () => navigate('/PlanIndicativo/POAI'), 
             text: 'POAI', 
             bgColor: bgcolor,
             textColor: textcolor,
-            icon: ()=>svg.POAIIcon(logocolor)
+            icon: <POAIIcon color={ index === 2 ? logocolor : textcolor}/>
         },
         {
             inside: true, 
-            onClick: () => navigate('/'), 
-            text: 'Plan de accion', 
+            onClick: () => navigate('/PlanIndicativo/Mapa'),
+            text: 'Mapa de intervención', 
             bgColor: bgcolor,
             textColor: textcolor,
-            icon: ()=>svg.PlanAccionIcon(logocolor)
+            icon: <MapICon color={ index === 3 ? logocolor : textcolor}/>
         }
-    ]
+    ];
 
     const handleBtn = () => {
         dispatch(thunkLogout())
@@ -61,13 +63,13 @@ export const Frame = (props: FrameProps) => {
             .then(() => {
                 navigate('/')
             })
-    }
+    };
 
     return (
         <div className='tw-min-h-screen tw-flex tw-flex-col'>
             <header className={`tw-flex tw-justify-between tw-bg-header tw-drop-shadow-xl`}>
-                <img src="\src\assets\images\Logo.png" alt="" width={100} height={100}/>
-                {urlLogo && <img src={urlLogo} alt="" width={300} height={100} className='tw-hidden md:tw-block'/> }
+                <img src="\src\assets\images\Logo.png" alt="" width={100} height={100} className='tw-invisible'/>
+                {urlLogo && <img src={urlLogo} alt="" width={300} height={100} className='tw-invisible'/> }
                 <IconButton onClick={handleBtn}>
                     <LogoutIcon sx={{color: 'green'}}/>
                 </IconButton>

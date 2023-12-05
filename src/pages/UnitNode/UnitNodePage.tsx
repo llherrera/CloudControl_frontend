@@ -63,6 +63,7 @@ export const UnitNodePage = () => {
     }, []);
 
     useEffect(() => {
+        if (unit === undefined || unit === null) return;
         let acumProgramed = 0;
         let acumPhisical = 0;
         let acumFinalcial = 0;
@@ -244,8 +245,8 @@ export const UnitNodePage = () => {
                             tw-shadow-2xl
                             tw-border-b-2 tw-border-gray-400
                             tw-z-40'>
-                <img src="/src/assets/images/Logo.png" alt="" width={100} />
-                <img src="/src/assets/images/Logo-Municipio.png" alt="" width={250} className="tw-hidden md:tw-block" />
+                <img src="/src/assets/images/Logo.png" alt="" width={100} className="tw-invisible"/>
+                <img src="/src/assets/images/Logo-Municipio.png" alt="" width={250} className="tw-invisible" />
                 <img src="/src/assets/images/Plan-indicativo.png" alt="" width={60} />
             </div>
             <BackBtn handle={handleBack} id={parseInt(idPDT!)}/>
