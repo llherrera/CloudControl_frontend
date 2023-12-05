@@ -7,6 +7,7 @@ const getInitialState = (): InitialStateContentInterface => {
         loading: false,
         error: undefined,
         index: 0,
+        listDepartment: []
     };
 };
 

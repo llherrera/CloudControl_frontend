@@ -59,6 +59,16 @@ api.interceptors.request.use(
     }
 )
 
+export const getDepartment = async () => {
+    try {
+        const response = await api.get("/departamento");
+        return response.data;
+    } catch (error) {
+        return error;
+    }
+
+}
+
 export const getPDTs = async () => {
     try {
         const response = await api.get("/plan-territorial");

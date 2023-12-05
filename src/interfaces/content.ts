@@ -9,6 +9,7 @@ export interface InitialStateContentInterface {
     loading: boolean;
     error: ErrorTypeInterface;
     index: number;
+    listDepartment: string[];
 }
 
 export interface GetUnitProps {
