@@ -1,45 +1,87 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import IconButton from "@mui/material/IconButton";
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 
-import { Input } from "../Inputs";
+import { Input, Select } from "../Inputs";
 import { PDTInterface } from "../../interfaces";
 
 import { useAppDispatch } from '@/store';
 import { thunkAddPDT } from "@/store/plan/thunks";
+import { getDepartmentCities, getDepartments } from "@/services/col_api";
 
+interface selectOption {
+    id: number
+    name: string
+}
 export const PDTForm = () => {
     const dispatch = useAppDispatch()
     const navigate = useNavigate();
 
     const fechaInicio = new Date().getFullYear()
 
-    const [año, setAño] = useState<number>(fechaInicio)
+    const [departamentOptions, setDepartamentOptions] = useState<selectOption[]|null>(null);
+    const [municipioOptions, setMunicipioOptions] = useState<selectOption[]|null>(null);
+    const [selectedDepartamento, setSelectedDepartamento] = useState<selectOption|null>(null);
     const [planData, setPlanData] = useState<PDTInterface>({
         Nombre: "",
-        Alcaldia: "",
+        Departamento: "",
         Municipio: "",
         Fecha_inicio: new Date().getUTCFullYear().toString(),
         Fecha_fin: (new Date().getUTCFullYear() + 3).toString(),
         Descripcion: "",
     });
 
+    useEffect(() => {
+        getDepartments()
+            .then((res) => {
+                setDepartamentOptions([{id: -1, name: ''}, ...res]);
+            });
+    }, []);
+    
+    useEffect(() => {
+        if (!selectedDepartamento || selectedDepartamento.id < 0) return
+        getDepartmentCities(selectedDepartamento.id)
+            .then((res) => {
+                setMunicipioOptions([{id: -1, name: ''}, ...res]);
+            });
+    }, [selectedDepartamento]);
+
     const handleInputYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const { value } = e.target;
-        setAño(parseInt(value));
         setPlanData({
             ...planData,
             Fecha_inicio: new Date(parseInt(value), 0, 1).toISOString(),
             Fecha_fin: new Date(parseInt(value) + 3, 11, 31).toISOString(),
         });
-    }
+    };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setPlanData({
             ...planData,
             [name]: value,
+        });
+    };
+
+    const handleDepartmentChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const { value } = e.target;
+        if (!departamentOptions) return;
+        setMunicipioOptions(null);
+        setSelectedDepartamento(departamentOptions[parseInt(value)]);
+        setPlanData({
+            ...planData,
+            Departamento: departamentOptions[parseInt(value)].name,
+            Municipio: ''
+        });
+    };
+
+    const handleMunicipioChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const { value } = e.target;
+        if (!municipioOptions) return;
+        setPlanData({
+            ...planData,
+            Municipio: municipioOptions[parseInt(value)].name,
         });
     };
 
@@ -81,18 +123,27 @@ export const PDTForm = () => {
                         name={"Nombre"}
                         value={planData.Nombre}
                         onChange={handleInputChange}/><br/>
-                <Input  type={"text"}
+                <Select label="Departamento:"
+                        id="Departamento"
+                        name="Departamento"
+                        onChange={handleDepartmentChange}
+                        options={departamentOptions ? departamentOptions : []}
+                        optionLabelFn={(e, i) => <option key={e.id} value={i}>{e.name}</option>}
+                /><br/>
+                {/* <Input  type={"text"}
                         label="Alcaldía:"
                         id={"Alcaldia"}
                         name={"Alcaldia"}
-                        value={planData.Alcaldia}
-                        onChange={handleInputChange}/><br/>
-                <Input  type={"text"}
-                        label="Municipio:"
-                        id={"Municipio"}
-                        name={"Municipio"}
-                        value={planData.Municipio}
-                        onChange={handleInputChange}/><br/>
+                        value={planData.Departamento}
+                        onChange={handleInputChange}/><br/> */}
+                <Select label="Municipio:"
+                        id="Municipio"
+                        name="Municipio"
+                        onChange={handleMunicipioChange}
+                        options={municipioOptions ? municipioOptions : []}
+                        optionLabelFn={(e, i) => <option key={e.id} value={i}>{e.name}</option>}
+                        disabled={!selectedDepartamento}
+                /><br/>
                 <Input  type={"text"}
                         label="Descripción:"
                         id={"Descripcion"}
@@ -100,7 +151,15 @@ export const PDTForm = () => {
                         value={planData.Descripcion}
                         onChange={handleInputChange}/><br/>
 
-                <div>
+                <Select label="Fecha de inicio:"
+                        id="Fecha_inicio"
+                        name="Fecha_inicio"
+                        onChange={handleInputYearChange}
+                        options={Array.from(Array(5).keys())}
+                        optionLabelFn={(e) => <option key={e} value={fechaInicio + e}>{fechaInicio + e}</option>}
+                /><br/>
+
+                {/* <div>
                     <label className="tw-mr-4">Fecha de inicio:</label>
                     <select name="Fecha_inicio" 
                             id="Fecha_inicio" 
@@ -110,7 +169,7 @@ export const PDTForm = () => {
                             return <option key={e} value={fechaInicio + e}>{fechaInicio + e}</option>;
                         })}
                     </select>
-                </div><br/>
+                </div><br/> */}
                 <input  type="submit"
                         value="Registrar Plan"
                         title="Añadir plan"

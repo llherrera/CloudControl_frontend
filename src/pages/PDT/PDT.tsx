@@ -79,7 +79,7 @@ const ListPDT = ( props: PDTPageProps ) => {
                             onClick={() => handlePdtid(e.id_plan!)}
                             title={e.Descripcion}>
                         <p className="tw-mr-4">{e.Nombre}</p>
-                        <p className="tw-ml-4">{e.Alcaldia}</p>
+                        <p className="tw-ml-4">{e.Departamento}</p>
                     </button>
                     <IconButton color="success"
                                 aria-label="delete"

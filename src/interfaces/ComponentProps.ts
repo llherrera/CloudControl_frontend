@@ -1,3 +1,4 @@
+import { ChangeEventHandler } from "react";
 import { EvidenceInterface, NodoInterface, PDTInterface } from "./formInterfaces";
 
 export interface ContentProps {
@@ -79,6 +80,17 @@ export interface InputProps {
     value: string;
     onChange: (e: React.ChangeEvent<HTMLInputElement>, index:(number | void)) => void;
     isRequired?: boolean;
+}
+
+export interface SelectProps {
+    id: string;
+    label: string;
+    name: string;
+    options: any[];
+    onChange: ChangeEventHandler<HTMLSelectElement>;
+    optionLabelFn?: (option: any, index?: number) => any;
+    isRequired?: boolean;
+    disabled?: boolean;
 }
 
 export interface NavBarProps {
