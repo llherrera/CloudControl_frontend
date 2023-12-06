@@ -1,7 +1,7 @@
 import { ErrorTypeInterface } from '@/interfaces'
 
 export interface AuthInterface {
-  access_token: string
+  token: string
   expires_in: number
   refresh_expires_in: number
   refresh_token: number

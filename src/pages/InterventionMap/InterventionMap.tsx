@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { GoogleMap, useJsApiLoader } from '@react-google-maps/api';
+import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
 
 import { useAppDispatch, useAppSelector } from '@/store';
 import { thunkGetEvidence } from '@/store/evidence/thunks';
@@ -33,7 +33,7 @@ const Section = () => {
 
     const { levels, plan } = useAppSelector(state => state.plan);
     const { unit } = useAppSelector(store => store.unit);
-    const { evidence, ubications } = useAppSelector(store => store.evidence);
+    const { evidence, eviSelected } = useAppSelector(store => store.evidence);
 
     const id = location.state?.id;
     const { isLoaded } = useJsApiLoader({
@@ -141,9 +141,8 @@ const Section = () => {
         setIndex(newIndex_);
     };
 
-    const handleChangeEvidence = (index: number, item: EvidenceInterface) => {
-        const ubications_ = ubications.filter((item_) => item_.codigo == item.codigo);
-        dispatch(setEvidence(ubications_));
+    const handleChangeEvidence = (item: EvidenceInterface) => {
+        dispatch(setEvidence(item));
     };
 
     return (
@@ -171,7 +170,7 @@ const Section = () => {
                                 className=' tw-border tw-rounded 
                                             tw-mb-2 tw-p-1
                                             tw-bg-slate-300 hover:tw-bg-slate-400'
-                                onClick={()=>handleChangeEvidence(index, item)}>
+                                onClick={()=>handleChangeEvidence(item)}>
                             <p className='tw-text-start'>{index + 1} - {item.nombreDocumento}</p>
                         </button>
                     ))}
@@ -179,10 +178,14 @@ const Section = () => {
                 <GoogleMap
                     mapContainerStyle={containerStyle}
                     center={ubication}
-                    zoom={15}
+                    zoom={14}
                     onLoad={onLoad}
                     onUnmount={onUnmount}>
-                    
+                    {eviSelected !== undefined ? (
+                        eviSelected.ubicaciones.map((item, index) => (
+                            <Marker key={index} position={{lat:item.Latitud, lng:item.Longitud}} />
+                        ))
+                    ): null}
                 </GoogleMap>
             </div>
             ) : <p>Cargando...</p>}

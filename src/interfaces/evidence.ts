@@ -5,7 +5,7 @@ export interface InitialStateEvidenceInterface {
     loadingEvidence: boolean;
     errorLoadingEvidence: ErrorTypeInterface;
     evidence: EvidenceInterface[];
-    ubications: UbicationDB[];
+    eviSelected?: EvidenceInterface;
     eviCount: number;
 }
 

@@ -45,6 +45,7 @@ export const EvidencePage = () => {
         lugar: "",
         fecha2: "",
         url: "",
+        ubicaciones: []
     })
     const [documento, setDocumento] = useState<FileList | null>(null)
     const [listPoints, setListPoints] = useState<Coordinates[]>([])

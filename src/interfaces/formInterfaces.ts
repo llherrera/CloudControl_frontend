@@ -75,9 +75,17 @@ export interface EvidenceInterface {
     lugar: string;
     fecha2: string;
     url: string;
+    ubicaciones: UbicationDB[];
 }
 
 export interface LoginProps {
     username: string
     password: string
+}
+
+export interface UbicationDB {
+    id_ubicacion_evi: number;
+    codigo: string;
+    Latitud: number;
+    Longitud: number;
 }

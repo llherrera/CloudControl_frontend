@@ -9,7 +9,7 @@ const getInitialState = (): InitialStateEvidenceInterface => {
         loadingEvidence: false,
         errorLoadingEvidence: undefined,
         evidence: [],
-        ubications: [],
+        eviSelected: undefined,
         eviCount: 0
     };
 };
@@ -22,8 +22,8 @@ export const evidenceSlice = createSlice({
             state.evidence = state.evidence?.slice(action.payload, 1);
         },
         resetEvidence: () => getInitialState(),
-        setEvidence: (state, action: PayloadAction<UbicationDB[]>) => {
-            state.ubications = action.payload;
+        setEvidence: (state, action: PayloadAction<EvidenceInterface>) => {
+            state.eviSelected = action.payload;
         },
     },
     extraReducers: builder => {
@@ -33,8 +33,8 @@ export const evidenceSlice = createSlice({
         });
         builder.addCase(thunkGetEvidence.fulfilled, (state, action) => {
             state.loadingEvidence = false;
-            state.evidence = action.payload[0];
-            state.ubications = action.payload[1];
+            state.evidence = action.payload;
+            state.eviSelected = action.payload[0];
         });
         builder.addCase(thunkGetEvidence.rejected, (state, action) => {
             state.loadingEvidence = false;
