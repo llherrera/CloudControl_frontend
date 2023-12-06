@@ -90,10 +90,8 @@ export interface UbicationDB {
     Longitud: number;
 }
 export enum locationTypes {
-    Barrio = 'Barrio',
-    Comuna = 'Comuna',
-    Vereda = 'Vereda',
-    Corregimiento = 'Corregimiento',
+    Barrio = 'Barrio / Vereda',
+    Comuna = 'Comuna / Corregimiento',
 }
 export interface LocationInterface {
     id_plan: number
