@@ -1,6 +1,7 @@
-import { LocationInterface, locationTypes } from "@/interfaces";
+import { Coordinates, LocationInterface, locationTypes } from "@/interfaces";
 import { useAppSelector, useAppDispatch } from "@/store";
 import { useState } from "react";
+import { LocationPopover } from "../Popover";
 
 export const LocationsForm = () => {
     const dispatch = useAppDispatch();
@@ -44,8 +45,15 @@ export const LocationsForm = () => {
                 return;
             }
         })
+        // TODO enviar los datos a endpoint (por crear)
         console.log(data)
     }
+    const handleLocation = (value: Coordinates, index: number) => {
+        const newData = [...data];
+        newData[index] = { ...newData[index], LAT: value.lat, LNG: value.lng };
+        setData(newData);
+    };
+
     return(
         <div className="tw-flex tw-justify-center tw-border-t-4 tw-mt-4 tw-pt-2">
             <form   
@@ -57,7 +65,7 @@ export const LocationsForm = () => {
                             <label htmlFor="" className="tw-">{index + 1}</label>
                             <select name="type"
                                 onChange={(e) => handleTypeChange(e, index)}
-                                className="tw-mb-3 tw-p-2 tw-rounded tw-border-2 tw-border-gray-400"
+                                className="tw-m-2 tw-p-2 tw-rounded tw-border-2 tw-border-gray-400"
                                 required>
                                 {locationTypeOptions.map((e, i) => {
                                 return <option key={i} value={e}>{e}</option>
@@ -66,6 +74,7 @@ export const LocationsForm = () => {
                             <input  className="tw-m-2 tw-p-2 tw-rounded tw-border-2 tw-border-gray-400"
                                     onChange={ (e) => handleInputChange(e, index) } value={ location.name }
                                     type="text" name="name" required placeholder="Nombre" />
+                            <LocationPopover index={index} callback={handleLocation} item={location}/>
                         </div>
                     ))}
                     <div className="tw-flex tw-justify-around tw-py-2 tw-rounded">
