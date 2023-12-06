@@ -5,7 +5,8 @@ import { useAppSelector, useAppDispatch } from '@/store';
 import { thunkGetSecretaries } from '@/store/plan/thunks';
 
 import { Frame, BackBtn, ColorForm, SecretaryForm, 
-        UploadImage } from '@/components'
+        UploadImage, 
+        LocationsForm} from '@/components'
 import { getToken, decode } from "@/utils";
 import { Token } from '@/interfaces';
 
@@ -97,6 +98,10 @@ const SettingPageWrapper = () => {
             
             {((rol === "admin") || (rol === 'funcionario' && id === plan!.id_plan!)) ?
             <SecretaryForm/>
+            : null}
+
+            {((rol === "admin") || (rol === 'funcionario' && id === plan!.id_plan!)) ?
+            <LocationsForm/>
             : null}
         </div>
     )

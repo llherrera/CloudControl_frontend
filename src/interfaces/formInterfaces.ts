@@ -17,7 +17,7 @@ export interface UserInterface {
 export interface PDTInterface {
     id_plan?: number;
     Nombre: string;
-    Alcaldia: string;
+    Departamento: string;
     Municipio: string;
     Descripcion: string;
     Fecha_inicio: string;
@@ -88,4 +88,17 @@ export interface UbicationDB {
     codigo: string;
     Latitud: number;
     Longitud: number;
+}
+export enum locationTypes {
+    Barrio = 'Barrio',
+    Comuna = 'Comuna',
+    Vereda = 'Vereda',
+    Corregimiento = 'Corregimiento',
+}
+export interface LocationInterface {
+    id_plan: number
+    type: locationTypes
+    name: string;
+    LAT?: number
+    LNG?: number
 }

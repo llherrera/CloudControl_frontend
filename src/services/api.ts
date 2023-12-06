@@ -168,7 +168,7 @@ export const addPDT = async (pdt: PDTInterface) => {
     try {
         const response = await api.post("/plan-territorial", {
             PlanName:     pdt.Nombre,
-            TownHall:     pdt.Alcaldia,
+            TownHall:     pdt.Departamento,
             Municipality: pdt.Municipio,
             StartDate:    pdt.Fecha_inicio.slice(0, 19).replace('T', ' '),
             EndDate:      pdt.Fecha_fin.slice(0, 19).replace('T', ' '),
@@ -184,7 +184,7 @@ export const updatePDT = async (id: number, pdt: PDTInterface) => {
     try {
         const response = await api.put(`/plan-territorial/${id}`, {
             PlanName:     pdt.Nombre,
-            TownHall:     pdt.Alcaldia,
+            TownHall:     pdt.Departamento,
             Municipality: pdt.Municipio,
             StartDate:    pdt.Fecha_inicio,
             EndDate:      pdt.Fecha_fin,
@@ -517,6 +517,19 @@ export const addSecretaries = async (id_plan: number, secretaries: Secretary[]) 
 export const getSecretaries = async (id_plan: number) => {
     try {
         const response = await api.get(`/plan-territorial/secretarias`, {
+            params: {
+                id_plan: id_plan
+            }
+        });
+        return response.data;
+    } catch (error) {
+        return error;
+    }
+}
+
+export const addLocations = async (id_plan: number, locations: any) => {
+    try {
+        const response = await api.post(`/plan-territorial/localidades`, {
             params: {
                 id_plan: id_plan
             }
