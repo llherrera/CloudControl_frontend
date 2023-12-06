@@ -1,6 +1,6 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
-import { InitialStateEvidenceInterface } from "@/interfaces";
+import { EvidenceInterface, InitialStateEvidenceInterface, UbicationDB } from "@/interfaces";
 
 import { thunkGetEvidence, thunkGetEvidences, thunkGetEvidenceCount } from "./thunks";
 
@@ -9,6 +9,7 @@ const getInitialState = (): InitialStateEvidenceInterface => {
         loadingEvidence: false,
         errorLoadingEvidence: undefined,
         evidence: [],
+        ubications: [],
         eviCount: 0
     };
 };
@@ -20,7 +21,10 @@ export const evidenceSlice = createSlice({
         removeEvidence: (state, action: PayloadAction<number>) => {
             state.evidence = state.evidence?.slice(action.payload, 1);
         },
-        resetEvidence: () => getInitialState()
+        resetEvidence: () => getInitialState(),
+        setEvidence: (state, action: PayloadAction<UbicationDB[]>) => {
+            state.ubications = action.payload;
+        },
     },
     extraReducers: builder => {
         builder.addCase(thunkGetEvidence.pending, state => {
@@ -29,7 +33,8 @@ export const evidenceSlice = createSlice({
         });
         builder.addCase(thunkGetEvidence.fulfilled, (state, action) => {
             state.loadingEvidence = false;
-            state.evidence = action.payload;
+            state.evidence = action.payload[0];
+            state.ubications = action.payload[1];
         });
         builder.addCase(thunkGetEvidence.rejected, (state, action) => {
             state.loadingEvidence = false;
@@ -66,5 +71,5 @@ export const evidenceSlice = createSlice({
     }
 });
 
-export const { removeEvidence, resetEvidence } = evidenceSlice.actions;
+export const { removeEvidence, resetEvidence, setEvidence } = evidenceSlice.actions;
 export const evidenceReducer = evidenceSlice.reducer;

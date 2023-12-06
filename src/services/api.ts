@@ -5,7 +5,7 @@ import { getEnvironment } from '../utils/environment';
 import { YearInterface, UnitInterface, NodoInterface, 
     NivelInterface, RegisterInterface, PDTInterface, 
     EvidenceInterface, GetNodeProps, AddColorsProps, 
-    Secretary, LoginProps } from "../interfaces";
+    Secretary, LoginProps, Coordinates } from "../interfaces";
 
 import { getToken, refreshToken } from "@/utils";
 
@@ -325,14 +325,15 @@ export const getUnitNodeAndYears = async (idPDT: string, idNodo: string) => {
     }
 }
 
-export const addEvicenceGoal = async (id_plan: number, codigo: string, evidencia: EvidenceInterface, file: File) => {
+export const addEvicenceGoal = async (id_plan: number, codigo: string, evidencia: EvidenceInterface, file: File, points: Coordinates[]) => {
     try {
         const response = await api.post("/nodo/evidencia", 
         {
             id_plan: id_plan,
             code: codigo,
             evidence: evidencia,
-            file: file
+            file: file,
+            points: points
         },{
             headers: {
                 'Content-Type': 'multipart/form-data'

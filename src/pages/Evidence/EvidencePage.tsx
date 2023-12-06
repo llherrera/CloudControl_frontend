@@ -1,11 +1,19 @@
-import React, { useState } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
 
 import { useAppSelector } from "@/store";
 
 import { addEvicenceGoal } from "../../services/api";
-import { EvidenceInterface } from "../../interfaces";
-import { BackBtn } from "@/components";
+import { EvidenceInterface, Coordinates } from "../../interfaces";
+import { BackBtn, MarkerComponent } from "@/components";
+
+
+const API_KEY = import.meta.env.VITE_API_KEY_MAPS as string;
+const containerStyle = {
+    width: '400px',
+    height: '400px'
+};
 
 export const EvidencePage = () => {
     const navigate = useNavigate();
@@ -13,7 +21,7 @@ export const EvidencePage = () => {
 
     const idPDT = location.state?.idPDT;
 
-    const { namesTree } = useAppSelector((state) => state.plan);
+    const { namesTree, plan } = useAppSelector((state) => state.plan);
     const { unit } = useAppSelector((state) => state.unit);
     
     const [cargar, setCargar] = useState(false)
@@ -39,6 +47,56 @@ export const EvidencePage = () => {
         url: "",
     })
     const [documento, setDocumento] = useState<FileList | null>(null)
+    const [listPoints, setListPoints] = useState<Coordinates[]>([])
+
+    const { isLoaded } = useJsApiLoader({
+        id: 'google-map-script',
+        googleMapsApiKey: API_KEY
+    });
+
+    const [map, setMap] = useState<google.maps.Map|null>(null);
+    const [ubication, setUbication] = useState<Coordinates>({lat: 10.96854, lng: -74.78132});
+
+    useEffect(() => {
+        navigator.geolocation.watchPosition((position) => {
+            setUbication({lat: position.coords.latitude, lng: position.coords.longitude})
+        }, (error) => {
+            console.log(error)
+        }, {
+            enableHighAccuracy: true,
+            timeout: 5000,
+            maximumAge: 0
+        })
+    }, []);
+
+    useEffect(()=> {
+        //To DO: obtener localidades para hacer el select
+    }, [])
+
+    const onLoad = useCallback(function callback(map: google.maps.Map) {
+        const bounds = new window.google.maps.LatLngBounds();
+        map.fitBounds(bounds);
+        setMap(map)
+    }, []);
+
+    const onUnmount = useCallback(function callback(map: google.maps.Map) {
+        setMap(null)
+    }, []);
+
+    const handleMapClick = (event: google.maps.MapMouseEvent) => {
+        const lat = event.latLng?.lat();
+        const lng = event.latLng?.lng();
+        if (lat && lng) {
+            const exist = listPoints.find((point) => point.lat === lat && point.lng === lng)
+            if (exist) return;
+            setListPoints([...listPoints, {lat, lng}])
+        }
+    }
+
+    const handleDeleteMarker = (index: number) => {
+        const newList = listPoints.filter((point, i) => i !== index);
+        setListPoints(newList);
+    }
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = event.target;
@@ -81,8 +139,9 @@ export const EvidencePage = () => {
         if (data.recursosEjecutados <= 0) return alert('No se ha seleccionado un recurso ejecutado');
         if (data.unidad === "") return alert('No se ha seleccionado una unidad');
         if (data.vereda === "") return alert('No se ha seleccionado una vereda');
+        if (listPoints.length === 0) return alert('No se ha seleccionado una ubicacion');
         setLoading(true)
-        await addEvicenceGoal(parseInt(idPDT!), unit.code, data, documento![0])
+        await addEvicenceGoal(plan?.id_plan! , unit.code, data, documento![0], listPoints)
         .then(() => {
             setLoading(false)
             alert('Evidencia añadida con exito')
@@ -173,6 +232,7 @@ export const EvidencePage = () => {
                                             md:tw-ml-2"
                                 type="text" 
                                 value={unit.indicator??""}
+                                readOnly
                                 name="" 
                                 id=""/>
                     </div>
@@ -189,6 +249,7 @@ export const EvidencePage = () => {
                                             md:tw-ml-2" 
                                 type="text"
                                 value={unit.responsible??"Por asignar"}
+                                readOnly
                                 name="" 
                                 id="" />
                     </div>
@@ -205,6 +266,7 @@ export const EvidencePage = () => {
                                             md:tw-ml-2" 
                                 type="text"
                                 value={unit.description??"Por asignar"}
+                                readOnly
                                 name="" 
                                 id=""/>
                     </div>
@@ -253,6 +315,7 @@ export const EvidencePage = () => {
                         name="descripcionActividades" 
                         id="descripcionActividades" 
                         required
+                        value={data.descripcionActividades}
                         className=" tw-p-2 tw-rounded
                                     tw-border-2 tw-border-gray-400
                                     tw-bg-white tw-resize-none"
@@ -267,9 +330,9 @@ export const EvidencePage = () => {
                             <select
                                 name="unidad"
                                 id="unidad"
-                                className="tw-p-2 tw-rounded
-                                tw-border-2 tw-border-gray-400
-                                tw-bg-white"
+                                className=" tw-p-2 tw-rounded
+                                            tw-border-2 tw-border-gray-400
+                                            tw-bg-white"
                                 onChange={(e) => handleInputChange(e)}
                                 required
                                 value={data.unidad}>
@@ -289,6 +352,7 @@ export const EvidencePage = () => {
                                             tw-border-2 tw-border-gray-400
                                             tw-bg-white"
                                 required
+                                value={data.cantidad}
                                 onChange={(e)=> handleInputChange(e)}/>
                         </div>
                     </div>
@@ -298,7 +362,7 @@ export const EvidencePage = () => {
                                     tw-rounded tw-p-2
                                     tw-border-2 tw-border-gray-400">
                         <div className="tw-flex tw-flex-col">
-                            <label>Comuna</label>
+                            <label>Comuna o Corregimiento</label>
                             <select 
                                 name="comuna"
                                 id="comuna"
@@ -309,12 +373,11 @@ export const EvidencePage = () => {
                                 required
                                 value={data.comuna}
                                 >
-                                <option value="Tubara">Tubara</option>
-                                <option value="Baranoa">Baranoa</option>
+                                <option value="Tubara">Todas</option>
                             </select>
                         </div>
                         <div className="tw-flex tw-flex-col tw-ml-3">
-                            <label>Barrio</label>
+                            <label>Barrio o Vereda</label>
                             <select 
                                 name="barrio"
                                 id="barrio"
@@ -325,41 +388,35 @@ export const EvidencePage = () => {
                                 required
                                 value={data.barrio}
                                 >
-                                <option value="Soledad">Soledad</option>
+                                <option value="Soledad">Todas</option>
                                 <option value="Galapa">Galapa</option>
                             </select>
                         </div>
-                        <div className="tw-flex tw-flex-col tw-ml-3">
-                            <label>Correguimiento</label>
-                            <select 
-                                name="correguimiento" 
-                                id="correguimiento" 
-                                className=" tw-p-2 tw-rounded
-                                            tw-border-2 tw-border-gray-400
-                                            tw-bg-white"
-                                onChange={(e)=> handleInputChange(e)}
-                                required
-                                value={data.correguimiento}
-                                >
-                                <option value="Carrizal">Carrizal</option>
-                                <option value="BrisasDelRio">Brisas del Rio</option>
-                            </select>
-                        </div>
-                        <div className="tw-flex tw-flex-col tw-ml-3">
-                        <label>Vereda</label>
-                            <select 
-                                name="vereda" 
-                                id="vereda" 
-                                className=" tw-p-2 tw-rounded
-                                            tw-border-2 tw-border-gray-400
-                                            tw-bg-white"
-                                onChange={(e)=> handleInputChange(e)}
-                                value={data.vereda}
-                                required
-                                >
-                                <option value="Eden">El Eden</option>
-                                <option value="Morrito">El Morrito</option>
-                            </select>
+                        <div className="tw-ml-3">
+                            <button className=" tw-px-1 tw-mb-1
+                                                tw-bg-white hover:tw-bg-gray-300
+                                                tw-border-gray-400
+                                                tw-rounded tw-border-2"
+                                    onClick={()=>{}}
+                                    type="button">
+                                Cargar en el mapa
+                            </button>
+                            {isLoaded ? 
+                                <GoogleMap
+                                    mapContainerStyle={containerStyle}
+                                    center={ubication}
+                                    zoom={15}
+                                    onLoad={onLoad}
+                                    onUnmount={onUnmount}
+                                    onClick={handleMapClick}>
+                                    {listPoints.map((point, index) => (
+                                        <Marker key={index} 
+                                                position={point}
+                                                onClick={()=>handleDeleteMarker(index)} />
+                                    ))}
+                                    <MarkerComponent lat={ubication.lat} lng={ubication.lng} />
+                                </GoogleMap>
+                            :(<></>)}
                         </div>
                     </div>
 
@@ -392,6 +449,7 @@ export const EvidencePage = () => {
                                             tw-border-2 tw-border-gray-400
                                             tw-bg-white"
                                 required
+                                value={data.numeroPoblacionBeneficiada}
                                 onChange={(e)=> handleInputChange(e)}/>
                         </div>
                         <div className="tw-flex tw-flex-col tw-ml-3">
@@ -405,6 +463,7 @@ export const EvidencePage = () => {
                                             tw-border-2 tw-border-gray-400
                                             tw-bg-white"
                                 required
+                                value={data.recursosEjecutados}
                                 onChange={(e)=> handleInputChange(e)}/>
                         </div>
                         <div className="tw-flex tw-flex-col tw-ml-3">
@@ -450,6 +509,7 @@ export const EvidencePage = () => {
                                             tw-border-2 tw-border-gray-400
                                             tw-bg-white"
                                 required
+                                value={data.nombreDocumento}
                                 onChange={(e) => handleInputChange(e)}/><br />
                         </div>
                         <div className="tw-flex tw-flex-col tw-ml-3">
@@ -463,6 +523,7 @@ export const EvidencePage = () => {
                                             tw-border-2 tw-border-gray-400
                                             tw-bg-white"
                                 required
+                                value={data.lugar}
                                 onChange={(e) => handleInputChange(e)}/><br />
                         </div>
                         <div className="tw-flex tw-flex-col tw-ml-3">
@@ -475,6 +536,7 @@ export const EvidencePage = () => {
                                             tw-border-2 tw-border-gray-400
                                             tw-bg-white"
                                 required
+                                value={data.fecha2}
                                 onChange={(e) => handleInputChange(e)}/><hr />
                         </div>
                     </div>
