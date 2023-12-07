@@ -1,10 +1,10 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
-import { InitialStatePlanInterface, NodoInterface, Node, Secretary, SecretaryResponse } from "@/interfaces";
+import { InitialStatePlanInterface, NodoInterface, Node, Secretary, SecretaryResponse, LocationInterface } from "@/interfaces";
 
 import { thunkGetPDTid, thunkAddPDT, thunkGetColors, thunkAddColors,
     thunkGetNodes, thunkUpdateYears, thunkGetLevelsById, thunkGetLevelName,
-    thunkGetLogo, thunkGetSecretaries, thunkAddSecretaries } from "./thunks";
+    thunkGetLogo, thunkGetSecretaries, thunkAddSecretaries, thunkAddLocations, thunkGetLocations } from "./thunks";
 
 const getInitialState = (): InitialStatePlanInterface => {
     return {
@@ -15,6 +15,7 @@ const getInitialState = (): InitialStatePlanInterface => {
         loadingNamesTree: false,
         loadingLogo: false,
         loadingSecretaries: false,
+        loadingLocations: false,
         loadingReport: false,
         errorLoadingPlan: undefined,
         errorLoadingColors: undefined,
@@ -23,6 +24,7 @@ const getInitialState = (): InitialStatePlanInterface => {
         errorLoadingNamesTree: undefined,
         errorLoadingLogo: undefined,
         errorLoadingSecretaries: undefined,
+        errorLoadingLocations: undefined,
         plan: undefined,
         colorimeter: [],
         color: undefined,
@@ -39,6 +41,7 @@ const getInitialState = (): InitialStatePlanInterface => {
         radioBtn: 'fisica',
         url: undefined,
         secretaries: [],
+        locations: []
     };
 };
 
@@ -250,6 +253,49 @@ export const planSlice = createSlice({
             }
         });
 
+        builder.addCase(thunkAddLocations.pending, state => {
+            if (!state.loadingLocations) state.loadingLocations = true;
+            state.errorLoadingLocations = undefined;
+        });
+        builder.addCase(thunkAddLocations.fulfilled, (state, action) => {
+            state.loadingLocations = false;
+            alert("Se han agregado las localidades correctamente.");
+        });
+        builder.addCase(thunkAddLocations.rejected, (state, action) => {
+            state.loadingLocations = false;
+            state.errorLoadingLocations = action.payload;
+            if (action.payload) {
+                switch (action.payload.status) {
+                    case 401:
+                        alert("No está permitido acceder aquí.");
+                        break;
+                    case 403:
+                        alert("No tienes permitido realizar esta acción.");
+                        break;    
+                    case 404:
+                        alert("Plan no existe.");
+                        break;
+                    case 500:
+                        alert("Ha habido un error, pruebe más tarde.");
+                        break;
+                    default:
+                        break;
+                }
+            }
+        });
+
+        builder.addCase(thunkGetLocations.pending, state => {
+            if (!state.loadingLocations) state.loadingLocations = true;
+            state.errorLoadingLocations = undefined;
+        });
+        builder.addCase(thunkGetLocations.fulfilled, (state, action) => {
+            state.loadingLocations = false;
+            state.locations = action.payload;
+        });
+        builder.addCase(thunkGetLocations.rejected, (state, action) => {
+            state.loadingLocations = false;
+            state.errorLoadingLocations = action.payload;
+        });
 
         builder.addCase(thunkGetSecretaries.pending, state => {
             if (!state.loadingSecretaries) state.loadingSecretaries = true;

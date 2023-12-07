@@ -221,10 +221,10 @@ export const LoadIcon = () => {
     )
 }
 
-export const LocationIcon = () => {
+export const LocationIcon = ( {color}: IconProps ) => {
     return (
         <SvgIcon>
-            <svg fill="#000000" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" 
+            <svg fill={color} version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" 
             width="200px" height="200px" viewBox="0 0 395.71 395.71">
                 <g>
                     <path d="M197.849,0C122.131,0,60.531,61.609,60.531,137.329c0,72.887,124.591,243.177,129.896,250.388l4.951,6.738

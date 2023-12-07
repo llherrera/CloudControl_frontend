@@ -2,12 +2,12 @@ import { createAction, createAsyncThunk } from '@reduxjs/toolkit'
 
 import { PDTInterface, ErrorBasicInterface, GetNodeProps, 
         AddColorsProps, NivelInterface, Nivel, Secretary, 
-        PropsSecretary, SecretaryResponse } from '../../interfaces'
+        PropsSecretary, SecretaryResponse, PropsLocations, LocationInterface } from '../../interfaces'
 import { parseErrorAxios } from '../../utils'
 
 import { getPDTid, addPDT, getColors, getLevelNodes, addColor, 
         getPDTLevelsById, getLevelName, getLogoPlan, getSecretaries,
-        addSecretaries, addLocations } from '@/services/api'
+        addSecretaries, addLocations, getLocations } from '@/services/api'
 
 export const thunkGetPDTid = createAsyncThunk<PDTInterface, string, { rejectValue: ErrorBasicInterface }>(
     'pdt/getPDTid',
@@ -163,14 +163,25 @@ export const thunkGetSecretaries = createAsyncThunk<string[], number, { rejectVa
         }
     }
 )
-
-export const thunkAddLocations = createAsyncThunk<string[], number, { rejectValue: ErrorBasicInterface }>(
+export const thunkAddLocations = createAsyncThunk<LocationInterface[], PropsLocations, { rejectValue: ErrorBasicInterface }>(
     'pdt/addLocations',
     async (props: any, { rejectWithValue }) => {
         try {
             const { id_plan, locations } = props;
             const res = await addLocations(id_plan, locations);
-            return res.map((item: SecretaryResponse) => item.Nombre);
+            return res
+        } catch (err) {
+            const result = parseErrorAxios(err)
+            return rejectWithValue(result)
+        }
+    }
+)
+export const thunkGetLocations = createAsyncThunk<LocationInterface[], number, { rejectValue: ErrorBasicInterface }>(
+    'pdt/getLocations',
+    async (props: number, { rejectWithValue }) => {
+        try {
+            const res = await getLocations(props)
+            return res
         } catch (err) {
             const result = parseErrorAxios(err)
             return rejectWithValue(result)

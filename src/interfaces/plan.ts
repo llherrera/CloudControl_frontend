@@ -1,5 +1,5 @@
 import { ErrorTypeInterface } from "./common";
-import { PDTInterface, NivelInterface, NodoInterface } from "./formInterfaces";
+import { PDTInterface, NivelInterface, NodoInterface, LocationInterface } from "./formInterfaces";
 import { Secretary } from "./secretary";
 
 export interface InitialStatePlanInterface {
@@ -11,6 +11,7 @@ export interface InitialStatePlanInterface {
     loadingLogo: boolean;
     loadingSecretaries: boolean;
     loadingReport: boolean;
+    loadingLocations: boolean;
     errorLoadingPlan: ErrorTypeInterface;
     errorLoadingColors: ErrorTypeInterface;
     errorLoadingNodes: ErrorTypeInterface;
@@ -18,6 +19,7 @@ export interface InitialStatePlanInterface {
     errorLoadingNamesTree: ErrorTypeInterface;
     errorLoadingLogo: ErrorTypeInterface;
     errorLoadingSecretaries: ErrorTypeInterface;
+    errorLoadingLocations: ErrorTypeInterface;
     plan?: PDTInterface;
     colorimeter: number[];
     color?: boolean;
@@ -34,6 +36,7 @@ export interface InitialStatePlanInterface {
     radioBtn: string;
     url?: string;
     secretaries: string[];
+    locations: LocationInterface[]
 }
 
 export interface GetNodeProps {

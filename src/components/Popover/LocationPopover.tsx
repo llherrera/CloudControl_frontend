@@ -16,6 +16,9 @@ const API_KEY = import.meta.env.VITE_API_KEY_MAPS as string;
 export const LocationPopover = (props: PopoverProps) => {
     const [poLocationIsOpen, setPoLocationIsOpen] = useState(false);
     const toggleOpen = () => setPoLocationIsOpen(!poLocationIsOpen)
+    let red = '#EF4444';
+    let green = '#86EFAC';
+    let locationSelected = !!props.item.lat && !!props.item.lng;
 
     return (
         <Popover
@@ -24,7 +27,7 @@ export const LocationPopover = (props: PopoverProps) => {
             content={mapContainer(props)}
             onClickOutside={toggleOpen}>
             <button type="button" onClick={toggleOpen}>
-                <LocationIcon />
+                <LocationIcon color={locationSelected ? green:red} />
             </button>
         </Popover>
     );
@@ -53,10 +56,10 @@ const mapContainer = (props: PopoverProps) => {
             }
         }
     }
-    if (item.LAT && item.LNG){
+    if (item.lat && item.lng){
         centerLocation = {
-            lat: item.LAT,
-            lng: item.LNG
+            lat: item.lat,
+            lng: item.lng
         }
         options.zoom = 12
     }
@@ -66,10 +69,10 @@ const mapContainer = (props: PopoverProps) => {
     });
 
     const onLoad = useCallback(function callback(map: google.maps.Map) {
-        if (item.LAT && item.LNG) {
+        if (item.lat && item.lng) {
             let markerPosition: google.maps.LatLngLiteral = {
-                lat: item.LAT,
-                lng: item.LNG
+                lat: item.lat,
+                lng: item.lng
             }
             let markerOptions = {
                 clickable: false,
