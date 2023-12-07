@@ -9,46 +9,27 @@ import { getLastPDT } from '../../services/api';
 import { decode } from '../../utils/decode';
 import { getToken } from '@/utils';
 
-import { useAppDispatch } from '@/store';
+import { useAppDispatch, useAppSelector } from '@/store';
 import { selectOption } from '@/store/content/contentSlice';
 
 export const LobbyPage = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
-    const [rol, setRol] = useState("");
-    const [id, setId] = useState(0);
+    const { token_info } = useAppSelector(state => state.auth)
+    const { id_plan } = useAppSelector(state => state.content)
 
-    useEffect(() => {
-        const gettoken = getToken()
-        try {
-            let {token} = gettoken
-            if (token !== null || token !== undefined) {
-                const decoded = decode(token) as Token
-                setId(decoded.id_plan)
-                setRol(decoded.rol)
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    }, [])
+    let rol = "";
+    let id = id_plan !== 0 ? id_plan : 0;
+    
+    if (token_info?.token !== undefined) {
+        const decoded = decode(token_info.token)
+        rol = decoded.rol
+        id = decoded.id_plan
+    }
 
     const handleButton = () => {
-        if (rol === "admin") {
-            navigate('/pdt')
-            return
-        }else if (rol === "funcionario") {
-            navigate(`/pdt/PlanIndicativo`, {state: {id}})
-            return
-        }
-        getLastPDT()
-            .then((e) => {
-                console.log(e);
-                if (e.id_plan)
-                    navigate(`/pdt/PlanIndicativo`, {state: {id: e.id_plan}})
-                else
-                    alert("No hay un PDT disponible")             
-            })
+        navigate(`/pdt/PlanIndicativo`, {state: {id}})
     }
 
     const buttons: React.ReactNode[] = [

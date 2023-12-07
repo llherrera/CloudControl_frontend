@@ -5,9 +5,9 @@ import { useAppDispatch, useAppSelector } from "@/store";
 import { thunkGetNodes, thunkUpdateYears } from "@/store/plan/thunks";
 import { decrementLevelIndex, setParent } from "@/store/plan/planSlice";
 
-import { NodoInterface, Token, PesosNodos, ContentProps } from "@/interfaces";
-import { NodeForm, NodesList, 
-        TimeLine, Graph, BackBtn, SettingsBtn } from "@/components";
+import { Token, ContentProps } from "@/interfaces";
+import { NodeForm, NodesList, TimeLine, Graph,
+         BackBtn, SettingsBtn } from "@/components";
 import { getToken, decode, getYears } from "@/utils";
 
 export const Content = ( props : ContentProps ) => {
@@ -16,12 +16,7 @@ export const Content = ( props : ContentProps ) => {
 
     const { plan, years, indexLevel, levels, 
         parent, progressNodes, financial, 
-        radioBtn } = useAppSelector(store => store.plan)
-
-    const [nodos, setNodos] = useState<NodoInterface[]>([]);
-
-    const [yearProgress, setYearProgress] = useState<number[]>([])
-    const [yearsprogress, setYearsProgress] = useState(0);
+        radioBtn, nodes } = useAppSelector(store => store.plan)
 
     const [rol, setRol] = useState("")
     const [id, setId] = useState(0)
@@ -50,45 +45,8 @@ export const Content = ( props : ContentProps ) => {
     useEffect(() => {
         dispatch(thunkGetNodes({id_level: levels[indexLevel!].id_nivel!, parent: parent}))
         .unwrap()
-        .then((res) => {
-            setNodos(res)
-            getYearProgress()
-        })
         .catch((err) => {console.log(err)})
     }, [years, indexLevel])
-
-    const getYearProgress = () => {
-        let pesosStr = localStorage.getItem('pesosNodo')
-        if (pesosStr == undefined) 
-            pesosStr = '[]'
-        
-        let pesosNodo = JSON.parse(pesosStr as string)
-        let progreso = [] as number[]
-        const nodoss = pesosNodo.filter((item: PesosNodos) => item.Padre === parent)
-        
-        if (nodoss.length === 0) {
-            setYearsProgress(-1)
-            setYearProgress([-1,-1,-1,-1])
-            return
-        }
-        for (let i = 0; i < years.length; i++) {
-            let temp = 0
-            nodoss.forEach((item: PesosNodos) => {
-                const { porcentajes } = item
-                if (porcentajes) {
-                    temp += (porcentajes[i].progreso)*(item.Peso/100)
-                }else {
-                    
-                }
-            })
-            temp = Math.round(temp*100)/100
-            progreso.push(temp)
-        }
-        let temp = progreso.reduce((a, b) => a + b, 0)
-        temp = Math.round(temp*100/years.length)
-        setYearsProgress(temp)
-        setYearProgress(progreso)
-    }
 
     const handleBack = () => {
         if (indexLevel === 0) {
@@ -138,8 +96,7 @@ export const Content = ( props : ContentProps ) => {
                     <p className="tw-font-montserrat tw-ml-4 tw-mb-3">
                         Plan de desarrollo. ¡Así vamos!
                     </p>
-                    <TimeLine   yearProgress={yearProgress}
-                                yearsProgress={yearsprogress}/>
+                    <TimeLine/>
                 </div>
 
                 <div className="tw-rounded tw-shadow-lg tw-border
@@ -157,7 +114,7 @@ export const Content = ( props : ContentProps ) => {
                         {levels[indexLevel!].LevelName}
                     </p>
                     <div className="tw-pb-1 tw-mb-2">
-                        {nodos.length === 0 ?
+                        {nodes.length === 0 ?
                         <div>
                             {(rol === "admin") || (rol === 'funcionario' && id === props.id) ?
                             <NodeForm   index={indexLevel!}
@@ -167,8 +124,7 @@ export const Content = ( props : ContentProps ) => {
                             </div>
                             }
                         </div>
-                        :<NodesList nodes={nodos}
-                                    id={props.id}/>
+                        :<NodesList id={props.id}/>
                         }
                     </div>
                 </div>

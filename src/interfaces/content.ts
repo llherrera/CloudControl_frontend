@@ -10,6 +10,7 @@ export interface InitialStateContentInterface {
     error: ErrorTypeInterface;
     index: number;
     listDepartment: string[];
+    id_plan: number;
 }
 
 export interface GetUnitProps {

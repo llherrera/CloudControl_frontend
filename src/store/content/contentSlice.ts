@@ -7,7 +7,8 @@ const getInitialState = (): InitialStateContentInterface => {
         loading: false,
         error: undefined,
         index: 0,
-        listDepartment: []
+        listDepartment: [],
+        id_plan: 0
     };
 };
 
@@ -17,11 +18,14 @@ export const contentSlice = createSlice({
     reducers: {
         selectOption: (state, action: PayloadAction<number>) => {
             state.index = action.payload;
+        },
+        setIdPlan: (state, action: PayloadAction<number>) => {
+            state.id_plan = action.payload;
         }
     }
 });
 
-export const { selectOption } = contentSlice.actions;
+export const { selectOption, setIdPlan } = contentSlice.actions;
 export const selectContent = (state: RootState) => state.content.index;
 
 export default contentSlice.reducer;

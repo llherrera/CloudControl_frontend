@@ -1,42 +1,52 @@
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { useAppDispatch, useAppSelector } from '../../store'
-import { thunkLogin } from '../../store/auth/thunks'
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+import { useAppDispatch, useAppSelector } from '../../store';
+import { thunkLogin } from '../../store/auth/thunks';
+
+import { decode } from '../../utils/decode';
+import { Token } from '@/interfaces';
 
 export const LoginForm = () => {
-    const dispatch = useAppDispatch()
-    const logged = useAppSelector(store => store.auth.logged)
+    const dispatch = useAppDispatch();
+    const navigate = useNavigate();
 
-    const navigate = useNavigate()
+    const { token_info } = useAppSelector(state => state.auth);
 
     const [user, setuser] = useState({
         username: "",
         password: ""
-    })
+    });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setuser({
             ...user,
             [e.target.name]: e.target.value
         })
-    }
+    };
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         await dispatch(thunkLogin(user))
             .unwrap()
-            .then(() => {
-                navigate('/lobby')
+            .then((res) => {
+                if (res === undefined) return alert("Usuario o contraseña incorrectos")
+                const info = decode(res.token)
+                info.rol === "admin" ? 
+                navigate('/pdt') :
+                (info.rol === "funcionario" || info.rol === 'planeacion' || info.rol === 'sectorialista') ?
+                navigate('/pdt/PlanIndicativo', {state: {id: info.id_plan}}) :
+                navigate('/')
             })
             .catch((err) => {
                 console.log(err)
             }
         )
-    }
+    };
 
     const handleCancelar = () => {
         navigate('/')
-    }
+    };
 
     return (
         <form className='   tw-rounded

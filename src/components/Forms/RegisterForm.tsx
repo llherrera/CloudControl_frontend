@@ -56,42 +56,45 @@ export const RegisterForm = (props: RegisterFormProps) => {
     }
 
     return (
-        <div className="tw-flex tw-justify-center">
+        <div className="tw-flex tw-justify-center tw-mt-4">
             <div className="tw-float">
                 {backIconButton()}
             </div>
-            <form onSubmit={submitForm}>
+            <form   onSubmit={submitForm}
+                    className=" tw-px-10 tw-shadow-2xl
+                                tw-rounded ">
                 <h1 className="tw-mb-4 tw-grow tw-text-center tw-text-xl">Registrar funcionario</h1>
+                <div>
                 <Input  label={"Usuario"}
                         type={"text"}
                         id={"usuario"}
                         name={"usuario"}
                         value={form.usuario}
-                        onChange={ (event) => handleInputChange(event)}/><br />
+                        onChange={ (event) => handleInputChange(event)}/>
                 <Input  label={"Apellido"}
                         type={"text"}
                         id={"apellido"}
                         name={"apellido"}
                         value={form.apellido}
-                        onChange={ (event) => handleInputChange(event)}/><br />
+                        onChange={ (event) => handleInputChange(event)}/>
                 <Input  label={"Correo"}
                         type={"text"}
                         id={"correo"}
                         name={"correo"}
                         value={form.correo}
-                        onChange={ (event) => handleInputChange(event)}/><br />
+                        onChange={ (event) => handleInputChange(event)}/>
                 <Input  label={"Contraseña"}
                         type={"password"}
                         id={"contraseña"}
                         name={"contraseña"}
                         value={form.contraseña}
-                        onChange={ (event) => handleInputChange(event)}/><br />
+                        onChange={ (event) => handleInputChange(event)}/>
                 <Input  label={"Confirmar Contraseña"}
                         type={"password"}
                         id={"confirmarContraseña"}
                         name={"confirmarContraseña"}
                         value={form.confirmarContraseña}
-                        onChange={ (event) => handleInputChange(event)}/><br /> 
+                        onChange={ (event) => handleInputChange(event)}/>
                 <div className="tw-flex tw-justify-center tw-mb-3">
                     <button
                         className={`${form.rol === 'funcionario' ? 'tw-bg-red-300 hover:tw-bg-red-400':'tw-bg-gray-300 hover:tw-bg-gray-400'}
@@ -114,6 +117,7 @@ export const RegisterForm = (props: RegisterFormProps) => {
                         value={'sectorialista'}
                         type="button"
                         onClick={()=>handleChangeRol('sectorialista')}>Sectorialista</button>
+                </div>
                 </div>
                 <button type="submit"
                         className=' tw-bg-green-300 hover:tw-bg-green-400

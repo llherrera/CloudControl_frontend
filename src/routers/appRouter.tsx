@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { Route, Routes } from 'react-router-dom'
 
 import { useAppSelector } from '../store'
@@ -13,22 +14,24 @@ import { Token } from '@/interfaces'
 
 export const AppRouter = () => {
     const { logged, token_info } = useAppSelector(store => store.auth)
-    const token: Token = decode(token_info?.token || '')
+    let token;
+    if (token_info) 
+        token = decode(token_info.token).rol
 
     return logged ? (
-        token.rol === 'admin' ? (
+        token === 'admin' ? (
             <Routes>
                 <Route path="*" element={<PrivateRouter />} />
             </Routes>
-        ): token.rol === 'funcionario' ? (
+        ): token === 'funcionario' ? (
             <Routes>
                 <Route path="*" element={<OfficerRouter />} />
             </Routes>
-        ): token.rol === 'planeacion' ? (
+        ): token === 'planeacion' ? (
             <Routes>
                 
             </Routes>
-        ): token.rol === 'sectorialista' ? (
+        ): token === 'sectorialista' ? (
             <Routes>
                 <Route path="*" element={<SectorialistRouter />} />
             </Routes>

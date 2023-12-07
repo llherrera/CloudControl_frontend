@@ -10,7 +10,6 @@ interface LoginProps {
   password: string
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-types
 export const thunkLogin = createAsyncThunk<AuthInterface, LoginProps, { rejectValue: ErrorBasicInterface }>(
   'auth/login',
   async (props: LoginProps, { rejectWithValue }) => {

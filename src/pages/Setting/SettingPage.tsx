@@ -69,6 +69,7 @@ const SettingPageWrapper = () => {
     }
 
     return (
+        (plan === null || plan === undefined) ? <div className='tw-text-center'>No hay un plan seleccionado</div> :
         <div>
             <BackBtn handle={handleBack} id={id}/><br />
             <UploadImage id={id_}/>

@@ -162,8 +162,8 @@ export const EvidencePage = () => {
         setCargar(!cargar)
     }
 
-    const memorias = () =>{
-        if (unit === undefined) return;
+    const memorias = () => {
+        if (unit === undefined) return <div className="tw-text-center">No hay una meta seleccionada</div>;
         return(
             <div className="tw-mx-3 tw-mt-2">
                 <header className=" tw-border-4 tw-border-double
@@ -285,8 +285,8 @@ export const EvidencePage = () => {
         )
     }
 
-    const evidencias = () =>{
-        if (unit === undefined) return;
+    const evidencias = () => {
+        if (unit === undefined) return <div className="tw-text-center">No hay una meta seleccionada</div>;
         return(
             <div className="tw-mx-3 tw-mt-2">
                 <header className=" tw-flex tw-flex-col
@@ -559,7 +559,7 @@ export const EvidencePage = () => {
         )
     }
 
-    return(
-        cargar ? evidencias():memorias()
+    return (
+        cargar ? evidencias() : memorias()
     )
 }

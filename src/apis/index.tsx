@@ -35,7 +35,7 @@ apis.interceptors.request.use(
         // @ts-expect-error request.headers
         request.headers = {
           ...request.headers,
-          Authorization: `Bearer ${new_token.access_token}`
+          Authorization: `Bearer ${new_token.token}`
         }
       return request
     }

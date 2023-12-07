@@ -28,8 +28,9 @@ const processFailedQueue = (error?: unknown) => {
 api.interceptors.request.use(
     async request => {
         try {
-            const {token} = getToken();
+            let token = getToken();
             if (token) {
+                token = token.token;
                 // @ts-expect-error request.headers
                 request.headers = {
                     ...request.headers,

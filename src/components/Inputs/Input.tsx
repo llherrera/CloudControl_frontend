@@ -2,8 +2,9 @@ import { InputProps } from "@/interfaces";
 
 export const Input = (props: InputProps) => {
     return(
-        <div className="">
-            <label htmlFor={props.id}>{props.label}</label>
+        <div className="tw-flex tw-justify-between">
+            <label  htmlFor={props.id}
+                    className="tw-self-center">{props.label}</label>
             <input
                 type={props.type}
                 id={props.id}

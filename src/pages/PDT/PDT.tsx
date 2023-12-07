@@ -1,29 +1,29 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+
 import IconButton from "@mui/material/IconButton";
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 
+import { useAppSelector, useAppDispatch } from "@/store";
+import { setIdPlan } from "@/store/content/contentSlice";
+
 import { getPDTs } from "../../services/api";
-import { Token, PDTInterface, PDTPageProps } from "../../interfaces";
-import { getToken, decode } from "@/utils";
-import { Frame, BackBtn } from "@/components";
+import { PDTInterface, PDTPageProps } from "../../interfaces";
+import { decode } from "@/utils";
+import { BackBtn, Header } from "@/components";
 
 export const PDT = () => {
-    const [data, setData] = useState<PDTInterface[]>([])
-    const [rol, setRol] = useState("")
+    const [data, setData] = useState<PDTInterface[]>([]);
+    const { token_info } = useAppSelector(state => state.auth);
+
+    let rol = "";
+    
+    if (token_info?.token !== undefined) {
+        const decoded = decode(token_info.token)
+        rol = decoded.rol
+    }
 
     useEffect(() => {
-        const gettoken = getToken();
-        try {
-            const {token} = gettoken;
-
-            if (token !== null || token !== undefined) {
-                const decoded = decode(token!) as Token
-                setRol(decoded.rol)
-            }
-        } catch (error) {
-            console.log(error);
-        }
         getPDTs()
             .then((res) => {
                 setData(res)
@@ -34,21 +34,26 @@ export const PDT = () => {
     }, []);
 
     return (
-        <Frame data={
-            <ListPDT data={data} rol={rol}/>
-        }/>
+        <Header
+            componentes={[
+                <ListPDT data={data} rol={rol}/>
+            ]}
+        />
+        
     )
 }
 
 const ListPDT = ( props: PDTPageProps ) => {
+    const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
     const handleAddPdt = () => {
         navigate('/anadirPDT')
     }
 
-    const handlePdtid = ( id: number ) => {
-        navigate(`/pdt/PlanIndicativo`, {state: {id}})
+    const handlePdtid = (id: number) => {
+        dispatch(setIdPlan(id))
+        navigate(`/lobby`)
     }
 
     const handleAdd = (id: number) => {

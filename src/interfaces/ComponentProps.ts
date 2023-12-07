@@ -8,7 +8,6 @@ export interface ContentProps {
 
 export interface NodeListProps {
     id: number;
-    nodes: NodoInterface[];
 }
 
 export interface BackBtnProps {

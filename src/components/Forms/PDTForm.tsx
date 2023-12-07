@@ -113,29 +113,23 @@ export const PDTForm = () => {
         <div className="tw-flex tw-justify-center">
             {backIconButton()}
             <form   onSubmit={handleSubmit}
-                    className=" tw-flex tw-flex-col 
-                                tw-items-center tw-justify-center 
-                                tw-rounded tw-shadow-2xl
+                    className=" tw-rounded tw-shadow-2xl
                                 tw-p-10">
+                <h1 className="tw-mb-4 tw-grow tw-text-center tw-text-xl">Registrar Plan de Desarrollo</h1>
+                <div>
                 <Input  type={"text"}
                         label="Nombre:"
                         id={"Nombre"}
                         name={"Nombre"}
                         value={planData.Nombre}
-                        onChange={handleInputChange}/><br/>
+                        onChange={handleInputChange}/>
                 <Select label="Departamento:"
                         id="Departamento"
                         name="Departamento"
                         onChange={handleDepartmentChange}
                         options={departamentOptions ? departamentOptions : []}
                         optionLabelFn={(e, i) => <option key={e.id} value={i}>{e.name}</option>}
-                /><br/>
-                {/* <Input  type={"text"}
-                        label="Alcaldía:"
-                        id={"Alcaldia"}
-                        name={"Alcaldia"}
-                        value={planData.Departamento}
-                        onChange={handleInputChange}/><br/> */}
+                />
                 <Select label="Municipio:"
                         id="Municipio"
                         name="Municipio"
@@ -143,13 +137,13 @@ export const PDTForm = () => {
                         options={municipioOptions ? municipioOptions : []}
                         optionLabelFn={(e, i) => <option key={e.id} value={i}>{e.name}</option>}
                         disabled={!selectedDepartamento}
-                /><br/>
+                />
                 <Input  type={"text"}
                         label="Descripción:"
                         id={"Descripcion"}
                         name={"Descripcion"}
                         value={planData.Descripcion}
-                        onChange={handleInputChange}/><br/>
+                        onChange={handleInputChange}/>
 
                 <Select label="Fecha de inicio:"
                         id="Fecha_inicio"
@@ -157,19 +151,8 @@ export const PDTForm = () => {
                         onChange={handleInputYearChange}
                         options={Array.from(Array(5).keys())}
                         optionLabelFn={(e) => <option key={e} value={fechaInicio + e}>{fechaInicio + e}</option>}
-                /><br/>
-
-                {/* <div>
-                    <label className="tw-mr-4">Fecha de inicio:</label>
-                    <select name="Fecha_inicio" 
-                            id="Fecha_inicio" 
-                            onChange={handleInputYearChange}
-                            className="tw-mb-3 tw-p-2 tw-rounded tw-border-2 tw-border-gray-400">
-                        {Array.from(Array(5).keys()).map((e) => {
-                            return <option key={e} value={fechaInicio + e}>{fechaInicio + e}</option>;
-                        })}
-                    </select>
-                </div><br/> */}
+                />
+                </div>
                 <input  type="submit"
                         value="Registrar Plan"
                         title="Añadir plan"
