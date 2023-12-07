@@ -34,7 +34,7 @@ const ModalPDT = ( props: ModalsecretaryProps ) => {
     const dispatch = useAppDispatch();
 
     const { years, levels, plan, secretaries, 
-            loadingReport } = useAppSelector((state) => state.plan);
+            loadingReport, colorimeter } = useAppSelector((state) => state.plan);
 
     const [data, setData] = useState<ReportPDTInterface[]>([]);
     const [secretary, setSecretary] = useState<string>('');
@@ -171,7 +171,15 @@ const ModalPDT = ( props: ModalsecretaryProps ) => {
                             <td className='tw-border tw-p-2'>{item.responsible}</td>
                             <td className='tw-border tw-p-2'>{item.goalCode}</td>
                             <td className='tw-border tw-p-2'>{item.goalDescription}</td>
-                            <td className='tw-border tw-p-2' >{item['percentExecuted'][0]}</td>
+                            <td className={`tw-border tw-p-2 tw-text-center
+                                ${item['percentExecuted'][0] < 0 ? 'tw-bg-gray-400' :
+                                (item['percentExecuted'][0]) < colorimeter[0] ? 'tw-bg-redColory'   :
+                                (item['percentExecuted'][0]) < colorimeter[1] ? 'tw-bg-yellowColory':
+                                (item['percentExecuted'][0]) < colorimeter[2] ? 'tw-bg-greenColory' :
+                                'tw-bg-blueColory hover:tw-ring-blue-200'}
+                                `} >
+                                {item['percentExecuted'][0]}
+                            </td>
                             {levels.map((level, index) => (
                                 <td className='tw-border tw-p-2' 
                                     key={index}>

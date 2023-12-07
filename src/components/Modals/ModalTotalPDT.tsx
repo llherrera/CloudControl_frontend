@@ -87,7 +87,7 @@ export const ModalTotalPDT = () => {
 }
 
 const ModalPDT = ( props: ModalPDTProps ) => {
-    const { years, levels, loadingReport } = useAppSelector((state) => state.plan);
+    const { years, levels, loadingReport, colorimeter } = useAppSelector((state) => state.plan);
 
     return (
         <Modal  isOpen={props.modalIsOpen}
@@ -148,12 +148,34 @@ const ModalPDT = ( props: ModalPDTProps ) => {
                             <td className='tw-border tw-p-2'>{item.responsible}</td>
                             <td className='tw-border tw-p-2'>{item.goalCode}</td>
                             <td className='tw-border tw-p-2'>{item.goalDescription}</td>
-                            {years.map((year, index) => (<td className='tw-border tw-p-2' key={index}>{item['percentExecuted'][index]}</td>))}
-                            {levels.map((level, index) => (<td className='tw-border tw-p-2' key={index}>{item['planSpecific'][index]}</td>))}
+                            {years.map((year, index) => (
+                                <td className={`tw-border tw-p-2 tw-text-center 
+                                    ${item['percentExecuted'][index] < 0 ? 'tw-bg-gray-400' :
+                                    (item['percentExecuted'][index]) < colorimeter[0] ? 'tw-bg-redColory'   :
+                                    (item['percentExecuted'][index]) < colorimeter[1] ? 'tw-bg-yellowColory':
+                                    (item['percentExecuted'][index]) < colorimeter[2] ? 'tw-bg-greenColory' :
+                                    'tw-bg-blueColory hover:tw-ring-blue-200'}
+                                    `} key={index}>
+                                    {item['percentExecuted'][index]}
+                                </td>
+                            ))}
+                            {levels.map((level, index) => (
+                                <td className='tw-border tw-p-2' key={index}>
+                                    {item['planSpecific'][index]}
+                                </td>
+                            ))}
                             <td className='tw-border tw-p-2'>{item.indicator}</td>
                             <td className='tw-border tw-p-2'>{item.base}</td>
-                            {years.map((year, index) => (<td className='tw-border tw-p-2' key={index}>{item['programed'][index]}</td>))}
-                            {years.map((year, index) => (<td className='tw-border tw-p-2' key={index}>{item['executed'][index]}</td>))}
+                            {years.map((year, index) => (
+                                <td className='tw-border tw-p-2' key={index}>
+                                    {item['programed'][index]}
+                                </td>
+                            ))}
+                            {years.map((year, index) => (
+                                <td className='tw-border tw-p-2' key={index}>
+                                    {item['executed'][index]}
+                                </td>
+                            ))}
                         </tr>
                     ))}
                 </tbody>

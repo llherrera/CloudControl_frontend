@@ -1,17 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { useAppDispatch, useAppSelector } from '../../store';
+import { useAppDispatch } from '../../store';
 import { thunkLogin } from '../../store/auth/thunks';
 
 import { decode } from '../../utils/decode';
-import { Token } from '@/interfaces';
 
 export const LoginForm = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
-
-    const { token_info } = useAppSelector(state => state.auth);
 
     const [user, setuser] = useState({
         username: "",

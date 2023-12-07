@@ -1,16 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { Header, ButtonComponent } from '../../components';
 import { MapICon } from '@/assets/icons';
-import { Token } from '@/interfaces';
-
-import { getLastPDT } from '../../services/api';
 import { decode } from '../../utils/decode';
-import { getToken } from '@/utils';
 
 import { useAppDispatch, useAppSelector } from '@/store';
 import { selectOption } from '@/store/content/contentSlice';
+import { thunkGetLevelsById } from '@/store/plan/thunks';
 
 export const LobbyPage = () => {
     const dispatch = useAppDispatch();
@@ -20,26 +17,25 @@ export const LobbyPage = () => {
     const { id_plan } = useAppSelector(state => state.content)
 
     let rol = "";
-    let id = id_plan !== 0 ? id_plan : 0;
-    
+
     if (token_info?.token !== undefined) {
         const decoded = decode(token_info.token)
         rol = decoded.rol
-        id = decoded.id_plan
     }
 
-    const handleButton = () => {
-        navigate(`/pdt/PlanIndicativo`, {state: {id}})
-    }
+    useEffect(() => {
+        dispatch(thunkGetLevelsById(id_plan.toString()))
+    }, [])
 
     const buttons: React.ReactNode[] = [
         <ButtonComponent
             inside={false}
             text='Plan indicativo'
             src="/src/assets/icons/plan-indicativo.svg"
-            onClick={()=>{
+            onClick={() => {
                 dispatch(selectOption(0))
-                handleButton()}}
+                navigate(`/pdt/PlanIndicativo`, {state: {id: id_plan}})
+            }}
             bgColor="tw-bg-greenBtn" />,
         <ButtonComponent
             inside={false}
@@ -47,7 +43,8 @@ export const LobbyPage = () => {
             src="/src/assets/icons/Banco-proyectos.svg"
             onClick={() => {
                 dispatch(selectOption(1))
-                navigate('/PlanIndicativo/Banco-proyectos')}}
+                navigate('/PlanIndicativo/Banco-proyectos', {state: {id: id_plan}})
+            }}
             bgColor="tw-bg-greenBtn" />,
         <ButtonComponent
             inside={false}
@@ -55,14 +52,16 @@ export const LobbyPage = () => {
             src="/src/assets/icons/POAI.svg"
             onClick={() => {
                 dispatch(selectOption(2))
-                navigate('/PlanIndicativo/POAI')}}
+                navigate('/PlanIndicativo/POAI', {state: {id: id_plan}})
+            }}
             bgColor="tw-bg-greenBtn" />,
         <ButtonComponent
             inside={false}
-            text='Plan de acción'
+            text='Mapa de intervención'
             onClick={() => {
                 dispatch(selectOption(3))
-                navigate('/PlanIndicativo/Mapa')}}
+                navigate('/PlanIndicativo/Mapa', {state: {id: id_plan}})
+            }}
             bgColor="tw-bg-greenBtn"
             icon={<MapICon color='white'/>}/>,
     ]

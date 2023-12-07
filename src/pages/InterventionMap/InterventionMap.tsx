@@ -31,7 +31,7 @@ const Section = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const { levels, plan } = useAppSelector(state => state.plan);
+    const { levels } = useAppSelector(state => state.plan);
     const { unit } = useAppSelector(store => store.unit);
     const { evidence, eviSelected } = useAppSelector(store => store.evidence);
 
@@ -91,7 +91,7 @@ const Section = () => {
 
     useEffect(() => {
         const fetch = async () => {
-            dispatch(thunkGetUnit({idPDT: plan!.id_plan!.toString(), idNode: programs[levels.length-1][index_[levels.length-1]].id_node}))
+            dispatch(thunkGetUnit({idPDT: id, idNode: programs[levels.length-1][index_[levels.length-1]].id_node}))
                 .unwrap()
                 .catch((err) => {
                     alert('Ha ocurrido un error al cargar la unidad')
@@ -102,7 +102,7 @@ const Section = () => {
 
     useEffect(() => {
         const fetch = async () => {
-        dispatch(thunkGetEvidence({id_plan: plan!.id_plan!, codigo: unit!.code}))
+        dispatch(thunkGetEvidence({id_plan: id, codigo: unit!.code}))
             .unwrap()
             .then((res) => {
                 if (res.length === 0) {
