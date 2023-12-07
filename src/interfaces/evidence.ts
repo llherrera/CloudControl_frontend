@@ -1,5 +1,6 @@
 import { ErrorTypeInterface } from "./common";
 import { EvidenceInterface } from "./formInterfaces";
+import { Coordinates } from "./ubication";
 
 export interface InitialStateEvidenceInterface {
     loadingEvidence: boolean;
@@ -7,6 +8,7 @@ export interface InitialStateEvidenceInterface {
     evidence: EvidenceInterface[];
     eviSelected?: EvidenceInterface;
     eviCount: number;
+    listPoints: Coordinates[];
 }
 
 export interface GetEvidenceProps {

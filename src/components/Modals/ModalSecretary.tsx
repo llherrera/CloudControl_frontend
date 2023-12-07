@@ -11,6 +11,7 @@ import { Spinner } from "@/assets/icons";
 
 import { exportFile } from "@/utils";
 import { ReportPDTInterface, YearDetail, ModalsecretaryProps } from "@/interfaces";
+import { getLevelName } from "@/services/api";
 
 export const ModalSecretary = () => {
     const [modalSecretaryIsOpen, setModalSecretaryIsOpen] = useState(false);
@@ -56,9 +57,9 @@ const ModalPDT = ( props: ModalsecretaryProps ) => {
         const detalleStr = localStorage.getItem('detalleAño');
         const detalle = detalleStr ? JSON.parse(detalleStr) : [];
         const nodes = detalle.filter((item: YearDetail) => (item.responsable === secretary && item.Año === years[indexYear]));
-        
         const data: ReportPDTInterface[] = [];
-        nodes.forEach((item: YearDetail) => {
+
+        nodes.forEach( async (item: YearDetail) => {
             let percent = (item.Ejecucion_fisica/item.Programacion_fisica)*100;
             percent = percent ? percent : 0;
             percent = Math.round(percent*100)/100;
@@ -67,13 +68,13 @@ const ModalPDT = ( props: ModalsecretaryProps ) => {
                 goalCode: item.id_nodo,
                 goalDescription: item.Descripcion,
                 percentExecuted: [percent],
-                planSpecific: [item.id_nodo],
+                planSpecific: [],
                 indicator: item.Indicador,
                 base: item.Linea_base,
                 executed: [item.Ejecucion_fisica],
                 programed: [item.Programacion_fisica]
-            }
-            data.push(item_)
+            };
+            data.push(item_);
         });
         dispatch(setLoadingReport(false));
         setData(data);
@@ -187,9 +188,9 @@ const ModalPDT = ( props: ModalsecretaryProps ) => {
                                 </td>
                             ))}
                             <td className='tw-border tw-p-2'>{item.indicator}</td>
-                            <td className='tw-border tw-p-2'>{item.base}</td>
-                            <td className='tw-border tw-p-2'>{item['programed'][0]}</td>
-                            <td className='tw-border tw-p-2'>{item['executed'][0]}</td>
+                            <td className='tw-border tw-p-2 tw-text-center'>{item.base}</td>
+                            <td className='tw-border tw-p-2 tw-text-center'>{item['programed'][0]}</td>
+                            <td className='tw-border tw-p-2 tw-text-center'>{item['executed'][0]}</td>
                         </tr>
                     ))}
                 </tbody>

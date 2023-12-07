@@ -50,7 +50,7 @@ export const LocationsForm = () => {
     }
     const handleLocation = (value: Coordinates, index: number) => {
         const newData = [...data];
-        newData[index] = { ...newData[index], LAT: value.lat, LNG: value.lng };
+        newData[index] = { ...newData[index], LAT: value.LAT, LNG: value.LNG };
         setData(newData);
     };
 

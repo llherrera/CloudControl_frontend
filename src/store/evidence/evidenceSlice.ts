@@ -1,6 +1,6 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
-import { EvidenceInterface, InitialStateEvidenceInterface, UbicationDB } from "@/interfaces";
+import { EvidenceInterface, InitialStateEvidenceInterface, Coordinates } from "@/interfaces";
 
 import { thunkGetEvidence, thunkGetEvidences, thunkGetEvidenceCount } from "./thunks";
 
@@ -10,7 +10,8 @@ const getInitialState = (): InitialStateEvidenceInterface => {
         errorLoadingEvidence: undefined,
         evidence: [],
         eviSelected: undefined,
-        eviCount: 0
+        eviCount: 0,
+        listPoints: [],
     };
 };
 
@@ -25,6 +26,9 @@ export const evidenceSlice = createSlice({
         setEvidence: (state, action: PayloadAction<EvidenceInterface>) => {
             state.eviSelected = action.payload;
         },
+        setPoints: (state, action: PayloadAction<Coordinates[]>) => {
+            state.listPoints = action.payload;
+        }
     },
     extraReducers: builder => {
         builder.addCase(thunkGetEvidence.pending, state => {
@@ -71,5 +75,5 @@ export const evidenceSlice = createSlice({
     }
 });
 
-export const { removeEvidence, resetEvidence, setEvidence } = evidenceSlice.actions;
+export const { removeEvidence, resetEvidence, setEvidence, setPoints } = evidenceSlice.actions;
 export const evidenceReducer = evidenceSlice.reducer;

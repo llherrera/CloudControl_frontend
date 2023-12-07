@@ -42,14 +42,14 @@ const Section = () => {
     });
 
     const [map, setMap] = useState<google.maps.Map|null>(null);
-    const [ubication, setUbication] = useState<Coordinates>({lat: 10.96854, lng: -74.78132});
+    const [ubication, setUbication] = useState<Coordinates>({LAT: 10.96854, LNG: -74.78132});
     
     const [programs, setPrograms] = useState<NodoInterface[][]>([]);
     const [index_, setIndex] = useState<number[]>(levels.map(() => 0));
 
     useEffect(() => {
         navigator.geolocation.watchPosition((position) => {
-            setUbication({lat: position.coords.latitude, lng: position.coords.longitude})
+            setUbication({LAT: position.coords.latitude, LNG: position.coords.longitude})
         }, (error) => {
             console.log(error)
         }, {
@@ -177,7 +177,7 @@ const Section = () => {
                 </div>
                 <GoogleMap
                     mapContainerStyle={containerStyle}
-                    center={ubication}
+                    center={{lat: ubication.LAT, lng: ubication.LNG}}
                     zoom={14}
                     onLoad={onLoad}
                     onUnmount={onUnmount}>

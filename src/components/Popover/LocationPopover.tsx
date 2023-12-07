@@ -1,15 +1,18 @@
-import { LocationIcon } from '@/assets/icons';
-import { LocationInterface } from '@/interfaces';
-import { useJsApiLoader, GoogleMap } from '@react-google-maps/api';
 import { useCallback, useState } from 'react';
+import { useJsApiLoader, GoogleMap, Marker } from '@react-google-maps/api';
 import { Popover } from 'react-tiny-popover'
+
+import { useAppDispatch, useAppSelector } from '@/store';
+import { setPoints } from '@/store/evidence/evidenceSlice';
+
+import { LocationIcon } from '@/assets/icons';
+import { LocationInterface, Coordinates } from '@/interfaces';
 
 interface PopoverProps {
     callback: Function,
     index: number,
     item: LocationInterface
 }
-
 
 const API_KEY = import.meta.env.VITE_API_KEY_MAPS as string;
 
@@ -30,29 +33,47 @@ export const LocationPopover = (props: PopoverProps) => {
     );
 }
 
+export const UbicationsPopover = () => {
+    const [poLocationIsOpen, setPoLocationIsOpen] = useState(false);
+    const toggleOpen = () => setPoLocationIsOpen(!poLocationIsOpen)
+
+    return (
+        <Popover
+            isOpen={poLocationIsOpen}
+            positions={['right']}
+            content={mapContainerUbi()}
+            onClickOutside={toggleOpen}>
+            <button type="button" onClick={toggleOpen}>
+                <LocationIcon />
+            </button>
+        </Popover>
+    );
+}
+
+let contentStyle: React.CSSProperties = {
+    background: 'white',
+    width: '400px',
+    height: '250px',
+    borderRadius: '15px'
+}
+let options: google.maps.MapOptions = {
+    disableDefaultUI: true,
+    zoom: 0,
+    restriction: {
+        latLngBounds: {
+            north: 13.011493,
+            east: -66.9,
+            south: -4.334669,
+            west: -79.314914
+        }
+    }
+}
+
 const mapContainer = (props: PopoverProps) => {
     const [map, setMap] = useState<google.maps.Map | null>(null);
     const [marker, setMarker] = useState<google.maps.Marker | null>(null);
     let item = props.item;
     let centerLocation = { lat: 4.713237, lng: -74.78132 }
-    let contentStyle: React.CSSProperties = {
-        background: 'white',
-        width: '400px',
-        height: '250px',
-        borderRadius: '15px'
-    }
-    let options: google.maps.MapOptions = {
-        disableDefaultUI: true,
-        zoom: 0,
-        restriction: {
-            latLngBounds: {
-                north: 13.011493,
-                east: -66.9,
-                south: -4.334669,
-                west: -79.314914
-            }
-        }
-    }
     if (item.LAT && item.LNG){
         centerLocation = {
             lat: item.LAT,
@@ -125,4 +146,65 @@ const mapContainer = (props: PopoverProps) => {
         </div>
     )
 
+}
+
+const mapContainerUbi = () => {
+    const dispatch = useAppDispatch();
+    const { listPoints } = useAppSelector(state => state.evidence);
+
+    const [map, setMap] = useState<google.maps.Map|null>(null);
+    let centerLocation = { lat: 4.713237, lng: -74.78132 };
+
+    const { isLoaded } = useJsApiLoader({
+        id: 'google-map-script',
+        googleMapsApiKey: API_KEY
+    });
+
+    const onLoad = useCallback(function callback(map: google.maps.Map) {
+        const bounds = new window.google.maps.LatLngBounds();
+        map.fitBounds(bounds);
+        setMap(map)
+    }, []);
+
+    const onUnmount = useCallback(function callback(map: google.maps.Map) {
+        setMap(null)
+    }, []);
+
+    const handleMapClick = (event: google.maps.MapMouseEvent) => {
+        const lat = event.latLng?.lat();
+        const lng = event.latLng?.lng();
+        if (lat && lng) {
+            const exist = listPoints.find((point) => point.LAT === lat && point.LNG === lng)
+            if (exist) return;
+            console.log(listPoints);
+            
+            dispatch(setPoints([...listPoints, {LAT:lat, LNG:lng}]))
+        }
+    }
+
+    const handleDeleteMarker = (index: number) => {
+        const newList = listPoints.filter((point, i) => i !== index);
+        dispatch(setPoints(newList));
+    }
+
+    return (
+        <div>
+            {isLoaded ? 
+                <GoogleMap
+                    mapContainerStyle={contentStyle}
+                    center={centerLocation}
+                    zoom={15}
+                    options={options}
+                    onLoad={onLoad}
+                    onUnmount={onUnmount}
+                    onClick={handleMapClick}>
+                    {listPoints.map((point, index) => (
+                        <Marker key={index} 
+                                position={{lat:point.LAT, lng:point.LNG}}
+                                onClick={()=>handleDeleteMarker(index)} />
+                    ))}
+                </GoogleMap>
+            :<p>Cargando...</p>}
+        </div>
+    )
 }

@@ -1,19 +1,11 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
 
 import { useAppSelector } from "@/store";
 
 import { addEvicenceGoal } from "../../services/api";
-import { EvidenceInterface, Coordinates } from "../../interfaces";
-import { BackBtn, MarkerComponent } from "@/components";
-
-
-const API_KEY = import.meta.env.VITE_API_KEY_MAPS as string;
-const containerStyle = {
-    width: '400px',
-    height: '400px'
-};
+import { EvidenceInterface } from "../../interfaces";
+import { BackBtn, UbicationsPopover } from "@/components";
 
 export const EvidencePage = () => {
     const navigate = useNavigate();
@@ -23,6 +15,7 @@ export const EvidencePage = () => {
 
     const { namesTree, plan } = useAppSelector((state) => state.plan);
     const { unit } = useAppSelector((state) => state.unit);
+    const { listPoints } = useAppSelector((state) => state.evidence)
     
     const [cargar, setCargar] = useState(false)
     const [loading, setLoading] = useState(false)
@@ -48,56 +41,10 @@ export const EvidencePage = () => {
         ubicaciones: []
     })
     const [documento, setDocumento] = useState<FileList | null>(null)
-    const [listPoints, setListPoints] = useState<Coordinates[]>([])
-
-    const { isLoaded } = useJsApiLoader({
-        id: 'google-map-script',
-        googleMapsApiKey: API_KEY
-    });
-
-    const [map, setMap] = useState<google.maps.Map|null>(null);
-    const [ubication, setUbication] = useState<Coordinates>({lat: 10.96854, lng: -74.78132});
-
-    useEffect(() => {
-        navigator.geolocation.watchPosition((position) => {
-            setUbication({lat: position.coords.latitude, lng: position.coords.longitude})
-        }, (error) => {
-            console.log(error)
-        }, {
-            enableHighAccuracy: true,
-            timeout: 5000,
-            maximumAge: 0
-        })
-    }, []);
 
     useEffect(()=> {
         //To DO: obtener localidades para hacer el select
     }, [])
-
-    const onLoad = useCallback(function callback(map: google.maps.Map) {
-        const bounds = new window.google.maps.LatLngBounds();
-        map.fitBounds(bounds);
-        setMap(map)
-    }, []);
-
-    const onUnmount = useCallback(function callback(map: google.maps.Map) {
-        setMap(null)
-    }, []);
-
-    const handleMapClick = (event: google.maps.MapMouseEvent) => {
-        const lat = event.latLng?.lat();
-        const lng = event.latLng?.lng();
-        if (lat && lng) {
-            const exist = listPoints.find((point) => point.lat === lat && point.lng === lng)
-            if (exist) return;
-            setListPoints([...listPoints, {lat, lng}])
-        }
-    }
-
-    const handleDeleteMarker = (index: number) => {
-        const newList = listPoints.filter((point, i) => i !== index);
-        setListPoints(newList);
-    }
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = event.target;
@@ -393,31 +340,8 @@ export const EvidencePage = () => {
                                 <option value="Galapa">Galapa</option>
                             </select>
                         </div>
-                        <div className="tw-ml-3">
-                            <button className=" tw-px-1 tw-mb-1
-                                                tw-bg-white hover:tw-bg-gray-300
-                                                tw-border-gray-400
-                                                tw-rounded tw-border-2"
-                                    onClick={()=>{}}
-                                    type="button">
-                                Cargar en el mapa
-                            </button>
-                            {isLoaded ? 
-                                <GoogleMap
-                                    mapContainerStyle={containerStyle}
-                                    center={ubication}
-                                    zoom={15}
-                                    onLoad={onLoad}
-                                    onUnmount={onUnmount}
-                                    onClick={handleMapClick}>
-                                    {listPoints.map((point, index) => (
-                                        <Marker key={index} 
-                                                position={point}
-                                                onClick={()=>handleDeleteMarker(index)} />
-                                    ))}
-                                    <MarkerComponent lat={ubication.lat} lng={ubication.lng} />
-                                </GoogleMap>
-                            :(<></>)}
+                        <div className="tw-flex tw-ml-5">
+                            <UbicationsPopover/>
                         </div>
                     </div>
 

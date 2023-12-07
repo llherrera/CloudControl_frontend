@@ -18,10 +18,9 @@ const Evidence = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const id = location.state?.id;
-
     const { plan } = useAppSelector(store => store.plan);
     const { evidence, eviCount } = useAppSelector(store => store.evidence);
+    const { id_plan } = useAppSelector(store => store.content);
 
     const [page, setPage] = useState(1);
 
@@ -30,7 +29,7 @@ const Evidence = () => {
             const { id_plan } = plan
             if (id_plan) dispatch(thunkGetEvidenceCount(id_plan))
         } else {
-            dispatch(thunkGetEvidenceCount(parseInt(id!)))
+            dispatch(thunkGetEvidenceCount(id_plan))
         }
     }, [evidence])
 
@@ -39,7 +38,6 @@ const Evidence = () => {
             const { id_plan } = plan
             if (id_plan) dispatch(thunkGetEvidences({id_plan, page}))
         }else{
-            let id_plan = parseInt(id!)
             dispatch(thunkGetEvidences( {id_plan, page}))
         }
     }, [page, eviCount])
@@ -50,13 +48,13 @@ const Evidence = () => {
 
     const handleBack = () => {
         dispatch(resetEvidence())
-        navigate(`/pdt/PlanIndicativo`, {state: {id}})
+        navigate(`/pdt/PlanIndicativo`, {state: {id: id_plan}})
     }
 
     return (
         <div className="tw-flex tw-flex-col tw-items-center tw-mx-3">
             <p className="tw-ml-4 tw-mt-3 tw-font-montserrat tw-font-bold">
-                <BackBtn handle={handleBack} id={parseInt(id!)}/>
+                <BackBtn handle={handleBack} id={id_plan}/>
                 Evidencias por aprobar
             </p>
             <table>
