@@ -11,6 +11,7 @@ import { getPDTs } from "../../services/api";
 import { PDTInterface, PDTPageProps } from "../../interfaces";
 import { decode } from "@/utils";
 import { BackBtn, Header } from "@/components";
+import { thunkGetPDTid } from "@/store/plan/thunks";
 
 export const PDT = () => {
     const [data, setData] = useState<PDTInterface[]>([]);
@@ -53,6 +54,7 @@ const ListPDT = ( props: PDTPageProps ) => {
 
     const handlePdtid = (id: number) => {
         dispatch(setIdPlan(id))
+        dispatch(thunkGetPDTid(id.toString())).unwrap()
         navigate(`/lobby`)
     }
 

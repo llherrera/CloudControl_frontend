@@ -8,6 +8,11 @@ import { decode } from '../../utils/decode';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { selectOption } from '@/store/content/contentSlice';
 import { thunkGetLevelsById } from '@/store/plan/thunks';
+import { setPlanLocation } from '@/store/plan/planSlice';
+import { getGoogleApiKey } from '@/utils';
+import { useJsApiLoader } from '@react-google-maps/api';
+
+const { API_KEY } = getGoogleApiKey();
 
 export const LobbyPage = () => {
     const dispatch = useAppDispatch();
@@ -15,6 +20,11 @@ export const LobbyPage = () => {
 
     const { token_info } = useAppSelector(state => state.auth)
     const { id_plan } = useAppSelector(state => state.content)
+    const { plan } = useAppSelector(store => store.plan)
+    const { isLoaded, loadError} = useJsApiLoader({
+        id: 'google-map-script',
+        googleMapsApiKey: API_KEY
+    });
 
     let rol = "";
 
@@ -26,6 +36,18 @@ export const LobbyPage = () => {
     useEffect(() => {
         dispatch(thunkGetLevelsById(id_plan.toString()))
     }, [])
+
+    useEffect(() => {
+        if (!plan || !isLoaded || loadError) return;
+        const geocoder = new google.maps.Geocoder();
+        geocoder.geocode({address: `Colombia, ${plan?.Departamento}, ${plan?.Municipio}`}).then((res) => {
+            let location = res.results[0].geometry.location;
+            dispatch(setPlanLocation({
+                lat: location.lat(),
+                lng: location.lng()
+            }));
+        });
+    });
 
     const buttons: React.ReactNode[] = [
         <ButtonComponent

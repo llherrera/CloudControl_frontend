@@ -1,5 +1,6 @@
 import { LocationIcon } from '@/assets/icons';
 import { LocationInterface } from '@/interfaces';
+import { useAppSelector } from '@/store';
 import { useJsApiLoader, GoogleMap } from '@react-google-maps/api';
 import { useCallback, useState } from 'react';
 import { Popover } from 'react-tiny-popover'
@@ -36,8 +37,9 @@ export const LocationPopover = (props: PopoverProps) => {
 const mapContainer = (props: PopoverProps) => {
     const [map, setMap] = useState<google.maps.Map | null>(null);
     const [marker, setMarker] = useState<google.maps.Marker | null>(null);
+    const { planLocation } = useAppSelector(state => state.plan);
+
     let item = props.item;
-    let centerLocation = { lat: 4.713237, lng: -74.78132 }
     let contentStyle: React.CSSProperties = {
         background: 'white',
         width: '400px',
@@ -46,7 +48,7 @@ const mapContainer = (props: PopoverProps) => {
     }
     let options: google.maps.MapOptions = {
         disableDefaultUI: true,
-        zoom: 0,
+        zoom: 12,
         restriction: {
             latLngBounds: {
                 north: 13.011493,
@@ -54,14 +56,8 @@ const mapContainer = (props: PopoverProps) => {
                 south: -4.334669,
                 west: -79.314914
             }
-        }
-    }
-    if (item.lat && item.lng){
-        centerLocation = {
-            lat: item.lat,
-            lng: item.lng
-        }
-        options.zoom = 12
+        },
+        center: planLocation
     }
     const { isLoaded } = useJsApiLoader({
         id: 'google-map-script',
@@ -117,7 +113,7 @@ const mapContainer = (props: PopoverProps) => {
             {isLoaded ? (
                 <GoogleMap
                     mapContainerStyle={contentStyle}
-                    center={centerLocation}
+                    center={planLocation}
                     zoom={4}
                     onLoad={onLoad}
                     onUnmount={onUnmount}

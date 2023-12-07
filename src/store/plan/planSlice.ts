@@ -1,6 +1,6 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
-import { InitialStatePlanInterface, NodoInterface, Node, Secretary, SecretaryResponse, LocationInterface } from "@/interfaces";
+import { InitialStatePlanInterface, NodoInterface, Node, Secretary, SecretaryResponse, LocationInterface, Coordinates } from "@/interfaces";
 
 import { thunkGetPDTid, thunkAddPDT, thunkGetColors, thunkAddColors,
     thunkGetNodes, thunkUpdateYears, thunkGetLevelsById, thunkGetLevelName,
@@ -33,7 +33,7 @@ const getInitialState = (): InitialStatePlanInterface => {
         years: [],
         yearSelect: undefined,
         levels: [],
-        indexLevel: undefined,
+        indexLevel: 0,
         parent: null,
         progressNodes: [],
         financial: [],
@@ -41,7 +41,8 @@ const getInitialState = (): InitialStatePlanInterface => {
         radioBtn: 'fisica',
         url: undefined,
         secretaries: [],
-        locations: []
+        locations: [],
+        planLocation: undefined
     };
 };
 
@@ -75,6 +76,9 @@ export const planSlice = createSlice({
         },
         setNodesReport: (state, action: PayloadAction<Node[]>) => {
             state.nodesReport = action.payload
+        },
+        setPlanLocation: (state, action: PayloadAction<Coordinates>) => {
+            state.planLocation = action.payload
         },
     },
     extraReducers: builder => {
@@ -313,5 +317,5 @@ export const planSlice = createSlice({
 });
 export const { selectYear, incrementLevelIndex, decrementLevelIndex, 
         setParent, setRadioBtn, setProgressNodes, setFinancial, 
-        setLoadingReport, setNodesReport } = planSlice.actions;
+        setLoadingReport, setNodesReport, setPlanLocation } = planSlice.actions;
 export default planSlice.reducer;

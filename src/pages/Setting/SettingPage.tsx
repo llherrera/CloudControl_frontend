@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
 import { useAppSelector, useAppDispatch } from '@/store';
-import { thunkGetSecretaries } from '@/store/plan/thunks';
+import { thunkGetLocations, thunkGetSecretaries } from '@/store/plan/thunks';
 
 import { Frame, BackBtn, ColorForm, SecretaryForm, 
         UploadImage, 
@@ -50,6 +50,7 @@ const SettingPageWrapper = () => {
     useEffect(() => {
         if (id) {
             dispatch(thunkGetSecretaries(id))
+            dispatch(thunkGetLocations(id))
         }
     }, [])
 

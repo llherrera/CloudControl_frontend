@@ -31,7 +31,7 @@ const Section = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const { levels } = useAppSelector(state => state.plan);
+    const { levels, planLocation } = useAppSelector(state => state.plan);
     const { unit } = useAppSelector(store => store.unit);
     const { evidence, eviSelected } = useAppSelector(store => store.evidence);
 
@@ -41,23 +41,30 @@ const Section = () => {
         googleMapsApiKey: API_KEY
     });
 
+    const mapOptions = {
+        restriction: {
+            latLngBounds: {
+                north: 13.011493,
+                east: -66.9,
+                south: -4.334669,
+                west: -79.314914
+            }
+        },
+        fullscreenControl: false,
+        zoom: 12,
+        streetViewControl: false,
+        mapTypeControl: false
+    }
+
     const [map, setMap] = useState<google.maps.Map|null>(null);
-    const [ubication, setUbication] = useState<Coordinates>({lat: 10.96854, lng: -74.78132});
     
     const [programs, setPrograms] = useState<NodoInterface[][]>([]);
     const [index_, setIndex] = useState<number[]>(levels.map(() => 0));
 
     useEffect(() => {
-        navigator.geolocation.watchPosition((position) => {
-            setUbication({lat: position.coords.latitude, lng: position.coords.longitude})
-        }, (error) => {
-            console.log(error)
-        }, {
-            enableHighAccuracy: true,
-            timeout: 5000,
-            maximumAge: 0
-        })
-    }, []);
+        if (!map || !planLocation) return;
+        map.setCenter(planLocation)
+    });
 
     useEffect(() => {
         const fetch = async () => {
@@ -114,12 +121,10 @@ const Section = () => {
     }, [unit]);
 
     const onLoad = useCallback(function callback(map: google.maps.Map) {
-        const bounds = new window.google.maps.LatLngBounds();
-        map.fitBounds(bounds);
         setMap(map)
     }, []);
 
-    const onUnmount = useCallback(function callback(map: google.maps.Map) {
+    const onUnmount = useCallback(function callback() {
         setMap(null)
     }, []);
 
@@ -177,8 +182,7 @@ const Section = () => {
                 </div>
                 <GoogleMap
                     mapContainerStyle={containerStyle}
-                    center={ubication}
-                    zoom={14}
+                    options={mapOptions}
                     onLoad={onLoad}
                     onUnmount={onUnmount}>
                     {eviSelected !== undefined ? (

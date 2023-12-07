@@ -1,6 +1,6 @@
 import { ErrorTypeInterface } from "./common";
 import { PDTInterface, NivelInterface, NodoInterface, LocationInterface } from "./formInterfaces";
-import { Secretary } from "./secretary";
+import { Coordinates } from "./ubication";
 
 export interface InitialStatePlanInterface {
     loadingPlan: boolean;
@@ -36,7 +36,8 @@ export interface InitialStatePlanInterface {
     radioBtn: string;
     url?: string;
     secretaries: string[];
-    locations: LocationInterface[]
+    locations: LocationInterface[];
+    planLocation: Coordinates | undefined
 }
 
 export interface GetNodeProps {
