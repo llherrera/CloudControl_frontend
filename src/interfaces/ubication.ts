@@ -1,4 +1,11 @@
+import { LocationInterface } from "./formInterfaces";
+
 export interface Coordinates {
-    LAT: number;
-    LNG: number;
+    lat: number;
+    lng: number;
+}
+
+export interface PropsLocations {
+    id_plan: number;
+    locations: LocationInterface[]
 }

@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useJsApiLoader, GoogleMap, Marker } from '@react-google-maps/api';
 import { Popover } from 'react-tiny-popover'
 
@@ -19,6 +19,9 @@ const API_KEY = import.meta.env.VITE_API_KEY_MAPS as string;
 export const LocationPopover = (props: PopoverProps) => {
     const [poLocationIsOpen, setPoLocationIsOpen] = useState(false);
     const toggleOpen = () => setPoLocationIsOpen(!poLocationIsOpen)
+    let red = '#EF4444';
+    let green = '#86EFAC';
+    let locationSelected = !!props.item.lat && !!props.item.lng;
 
     return (
         <Popover
@@ -27,7 +30,7 @@ export const LocationPopover = (props: PopoverProps) => {
             content={mapContainer(props)}
             onClickOutside={toggleOpen}>
             <button type="button" onClick={toggleOpen}>
-                <LocationIcon />
+                <LocationIcon color={locationSelected ? green:red} />
             </button>
         </Popover>
     );
@@ -35,7 +38,8 @@ export const LocationPopover = (props: PopoverProps) => {
 
 export const UbicationsPopover = () => {
     const [poLocationIsOpen, setPoLocationIsOpen] = useState(false);
-    const toggleOpen = () => setPoLocationIsOpen(!poLocationIsOpen)
+    const toggleOpen = () => setPoLocationIsOpen(!poLocationIsOpen);
+    let red = '#EF4444';
 
     return (
         <Popover
@@ -44,7 +48,7 @@ export const UbicationsPopover = () => {
             content={mapContainerUbi()}
             onClickOutside={toggleOpen}>
             <button type="button" onClick={toggleOpen}>
-                <LocationIcon />
+                <LocationIcon color={red}/>
             </button>
         </Popover>
     );
@@ -72,14 +76,27 @@ let options: google.maps.MapOptions = {
 const mapContainer = (props: PopoverProps) => {
     const [map, setMap] = useState<google.maps.Map | null>(null);
     const [marker, setMarker] = useState<google.maps.Marker | null>(null);
+    const { planLocation } = useAppSelector(state => state.plan);
+
     let item = props.item;
-    let centerLocation = { lat: 4.713237, lng: -74.78132 }
-    if (item.LAT && item.LNG){
-        centerLocation = {
-            lat: item.LAT,
-            lng: item.LNG
-        }
-        options.zoom = 12
+    let contentStyle: React.CSSProperties = {
+        background: 'white',
+        width: '400px',
+        height: '250px',
+        borderRadius: '15px'
+    }
+    let options: google.maps.MapOptions = {
+        disableDefaultUI: true,
+        zoom: 12,
+        restriction: {
+            latLngBounds: {
+                north: 13.011493,
+                east: -66.9,
+                south: -4.334669,
+                west: -79.314914
+            }
+        },
+        center: planLocation
     }
     const { isLoaded } = useJsApiLoader({
         id: 'google-map-script',
@@ -87,10 +104,10 @@ const mapContainer = (props: PopoverProps) => {
     });
 
     const onLoad = useCallback(function callback(map: google.maps.Map) {
-        if (item.LAT && item.LNG) {
+        if (item.lat && item.lng) {
             let markerPosition: google.maps.LatLngLiteral = {
-                lat: item.LAT,
-                lng: item.LNG
+                lat: item.lat,
+                lng: item.lng
             }
             let markerOptions = {
                 clickable: false,
@@ -135,7 +152,7 @@ const mapContainer = (props: PopoverProps) => {
             {isLoaded ? (
                 <GoogleMap
                     mapContainerStyle={contentStyle}
-                    center={centerLocation}
+                    center={planLocation}
                     zoom={4}
                     onLoad={onLoad}
                     onUnmount={onUnmount}
@@ -174,11 +191,11 @@ const mapContainerUbi = () => {
         const lat = event.latLng?.lat();
         const lng = event.latLng?.lng();
         if (lat && lng) {
-            const exist = listPoints.find((point) => point.LAT === lat && point.LNG === lng)
+            const exist = listPoints.find((point) => point.lat === lat && point.lng === lng)
             if (exist) return;
             console.log(listPoints);
             
-            dispatch(setPoints([...listPoints, {LAT:lat, LNG:lng}]))
+            dispatch(setPoints([...listPoints, {lat, lng}]))
         }
     }
 
@@ -200,7 +217,7 @@ const mapContainerUbi = () => {
                     onClick={handleMapClick}>
                     {listPoints.map((point, index) => (
                         <Marker key={index} 
-                                position={{lat:point.LAT, lng:point.LNG}}
+                                position={{lat:point.lat, lng:point.lng}}
                                 onClick={()=>handleDeleteMarker(index)} />
                     ))}
                 </GoogleMap>

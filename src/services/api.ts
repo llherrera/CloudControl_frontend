@@ -529,14 +529,14 @@ export const getSecretaries = async (id_plan: number) => {
 }
 
 export const addLocations = async (id_plan: number, locations: any) => {
-    try {
-        const response = await api.post(`/plan-territorial/localidades`, {
-            params: {
-                id_plan: id_plan
-            }
-        });
-        return response.data;
-    } catch (error) {
-        return error;
-    }
+    const response = await api.post(`/plan-territorial/localidades`, {
+        id_plan,
+        locations
+    });
+    return response.data;
+}
+
+export const getLocations = async (id_plan: number) => {
+    const response = await api.get(`/plan-territorial/${id_plan}/localidades`);
+    return response.data;
 }

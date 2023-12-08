@@ -97,6 +97,6 @@ export interface LocationInterface {
     id_plan: number
     type: locationTypes
     name: string;
-    LAT?: number
-    LNG?: number
+    lat?: number
+    lng?: number
 }

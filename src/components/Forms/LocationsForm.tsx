@@ -1,7 +1,8 @@
 import { Coordinates, LocationInterface, locationTypes } from "@/interfaces";
 import { useAppSelector, useAppDispatch } from "@/store";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { LocationPopover } from "../Popover";
+import { thunkAddLocations } from "@/store/plan/thunks";
 
 export const LocationsForm = () => {
     const dispatch = useAppDispatch();
@@ -44,13 +45,17 @@ export const LocationsForm = () => {
                 alert("Por favor llene todos los campos");
                 return;
             }
+            if (!location.lat && !location.lng) {
+                alert(`Por favor seleccionar ubicación de localidad: ${location.name}`);
+                return;
+            }
         })
         // TODO enviar los datos a endpoint (por crear)
-        console.log(data)
+        dispatch(thunkAddLocations({ id_plan: plan?.id_plan!, locations: data}));
     }
     const handleLocation = (value: Coordinates, index: number) => {
         const newData = [...data];
-        newData[index] = { ...newData[index], LAT: value.LAT, LNG: value.LNG };
+        newData[index] = { ...newData[index], lat: value.lat, lng: value.lng };
         setData(newData);
     };
 
