@@ -137,7 +137,7 @@ export const SettingsPage = () => {
                         <div key={index}>
                             <label  htmlFor="">{year}</label>
                             <input  className="tw-m-2 tw-p-2 tw-rounded tw-border-2 tw-border-gray-400"
-                                    onChange={ (e) => handleChangeYear(e, index) } value={ nodeYear[index].programed }
+                                    onChange={ (e) => handleChangeYear(e, index) } value={ nodeYear[index]?.programed }
                                     type="number" name="programed" required placeholder="Programacion" />
                         </div>
                     ))}
