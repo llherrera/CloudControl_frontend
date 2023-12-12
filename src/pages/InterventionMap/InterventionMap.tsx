@@ -1,15 +1,14 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
+import { GoogleMap, useJsApiLoader } from '@react-google-maps/api';
 
 import { useAppDispatch, useAppSelector } from '@/store';
 import { thunkGetEvidence } from '@/store/evidence/thunks';
-import { thunkGetUnit } from "@/store/unit/thunks";
-import { setEvidence } from '@/store/evidence/evidenceSlice';
+import { setEvidences } from '@/store/evidence/evidenceSlice';
 
-import { BackBtn, Frame } from '@/components';
-import { Coordinates, NodoInterface, Node, EvidenceInterface } from '@/interfaces';
-import { getLevelNodes } from '@/services/api';
+import { BackBtn, Frame, MarkerComponent } from '@/components';
+import { Coordinates, NodoInterface, Node } from '@/interfaces';
+import { getLevelNodes, getUbiEvidences } from '@/services/api';
 
 export const InterventionMap = () => {
     return (
@@ -22,8 +21,9 @@ export const InterventionMap = () => {
 const API_KEY = import.meta.env.VITE_API_KEY_MAPS as string;
 
 const containerStyle = {
-    width: '400px',
-    height: '400px'
+    width: '500px',
+    height: '500px',
+    borderRadius: '15px'
 };
 
 const Section = () => {
@@ -33,7 +33,8 @@ const Section = () => {
 
     const { levels, planLocation } = useAppSelector(state => state.plan);
     const { unit } = useAppSelector(store => store.unit);
-    const { evidence, eviSelected } = useAppSelector(store => store.evidence);
+    const { evidence } = useAppSelector(store => store.evidence);
+    const { id_plan } = useAppSelector(store => store.content);
 
     const id = location.state?.id;
     const { isLoaded } = useJsApiLoader({
@@ -58,9 +59,9 @@ const Section = () => {
 
     const [map, setMap] = useState<google.maps.Map|null>(null);
     const [ubication, setUbication] = useState<Coordinates>({lat: 10.96854, lng: -74.78132});
-    
+
     const [programs, setPrograms] = useState<NodoInterface[][]>([]);
-    const [index_, setIndex] = useState<number[]>(levels.map(() => 0));
+    const [index_, setIndex] = useState<number[]>([0, 0]);
 
     useEffect(() => {
         navigator.geolocation.watchPosition((position) => {
@@ -73,20 +74,35 @@ const Section = () => {
             maximumAge: 0
         })
     }, []);
+
     useEffect(() => {
         if (!map || !planLocation) return;
         map.setCenter(planLocation);
-    });
+    }, []);
+
+    useEffect(() => {
+        const fetch = async () => {
+            await getUbiEvidences(id_plan)
+            .then((res)=> {
+                if (res.length === 0) {
+                    alert('No hay evidencias para esta unidad')
+                }else {
+                    localStorage.setItem('evidence', JSON.stringify(res));
+                }
+            });
+        }
+        fetch();
+    }, []);
 
     useEffect(() => {
         const fetch = async () => {
             let parent: (string | null) = null;
             let response = [] as NodoInterface[][];
-            for (let i = 0; i < levels.length; i++) {
+            for (let i = 0; i < 2; i++) {
                 const { id_nivel } = levels[i];
                 if (id_nivel) {
                     const res = await getLevelNodes({id_level: id_nivel, parent: parent});
-                    const temp_ = [] as NodoInterface[];
+                    let temp_ = [] as NodoInterface[];
                     res.forEach((item:Node) => {
                         temp_.push({
                             id_node: item.id_nodo,
@@ -97,12 +113,21 @@ const Section = () => {
                             Weight: 0,
                         });
                     });
+                    if (res.length === 0) break;
                     const temp = [...programs];
                     temp[i] = temp_;
                     parent = res[index_[i]].id_nodo;
                     response.push(temp_);
                 }
             }
+            response[0].push({
+                id_node: '',
+                NodeName: 'Todas',
+                Description: '',
+                Parent: null,
+                id_level: 0,
+                Weight: 0,
+            })
             setPrograms(response);
         }
         fetch();
@@ -110,18 +135,16 @@ const Section = () => {
 
     useEffect(() => {
         const fetch = async () => {
-            dispatch(thunkGetUnit({idPDT: id, idNode: programs[levels.length-1][index_[levels.length-1]].id_node}))
-                .unwrap()
-                .catch((err) => {
-                    alert('Ha ocurrido un error al cargar la unidad')
-                })
+            if (programs.length === 0) return;
+            //await getUbiEvidences();
         }
         fetch();
     }, [programs]);
 
     useEffect(() => {
         const fetch = async () => {
-        dispatch(thunkGetEvidence({id_plan: id, codigo: unit!.code}))
+            if (!unit) return;
+            dispatch(thunkGetEvidence({id_plan: id, codigo: unit.code}))
             .unwrap()
             .then((res) => {
                 if (res.length === 0) {
@@ -149,6 +172,11 @@ const Section = () => {
         let newIndex_ = [...index_];
         if (newIndex === 0) {
             newIndex_[index] = newIndex;
+        } else if (newIndex === programs[0].length - 1) {
+            const evidencesLocal = localStorage.getItem('evidence');
+            const evidens = JSON.parse(evidencesLocal as string);
+            dispatch(setEvidences(evidens));
+        
         } else {
             newIndex_[index] = newIndex;
             for (let i = index+1; i < newIndex_.length; i++) {
@@ -158,12 +186,9 @@ const Section = () => {
         setIndex(newIndex_);
     };
 
-    const handleChangeEvidence = (item: EvidenceInterface) => {
-        dispatch(setEvidence(item));
-    };
-
     return (
-        <div>
+        <div className={`tw-bg-[url('/src/assets/images/bg-plan-indicativo.png')]
+                        tw-pb-3`} >
             <div className='tw-flex tw-my-4'>
                 <BackBtn handle={handleBack} id={id} />
                 <h1 className='tw-grow tw-text-center'>Mapa de intervenciones</h1>
@@ -171,27 +196,19 @@ const Section = () => {
 
             <div className='tw-flex tw-justify-center tw-mb-3'>
                 {programs.map((program, index) => (
-                    <select value={program[index_[index]].NodeName}
-                            onChange={(e)=>handleChangePrograms(index, e)}
-                            className='tw-border tw-border-gray-300 tw-rounded tw-mr-3 '
-                            key={index}>
-                        {program.map((node, index) => (<option value={node.NodeName} key={index}>{node.NodeName}</option>))}
-                    </select>
-                
+                    <div className='tw-flex tw-flex-col' key={index}>
+                        <label className='tw-text-center'>
+                            {levels[index].LevelName}
+                        </label>
+                        <select value={program[index_[index]].NodeName}
+                                onChange={(e)=>handleChangePrograms(index, e)}
+                                className='tw-border tw-border-gray-300 tw-rounded tw-mr-3 '>
+                            {program.map((node, index) => (<option value={node.NodeName} key={index}>{node.NodeName}</option>))}
+                        </select>
+                    </div>
                 ))}
             </div>
             {isLoaded ? (<div className='tw-flex tw-justify-center'>
-                <div className='tw-flex tw-flex-col tw-mr-3'>
-                    {evidence.map((item, index) => (
-                        <button key={index}
-                                className=' tw-border tw-rounded 
-                                            tw-mb-2 tw-p-1
-                                            tw-bg-slate-300 hover:tw-bg-slate-400'
-                                onClick={()=>handleChangeEvidence(item)}>
-                            <p className='tw-text-start'>{index + 1} - {item.nombreDocumento}</p>
-                        </button>
-                    ))}
-                </div>
                 <GoogleMap
                     mapContainerStyle={containerStyle}
                     center={{lat: ubication.lat, lng: ubication.lng}}
@@ -199,11 +216,11 @@ const Section = () => {
                     options={mapOptions}
                     onLoad={onLoad}
                     onUnmount={onUnmount}>
-                    {eviSelected !== undefined ? (
-                        eviSelected.ubicaciones.map((item, index) => (
-                            <Marker key={index} position={{lat:item.Latitud, lng:item.Longitud}} />
+                    {evidence.map((item) => (
+                        item.ubicaciones.map((location, index) => (
+                            <MarkerComponent key={index} item={location} />
                         ))
-                    ): null}
+                    ))}
                 </GoogleMap>
             </div>
             ) : <p>Cargando...</p>}

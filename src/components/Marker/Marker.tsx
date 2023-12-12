@@ -1,25 +1,32 @@
-import React from "react";
-import { Marker } from "@react-google-maps/api";
+import React, { useState } from "react";
+import { InfoWindow, Marker } from "@react-google-maps/api";
 
-interface MarkerProps {
-    lat: number;
-    lng: number;
-    onDelete?: () => void;
-    onEdit?: () => void;
-    onDetail?: () => void;
-}
+import { MarkerProps } from "@/interfaces";
+import icono from "@/assets/icons/location.svg";
 
 export const MarkerComponent = ( props: MarkerProps ) => {
+    const [showTooltip, setShowTooltip] = useState<boolean>(false);
+
+    const handleShowTooltip = () => {
+        setShowTooltip(true);
+    }
+
+    const { item } = props;
+
     return (
-        <Marker
-            position={{ lat: props.lat, lng: props.lng }}
-            onClick={ props.onDetail?? props.onEdit?? props.onDelete?? (() => {console.log('Este marcador no tiene accione')}) }
-            icon={{
-                url: "https://loading.io/icon/bt460y",
-                scaledSize: new window.google.maps.Size(30, 30),
-                origin: new window.google.maps.Point(0, 0),
-                anchor: new window.google.maps.Point(15, 15),
-            }}
-        />
+        <Marker position={{lat: item.Latitud, lng: item.Longitud}}
+                onClick={handleShowTooltip}
+                icon={{
+                    url: icono,
+                    scaledSize: new window.google.maps.Size(30, 30),
+                }}>
+            {showTooltip && (
+                <InfoWindow onCloseClick={()=>setShowTooltip(false)}>
+                    <div>
+                        <p>{item.codigo}</p>
+                    </div>
+                </InfoWindow>
+            )}
+        </Marker>
     );
 }

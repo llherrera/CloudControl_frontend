@@ -28,6 +28,9 @@ export const evidenceSlice = createSlice({
         },
         setPoints: (state, action: PayloadAction<Coordinates[]>) => {
             state.listPoints = action.payload;
+        },
+        setEvidences: (state, action: PayloadAction<EvidenceInterface[]>) => {
+            state.evidence = action.payload;
         }
     },
     extraReducers: builder => {
@@ -75,5 +78,9 @@ export const evidenceSlice = createSlice({
     }
 });
 
-export const { removeEvidence, resetEvidence, setEvidence, setPoints } = evidenceSlice.actions;
+export const {  removeEvidence, 
+                resetEvidence, 
+                setEvidence, 
+                setPoints,
+                setEvidences } = evidenceSlice.actions;
 export const evidenceReducer = evidenceSlice.reducer;

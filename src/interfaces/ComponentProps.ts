@@ -1,5 +1,5 @@
 import { ChangeEventHandler } from "react";
-import { EvidenceInterface, NodoInterface, PDTInterface } from "./formInterfaces";
+import { EvidenceInterface, NodoInterface, PDTInterface, UbicationDB } from "./formInterfaces";
 
 export interface ContentProps {
     id: number;
@@ -100,4 +100,8 @@ export interface NavBarProps {
 export interface PDTPageProps {
     data: PDTInterface[],
     rol: string
+}
+
+export interface MarkerProps {
+    item: UbicationDB;
 }

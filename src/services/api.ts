@@ -346,6 +346,19 @@ export const addEvicenceGoal = async (id_plan: number, codigo: string, evidencia
     }
 }
 
+export const getUbiEvidences = async (id_plan: number) => {
+    try {
+        const response = await api.get(`/nodo/evidencia-ubicacion`, {
+            params: {
+                id_plan: id_plan
+            }
+        });
+        return response.data;
+    } catch (error) {
+        return error;   
+    }
+}
+
 export const getEvidence = async (id_plan: number, codigo: string) => {
     try {
         const response = await api.get("/nodo/evidencia", {

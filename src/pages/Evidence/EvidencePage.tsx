@@ -284,10 +284,14 @@ export const EvidencePage = () => {
                                 onChange={(e) => handleInputChange(e)}
                                 required
                                 value={data.unidad}>
-                                <option value="num">num</option>
-                                <option value="num">Kg</option>
-                                <option value="num">Pesos</option>
-                                <option value="char">Km</option>
+                                <option value="num">M</option>
+                                <option value="num">M2</option>
+                                <option value="num">M3</option>
+                                <option value="num">KM</option>
+                                <option value="num">HA</option>
+                                <option value="num">Otro</option>
+                                <option value="num">Num</option>
+                                <option value="num">%</option>
                             </select>
                         </div>
                         <div className="tw-flex tw-ml-3 tw-flex-col">
@@ -360,7 +364,23 @@ export const EvidencePage = () => {
                                 required
                                 value={data.poblacionBeneficiada}>
                                 <option value="AdultoMayor">Adulto Mayor</option>
-                                <option value="Infantes">Infantes</option>
+                                <option value="Afrodescendientes">Afrodescendientes</option>
+                                <option value="Docentes">Docentes</option>
+                                <option value="Estudiantes">Estudiantes</option>
+                                <option value="Calle">Habitantes de la Calle</option>
+                                <option value="Indigenas">Indigenas</option>
+                                <option value="Jovenes">Jovenes</option>
+                                <option value="LGBTI">LGBTI</option>
+                                <option value="Mujeres">Mujeres</option>
+                                <option value="NA">N/A</option>
+                                <option value="Adolescentes">Niños, Niñas y Adolescentes</option>
+                                <option value="Otros">Otros</option>
+                                <option value="Discapacitados">Personas con Discapacidad</option>
+                                <option value="PobrezaExtrema">Personas en Pobreza Extrema</option>
+                                <option value="Reinsertados">Reinsertados</option>
+                                <option value="ROM">ROM</option>
+                                <option value="Todos">Todos</option>
+                                <option value="Victimas">Victimas</option>
                             </select>
                         </div>
                         <div className="tw-flex tw-flex-col tw-ml-3">
@@ -402,8 +422,22 @@ export const EvidencePage = () => {
                                 onChange={(e)=> handleInputChange(e)}
                                 required
                                 value={data.fuenteRecursos}>
-                                <option value="Privado">Sector privado</option>
-                                <option value="Publico">Sector publico</option>
+                                <option value="Privado">Recursos Propios ICLD</option>
+                                <option value="Publico">Recursos Propios ICDE</option>
+                                <option value="Publico">SGP</option>
+                                <option value="Publico">Regalias</option>
+                                <option value="Publico">Credito</option>
+                                <option value="Publico">Estampillas</option>
+                                <option value="Publico">Otros</option>
+                                <option value="Publico">SGP Cultura</option>
+                                <option value="Publico">SGP Deporte</option>
+                                <option value="Publico">SGP Educacion</option>
+                                <option value="Publico">SGP Salud</option>
+                                <option value="Publico">SGP Libre inversion</option>
+                                <option value="Publico">Cofinanciacion Departamento</option>
+                                <option value="Publico">Cofinanciacion Nacion</option>
+                                <option value="Publico">Propios</option>
+                                <option value="Publico">Funcionamiento</option>
                             </select>
                         </div>
                     </div>
