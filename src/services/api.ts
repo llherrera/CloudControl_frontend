@@ -359,6 +359,20 @@ export const getUbiEvidences = async (id_plan: number) => {
     }
 }
 
+export const getCodeEvidences = async (id_node: string, id_plan: number) => {
+    try {
+        const response = await api.get(`/nodo/evidencia-codigo`, {
+            params: {
+                id_node: id_node,
+                id_plan: id_plan
+            }
+        });
+        return response.data;
+    } catch (error) {
+        return error;
+    }
+}
+
 export const getEvidence = async (id_plan: number, codigo: string) => {
     try {
         const response = await api.get("/nodo/evidencia", {

@@ -3,12 +3,11 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { GoogleMap, useJsApiLoader } from '@react-google-maps/api';
 
 import { useAppDispatch, useAppSelector } from '@/store';
-import { thunkGetEvidence } from '@/store/evidence/thunks';
 import { setEvidences } from '@/store/evidence/evidenceSlice';
 
 import { BackBtn, Frame, MarkerComponent } from '@/components';
-import { Coordinates, NodoInterface, Node } from '@/interfaces';
-import { getLevelNodes, getUbiEvidences } from '@/services/api';
+import { Coordinates, NodoInterface, Node, EvidenceInterface, UbicationDB } from '@/interfaces';
+import { getLevelNodes, getUbiEvidences, getCodeEvidences } from '@/services/api';
 
 export const InterventionMap = () => {
     return (
@@ -32,7 +31,6 @@ const Section = () => {
     const location = useLocation();
 
     const { levels, planLocation } = useAppSelector(state => state.plan);
-    const { unit } = useAppSelector(store => store.unit);
     const { evidence } = useAppSelector(store => store.evidence);
     const { id_plan } = useAppSelector(store => store.content);
 
@@ -62,6 +60,7 @@ const Section = () => {
 
     const [programs, setPrograms] = useState<NodoInterface[][]>([]);
     const [index_, setIndex] = useState<number[]>([0, 0]);
+    const [codes, setCodes] = useState<string[]>([]);
 
     useEffect(() => {
         navigator.geolocation.watchPosition((position) => {
@@ -136,24 +135,26 @@ const Section = () => {
     useEffect(() => {
         const fetch = async () => {
             if (programs.length === 0) return;
-            //await getUbiEvidences();
+            await getCodeEvidences(programs[1][index_[1]].id_node, id_plan)
+            .then((res) => {
+                setCodes(res);
+            });
         }
         fetch();
     }, [programs]);
 
     useEffect(() => {
-        const fetch = async () => {
-            if (!unit) return;
-            dispatch(thunkGetEvidence({id_plan: id, codigo: unit.code}))
-            .unwrap()
-            .then((res) => {
-                if (res.length === 0) {
-                    alert('No hay evidencias para esta unidad')
-                }
-            })
-        }
-        fetch();
-    }, [unit]);
+        if (codes.length === 0) return;
+        const evidencesLocal = localStorage.getItem('evidence');
+        const evidens = JSON.parse(evidencesLocal as string) as EvidenceInterface[];
+        let temp = [] as EvidenceInterface[];
+        evidens.forEach((item: EvidenceInterface) => {
+            if (codes.includes(item.codigo)) {
+                temp.push(item);
+            }
+        });
+        dispatch(setEvidences(temp));
+    }, [codes]);
 
     const onLoad = useCallback(function callback(map: google.maps.Map) {
         setMap(map)
@@ -176,7 +177,6 @@ const Section = () => {
             const evidencesLocal = localStorage.getItem('evidence');
             const evidens = JSON.parse(evidencesLocal as string);
             dispatch(setEvidences(evidens));
-        
         } else {
             newIndex_[index] = newIndex;
             for (let i = index+1; i < newIndex_.length; i++) {

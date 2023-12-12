@@ -35,7 +35,7 @@ export const ColorForm = ( props : ColorFromProps ) => {
                 return (
                     <div className='tw-flex tw-mx-2'
                         key={index}>
-                        <Box sx={{ width:100 }}>
+                        <Box sx={{ width:100, display:'flex', alignItems:'center' }}>
                             <Slider min={0}
                                     max={100}
                                     value={value}
@@ -43,7 +43,7 @@ export const ColorForm = ( props : ColorFromProps ) => {
                                     valueLabelDisplay="auto"
                                     disableSwap/>
                         </Box>
-                        <div className={`tw-w-12 tw-h-12 tw-ml-2
+                        <div className={`tw-w-12 tw-h-12 tw-ml-3
                                         ${index=== 0 ? 'tw-bg-redColory'   : 
                                         (index === 1 ? 'tw-bg-yellowColory': 
                                         (index === 2 ? 'tw-bg-greenColory' : 

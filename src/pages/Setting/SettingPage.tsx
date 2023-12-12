@@ -4,9 +4,13 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from '@/store';
 import { thunkGetLocations, thunkGetSecretaries } from '@/store/plan/thunks';
 
-import { Frame, BackBtn, ColorForm, SecretaryForm, 
+import { Frame, 
+        BackBtn, 
+        ColorForm, 
+        SecretaryForm, 
         UploadImage, 
-        LocationsForm} from '@/components'
+        LocationsForm,
+        FileInput} from '@/components'
 import { getToken, decode } from "@/utils";
 import { Token } from '@/interfaces';
 
@@ -73,6 +77,7 @@ const SettingPageWrapper = () => {
         (plan === null || plan === undefined) ? <div className='tw-text-center'>No hay un plan seleccionado</div> :
         <div>
             <BackBtn handle={handleBack} id={id}/><br />
+            <FileInput/>
             <UploadImage id={id_}/>
             <div className='tw-border-t-4 tw-mt-4'>
                 {((rol === "admin") || (rol === 'funcionario' && id === plan!.id_plan!)) ?
