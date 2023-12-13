@@ -327,23 +327,19 @@ export const getUnitNodeAndYears = async (idPDT: string, idNodo: string) => {
 }
 
 export const addEvicenceGoal = async (id_plan: number, codigo: string, evidencia: EvidenceInterface, file: File, points: Coordinates[]) => {
-    try {
-        const response = await api.post("/nodo/evidencia", 
-        {
-            id_plan: id_plan,
-            code: codigo,
-            evidence: evidencia,
-            file: file,
-            points: points
-        },{
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
-        });
-        return response.data;
-    } catch (error) {
-        return error;
-    }
+    const response = await api.post("/nodo/evidencia", 
+    {
+        id_plan: id_plan,
+        code: codigo,
+        evidence: evidencia,
+        file: file,
+        points: points
+    },{
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    });
+    return response.data;
 }
 
 export const getUbiEvidences = async (id_plan: number) => {

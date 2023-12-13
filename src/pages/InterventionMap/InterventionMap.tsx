@@ -216,7 +216,7 @@ const Section = () => {
                     options={mapOptions}
                     onLoad={onLoad}
                     onUnmount={onUnmount}>
-                    {evidence.map((item) => (
+                    {evidence && evidence.map((item) => (
                         item.ubicaciones.map((location, index) => (
                             <MarkerComponent key={index} item={location} />
                         ))
