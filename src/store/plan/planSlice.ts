@@ -233,8 +233,6 @@ export const planSlice = createSlice({
         });
         builder.addCase(thunkAddSecretaries.fulfilled, (state, action) => {
             state.loadingSecretaries = false;
-            const temp = action.payload.map((item: Secretary) => (item.name));
-            state.secretaries = temp;
             alert("Se han agregado las secretarías correctamente.");
         });
         builder.addCase(thunkAddSecretaries.rejected, (state, action) => {

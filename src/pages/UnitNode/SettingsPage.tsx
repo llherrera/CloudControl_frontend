@@ -73,8 +73,7 @@ export const SettingsPage = () => {
                         tw-bg-gray-200
                         tw-border-8 tw-border-gray-400 
                         tw-rounded-md">
-            <div className='tw-cols-start-1 tw-col-span-full
-                            tw-flex tw-justify-between
+            <div className='tw-flex tw-justify-between
                             tw-px-3 tw-my-4
                             tw-shadow-2xl
                             tw-border-b-2 tw-border-gray-400
@@ -84,7 +83,7 @@ export const SettingsPage = () => {
                 <img src="/src/assets/images/Plan-indicativo.png" alt="" width={60} />
             </div>
             <BackBtn handle={() => navigate(-1)} id={plan?.id_plan!} />
-            <ol className="tw-col-start-1 tw-col-span-full tw-flex tw-justify-center tw-flex-wrap">
+            <ol className="tw-flex tw-justify-center tw-flex-wrap">
             {namesTree.length > 0 && namesTree.map((name, index) => {
                 return (
                     <li className="tw-flex tw-mx-3" key={index}>
@@ -94,54 +93,65 @@ export const SettingsPage = () => {
                 );
             })}
             </ol>
-            <div className="tw-p-3 tw-justify-center">
+            <div className="tw-p-3">
                 <p className='tw-block'>Información de la meta:</p>
-                <form   action=""
-                        className=' tw-shadow-2xl tw-rounded tw-border-2
-                                    tw-flex tw-flex-wrap tw-gap-3 
+                <form   className=' tw-shadow-2xl tw-rounded tw-border-2
+                                    tw-flex tw-flex-wrap
                                     tw-p-2 
                                     tw-bg-white'>
-                    <input  className='tw-mb-3 tw-p-2 tw-rounded tw-border-2 tw-border-gray-400'
+                    <input  className='tw-m-3 tw-p-2 tw-rounded tw-border-2 tw-border-gray-400'
                             placeholder='Descripción de la meta'
                             onChange={ (e)=>handleChangeUnit(e)}
                             type="text" name='description' required/><br />
-                    <input  className='tw-mb-3 tw-p-2 tw-rounded tw-border-2 tw-border-gray-400'
+                    <input  className='tw-m-3 tw-p-2 tw-rounded tw-border-2 tw-border-gray-400'
                             placeholder='Indicador'
                             onChange={ (e)=>handleChangeUnit(e)}
                             type="text" name='indicator' required/><br />
-                    <input  className='tw-mb-3 tw-p-2 tw-rounded tw-border-2 tw-border-gray-400'
+                    <input  className='tw-m-3 tw-p-2 tw-rounded tw-border-2 tw-border-gray-400'
                             placeholder='Meta'
                             onChange={ (e)=>handleChangeUnit(e)}
                             type="number" name='goal' required/><br />
-                    <input  className='tw-mb-3 tw-p-2 tw-rounded tw-border-2 tw-border-gray-400'
+                    <input  className='tw-m-3 tw-p-2 tw-rounded tw-border-2 tw-border-gray-400'
                             placeholder='Línea base'
                             onChange={ (e)=>handleChangeUnit(e)}
                             type="text" name='base' required/>
                     <select name="responsible"
                             onChange={ (e)=>handleChangeUnit(e) }
-                            className='tw-mb-3 tw-p-2 tw-rounded tw-border-2 tw-border-gray-400'>
+                            className='tw-m-3 tw-p-2 tw-rounded tw-border-2 tw-border-gray-400'>
                         {secretaries.map((secretary, index) => (
                             <option key={index} value={secretary}>{secretary}</option>
                         ))}
                     </select>
                 </form>
             </div>
-            <div className="tw-p-3 tw-justify-center">
+            <div className="tw-p-3">
                 <p>Información de la programación</p>
-                <form   action=""
-                        className=' tw-shadow-2xl tw-rounded tw-border-2
-                                    tw-flex tw-flex-wrap tw-gap-3 
+                <form   className=' tw-shadow-2xl tw-rounded tw-border-2
+                                    tw-flex tw-flex-wrap
                                     tw-p-2 
                                     tw-bg-white'>
                     {years.map((year, index) => (
                         <div key={index}>
                             <label  htmlFor="">{year}</label>
                             <input  className="tw-m-2 tw-p-2 tw-rounded tw-border-2 tw-border-gray-400"
-                                    onChange={ (e) => handleChangeYear(e, index) } value={ nodeYear[index].programed }
-                                    type="number" name="programed" required placeholder="Programacion" />
+                                    onChange={ (e) => handleChangeYear(e, index) } 
+                                    value={ nodeYear.length > 0 ? nodeYear[index].programed : 0 }
+                                    type="number" 
+                                    name="programed" 
+                                    placeholder="Programacion" 
+                                    required/>
                         </div>
                     ))}
                 </form>
+            </div>
+            <div className='tw-p-3 tw-flex tw-justify-center'>
+                <button className=' tw-bg-blue-400 hover:tw-bg-blue-300
+                                    tw-text-white hover:tw-text-gray-900
+                                    tw-font-bold
+                                    tw-p-2 tw-mb-4
+                                    tw-rounded'>
+                    Guardar Cambios de la meta
+                </button>
             </div>
         </div>
     );
