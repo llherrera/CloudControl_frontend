@@ -153,15 +153,16 @@ export const PDTForm = () => {
                         optionLabelFn={(e) => <option key={e} value={fechaInicio + e}>{fechaInicio + e}</option>}
                 />
                 </div>
-                <input  type="submit"
-                        value="Registrar Plan"
-                        title="Añadir plan"
-                        className=" tw-bg-green-500 hover:tw-bg-green-300
-                                    tw-text-white tw-font-bold hover:tw-text-black
-                                    tw-rounded
-                                    tw-p-2"
-                />
-
+                <div className="tw-flex tw-justify-center">
+                    <input  type="submit"
+                            value="Registrar Plan"
+                            title="Añadir plan"
+                            className=" tw-bg-green-500 hover:tw-bg-green-300
+                                        tw-text-white tw-font-bold hover:tw-text-black
+                                        tw-rounded
+                                        tw-p-2"
+                    />
+                </div>
             </form>
         </div>
     )

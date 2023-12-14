@@ -1,6 +1,6 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
-import { InitialStatePlanInterface, NodoInterface, Node, Secretary, Coordinates } from "@/interfaces";
+import { InitialStatePlanInterface, NodoInterface, Node, Coordinates, NivelInterface } from "@/interfaces";
 
 import { thunkGetPDTid, thunkAddPDT, thunkGetColors, thunkAddColors,
     thunkGetNodes, thunkUpdateYears, thunkGetLevelsById, thunkGetLevelName,
@@ -79,6 +79,9 @@ export const planSlice = createSlice({
         },
         setPlanLocation: (state, action: PayloadAction<Coordinates>) => {
             state.planLocation = action.payload
+        },
+        setLevels: (state, action: PayloadAction<NivelInterface[]>) => {
+            state.levels = action.payload
         },
     },
     extraReducers: builder => {
@@ -315,5 +318,6 @@ export const planSlice = createSlice({
 });
 export const { selectYear, incrementLevelIndex, decrementLevelIndex, 
         setParent, setRadioBtn, setProgressNodes, setFinancial, 
-        setLoadingReport, setNodesReport, setPlanLocation } = planSlice.actions;
+        setLoadingReport, setNodesReport, setPlanLocation,
+        setLevels } = planSlice.actions;
 export default planSlice.reducer;

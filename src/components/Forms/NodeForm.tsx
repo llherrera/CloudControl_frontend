@@ -88,7 +88,7 @@ export const NodeForm = ( props : NodeFormProps ) => {
             return
         }
         try {
-            await addLevelNode(data, parent, props.id)
+            await addLevelNode(data, props.id)
         } catch (error) {
             console.log(error);
         }

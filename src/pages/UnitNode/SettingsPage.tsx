@@ -2,12 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 import { useAppSelector, useAppDispatch } from '@/store';
-import { thunkGetSecretaries } from '@/store/plan/thunks';
-import { thunkGetLevelName } from "@/store/plan/thunks";
+import { thunkGetSecretaries, thunkGetLevelName } from '@/store/plan/thunks';
+import { thunkGetUnit } from '@/store/unit/thunks';
 
 import { BackBtn } from '@/components';
 import { UnitInterface, YearInterface } from '@/interfaces';
-import { thunkGetUnit } from '@/store/unit/thunks';
+import { getLetter } from '@/utils';
 
 export const SettingsPage = () => {
     const dispatch = useAppDispatch();
@@ -78,8 +78,8 @@ export const SettingsPage = () => {
                             tw-shadow-2xl
                             tw-border-b-2 tw-border-gray-400
                             tw-z-40'>
-                <img src="/src/assets/images/Logo.png" alt="" width={100} />
-                <img src="/src/assets/images/Logo-Municipio.png" alt="" width={250} className="tw-hidden md:tw-block" />
+                <img src="/src/assets/images/CloudControlIcon.png" alt="" width={100}/>
+                <img src="/src/assets/images/Logo-Municipio.png" alt="" width={250} className="tw-invisible" />
                 <img src="/src/assets/images/Plan-indicativo.png" alt="" width={60} />
             </div>
             <BackBtn handle={() => navigate(-1)} id={plan?.id_plan!} />

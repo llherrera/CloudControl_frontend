@@ -68,7 +68,7 @@ export const Frame = (props: FrameProps) => {
     return (
         <div className='tw-min-h-screen tw-flex tw-flex-col'>
             <header className={`tw-flex tw-justify-between tw-bg-header tw-drop-shadow-xl`}>
-                <img src="\src\assets\images\Logo.png" alt="" width={100} height={100} className='tw-invisible'/>
+                <img src="\src\assets\images\CloudControlIcon.png" alt="" width={100} height={100}/>
                 {urlLogo && <img src={urlLogo} alt="" width={300} height={100} className='tw-invisible'/> }
                 <IconButton onClick={handleBtn}>
                     <LogoutIcon sx={{color: 'green'}}/>

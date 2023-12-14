@@ -6,7 +6,6 @@ import { ButtonComponent, Header } from "../../components"
 import { thunkLogout } from "@/store/auth/thunks"
 import { useAppDispatch, useAppSelector } from '../../store'
 
-
 export const HomePage = () => {
     const dispatch = useAppDispatch()
     const { logged } = useAppSelector(store => store.auth)

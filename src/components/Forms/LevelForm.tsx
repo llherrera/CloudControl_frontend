@@ -3,43 +3,47 @@ import IconButton from "@mui/material/IconButton";
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import { useNavigate } from "react-router-dom";
 
-import { Input } from "../Inputs";
+import { useAppDispatch } from "@/store";
+import { setLevels } from "@/store/plan/planSlice";
+
+import { Input, FileInput } from "../Inputs";
 import { addLevel } from "@/services/api";
 import { NivelInterface, Token, LevelFormProps } from "@/interfaces";
 import { getToken, decode } from "@/utils";
 
 export const LevelForm = ( props: LevelFormProps ) => {
-    const navigate = useNavigate()
+    const navigate = useNavigate();
+    const dispatch = useAppDispatch();
 
     const [data, setData] = useState<NivelInterface[]>([
         { LevelName: "", Description: "" },
         { LevelName: "", Description: "" },
         { LevelName: "", Description: "" }
-    ])
+    ]);
 
     const [nivel, setNivel] = useState<NivelInterface>({
         LevelName: "",
         Description: ""
-    })
+    });
 
-    const [rol, setRol] = useState("")
-    const [id_, setId] = useState(0)
+    const [rol, setRol] = useState("");
+    const [id_, setId] = useState(0);
 
     useEffect(() => {
-        const abortController = new AbortController()
-        const gettoken = getToken()
+        const abortController = new AbortController();
+        const gettoken = getToken();
         try {
-            const {token} = gettoken
+            const {token} = gettoken;
             if (token !== null || token !== undefined) {
-                const decoded = decode(token) as Token
-                setId(decoded.id_plan)
-                setRol(decoded.rol)
+                const decoded = decode(token) as Token;
+                setId(decoded.id_plan);
+                setRol(decoded.rol);
             }
         } catch (error) {
             console.log(error);
         }
-        return () => abortController.abort()
-    })
+        return () => abortController.abort();
+    });
 
     const backIconButton = () => {
         return (
@@ -78,21 +82,23 @@ export const LevelForm = ( props: LevelFormProps ) => {
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        try {
-            await addLevel(data, props.id)
-            window.location.reload();
-        } catch (error) {
+        await addLevel(data, props.id)
+        .then(()=>{
+            dispatch(setLevels(data));
+        }).catch((error)=>{
             console.log(error);
-        }
+        });
     }
 
     return (
         <div className="tw-bg-[url('/src/assets/images/bg-plan-indicativo.png')]">
             {backIconButton()}
-            <p>Definir niveles del plan</p>
+            <p className="tw-text-center tw-font-bold tw-text-2xl">Definir niveles del plan</p>
             {(rol === "admin") || (rol === 'funcionario' && id_ === parseInt(props.id)) ?
-            <form   onSubmit={ handleSubmit}
-                    className="tw-grid tw-grid-cols-12 tw-mt-5">
+            (<div>
+                <FileInput/>
+                <form   onSubmit={ handleSubmit}
+                className="tw-grid tw-grid-cols-12 tw-mt-5">
                 <ul className=" tw-col-start-5 tw-col-span-4
                                 md:tw-col-start-4 md:tw-col-span-6 
                                 lg:tw-col-start-4 lg:tw-col-span-6 
@@ -128,23 +134,24 @@ export const LevelForm = ( props: LevelFormProps ) => {
                                         hover:tw-bg-red-300 
                                         tw-text-white tw-font-bold
                                         tw-w-12 tw-p-2 tw-rounded"
-                            type="button"
-                            title="Eliminar un nivel"
-                            onClick={ eliminarNivel }>-</button>
+                                        type="button"
+                                        title="Eliminar un nivel"
+                                        onClick={ eliminarNivel }>-</button>
                 </div>
                 </ul>
                 <input  type="submit"
                         value={"Guardar"}
                         title="Guardar"
                         className=" tw-col-start-6 tw-col-span-2
-                                    tw-bg-blue-500
-                                    hover:tw-bg-blue-300 
-                                    tw-text-white tw-font-bold }
-                                    tw-rounded
-                                    tw-mt-5 tw-mx-6 tw-py-2"/>
+                        tw-bg-blue-500
+                        hover:tw-bg-blue-300 
+                        tw-text-white tw-font-bold }
+                        tw-rounded
+                        tw-mt-5 tw-mx-6 tw-py-2"/>
             </form>
+            </div>)
             : <p className="tw-text-center tw-text-2xl">Plan en proceso</p>}
-        </div>
-        
+            </div>
+            
     )
 }

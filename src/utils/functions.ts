@@ -75,3 +75,8 @@ export const handleUser = (rol: string, id: number) => {
     return
   }
 }
+
+export const getLetter = (year: number) => {
+  const num = parseInt(((year - 2016)/4).toString());
+  return String.fromCharCode(num + 'A'.charCodeAt(0));
+}

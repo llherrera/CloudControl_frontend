@@ -72,10 +72,10 @@ export const NodesList = ( props : NodeListProps ) => {
                                         tw-flex tw-justify-center tw-items-center
                                         tw-border-4
                                         ${
-                                        progressNodes[index] < 0 ? 'tw-border-gray-400 hover:tw-border-gray-200' :
-                                        (progressNodes[index])*100 < colorimeter[0] ? 'tw-border-redColory hover:tw-border-red-200'      :
-                                        (progressNodes[index])*100 < colorimeter[1] ? 'tw-border-yellowColory hover:tw-border-yellow-200':
-                                        (progressNodes[index])*100 < colorimeter[2] ? 'tw-border-greenColory hover:tw-border-green-200'  :
+                                        parseInt( ((progressNodes[index]??0)*100).toString()) < 0 ? 'tw-border-gray-400 hover:tw-border-gray-200' :
+                                        parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[0] ? 'tw-border-redColory hover:tw-border-red-200'      :
+                                        parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[1] ? 'tw-border-yellowColory hover:tw-border-yellow-200':
+                                        parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[2] ? 'tw-border-greenColory hover:tw-border-green-200'  :
                                         'tw-border-blueColory hover:tw-border-blue-200'}
                                         tw-ml-3
                                         tw-w-12 tw-h-12
@@ -86,10 +86,10 @@ export const NodesList = ( props : NodeListProps ) => {
                     </button>
                     {indexLevel !== levels.length-1 ?
                     <button className={`${
-                                        progressNodes[index] < 0 ? 'tw-bg-gray-400 hover:tw-bg-gray-200' :
-                                        (progressNodes[index])*100 < colorimeter[0] ? 'tw-bg-redColory hover:tw-bg-red-200'      :
-                                        (progressNodes[index])*100 < colorimeter[1] ? 'tw-bg-yellowColory hover:tw-bg-yellow-200':
-                                        (progressNodes[index])*100 < colorimeter[2] ? 'tw-bg-greenColory hover:tw-bg-green-200'  : 
+                                        parseInt( ((progressNodes[index]??0)*100).toString()) < 0 ? 'tw-bg-gray-400 hover:tw-bg-gray-200' :
+                                        parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[0] ? 'tw-bg-redColory hover:tw-bg-red-200'      :
+                                        parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[1] ? 'tw-bg-yellowColory hover:tw-bg-yellow-200':
+                                        parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[2] ? 'tw-bg-greenColory hover:tw-bg-green-200'  : 
                                         'tw-bg-blueColory hover:tw-ring-blue-200'}
                                         tw-h-8 tw-my-2
                                         tw-w-2/3

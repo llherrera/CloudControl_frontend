@@ -213,7 +213,7 @@ export const UnitNodePage = () => {
                             </p>
                             <p className="  tw-text-center
                                             tw-border-t tw-border-black">
-                                {parseInt(acum.toString())*100}%
+                                {isNaN(acum) ? 0 : parseInt(acum.toString())*100}%
                             </p>
                         </div>
                         <div className="tw-flex tw-flex-col tw-justify-center
@@ -241,11 +241,11 @@ export const UnitNodePage = () => {
                         tw-border-gray-400 tw-rounded-md ">
             <div className='tw-cols-start-1 tw-col-span-full
                             tw-flex tw-justify-between
-                            tw-px-3 tw-my-4
+                            tw-mb-4
                             tw-shadow-2xl
                             tw-border-b-2 tw-border-gray-400
                             tw-z-40'>
-                <img src="/src/assets/images/Logo.png" alt="" width={100} className="tw-invisible"/>
+                <img src="/src/assets/images/CloudControlIcon.png" alt="" width={100}/>
                 <img src="/src/assets/images/Logo-Municipio.png" alt="" width={250} className="tw-invisible" />
                 <img src="/src/assets/images/Plan-indicativo.png" alt="" width={60} />
             </div>

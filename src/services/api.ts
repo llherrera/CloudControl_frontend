@@ -259,11 +259,10 @@ export const getLevelNodes = async (props: GetNodeProps) => {
     }
 }
 
-export const addLevelNode = async (nodes: NodoInterface[], parent: (string|null), id_level: number) => {
+export const addLevelNode = async (nodes: NodoInterface[], id_level: number) => {
     try {
         const response = await api.post("/plan-territorial/nivel", { 
             nodes: nodes,
-            parent: parent,
             id_level: id_level
         });
         return response.data;
