@@ -1,13 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 import { useAppSelector, useAppDispatch } from '@/store';
 import { thunkGetSecretaries, thunkGetLevelName } from '@/store/plan/thunks';
-import { thunkGetUnit } from '@/store/unit/thunks';
+import { thunkGetUnit, thunkAddUnit } from '@/store/unit/thunks';
+import { setUnit } from '@/store/unit/unitSlice';
 
 import { BackBtn } from '@/components';
 import { UnitInterface, YearInterface } from '@/interfaces';
-import { getLetter } from '@/utils';
+import { addUnitNodeAndYears } from '@/services/api';
+import { getCityId } from '@/services/col_api';
 
 export const SettingsPage = () => {
     const dispatch = useAppDispatch();
@@ -20,18 +22,9 @@ export const SettingsPage = () => {
     const { plan, years, namesTree, secretaries } = useAppSelector(store => store.plan);
     const { unit } = useAppSelector(store => store.unit);
 
-    const [nodeUnit, setNodeUnit] = useState<UnitInterface>(unit!);
-
-    const [nodeYear, setNodeYear] = useState<YearInterface[]>(unit!.years!);
-
     useEffect(() => {
         dispatch(thunkGetUnit({idPDT: id_plan, idNode: id_nodo}))
     }, []);
-
-    useEffect(() => {
-        setNodeUnit(unit!);
-        setNodeYear(unit!.years!);
-    }, [unit]);
 
     useEffect(() => {
         const ids = id_nodo!.split('.');
@@ -54,18 +47,62 @@ export const SettingsPage = () => {
 
     const handleChangeUnit = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = event.target;
-        setNodeUnit({ ...nodeUnit, [name]: value });
+        const unit_: UnitInterface = {
+            ...unit,
+            [name]: value,
+        }
+        dispatch(setUnit(unit_));
     }
 
     const handleChangeYear = (event: React.ChangeEvent<HTMLInputElement>, index: number) => {
         const { name, value } = event.target;
-        const newData = [...nodeYear];
-        newData[index] = { ...newData[index], [name]: value };
-        setNodeYear(newData);
+        const unit_: UnitInterface = {
+            ...unit,
+            years: unit.years.map((year, i) => {
+                if (i === index) {
+                    const year_: YearInterface = {
+                        ...year,
+                        [name]: value,
+                        ['year']: years[i],
+                    }
+                    return year_;
+                } else {
+                    return year;
+                }
+            })
+        }
+        dispatch(setUnit(unit_));
     }
 
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
+    const handleSubmit = async () => {
+        if (plan === undefined) return;
+        if (unit.description === '') {
+            alert('Debe ingresar una descripción');
+            return;
+        }
+        if (unit.indicator === '') {
+            alert('Debe ingresar un indicador');
+            return;
+        }
+        if (unit.goal === 0) {
+            alert('Debe ingresar una meta');
+            return;
+        }
+        if (unit.responsible === '') {
+            alert('Debe ingresar un responsable');
+            return;
+        }
+        if (unit.years.length === 0) {
+            alert('Debe ingresar una programación');
+            return;
+        }
+        const id_city = await getCityId(plan.Municipio);
+        addUnitNodeAndYears(id_plan, id_nodo, unit, unit.years, id_city)
+        .then(() => {
+            alert('Se ha guardado la información de la meta');
+        }).catch(() => {
+            alert('Ha ocurrido un error guardando la información de la meta');
+        });
     }
 
     return (
@@ -130,12 +167,12 @@ export const SettingsPage = () => {
                                     tw-flex tw-flex-wrap
                                     tw-p-2 
                                     tw-bg-white'>
-                    {years.map((year, index) => (
+                    {unit.years.map((year, index) => (
                         <div key={index}>
-                            <label  htmlFor="">{year}</label>
+                            <label  htmlFor="">{years[index]}</label>
                             <input  className="tw-m-2 tw-p-2 tw-rounded tw-border-2 tw-border-gray-400"
                                     onChange={ (e) => handleChangeYear(e, index) } 
-                                    value={ nodeYear.length > 0 ? nodeYear[index].programed : 0 }
+                                    value={ year.programed??0 }
                                     type="number" 
                                     name="programed" 
                                     placeholder="Programacion" 
@@ -149,7 +186,8 @@ export const SettingsPage = () => {
                                     tw-text-white hover:tw-text-gray-900
                                     tw-font-bold
                                     tw-p-2 tw-mb-4
-                                    tw-rounded'>
+                                    tw-rounded'
+                        onClick={handleSubmit}>
                     Guardar Cambios de la meta
                 </button>
             </div>

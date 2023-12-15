@@ -2,17 +2,25 @@ import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 
 import { useAppDispatch, useAppSelector } from "@/store";
-import { thunkGetLogo } from "@/store/plan/thunks";
+import { thunkUpdateYears, thunkGetLogo } from "@/store/plan/thunks";
 import { incrementLevelIndex } from "@/store/plan/planSlice";
 
 import { LevelForm, Board, Frame } from "../../components";
+import { getYears } from "@/utils";
 
 export const PDTid = () => {
     const dispatch = useAppDispatch()
     const location = useLocation();
 
-    const { levels, indexLevel } = useAppSelector(store => store.plan)
+    const { levels, indexLevel, plan } = useAppSelector(store => store.plan)
     const id = location.state?.id;
+
+    useEffect(() => {
+        if (plan){
+            let years = getYears(plan.Fecha_inicio)
+            dispatch(thunkUpdateYears(years))
+        }
+    }, [plan])
 
     useEffect(() => {
         let i = indexLevel ?? 0

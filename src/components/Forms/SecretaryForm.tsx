@@ -11,11 +11,11 @@ export const SecretaryForm = () => {
     const { plan } = useAppSelector((state) => state.plan);
 
     const [data, setData] = useState<Secretary[]>([
-        { name: "", id_plan: plan?.id_plan!, email: "", phone: "" },
+        { name: "", id_plan: plan?.id_plan!, email: "", phone: 0 },
     ])
 
     const addSecretary = () => {
-        const newData = [...data, { name: "", id_plan: plan?.id_plan!, email: "", phone: "" }];
+        const newData = [...data, { name: "", id_plan: plan?.id_plan!, email: "", phone: 0 }];
         setData(newData);
     }
 
@@ -34,7 +34,7 @@ export const SecretaryForm = () => {
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         data.forEach((secretary) => {
-            if (secretary.name === "" || secretary.email === "" || secretary.phone === "") {
+            if (secretary.name === "" || secretary.email === "" || secretary.phone === 0) {
                 alert("Por favor llene todos los campos");
                 return;
             }

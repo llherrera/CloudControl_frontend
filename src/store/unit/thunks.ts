@@ -10,6 +10,9 @@ export const thunkGetUnit = createAsyncThunk<UnitInterface, GetUnitProps, { reje
     async (props: GetUnitProps, { rejectWithValue }) => {
         try {
             const res = await getUnitNodeAndYears(props.idPDT, props.idNode);
+            if (res.Years.length === 0) {
+                return rejectWithValue({'error_code': '404', 'error_description': 'No se encontró la unidad'});
+            }
             
             let years = res.Years;
             years = years.map((item:any) => {

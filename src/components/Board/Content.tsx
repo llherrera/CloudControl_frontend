@@ -2,13 +2,13 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useAppDispatch, useAppSelector } from "@/store";
-import { thunkGetNodes, thunkUpdateYears } from "@/store/plan/thunks";
+import { thunkGetNodes } from "@/store/plan/thunks";
 import { decrementLevelIndex, setParent } from "@/store/plan/planSlice";
 
 import { Token, ContentProps } from "@/interfaces";
 import { NodeForm, NodesList, TimeLine, Graph,
          BackBtn, SettingsBtn } from "@/components";
-import { getToken, decode, getYears } from "@/utils";
+import { getToken, decode } from "@/utils";
 
 export const Content = ( props : ContentProps ) => {
     const navigate = useNavigate();
@@ -34,13 +34,6 @@ export const Content = ( props : ContentProps ) => {
             console.log(error);
         }
     }, [])
-
-    useEffect(() => {
-        if (plan){
-            let years = getYears(plan.Fecha_inicio)
-            dispatch(thunkUpdateYears(years))
-        }
-    }, [plan])
 
     useEffect(() => {
         dispatch(thunkGetNodes({id_level: levels[indexLevel!].id_nivel!, parent: parent}))

@@ -30,3 +30,12 @@ export const getDepartmentCities = async (id: number) => {
         return error;
     }
 }
+
+export const getCityId = async (name: string) => {
+    try {
+        const response = await col_api.get(`/City/name/${name}`);
+        return response.data[0].id;
+    } catch (error) {
+        return error;
+    }
+}

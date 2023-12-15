@@ -73,14 +73,14 @@ export interface ExcelPlan {
     Descripcion: string;
     Id: string;
     Indicador: string;
-    Linea_Base: number | null;
+    LineaBase: number | null;
     Meta: number | null;
     Niveles: string;
     Nodos: string;
     Peso: number;
-    Programado_Año_1: number | null;
-    Programado_Año_2: number | null;
-    Programado_Año_3: number | null;
-    Programado_Año_4: number | null;
+    ProgramadoAño1: number | null;
+    ProgramadoAño2: number | null;
+    ProgramadoAño3: number | null;
+    ProgramadoAño4: number | null;
     Responsable: string | null;
 }

@@ -149,7 +149,9 @@ export const UnitNodePage = () => {
                                             tw-border-x tw-border-t tw-border-black 
                                             tw-text-xl tw-text-center
                                             tw-bg-yellow-300
-                                            tw-rounded-t">{item.year}</p>
+                                            tw-rounded-t">
+                                {item.year}
+                            </p>
                             <div className="tw-flex tw-justify-between 
                                             tw-mx-2 
                                             tw-bg-gray-200

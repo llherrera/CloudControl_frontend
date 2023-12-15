@@ -20,37 +20,37 @@ export const EvidenceDetail = ( {evi, index}: EvidenceDetailProps ) => {
     
     return (
         <tr>
-            <th key={index} className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
+            <th  className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
                 {new Date(evi.fecha).getDate()}/{new Date(evi.fecha).getMonth()}/{new Date(evi.fecha).getFullYear()}
             </th>
-            <th key={index} className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
+            <th  className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
                 {evi.descripcionActividades}
             </th>
-            <th key={index} className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
+            <th  className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
                 {evi.comuna}
             </th>
-            <th key={index} className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
+            <th  className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
                 {evi.barrio}
             </th>
-            <th key={index} className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
+            <th  className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
                 {evi.unidad}
             </th>
-            <th key={index} className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
+            <th  className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
                 {evi.cantidad}
             </th>
-            <th key={index} className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
+            <th  className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
                 {evi.poblacionBeneficiada}
             </th>
-            <th key={index} className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
+            <th  className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
                 {evi.numeroPoblacionBeneficiada}
             </th>
-            <th key={index} className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
+            <th  className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
                 {new Date(evi.fecha2).getDate()}/{new Date(evi.fecha2).getMonth()}/{new Date(evi.fecha2).getFullYear()}
             </th>
-            <th key={index} className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
+            <th  className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
                 <a href={evi.url}>Visitar</a>
             </th>
-            <th key={index} className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
+            <th  className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
                 <button className="tw-bg-greenBtn hover:tw-bg-green-400 
                                     tw-text-white hover:tw-text-black
                                     tw-rounded 

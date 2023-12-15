@@ -137,15 +137,15 @@ export const doRefreshToken = async () => {
     }
 }
 
-export const doRegister = async (id: number, userData: RegisterInterface) => {
+export const doRegister = async (id: number, user_data: RegisterInterface) => {
     try {
         const response = await api.post('/usuarios/registrar', {
             id_plan:  id,
-            username: userData.usuario,
-            lastname: userData.apellido,
-            password: userData.contraseña,
-            email:    userData.correo,
-            rol:      userData.rol,
+            username: user_data.usuario,
+            lastname: user_data.apellido,
+            password: user_data.contraseña,
+            email:    user_data.correo,
+            rol:      user_data.rol,
         });
         return response.data;
     } catch (error) {
@@ -236,13 +236,9 @@ export const deletePDT = async (id: number) => {
     }
 }
 
-export const addLevel = async (nivel: NivelInterface[], id : string) => {
-    try {
-        const response = await api.post(`/plan-territorial/${id}`, { levels: nivel });
-        return response.data;
-    } catch (error) {
-        return error;
-    }
+export const addLevel = async (levels: NivelInterface[], id : string) => {
+    const response = await api.post(`/plan-territorial/${id}`, { levels: levels });
+    return response.data;
 }
 
 export const getLevelNodes = async (props: GetNodeProps) => {
@@ -297,26 +293,23 @@ export const getLevelName = async (ids: string[]) => {
     }
 }
 
-export const addUnitNodeAndYears = async (idPDT: string, idNodo: string, nodoUnidad: UnitInterface, años: YearInterface[]) => {
-    try {
-        const response = await api.post("/nodo", { 
-            id_plan: idPDT,
-            id_node: idNodo,
-            node:    nodoUnidad,
-            years:   años
-        });
-        return response.data;
-    } catch (error) {
-        return error;
-    }
+export const addUnitNodeAndYears = async (id_plan: string, id_node: string, node_unidad: UnitInterface, years: YearInterface[], id_city: number) => {
+    const response = await api.post("/nodo", { 
+        id_plan: id_plan,
+        id_node: id_node,
+        node:    node_unidad,
+        years:   years,
+        id_city: id_city
+    });
+    return response.data;
 }
 
-export const getUnitNodeAndYears = async (idPDT: string, idNodo: string) => {
+export const getUnitNodeAndYears = async (id_plan: string, id_node: string) => {
     try {
         const response = await api.get(`/nodo`, {
             params: { 
-                id_plan: idPDT, 
-                id_node: idNodo 
+                id_plan: id_plan,
+                id_node: id_node
             }
         });
         return response.data;
@@ -325,12 +318,12 @@ export const getUnitNodeAndYears = async (idPDT: string, idNodo: string) => {
     }
 }
 
-export const addEvicenceGoal = async (id_plan: number, codigo: string, evidencia: EvidenceInterface, file: File, points: Coordinates[]) => {
+export const addEvicenceGoal = async (id_plan: number, code: string, evidence: EvidenceInterface, file: File, points: Coordinates[]) => {
     const response = await api.post("/nodo/evidencia", 
     {
         id_plan: id_plan,
-        code: codigo,
-        evidence: evidencia,
+        code: code,
+        evidence: evidence,
         file: file,
         points: points
     },{
@@ -368,12 +361,12 @@ export const getCodeEvidences = async (id_node: string, id_plan: number) => {
     }
 }
 
-export const getEvidence = async (id_plan: number, codigo: string) => {
+export const getEvidence = async (id_plan: number, code: string) => {
     try {
         const response = await api.get("/nodo/evidencia", {
             params: {
                 id_plan: id_plan,
-                code: codigo
+                code: code
             }
         });
         return response.data;
@@ -409,12 +402,12 @@ export const getEvidenceCount = async (id_plan: number) => {
     }
 }
 
-export const getYearProgress = async (ids_nodos: string[], año: number) => {
+export const getYearProgress = async (ids_nodes: string[], year: number) => {
     try {
         const response = await api.get(`/nodo/progreso`, {
             params: {
-                ids:  ids_nodos,
-                year: año
+                ids:  ids_nodes,
+                year: year
             }
         });
         return response.data;
@@ -436,13 +429,13 @@ export const getTotalProgress = async (id_plan: number) => {
     }
 }
 
-export const updateNode = async (idPDT: string, idNodo: string, nodo: UnitInterface, años: YearInterface) => {
+export const updateNode = async (id_plan: string, id_node: string, node: UnitInterface, years: YearInterface) => {
     try {
         const response = await api.put("/nodo", { 
-            id_plan: idPDT,
-            id_node: idNodo,
-            node:    nodo,
-            years:   años
+            id_plan: id_plan,
+            id_node: id_node,
+            node:    node,
+            years:   years
         });
         return response.data;
     } catch (error) {
@@ -450,11 +443,11 @@ export const updateNode = async (idPDT: string, idNodo: string, nodo: UnitInterf
     }
 }
 
-export const updateEvidence = async (codigo: string, evidencia: EvidenceInterface) => {
+export const updateEvidence = async (code: string, evidence: EvidenceInterface) => {
     try {
         const response = await api.put("/nodo/evidencia", { 
-            code:      codigo,
-            evidence:  evidencia
+            code:      code,
+            evidence:  evidence
         });
         return response.data;
     } catch (error) {
@@ -462,11 +455,11 @@ export const updateEvidence = async (codigo: string, evidencia: EvidenceInterfac
     }
 }
 
-export const deleteEvidence = async (id_evidencia: number) => {
+export const deleteEvidence = async (id_evidence: number) => {
     try {
         const response = await api.delete("/nodo/evidencia", {
             params: {
-                id_evidence: id_evidencia
+                id_evidence: id_evidence
             }
         });
         return response.data;
@@ -526,15 +519,11 @@ export const approveEvidence = async (id_evidence: number, approve: number, code
 }
 
 export const addSecretaries = async (id_plan: number, secretaries: Secretary[]) => {
-    try {
-        const response = await api.post(`/plan-territorial/secretarias`, {
-            id_plan:     id_plan,
-            secretaries: secretaries
-        });
-        return response.data;
-    } catch (error) {
-        return error;
-    }
+    const response = await api.post(`/plan-territorial/secretarias`, {
+        id_plan:     id_plan,
+        secretaries: secretaries
+    });
+    return response.data;
 }
 
 export const getSecretaries = async (id_plan: number) => {
