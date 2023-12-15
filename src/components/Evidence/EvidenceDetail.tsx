@@ -11,7 +11,7 @@ export const EvidenceDetail = ( {evi, index}: EvidenceDetailProps ) => {
 
     const handleBtnApprove = async (approve: number) => {
         try {
-            await approveEvidence(evi.id_evidencia, approve, evi.codigo);
+            await approveEvidence(evi.id_evidencia, approve, evi.codigo, evi.cantidad, evi.fecha2);
             dispatch(removeEvidence(index));
         } catch (error) {
             console.log(error);
