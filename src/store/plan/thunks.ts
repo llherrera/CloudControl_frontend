@@ -1,13 +1,32 @@
 import { createAction, createAsyncThunk } from '@reduxjs/toolkit'
 
-import { PDTInterface, ErrorBasicInterface, GetNodeProps, 
-        AddColorsProps, NivelInterface, Nivel, Secretary, 
-        PropsSecretary, SecretaryResponse, PropsLocations, LocationInterface } from '../../interfaces'
+import { PDTInterface, 
+        ErrorBasicInterface, 
+        GetNodeProps, 
+        AddColorsProps, 
+        NivelInterface, 
+        Nivel, 
+        Secretary, 
+        PropsSecretary, 
+        SecretaryResponse, 
+        PropsLocations, 
+        LocationInterface } from '../../interfaces'
 import { parseErrorAxios } from '../../utils'
 
-import { getPDTid, addPDT, getColors, getLevelNodes, addColor, 
-        getPDTLevelsById, getLevelName, getLogoPlan, getSecretaries,
-        addSecretaries, addLocations, getLocations } from '@/services/api'
+import {getPDTid, 
+        addPDT, 
+        getColors, 
+        getLevelNodes, 
+        addColor, 
+        getPDTLevelsById, 
+        getLevelName, 
+        getLogoPlan, 
+        getSecretaries,
+        addSecretaries, 
+        addLocations, 
+        getLocations } from '@/services/api'
+
+
 
 export const thunkGetPDTid = createAsyncThunk<PDTInterface, string, { rejectValue: ErrorBasicInterface }>(
     'pdt/getPDTid',

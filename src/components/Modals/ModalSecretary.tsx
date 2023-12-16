@@ -11,7 +11,6 @@ import { Spinner } from "@/assets/icons";
 
 import { exportFile } from "@/utils";
 import { ReportPDTInterface, YearDetail, ModalsecretaryProps } from "@/interfaces";
-import { getLevelName } from "@/services/api";
 
 export const ModalSecretary = () => {
     const [modalSecretaryIsOpen, setModalSecretaryIsOpen] = useState(false);

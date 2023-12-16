@@ -20,10 +20,3 @@ export interface GetEvidencesProps {
     id_plan: number;
     page: number;
 }
-
-export interface UbicationDB {
-    id_ubicacion_evi: number;
-    codigo: string;
-    Latitud: number;
-    Longitud: number;
-}

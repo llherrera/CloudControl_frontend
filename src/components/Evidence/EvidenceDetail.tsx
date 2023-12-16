@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState } from "react";
+import Modal from 'react-modal';
 
 import { useAppDispatch } from "@/store";
 import { removeEvidence } from "@/store/evidence/evidenceSlice";
@@ -9,15 +10,36 @@ import { EvidenceDetailProps } from '@/interfaces';
 export const EvidenceDetail = ( {evi, index}: EvidenceDetailProps ) => {
     const dispatch = useAppDispatch()
 
-    const handleBtnApprove = async (approve: number) => {
+    const [modalIsOpen, setModalIsOpen] = useState(false);
+    const [reason, setReason] = useState("");
+
+    const onChangeReason = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+        setReason(e.target.value);
+    };
+
+    const handleInputModal = async () => {
         try {
-            await approveEvidence(evi.id_evidencia, approve, evi.codigo, evi.cantidad, evi.fecha2);
+            setModalIsOpen(false);
+            await approveEvidence(evi.id_evidencia, 2, evi.codigo, evi.cantidad, evi.fecha2, reason);
             dispatch(removeEvidence(index));
         } catch (error) {
             console.log(error);
         }
     };
-    
+
+    const handleBtnApprove = async (approve: number) => {
+        if (approve === 2) {
+            setModalIsOpen(true);
+        } else {
+            try {
+                await approveEvidence(evi.id_evidencia, approve, evi.codigo, evi.cantidad, evi.fecha2);
+                dispatch(removeEvidence(index));
+            } catch (error) {
+                console.log(error);
+            }
+        }
+    };
+
     return (
         <tr>
             <th  className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
@@ -60,7 +82,27 @@ export const EvidenceDetail = ( {evi, index}: EvidenceDetailProps ) => {
                                     tw-text-white hover:tw-text-black
                                     tw-rounded 
                                     tw-py-1 tw-px-2 tw-mt-1"
-                        onClick={()=>handleBtnApprove(0)}>Rechazar</button>
+                        onClick={()=>handleBtnApprove(2)}>Rechazar</button>
+            <Modal  isOpen={modalIsOpen}
+                    onRequestClose={()=>setModalIsOpen(false)}>
+                <div className="tw-flex tw-flex-col tw-items-center tw-justify-center tw-p-4">
+                    <p className="tw-text-2xl tw-font-bold">Ingrese el motivo del rechazo</p>
+                    <textarea   className=" tw-border 
+                                            tw-rounded tw-shadow-lg
+                                            tw-mt-2
+                                            tw-w-full tw-h-32 tw-p-2"
+                                onChange={(e)=>onChangeReason(e)}
+                                value={reason} 
+                                required/>
+                    <button className="tw-bg-blue-600 hover:tw-bg-blue-400 
+                                    tw-text-white hover:tw-text-black
+                                    tw-rounded
+                                    tw-p-3 tw-mt-3"
+                            onClick={handleInputModal}>
+                        Enviar
+                    </button>
+                </div>
+            </Modal>
             </th>
         </tr>
     );

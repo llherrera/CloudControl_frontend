@@ -1,12 +1,29 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
-import { InitialStatePlanInterface, NodoInterface, Node, Coordinates, NivelInterface } from "@/interfaces";
+import {InitialStatePlanInterface, 
+        NodoInterface, 
+        Node, 
+        Coordinates, 
+        NivelInterface } from "@/interfaces";
+import { setGenericState, getGenericState, removeGenericState } from "@/utils";
 
-import { thunkGetPDTid, thunkAddPDT, thunkGetColors, thunkAddColors,
-    thunkGetNodes, thunkUpdateYears, thunkGetLevelsById, thunkGetLevelName,
-    thunkGetLogo, thunkGetSecretaries, thunkAddSecretaries, thunkAddLocations, thunkGetLocations } from "./thunks";
+import {thunkGetPDTid, 
+        thunkAddPDT, 
+        thunkGetColors, 
+        thunkAddColors,
+        thunkGetNodes, 
+        thunkUpdateYears, 
+        thunkGetLevelsById, 
+        thunkGetLevelName,
+        thunkGetLogo, 
+        thunkGetSecretaries, 
+        thunkAddSecretaries, 
+        thunkAddLocations, 
+        thunkGetLocations } from "./thunks";
 
 const getInitialState = (): InitialStatePlanInterface => {
+    const planState = getGenericState('plan');
+    if (planState) return planState;
     return {
         loadingPlan: false,
         loadingColors: false,
@@ -51,37 +68,48 @@ export const planSlice = createSlice({
     initialState: getInitialState,
     reducers: {
         selectYear: (state, action: PayloadAction<number>) => {
-            state.yearSelect = action.payload
+            state.yearSelect = action.payload;
+            setGenericState('plan', state);
         },
         incrementLevelIndex: (state, action: PayloadAction<number>) => {
-            state.indexLevel = action.payload
+            state.indexLevel = action.payload;
+            setGenericState('plan', state);
         },
         decrementLevelIndex: (state, action: PayloadAction<number>) => {
-            state.indexLevel = action.payload
+            state.indexLevel = action.payload;
+            setGenericState('plan', state);
         },
         setParent: (state, action: PayloadAction<string | null>) => {
-            state.parent = action.payload
+            state.parent = action.payload;
+            setGenericState('plan', state);
         },
         setRadioBtn: (state, action: PayloadAction<string>) => {
-            state.radioBtn = action.payload
+            state.radioBtn = action.payload;
+            setGenericState('plan', state);
         },
         setProgressNodes: (state, action: PayloadAction<number[]>) => {
-            state.progressNodes = action.payload
+            state.progressNodes = action.payload;
+            setGenericState('plan', state);
         },
         setFinancial: (state, action: PayloadAction<number[]>) => {
-            state.financial = action.payload
+            state.financial = action.payload;
+            setGenericState('plan', state);
         },
         setLoadingReport: (state, action: PayloadAction<boolean>) => {
-            state.loadingReport = action.payload
+            state.loadingReport = action.payload;
+            setGenericState('plan', state);
         },
         setNodesReport: (state, action: PayloadAction<Node[]>) => {
-            state.nodesReport = action.payload
+            state.nodesReport = action.payload;
+            setGenericState('plan', state);
         },
         setPlanLocation: (state, action: PayloadAction<Coordinates>) => {
-            state.planLocation = action.payload
+            state.planLocation = action.payload;
+            setGenericState('plan', state);
         },
         setLevels: (state, action: PayloadAction<NivelInterface[]>) => {
-            state.levels = action.payload
+            state.levels = action.payload;
+            setGenericState('plan', state);
         },
     },
     extraReducers: builder => {
@@ -92,6 +120,7 @@ export const planSlice = createSlice({
         builder.addCase(thunkGetPDTid.fulfilled, (state, action) => {
             state.loadingPlan = false;
             state.plan = action.payload;
+            setGenericState('plan', state);
         });
         builder.addCase(thunkGetPDTid.rejected, (state, action) => {
             state.loadingPlan = false;
@@ -106,6 +135,7 @@ export const planSlice = createSlice({
         builder.addCase(thunkAddPDT.fulfilled, (state, action) => {
             state.loadingPlan = false;
             state.plan = action.payload;
+            setGenericState('plan', state);
         });
         builder.addCase(thunkAddPDT.rejected, (state, action) => {
             state.loadingPlan = false;
@@ -135,6 +165,7 @@ export const planSlice = createSlice({
             state.loadingColors = false;
             state.color = true;
             state.colorimeter = action.payload;
+            setGenericState('plan', state);
         });
         builder.addCase(thunkAddColors.rejected, (state, action) => {
             state.loadingColors = false;
@@ -150,6 +181,7 @@ export const planSlice = createSlice({
             state.loadingColors = false;
             state.color = true;
             state.colorimeter = action.payload;
+            setGenericState('plan', state);
         });
         builder.addCase(thunkGetColors.rejected, (state, action) => {
             state.loadingColors = false;
@@ -174,8 +206,9 @@ export const planSlice = createSlice({
                     id_level: item.id_nivel,
                     Weight: 0,
                 })
-            })
+            });
             state.nodes = temp;
+            setGenericState('plan', state);
         });
         builder.addCase(thunkGetNodes.rejected, (state, action) => {
             state.loadingNodes = false;
@@ -185,6 +218,7 @@ export const planSlice = createSlice({
 
         builder.addCase(thunkUpdateYears, (state, action) => {
             state.years = action.payload;
+            setGenericState('plan', state);
         });
 
 
@@ -195,6 +229,7 @@ export const planSlice = createSlice({
         builder.addCase(thunkGetLevelsById.fulfilled, (state, action) => {
             state.loadingLevels = false;
             state.levels = action.payload;
+            setGenericState('plan', state);
         });
         builder.addCase(thunkGetLevelsById.rejected, (state, action) => {
             state.loadingLevels = false;
@@ -209,6 +244,7 @@ export const planSlice = createSlice({
         builder.addCase(thunkGetLevelName.fulfilled, (state, action) => {
             state.loadingNamesTree = false;
             state.namesTree = action.payload;
+            setGenericState('plan', state);
         });
         builder.addCase(thunkGetLevelName.rejected, (state, action) => {
             state.loadingNamesTree = false;
@@ -223,6 +259,7 @@ export const planSlice = createSlice({
         builder.addCase(thunkGetLogo.fulfilled, (state, action) => {
             state.loadingLogo = false;
             state.url = action.payload;
+            setGenericState('plan', state);
         });
         builder.addCase(thunkGetLogo.rejected, (state, action) => {
             state.loadingLogo = false;
@@ -236,6 +273,7 @@ export const planSlice = createSlice({
         });
         builder.addCase(thunkAddSecretaries.fulfilled, (state, action) => {
             state.loadingSecretaries = false;
+            setGenericState('plan', state);
             alert("Se han agregado las secretarías correctamente.");
         });
         builder.addCase(thunkAddSecretaries.rejected, (state, action) => {
@@ -264,6 +302,7 @@ export const planSlice = createSlice({
         });
         builder.addCase(thunkAddLocations.fulfilled, (state, action) => {
             state.loadingLocations = false;
+            setGenericState('plan', state);
             alert("Se han agregado las localidades correctamente.");
         });
         builder.addCase(thunkAddLocations.rejected, (state, action) => {
@@ -296,6 +335,7 @@ export const planSlice = createSlice({
         builder.addCase(thunkGetLocations.fulfilled, (state, action) => {
             state.loadingLocations = false;
             state.locations = action.payload;
+            setGenericState('plan', state);
         });
         builder.addCase(thunkGetLocations.rejected, (state, action) => {
             state.loadingLocations = false;
@@ -309,6 +349,7 @@ export const planSlice = createSlice({
         builder.addCase(thunkGetSecretaries.fulfilled, (state, action) => {
             state.loadingSecretaries = false;
             state.secretaries = action.payload;
+            setGenericState('plan', state);
         });
         builder.addCase(thunkGetSecretaries.rejected, (state, action) => {
             state.loadingSecretaries = false;
@@ -316,8 +357,18 @@ export const planSlice = createSlice({
         });
     }
 });
-export const { selectYear, incrementLevelIndex, decrementLevelIndex, 
-        setParent, setRadioBtn, setProgressNodes, setFinancial, 
-        setLoadingReport, setNodesReport, setPlanLocation,
-        setLevels } = planSlice.actions;
+
+
+export const { 
+    selectYear, 
+    incrementLevelIndex, 
+    decrementLevelIndex, 
+    setParent, 
+    setRadioBtn, 
+    setProgressNodes, 
+    setFinancial, 
+    setLoadingReport, 
+    setNodesReport, 
+    setPlanLocation,
+    setLevels } = planSlice.actions;
 export default planSlice.reducer;

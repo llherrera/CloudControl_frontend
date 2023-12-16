@@ -4,8 +4,6 @@ import { useNavigate } from 'react-router-dom';
 
 import { doRefreshToken } from '@/services/api'
 import { AuthInterface, ErrorBasicInterface } from '../interfaces'
-import { apiRefreshToken } from '@/apis/authApi'
-
 import { setToken } from './storage'
 
 export const debounce = <F extends (...args: Parameters<F>) => ReturnType<F>>(func: F, waitFor = 800) => {
@@ -29,7 +27,7 @@ export const parseErrorAxios = (err: unknown) => {
 }
 
 export const refreshToken = async () => {
-  const { data } = await apiRefreshToken()
+  const { data } = await doRefreshToken()
   const token: AuthInterface = data.data
   setToken(token)
   return token

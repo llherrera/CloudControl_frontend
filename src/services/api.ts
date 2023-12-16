@@ -38,14 +38,14 @@ api.interceptors.request.use(
                 }
                 const decoder: {exp: number} = jwtDecode(token);
                 const isExpired = new Date(decoder.exp * 1000) < new Date();
-                if (!isExpired) return request
-                    const newToken = await refreshToken();
-                if (newToken)
-                // @ts-expect-error request.headers
-                    request.headers = {
-                        ...request.headers,
-                        Authorization: `Bearer ${newToken}`
-                    }
+                //if (!isExpired) return request
+                //    const newToken = await refreshToken();
+                //if (newToken)
+                //// @ts-expect-error request.headers
+                //    request.headers = {
+                //        ...request.headers,
+                //        Authorization: `Bearer ${newToken}`
+                //    }
                 return request;
             }
             return request;
@@ -505,14 +505,15 @@ export const updateColor = async (id_plan: number, colors: number[]) => {
     }
 }
 
-export const approveEvidence = async (id_evidence: number, approve: number, code: string, value: number, file_date: string) => {
+export const approveEvidence = async (id_evidence: number, approve: number, code: string, value: number, file_date: string, reason?: string) => {
     try {
         const response = await api.put(`/nodo/evidencia`, {
             id_evidence: id_evidence,
             approve:     approve,
             code:        code,
             value:       value,
-            file_date:   file_date
+            file_date:   file_date,
+            reason:      reason
         });
         return response.data;
     } catch (error) {
