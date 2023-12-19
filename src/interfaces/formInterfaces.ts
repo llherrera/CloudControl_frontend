@@ -74,8 +74,9 @@ export interface EvidenceInterface {
     nombreDocumento: string;
     lugar: string;
     fecha2: string;
-    url: string;
+    enlace: string;
     ubicaciones: UbicationDB[];
+    estado: number;
 }
 
 export interface LoginProps {

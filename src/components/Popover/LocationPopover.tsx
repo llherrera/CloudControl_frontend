@@ -193,8 +193,6 @@ const mapContainerUbi = () => {
         if (lat && lng) {
             const exist = listPoints.find((point) => point.lat === lat && point.lng === lng)
             if (exist) return;
-            console.log(listPoints);
-            
             dispatch(setPoints([...listPoints, {lat, lng}]))
         }
     }

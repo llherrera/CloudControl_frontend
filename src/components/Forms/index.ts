@@ -6,3 +6,4 @@ export * from './ColorForm';
 export * from './RegisterForm';
 export * from './SecretaryForm';
 export * from './LocationsForm';
+export * from './EvidenceForm';

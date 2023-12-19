@@ -122,6 +122,7 @@ export const Graph = ( props: GraphProps ) => {
 
     return (
         <div className="tw-flex tw-flex-col 
+                        tw-pb-3
                         tw-items-center 
                         md:tw-flex-row
                         md:tw-flex-wrap
@@ -149,7 +150,7 @@ export const Graph = ( props: GraphProps ) => {
                                 className='tw-mr-2'
                                 onChange={ ()=> dispatch(setRadioBtn('financiera'))}
                                 checked={radioBtn === 'financiera'}/>
-                        Ejecución financiera
+                            Ejecución financiera
                     </label>
                 </div>
                 <div className='tw-flex tw-justify-around'>
@@ -158,7 +159,7 @@ export const Graph = ( props: GraphProps ) => {
                     <ModalTotalPDT />
                 </div>
             </div>
-            <div className='tw-w-full md:tw-w-1/2 tw-shadow'>
+            <div className='tw-w-full md:tw-w-1/2 tw-shadow-2xl'>
                 <HighchartsReact
                     highcharts={Highcharts}
                     options={options}

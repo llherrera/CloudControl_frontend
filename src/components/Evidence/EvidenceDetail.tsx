@@ -8,7 +8,7 @@ import { approveEvidence } from "@/services/api";
 import { EvidenceDetailProps } from '@/interfaces';
 
 export const EvidenceDetail = ( {evi, index}: EvidenceDetailProps ) => {
-    const dispatch = useAppDispatch()
+    const dispatch = useAppDispatch();
 
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [reason, setReason] = useState("");
@@ -70,7 +70,7 @@ export const EvidenceDetail = ( {evi, index}: EvidenceDetailProps ) => {
                 {new Date(evi.fecha2).getDate()}/{new Date(evi.fecha2).getMonth()}/{new Date(evi.fecha2).getFullYear()}
             </th>
             <th  className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
-                <a href={evi.url}>Visitar</a>
+                <a href={evi.enlace}>Visitar</a>
             </th>
             <th  className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
                 <button className="tw-bg-greenBtn hover:tw-bg-green-400 

@@ -1,62 +1,97 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { useAppSelector, useAppDispatch } from "@/store";
-import { thunkGetEvidences, thunkGetEvidenceCount } from "@/store/evidence/thunks";
+import { thunkGetEvidences, thunkGetEvidenceCount, thunkGetUserEvidences } from "@/store/evidence/thunks";
 import { resetEvidence } from "@/store/evidence/evidenceSlice";
 
-import { Frame, EvidenceDetail, BackBtn } from "@/components";
+import { Frame, EvidenceDetail, BackBtn, MyEvidence } from "@/components";
 
 export const ListEvidence = () => {
     return (
         <Frame data={<Evidence />}/>
-    )
+    );
 }
 
 const Evidence = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
-    const location = useLocation();
 
     const { plan } = useAppSelector(store => store.plan);
-    const { evidence, eviCount } = useAppSelector(store => store.evidence);
+    const { evidences, eviCount } = useAppSelector(store => store.evidence);
     const { id_plan } = useAppSelector(store => store.content);
-
+    
     const [page, setPage] = useState(1);
+    const [opt, setOpt] = useState(0);
 
     useEffect(() => {        
         if (plan) {
-            const { id_plan } = plan
-            if (id_plan) dispatch(thunkGetEvidenceCount(id_plan))
+            const { id_plan } = plan;
+            if (id_plan) dispatch(thunkGetEvidenceCount(id_plan));
         } else {
-            dispatch(thunkGetEvidenceCount(id_plan))
+            dispatch(thunkGetEvidenceCount(id_plan));
         }
-    }, [evidence])
+    }, [evidences]);
 
     useEffect(() => {
         if (plan) {
-            const { id_plan } = plan
-            if (id_plan) dispatch(thunkGetEvidences({id_plan, page}))
+            const { id_plan } = plan;
+            if (id_plan) dispatch(thunkGetEvidences({id: id_plan, page}));
         }else{
-            dispatch(thunkGetEvidences( {id_plan, page}))
+            dispatch(thunkGetEvidences( {id: id_plan, page}));
         }
-    }, [page, eviCount])
+    }, [page, eviCount]);
+
+    useEffect(() => {
+        if (opt === 0) {
+            if (plan) {
+                const { id_plan } = plan;
+                if (id_plan) dispatch(thunkGetEvidences({id: id_plan, page}));
+            }else{
+                dispatch(thunkGetEvidences( {id: id_plan, page}));
+            }
+        } else if (opt === 1) {
+            if (plan) {
+                const { id_plan } = plan;
+                if (id_plan) dispatch(thunkGetUserEvidences(page));
+            }else{
+                dispatch(thunkGetUserEvidences(page));
+            }
+        }
+    }, [opt]);
 
     const handlePage = (page: number) => {
-        setPage(page)
-    }
+        setPage(page);
+    };
 
     const handleBack = () => {
-        dispatch(resetEvidence())
-        navigate(`/pdt/PlanIndicativo`, {state: {id: id_plan}})
-    }
+        dispatch(resetEvidence());
+        navigate(-1);
+    };
+
+    const handleOpt = (opt: number) => {
+        setPage(1);
+        setOpt(opt);
+    };
 
     return (
         <div className="tw-flex tw-flex-col tw-items-center tw-mx-3">
             <p className="tw-ml-4 tw-mt-3 tw-font-montserrat tw-font-bold">
                 <BackBtn handle={handleBack} id={id_plan}/>
-                Evidencias por aprobar
+                <button className={`tw-mr-2 tw-mb-2 tw-p-2 tw-rounded
+                                    ${opt === 0 ? 'tw-bg-green-300 hover:tw-bg-green-200 tw-border-2 tw-border-black'
+                                    : 'tw-bg-gray-300 hover:tw-bg-gray-200'}`}
+                        onClick={()=>handleOpt(0)}>
+                    Evidencias por aprobar
+                </button>
+                <button className={`tw-mr-2 tw-mb-2 tw-p-2 tw-rounded
+                                    ${opt === 1 ? 'tw-bg-green-300 hover:tw-bg-green-200 tw-border-2 tw-border-black'
+                                    : 'tw-bg-gray-300 hover:tw-bg-gray-200'}`}
+                        onClick={()=>handleOpt(1)}>
+                    Mis evidencias
+                </button>
             </p>
+            {opt === 0 ?
             <table>
                 <thead>
                     <tr>
@@ -96,14 +131,38 @@ const Evidence = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {evidence?.length === 0 || evidence ? evidence.map((evi, index) => (
+                    {evidences.length === 0 ? evidences.map((evi, index) => (
                         <EvidenceDetail evi={evi} index={index} key={index}/>
-                        
                     )) : <span>No hay evidencias</span>}
                 </tbody>
             </table>
+            :
+            <table>
+                <thead>
+                    <tr>
+                        <th className="tw-bg-black tw-border tw-px-3">
+                            <label className="tw-text-white">Id</label>
+                        </th>
+                        <th className="tw-bg-black tw-border tw-px-3">
+                            <label className="tw-text-white">Código</label>
+                        </th>
+                        <th className="tw-bg-black tw-border tw-px-3">
+                            <label className="tw-text-white">Estado</label>
+                        </th>
+                        <th className="tw-bg-black tw-border tw-px-3">
+                            <label className="tw-text-white">Editar</label>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {evidences.length === 0 || evidences ? evidences.map((evi, index) => (
+                        <MyEvidence evidence={evi} key={index}/>
+                    )) : <span>No hay evidencias</span>}
+                </tbody>
+            </table>
+            }
             
-            {evidence?.length === 0 || evidence ? 
+            {evidences.length === 0 || evidences ? 
             <div className="tw-w-full md:tw-w-1/2
                             tw-flex tw-justify-between
                             tw-mt-3">

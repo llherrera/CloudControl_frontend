@@ -2,12 +2,21 @@ import axios from "axios";
 import jwtDecode from "jwt-decode";
 import { getEnvironment } from '../utils/environment';
 
-import { YearInterface, UnitInterface, NodoInterface, 
-    NivelInterface, RegisterInterface, PDTInterface, 
-    EvidenceInterface, GetNodeProps, AddColorsProps, 
-    Secretary, LoginProps, Coordinates } from "../interfaces";
+import { 
+    YearInterface, 
+    UnitInterface, 
+    NodoInterface, 
+    NivelInterface, 
+    RegisterInterface, 
+    PDTInterface, 
+    EvidenceInterface, 
+    GetNodeProps, 
+    AddColorsProps, 
+    Secretary, 
+    LoginProps, 
+    Coordinates } from "../interfaces";
 
-import { getToken, refreshToken } from "@/utils";
+import { getToken } from "@/utils";
 
 const { BASE_URL } = getEnvironment();
 const api = axios.create({
@@ -59,16 +68,6 @@ api.interceptors.request.use(
         return Promise.reject(error);
     }
 )
-
-export const getDepartment = async () => {
-    try {
-        const response = await api.get("/departamento");
-        return response.data;
-    } catch (error) {
-        return error;
-    }
-
-}
 
 export const getPDTs = async () => {
     try {
@@ -130,7 +129,7 @@ export const doLogout = async () => {
 
 export const doRefreshToken = async () => {
     try {
-        const response = await api.post('/usuarios/refresh');
+        const response = await api.post('/usuarios/refrescar');
         return response.data;
     } catch (error) {
         return error;
@@ -334,6 +333,20 @@ export const addEvicenceGoal = async (id_plan: number, code: string, evidence: E
     return response.data;
 }
 
+export const updateEvicenceGoal = async (evidence: EvidenceInterface, file: File, points: Coordinates[]) => {
+    const response = await api.put("/nodo/evidencia", 
+    {
+        evidence: evidence,
+        file: file,
+        points: points
+    },{
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    });
+    return response.data;
+}
+
 export const getUbiEvidences = async (id_plan: number) => {
     try {
         const response = await api.get(`/nodo/evidencia-ubicacion`, {
@@ -391,7 +404,7 @@ export const getEvidences = async (id_plan: number, page: number) => {
 
 export const getEvidenceCount = async (id_plan: number) => {
     try {
-        const response = await api.get("/nodo/evidenciascount", {
+        const response = await api.get("/nodo/evidencia-contar", {
             params: {
                 id_plan: id_plan
             }
@@ -520,6 +533,15 @@ export const approveEvidence = async (id_evidence: number, approve: number, code
         return error;
     }
 }
+
+export const getUserEvidences = async (page: number) => {
+    const response = await api.get(`/nodo/evidencia-usuario`, {
+        params: {
+            page: page
+        }
+    });
+    return response.data;
+};
 
 export const addSecretaries = async (id_plan: number, secretaries: Secretary[]) => {
     const response = await api.post(`/plan-territorial/secretarias`, {

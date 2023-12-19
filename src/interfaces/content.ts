@@ -23,4 +23,5 @@ export interface AddUnitProps {
     idNode: string;
     unit: UnitInterface;
     years: YearInterface[];
+    id_city: number;
 }

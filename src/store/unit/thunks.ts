@@ -47,7 +47,7 @@ export const thunkAddUnit = createAsyncThunk<UnitInterface, AddUnitProps, { reje
     "unit/addUnit", 
     async (props: AddUnitProps, { rejectWithValue }) => {
         try {
-            const res = await addUnitNodeAndYears(props.idPDT, props.idNode, props.unit, props.years);
+            const res = await addUnitNodeAndYears(props.idPDT, props.idNode, props.unit, props.years, props.id_city);
             return res;
         } catch (err) {
             const result = parseErrorAxios(err);
