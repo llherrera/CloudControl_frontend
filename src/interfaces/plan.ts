@@ -1,6 +1,11 @@
 import { ErrorTypeInterface } from "./common";
-import { PDTInterface, NivelInterface, NodoInterface, LocationInterface } from "./formInterfaces";
+import { 
+    PDTInterface, 
+    NivelInterface, 
+    NodoInterface, 
+    LocationInterface } from "./formInterfaces";
 import { Coordinates } from "./ubication";
+import { SecretaryDB } from "./secretary";
 
 export interface InitialStatePlanInterface {
     loadingPlan: boolean;
@@ -35,7 +40,7 @@ export interface InitialStatePlanInterface {
     namesTree: [string[]];
     radioBtn: string;
     url?: string;
-    secretaries: string[];
+    secretaries: SecretaryDB[];
     locations: LocationInterface[];
     planLocation: Coordinates | undefined
 }
@@ -63,10 +68,6 @@ export interface Nivel {
     Nombre: string;
     Descripcion: string;
     id_nivel: number;
-}
-
-export interface SecretaryResponse {
-    Nombre: string;
 }
 
 export interface ExcelPlan {

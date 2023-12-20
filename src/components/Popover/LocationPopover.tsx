@@ -6,13 +6,7 @@ import { useAppDispatch, useAppSelector } from '@/store';
 import { setPoints } from '@/store/evidence/evidenceSlice';
 
 import { LocationIcon } from '@/assets/icons';
-import { LocationInterface, Coordinates } from '@/interfaces';
-
-interface PopoverProps {
-    callback: Function,
-    index: number,
-    item: LocationInterface
-}
+import { PopoverProps } from '@/interfaces';
 
 const API_KEY = import.meta.env.VITE_API_KEY_MAPS as string;
 

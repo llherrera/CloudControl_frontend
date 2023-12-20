@@ -11,7 +11,8 @@ const getInitialState = (): InitialStateContentInterface => {
         error: undefined,
         index: 0,
         listDepartment: [],
-        id_plan: 0
+        id_plan: 0,
+        mode: false,
     };
 };
 
@@ -26,11 +27,14 @@ export const contentSlice = createSlice({
         setIdPlan: (state, action: PayloadAction<number>) => {
             state.id_plan = action.payload;
             setGenericState('content', state);
-        }
+        },
+        setMode(state, action: PayloadAction<boolean>) {
+            state.mode = action.payload;
+        },
     }
 });
 
-export const { selectOption, setIdPlan } = contentSlice.actions;
+export const { selectOption, setIdPlan, setMode } = contentSlice.actions;
 export const selectContent = (state: RootState) => state.content.index;
 
 export default contentSlice.reducer;

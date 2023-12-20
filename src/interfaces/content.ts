@@ -11,6 +11,7 @@ export interface InitialStateContentInterface {
     index: number;
     listDepartment: string[];
     id_plan: number;
+    mode: boolean;
 }
 
 export interface GetUnitProps {

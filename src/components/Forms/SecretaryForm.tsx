@@ -1,18 +1,34 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 import { useAppSelector, useAppDispatch } from "@/store";
-import { thunkAddSecretaries } from "@/store/plan/thunks";
+import { thunkAddSecretaries, thunkUpdateSecretaries } from "@/store/plan/thunks";
 
 import { Secretary } from "@/interfaces";
 import { validateEmail } from "@/utils";
 
 export const SecretaryForm = () => {
     const dispatch = useAppDispatch();
-    const { plan } = useAppSelector((state) => state.plan);
+    const { plan, secretaries } = useAppSelector((state) => state.plan);
 
-    const [data, setData] = useState<Secretary[]>([
-        { name: "", id_plan: plan?.id_plan!, email: "", phone: 0 },
-    ])
+    const [data, setData] = useState<Secretary[]>([]);
+
+    useEffect(() => {
+        if (secretaries && secretaries.length > 0) {
+            const secretaries_ = secretaries.map((secretary) => {
+                return {
+                    id_secretary: secretary.id_secretaria,
+                    name: secretary.Nombre,
+                    id_plan: secretary.id_plan,
+                    email: secretary.correo,
+                    phone: secretary.telefono,
+                }
+            });
+            setData(secretaries_);
+        }else {
+            const data_ = [{ name: "", id_plan: plan?.id_plan!, email: "", phone: 0 },]
+            setData(data_);
+        }
+    }, []);
 
     const addSecretary = () => {
         const newData = [...data, { name: "", id_plan: plan?.id_plan!, email: "", phone: 0 }];
@@ -43,7 +59,11 @@ export const SecretaryForm = () => {
                 return;
             }
         })
-        dispatch(thunkAddSecretaries({ id_plan: plan?.id_plan!, secretaries: data}));
+        if (secretaries) {
+            dispatch(thunkUpdateSecretaries({ id_plan: plan?.id_plan!, secretaries: data }));
+        } else {
+            dispatch(thunkAddSecretaries({ id_plan: plan?.id_plan!, secretaries: data}));
+        }
     }
 
     return (

@@ -6,7 +6,9 @@ import {
     GetEvidenceProps, 
     GetEvidencesProps, 
     AddEvidenceProps,
-    UpdateEvidenceProps} from "@/interfaces";
+    UpdateEvidenceProps,
+    Coordinates,
+    UbicationDB} from "@/interfaces";
 import { parseErrorAxios } from "@/utils";
 
 import { 
@@ -15,7 +17,8 @@ import {
     getEvidenceCount, 
     getUserEvidences,
     addEvicenceGoal,
-    updateEvicenceGoal } from "@/services/api";
+    updateEvicenceGoal,
+    getUbiEvidences } from "@/services/api";
 
 export const thunkGetEvidence = createAsyncThunk<EvidenceInterface[], GetEvidenceProps, { rejectValue: ErrorBasicInterface}>(
     "evidence/getEvidence", 
@@ -88,6 +91,22 @@ export const thunkUpdateEvidence = createAsyncThunk<EvidenceInterface, UpdateEvi
         try {
             const res = await updateEvicenceGoal(props.data, props.file, props.listPoints);
             return res;
+        } catch (err) {
+            const result = parseErrorAxios(err);
+            return rejectWithValue(result);
+        }
+    }
+);
+
+export const thunkGetUbiEvidence = createAsyncThunk<Coordinates[], number, { rejectValue: ErrorBasicInterface}>(
+    "evidence/getUbiEvidence", 
+    async (id: number, { rejectWithValue }) => {
+        try {
+            const res = await getUbiEvidences(undefined,id);
+            const result: Coordinates[] = res.map((item: UbicationDB) => {
+                return {lat: item.Latitud, lng: item.Longitud};
+            });
+            return result;
         } catch (err) {
             const result = parseErrorAxios(err);
             return rejectWithValue(result);

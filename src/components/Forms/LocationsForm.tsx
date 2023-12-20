@@ -60,7 +60,7 @@ export const LocationsForm = () => {
     };
 
     return(
-        <div className="tw-flex tw-justify-center tw-border-t-4 tw-mt-4 tw-pt-2">
+        <div className="tw-flex tw-justify-center tw-border-t-4 tw-mt-4 tw-pt-2 tw-pb-4">
             <form   
                 onSubmit={ handleSubmit }
                 className="tw-shadow-2xl tw-p-2">

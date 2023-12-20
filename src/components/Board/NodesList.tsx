@@ -1,66 +1,78 @@
-import { useEffect } from 'react';
-import { useNavigate } from "react-router-dom";
+import {useEffect } from 'react';
+import {useNavigate } from "react-router-dom";
 
-import { useAppSelector, useAppDispatch } from "@/store";
-import { thunkGetNodes } from '@/store/plan/thunks';
-import { incrementLevelIndex, setParent, setProgressNodes, setFinancial } from '@/store/plan/planSlice';
+import {useAppSelector, useAppDispatch } from "@/store";
+import {thunkGetNodes } from '@/store/plan/thunks';
+import {incrementLevelIndex, 
+        setParent, 
+        setProgressNodes, 
+        setFinancial } from '@/store/plan/planSlice';
 
-import { NodoInterface, PesosNodos, Porcentaje, NodeListProps } from '@/interfaces';
+import {NodoInterface, 
+        PesosNodos, 
+        Porcentaje, 
+        NodeListProps } from '@/interfaces';
 
 export const NodesList = ( props : NodeListProps ) => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
-    const { nodes, yearSelect, levels, indexLevel, progressNodes, colorimeter } = useAppSelector(store => store.plan)
+    const { nodes, 
+            yearSelect, 
+            levels, 
+            indexLevel, 
+            progressNodes, 
+            colorimeter } = useAppSelector(store => store.plan);
+    const { mode } = useAppSelector(store => store.content);
 
     useEffect(() => {
-        const ids = nodes.map((item: NodoInterface) => item.id_node)
-        getProgress(ids)
-    }, [yearSelect, nodes])
+        const ids = nodes.map((item: NodoInterface) => item.id_node);
+        getProgress(ids);
+    }, [yearSelect, nodes]);
 
     const getProgress = (ids: string[]) => {
-        const pesosStr = localStorage.getItem('pesosNodo')
+        const pesosStr = localStorage.getItem('pesosNodo');
         if (pesosStr == undefined) 
-            return 0
-        let pesosNodo = []
+            return 0;
+        let pesosNodo = [];
         try {
-            pesosNodo = JSON.parse(pesosStr as string)            
+            pesosNodo = JSON.parse(pesosStr as string);            
         } catch (error) {
-            pesosNodo = []
+            pesosNodo = [];
         }
-        let progreso = [] as number[]
-        let programacion = [] as number[]
-        let financiacion = [] as number[]
+        let progreso = [] as number[];
+        let programacion = [] as number[];
+        let financiacion = [] as number[];
         pesosNodo.forEach((item: PesosNodos) => {
             if (ids.includes(item.id_nodo)) {
-                const { porcentajes } = item
+                const { porcentajes } = item;
                 if (porcentajes) {
                     porcentajes.forEach((porcentaje: Porcentaje) => {
                         if (porcentaje.año === yearSelect) {
-                            progreso.push(porcentaje.progreso)
-                            programacion.push(porcentaje.programacion)
-                            financiacion.push(porcentaje.ejecucionFinanciera)
+                            progreso.push(porcentaje.progreso);
+                            programacion.push(porcentaje.programacion);
+                            financiacion.push(porcentaje.ejecucionFinanciera);
                         }
-                    })
+                    });
                 }else {
-                    progreso.push(-1)
-                    programacion.push(-1)
-                    financiacion.push(-1)
+                    progreso.push(-1);
+                    programacion.push(-1);
+                    financiacion.push(-1);
                 }
             }
-        })
-        dispatch(setProgressNodes(progreso))
-        dispatch(setFinancial(financiacion))
-    }
+        });
+        dispatch(setProgressNodes(progreso));
+        dispatch(setFinancial(financiacion));
+    };
 
     const handleButton = ( index: number ) => {
         if ( indexLevel !== levels.length-1 ) {
-            dispatch(setParent(nodes[index].id_node))
-            dispatch(incrementLevelIndex(indexLevel!+1))
-            dispatch(thunkGetNodes({id_level: nodes[index].id_level+1, parent:nodes[index].id_node}))
+            dispatch(setParent(nodes[index].id_node));
+            dispatch(incrementLevelIndex(indexLevel!+1));
+            dispatch(thunkGetNodes({id_level: nodes[index].id_level+1, parent:nodes[index].id_node}));
         } else {
-            navigate(`/pdt/PlanIndicativo/Meta`, {state: {idPDT: props.id, idNodo: nodes[index].id_node}})
+            navigate(`/pdt/PlanIndicativo/Meta`, {state: {idPDT: props.id, idNodo: nodes[index].id_node}});
         }
-    }
+    };
 
     return (
         <ul className={`${indexLevel === levels.length-1 ? 'tw-flex tw-flex-row tw-flex-wrap': 'tw-flex-col tw-flex-wrap'} `}>
@@ -101,6 +113,13 @@ export const NodesList = ( props : NodeListProps ) => {
                         <p>{item.NodeName}</p>
                     </button>
                     :null}
+                    {mode ? 
+                    <input  className=' tw-px-2 tw-mx-2 
+                                        tw-border tw-rounded
+                                        tw-w-12'
+                            placeholder='peso'
+                            value={item.Weight}/> 
+                    : null}
                 </div>
             )})}
         </ul>

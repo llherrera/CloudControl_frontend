@@ -1,5 +1,5 @@
 import { ChangeEventHandler } from "react";
-import { EvidenceInterface, NodoInterface, PDTInterface, UbicationDB } from "./formInterfaces";
+import { EvidenceInterface, LocationInterface, NodoInterface, PDTInterface, UbicationDB } from "./formInterfaces";
 
 export interface ContentProps {
     id: number;
@@ -25,13 +25,13 @@ export interface TimeLineProps {
 }
 
 export interface BtnProps {
-    text: string,
-    src?: string,
-    inside: boolean,
-    icon?: JSX.Element,
-    onClick: () => void,
-    bgColor?: string,
-    textColor?: string
+    text: string;
+    src?: string;
+    inside: boolean;
+    icon?: JSX.Element;
+    onClick: () => void;
+    bgColor?: string;
+    textColor?: string;
 }
 
 export interface BtnPlanProps {
@@ -42,8 +42,8 @@ export interface BtnPlanProps {
 }
 
 export interface EvidenceDetailProps {
-    evi: EvidenceInterface,
-    index: number
+    evi: EvidenceInterface;
+    index: number;
 };
 
 export interface ColorFromProps {
@@ -68,7 +68,7 @@ export interface FrameProps {
 }
 
 export interface HeaderProps {
-    componentes: React.ReactNode[]
+    componentes: React.ReactNode[];
 }
 
 export interface InputProps {
@@ -93,15 +93,17 @@ export interface SelectProps {
 }
 
 export interface NavBarProps {
-    buttons: BtnProps[],
-    bgColor?: string
+    buttons: BtnProps[];
+    bgColor?: string;
 }
 
 export interface PDTPageProps {
-    data: PDTInterface[],
-    rol: string
+    data: PDTInterface[];
+    rol: string;
 }
 
-export interface MarkerProps {
-    item: UbicationDB;
+export interface PopoverProps {
+    callback: Function;
+    index: number;
+    item: LocationInterface;
 }

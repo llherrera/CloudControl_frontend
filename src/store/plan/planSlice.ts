@@ -79,6 +79,11 @@ export const planSlice = createSlice({
             state.indexLevel = action.payload;
             setGenericState('plan', state);
         },
+        setZeroLevelIndex: (state) => {
+            state.indexLevel = 0;
+            state.parent = null;
+            setGenericState('plan', state);
+        },
         setParent: (state, action: PayloadAction<string | null>) => {
             state.parent = action.payload;
             setGenericState('plan', state);
@@ -157,6 +162,7 @@ export const planSlice = createSlice({
             }
         });
 
+        
         builder.addCase(thunkAddColors.pending, state => {
             if (!state.loadingColors) state.loadingColors = true;
             state.errorLoadingColors = undefined;
@@ -172,6 +178,7 @@ export const planSlice = createSlice({
             state.color = false;
             state.errorLoadingColors = action.payload;
         });
+
 
         builder.addCase(thunkGetColors.pending, state => {
             if (!state.loadingColors) state.loadingColors = true;
@@ -296,6 +303,7 @@ export const planSlice = createSlice({
             }
         });
 
+
         builder.addCase(thunkAddLocations.pending, state => {
             if (!state.loadingLocations) state.loadingLocations = true;
             state.errorLoadingLocations = undefined;
@@ -328,6 +336,7 @@ export const planSlice = createSlice({
             }
         });
 
+
         builder.addCase(thunkGetLocations.pending, state => {
             if (!state.loadingLocations) state.loadingLocations = true;
             state.errorLoadingLocations = undefined;
@@ -341,6 +350,7 @@ export const planSlice = createSlice({
             state.loadingLocations = false;
             state.errorLoadingLocations = action.payload;
         });
+
 
         builder.addCase(thunkGetSecretaries.pending, state => {
             if (!state.loadingSecretaries) state.loadingSecretaries = true;
@@ -362,7 +372,8 @@ export const planSlice = createSlice({
 export const { 
     selectYear, 
     incrementLevelIndex, 
-    decrementLevelIndex, 
+    decrementLevelIndex,
+    setZeroLevelIndex, 
     setParent, 
     setRadioBtn, 
     setProgressNodes, 

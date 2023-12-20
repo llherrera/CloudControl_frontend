@@ -347,11 +347,14 @@ export const updateEvicenceGoal = async (evidence: EvidenceInterface, file: File
     return response.data;
 }
 
-export const getUbiEvidences = async (id_plan: number) => {
+export const getUbiEvidences = async (id_plan?: number, id_evidence?: number) => {
+    if (id_plan == undefined && id_evidence == undefined)
+        return alert("Error: falta el parametro id_plan o id_evidence");
     try {
         const response = await api.get(`/nodo/evidencia-ubicacion`, {
             params: {
-                id_plan: id_plan
+                id_plan,
+                id_evidence
             }
         });
         return response.data;
@@ -545,6 +548,14 @@ export const getUserEvidences = async (page: number) => {
 
 export const addSecretaries = async (id_plan: number, secretaries: Secretary[]) => {
     const response = await api.post(`/plan-territorial/secretarias`, {
+        id_plan:     id_plan,
+        secretaries: secretaries
+    });
+    return response.data;
+}
+
+export const updateSecretaries = async (id_plan: number, secretaries: Secretary[]) => {
+    const response = await api.put(`/plan-territorial/secretarias`, {
         id_plan:     id_plan,
         secretaries: secretaries
     });

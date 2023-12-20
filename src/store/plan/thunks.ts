@@ -1,4 +1,4 @@
-import { createAction, createAsyncThunk } from '@reduxjs/toolkit'
+import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
 
 import { PDTInterface, 
         ErrorBasicInterface, 
@@ -8,10 +8,11 @@ import { PDTInterface,
         Nivel, 
         Secretary, 
         PropsSecretary, 
-        SecretaryResponse, 
+        SecretaryDB, 
         PropsLocations, 
-        LocationInterface } from '../../interfaces'
-import { parseErrorAxios } from '../../utils'
+        LocationInterface,
+        PropsUpdateSecretary } from '../../interfaces';
+import { parseErrorAxios } from '../../utils';
 
 import {getPDTid, 
         addPDT, 
@@ -24,7 +25,8 @@ import {getPDTid,
         getSecretaries,
         addSecretaries, 
         addLocations, 
-        getLocations } from '@/services/api'
+        getLocations,
+        updateSecretaries } from '@/services/api';
 
 
 
@@ -32,11 +34,11 @@ export const thunkGetPDTid = createAsyncThunk<PDTInterface, string, { rejectValu
     'pdt/getPDTid',
     async (props: string, { rejectWithValue }) => {
         try {
-            const res = await getPDTid(props)
-            return res
+            const res = await getPDTid(props);
+            return res;
         } catch (err) {
-            const result = parseErrorAxios(err)
-            return rejectWithValue(result)
+            const result = parseErrorAxios(err);
+            return rejectWithValue(result);
         }
     }
 )
@@ -45,17 +47,17 @@ export const thunkAddPDT = createAsyncThunk<PDTInterface, PDTInterface, { reject
     'pdt/addPDT',
     async (props: PDTInterface, { rejectWithValue }) => {
         try {
-            const res = await addPDT(props)
-            const { id_plan } = res
+            const res = await addPDT(props);
+            const { id_plan } = res;
             if (id_plan) {
-                return res
+                return res;
             } else {
-                const result = parseErrorAxios(res)
-                return rejectWithValue(result)
+                const result = parseErrorAxios(res);
+                return rejectWithValue(result);
             }
         } catch (err) {
-            const result = parseErrorAxios(err)
-            return rejectWithValue(result)
+            const result = parseErrorAxios(err);
+            return rejectWithValue(result);
         }
     }
 )
@@ -64,15 +66,15 @@ export const thunkGetColors = createAsyncThunk<number[], string, { rejectValue: 
     'pdt/getColors',
     async (props: string, { rejectWithValue }) => {
         try {
-            const res = await getColors(props)
+            const res = await getColors(props);
             if (res.length === 0) {
-                const result = parseErrorAxios(res)
-                return rejectWithValue(result)
+                const result = parseErrorAxios(res);
+                return rejectWithValue(result);
             }
-            return [res[0].value1, res[0].value2, res[0].value3, res[0].value4]
+            return [res[0].value1, res[0].value2, res[0].value3, res[0].value4];
         } catch (err) {
-            const result = parseErrorAxios(err)
-            return rejectWithValue(result)
+            const result = parseErrorAxios(err);
+            return rejectWithValue(result);
         }
     }
 )
@@ -81,11 +83,11 @@ export const thunkAddColors = createAsyncThunk<number[], AddColorsProps, { rejec
     'pdt/addColors',
     async (props: AddColorsProps, { rejectWithValue }) => {
         try {
-            const res = await addColor(props)
-            return res
+            const res = await addColor(props);
+            return res;
         } catch (err) {
-            const result = parseErrorAxios(err)
-            return rejectWithValue(result)
+            const result = parseErrorAxios(err);
+            return rejectWithValue(result);
         }
     }
 )
@@ -94,11 +96,11 @@ export const thunkGetNodes = createAsyncThunk<[], GetNodeProps, { rejectValue: E
     'pdt/getNodes',
     async (props: GetNodeProps, { rejectWithValue }) => {
         try {
-            const res = await getLevelNodes(props)
-            return res
+            const res = await getLevelNodes(props);
+            return res;
         } catch (err) {
-            const result = parseErrorAxios(err)
-            return rejectWithValue(result)
+            const result = parseErrorAxios(err);
+            return rejectWithValue(result);
         }
     }
 )
@@ -113,20 +115,20 @@ export const thunkGetLevelsById = createAsyncThunk<NivelInterface[], string, { r
     'pdt/getLevelsId',
     async (props: string, {rejectWithValue}) => {
         try {
-            const res = await getPDTLevelsById(props)
+            const res = await getPDTLevelsById(props);
             const resArr = [...res];
-            const temp = [] as NivelInterface[]
+            const temp = [] as NivelInterface[];
             resArr.forEach((item: Nivel) => {
                 temp.push({
                     id_nivel: item.id_nivel,
                     LevelName: item.Nombre,
                     Description: item.Descripcion,
                 })
-            })
-            return temp
+            });
+            return temp;
         } catch (err) {
-            const result = parseErrorAxios(err)
-            return rejectWithValue(result)
+            const result = parseErrorAxios(err);
+            return rejectWithValue(result);
         }
     }
 )
@@ -135,11 +137,11 @@ export const thunkGetLevelName = createAsyncThunk<[[]], string[], { rejectValue:
     'pdt/getLevelName',
     async (props: string[], { rejectWithValue }) => {
         try {
-            const res = await getLevelName(props)
-            return res
+            const res = await getLevelName(props);
+            return res;
         } catch (err) {
-            const result = parseErrorAxios(err)
-            return rejectWithValue(result)
+            const result = parseErrorAxios(err);
+            return rejectWithValue(result);
         }
     }
 )
@@ -148,11 +150,11 @@ export const thunkGetLogo = createAsyncThunk<string, number, { rejectValue: Erro
     'pdt/getLogo',
     async (props: number, { rejectWithValue }) => {
         try {
-            const res = await getLogoPlan(props)
-            return res[0].UrlLogo
+            const res = await getLogoPlan(props);
+            return res[0].UrlLogo;
         } catch (err) {
-            const result = parseErrorAxios(err)
-            return rejectWithValue(result)
+            const result = parseErrorAxios(err);
+            return rejectWithValue(result);
         }
     }
 )
@@ -161,49 +163,64 @@ export const thunkAddSecretaries = createAsyncThunk<Secretary[], PropsSecretary,
     'pdt/addSecretaries',
     async (props: PropsSecretary, { rejectWithValue }) => {
         try {
-            const res = await addSecretaries(props.id_plan, props.secretaries)
-            return res
+            const res = await addSecretaries(props.id_plan, props.secretaries);
+            return res;
         } catch (err) {
-            const result = parseErrorAxios(err)
-            return rejectWithValue(result)
+            const result = parseErrorAxios(err);
+            return rejectWithValue(result);
         }
     }
 )
 
-export const thunkGetSecretaries = createAsyncThunk<string[], number, { rejectValue: ErrorBasicInterface }>(
+export const thunkGetSecretaries = createAsyncThunk<SecretaryDB[], number, { rejectValue: ErrorBasicInterface }>(
     'pdt/getSecretaries',
     async (props: number, { rejectWithValue }) => {
         try {
-            const res = await getSecretaries(props)
-            return res.map((item: SecretaryResponse) => item.Nombre)
+            const res = await getSecretaries(props);
+            return res;
         } catch (err) {
-            const result = parseErrorAxios(err)
-            return rejectWithValue(result)
+            const result = parseErrorAxios(err);
+            return rejectWithValue(result);
         }
     }
 )
+
+export const thunkUpdateSecretaries = createAsyncThunk<Secretary[], PropsSecretary, { rejectValue: ErrorBasicInterface }>(
+    'pdt/updateSecretaries',
+    async (props: PropsSecretary, { rejectWithValue }) => {
+        try {
+            const res = await updateSecretaries(props.id_plan, props.secretaries);
+            return res;
+        } catch (err) {
+            const result = parseErrorAxios(err);
+            return rejectWithValue(result);
+        }
+    }
+)
+
 export const thunkAddLocations = createAsyncThunk<LocationInterface[], PropsLocations, { rejectValue: ErrorBasicInterface }>(
     'pdt/addLocations',
     async (props: any, { rejectWithValue }) => {
         try {
             const { id_plan, locations } = props;
             const res = await addLocations(id_plan, locations);
-            return res
+            return res;
         } catch (err) {
-            const result = parseErrorAxios(err)
-            return rejectWithValue(result)
+            const result = parseErrorAxios(err);
+            return rejectWithValue(result);
         }
     }
 )
+
 export const thunkGetLocations = createAsyncThunk<LocationInterface[], number, { rejectValue: ErrorBasicInterface }>(
     'pdt/getLocations',
     async (props: number, { rejectWithValue }) => {
         try {
-            const res = await getLocations(props)
-            return res
+            const res = await getLocations(props);
+            return res;
         } catch (err) {
-            const result = parseErrorAxios(err)
-            return rejectWithValue(result)
+            const result = parseErrorAxios(err);
+            return rejectWithValue(result);
         }
     }
 )

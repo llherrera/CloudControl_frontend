@@ -8,7 +8,8 @@ import { decode } from '../../utils/decode';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { selectOption } from '@/store/content/contentSlice';
 import { thunkGetLevelsById } from '@/store/plan/thunks';
-import { setPlanLocation } from '@/store/plan/planSlice';
+import { setPlanLocation, setZeroLevelIndex } from '@/store/plan/planSlice';
+
 import { getGoogleApiKey } from '@/utils';
 import { useJsApiLoader } from '@react-google-maps/api';
 
@@ -34,7 +35,8 @@ export const LobbyPage = () => {
     }
 
     useEffect(() => {
-        dispatch(thunkGetLevelsById(id_plan.toString()))
+        dispatch(thunkGetLevelsById(id_plan.toString()));
+        dispatch(setZeroLevelIndex());
     }, [])
 
     useEffect(() => {

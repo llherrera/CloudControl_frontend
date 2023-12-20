@@ -1,4 +1,5 @@
 export interface Secretary {
+    id_secretary?: number;
     id_plan: number;
     name: string;
     email: string;
@@ -8,4 +9,16 @@ export interface Secretary {
 export interface PropsSecretary {
     id_plan: number;
     secretaries: Secretary[];
+}
+
+export interface PropsUpdateSecretary {
+    secretaries: Secretary[];
+}
+
+export interface SecretaryDB {
+    id_secretaria: number;
+    id_plan: number;
+    Nombre: string;
+    correo: string;
+    telefono: number;
 }

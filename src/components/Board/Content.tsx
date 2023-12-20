@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { thunkGetNodes } from "@/store/plan/thunks";
 import { decrementLevelIndex, setParent } from "@/store/plan/planSlice";
+import { setMode } from "@/store/content/contentSlice";
 
 import { Token, ContentProps } from "@/interfaces";
 import { NodeForm, NodesList, TimeLine, Graph,
@@ -16,51 +17,56 @@ export const Content = ( props : ContentProps ) => {
 
     const { plan, years, indexLevel, levels, 
         parent, progressNodes, financial, 
-        radioBtn, nodes } = useAppSelector(store => store.plan)
+        radioBtn, nodes } = useAppSelector(store => store.plan);
+    const { mode } = useAppSelector(store => store.content);
 
-    const [rol, setRol] = useState("")
-    const [id, setId] = useState(0)
+    const [rol, setRol] = useState("");
+    const [id, setId] = useState(0);
 
     useEffect(() => {
-        const gettoken = getToken()
+        const gettoken = getToken();
         try {
-            const {token} = gettoken ? gettoken : null
+            const {token} = gettoken ? gettoken : null;
             if (token !== null && token !== undefined) {
-                const decoded = decode(token) as Token
-                setId(decoded.id_plan)
-                setRol(decoded.rol)
+                const decoded = decode(token) as Token;
+                setId(decoded.id_plan);
+                setRol(decoded.rol);
             }
         } catch (error) {
             console.log(error);
         }
-    }, [])
+    }, []);
 
     useEffect(() => {
         dispatch(thunkGetNodes({id_level: levels[indexLevel!].id_nivel!, parent: parent}))
         .unwrap()
-        .catch((err) => {console.log(err)})
-    }, [years, indexLevel])
+        .catch((err) => {console.log(err)});
+    }, [years, indexLevel]);
 
     const handleBack = () => {
         if (indexLevel === 0) {
-            navigate(-1)
-            return
+            navigate(-1);
+            return;
         }
         try{
-            let temp = parent!.split('.')
-            let temp_ = temp.slice(0, temp.length-1)
+            let temp = parent!.split('.');
+            let temp_ = temp.slice(0, temp.length-1);
             temp.length === 2 ? 
                 dispatch(setParent(null))
-            : dispatch(setParent(temp_.join('.')))
+            : dispatch(setParent(temp_.join('.')));
 
-            dispatch(decrementLevelIndex(indexLevel!-1))
+            dispatch(decrementLevelIndex(indexLevel!-1));
         } catch (e) {
             console.log(e);
         }
-    }
+    };
 
     const handleSettings = () => {
-        navigate(`/pdt/PlanIndicativo/configuracion`, {state: {id: props.id}})
+        navigate(`/pdt/PlanIndicativo/configuracion`, {state: {id: props.id}});
+    };
+
+    const handleMode = () => {
+        dispatch(setMode(!mode))
     }
 
     return (
@@ -105,6 +111,13 @@ export const Content = ( props : ContentProps ) => {
                     <p className="tw-ml-4 tw-mt-3 tw-font-montserrat tw-font-bold">
                         <BackBtn handle={handleBack} id={props.id}/>
                         {levels[indexLevel!].LevelName}
+                        <button className={`tw-ml-4 tw-p-2 
+                                            tw-rounded
+                                            ${mode? 'tw-bg-red-300 hover:tw-bg-red-500' :
+                                            'tw-bg-green-300 hover:tw-bg-green-500'}`}
+                                onClick={handleMode}>
+                            Editar
+                        </button>
                     </p>
                     <div className="tw-pb-1 tw-mb-2">
                         {nodes.length === 0 ?

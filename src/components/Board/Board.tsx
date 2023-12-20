@@ -8,11 +8,7 @@ import { useAppDispatch } from '@/store';
 import { thunkGetPDTid, thunkGetColors } from '@/store/plan/thunks';
 import { useAppSelector } from "@/store";
 
-interface Props {
-    id: number
-}
-
-export const Board = ( {id}:Props ) => {
+export const Board = ( {id}:{id: number} ) => {
     const dispatch = useAppDispatch()
     const { plan } = useAppSelector(store => store.plan)
 

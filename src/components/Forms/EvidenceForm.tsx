@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 
 import { useAppSelector, useAppDispatch } from "@/store";
-import { thunkUpdateEvidence, thunkAddEvidenceGoal } from "@/store/evidence/thunks";
+import { thunkUpdateEvidence, thunkAddEvidenceGoal, thunkGetUbiEvidence } from "@/store/evidence/thunks";
 
-import { addEvicenceGoal } from "../../services/api";
 import { EvidenceInterface } from "../../interfaces";
 import { UbicationsPopover } from "@/components";
 
@@ -45,6 +44,12 @@ export const EvidenceForm = () => {
     useEffect(()=> {
         //To DO: obtener localidades para hacer el select
     }, []);
+
+    useEffect(()=> {
+        if (eviSelected !== undefined) {
+            dispatch(thunkGetUbiEvidence(eviSelected.id_evidencia));
+        }
+    }, [eviSelected]);
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = event.target;

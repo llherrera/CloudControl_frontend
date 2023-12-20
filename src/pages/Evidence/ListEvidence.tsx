@@ -44,19 +44,9 @@ const Evidence = () => {
 
     useEffect(() => {
         if (opt === 0) {
-            if (plan) {
-                const { id_plan } = plan;
-                if (id_plan) dispatch(thunkGetEvidences({id: id_plan, page}));
-            }else{
-                dispatch(thunkGetEvidences( {id: id_plan, page}));
-            }
+            dispatch(thunkGetEvidences( {id: id_plan, page}));
         } else if (opt === 1) {
-            if (plan) {
-                const { id_plan } = plan;
-                if (id_plan) dispatch(thunkGetUserEvidences(page));
-            }else{
-                dispatch(thunkGetUserEvidences(page));
-            }
+            dispatch(thunkGetUserEvidences(page));
         }
     }, [opt]);
 

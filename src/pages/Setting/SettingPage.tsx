@@ -10,7 +10,7 @@ import { Frame,
         SecretaryForm, 
         UploadImage, 
         LocationsForm,
-        FileInput} from '@/components'
+        FileInput} from '@/components';
 import { getToken, decode } from "@/utils";
 import { Token } from '@/interfaces';
 
@@ -19,59 +19,59 @@ export const SettingPage = () => {
         <Frame 
             data={<SettingPageWrapper/>}
         />
-    )
+    );
 }
 
 const SettingPageWrapper = () => {
-    const location = useLocation()
-    const navigate = useNavigate()
-    const dispatch = useAppDispatch()
+    const location = useLocation();
+    const navigate = useNavigate();
+    const dispatch = useAppDispatch();
 
-    const id = location.state?.id
+    const id = location.state?.id;
 
-    const { plan, secretaries } = useAppSelector(store => store.plan)
-    
+    const { plan, secretaries } = useAppSelector(store => store.plan);
+
     const [showColorForm, setShowColorForm] = useState(false);
     const [hasSecretaries, setHasSecretaries] = useState(false);
 
-    const [rol, setRol] = useState("")
-    const [id_, setId] = useState(0)
+    const [rol, setRol] = useState("");
+    const [id_, setId] = useState(0);
 
     useEffect(() => {
-        const gettoken = getToken()
+        const gettoken = getToken();
         try {
-            const {token} = gettoken ? gettoken : null
+            const {token} = gettoken ? gettoken : null;
             if (token !== null && token !== undefined) {
-                const decoded = decode(token) as Token
-                setId(decoded.id_plan)
-                setRol(decoded.rol)
+                const decoded = decode(token) as Token;
+                setId(decoded.id_plan);
+                setRol(decoded.rol);
             }
         } catch (error) {
             console.log(error);
         }
-    }, [])
+    }, []);
 
     useEffect(() => {
         if (id) {
-            dispatch(thunkGetSecretaries(id))
-            dispatch(thunkGetLocations(id))
+            dispatch(thunkGetSecretaries(id));
+            dispatch(thunkGetLocations(id));
         }
-    }, [])
+    }, []);
 
     useEffect(() => {
         if (secretaries.length > 0) {
-            setHasSecretaries(true)
+            setHasSecretaries(true);
         }
-    }, [secretaries])
+    }, [secretaries]);
 
     const handleBack = () => {
-        navigate(-1)
-    }
+        navigate(-1);
+    };
 
     const handleColor = ( event: React.MouseEvent<HTMLButtonElement> ) => {
         event.preventDefault();
-        setShowColorForm(!showColorForm)
-    }
+        setShowColorForm(!showColorForm);
+    };
 
     return (
         (plan === null || plan === undefined) ? <div className='tw-text-center'>No hay un plan seleccionado</div> :
@@ -111,5 +111,5 @@ const SettingPageWrapper = () => {
             <LocationsForm/>
             : null}
         </div>
-    )
+    );
 }

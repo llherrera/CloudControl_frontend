@@ -1,12 +1,12 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 
 import { useAppSelector } from '@/store';
 
-import { NodoInterface, NodeFormProps } from '../../interfaces'
-import { addLevelNode } from '../../services/api'
+import { NodoInterface, NodeFormProps } from '../../interfaces';
+import { addLevelNode } from '../../services/api';
 
 export const NodeForm = ( props : NodeFormProps ) => {
-    const { parent } = useAppSelector(store => store.plan)
+    const { parent } = useAppSelector(store => store.plan);
 
     let id_nodo_gen : number = 1;
     const [data, setData] = useState<NodoInterface[]>([
@@ -31,7 +31,7 @@ export const NodeForm = ( props : NodeFormProps ) => {
             Parent: parent,
             Weight: 33.33
         }
-    ])
+    ]);
 
     let nodo: NodoInterface = ({
         id_node: `${parent ?? props.id}.${data.length + 1}`,
@@ -40,7 +40,7 @@ export const NodeForm = ( props : NodeFormProps ) => {
         id_level: props.id,
         Parent: parent,
         Weight: 0
-    })
+    });
 
     const agregarNodo = () => {
         const newData = [...data, nodo];
@@ -53,7 +53,7 @@ export const NodeForm = ( props : NodeFormProps ) => {
             Parent: parent,
             Weight: 100/data.length
         });
-    }
+    };
 
     const eliminarNodo = () => {
         if (data.length > 1) {
@@ -68,31 +68,31 @@ export const NodeForm = ( props : NodeFormProps ) => {
                 Weight: 100/data.length
             });
         }
-    }
+    };
 
     const handleInputFormChange = (event: React.ChangeEvent<HTMLInputElement>, index: number) => {
         const { name, value } = event.target;
         const newData = [...data];
         newData[index] = { ...newData[index], [name]: value };
         setData(newData);
-    }
+    };
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         let sum: number=0;
         data.map((e) => sum += Number(e.Weight));
-        sum = parseFloat(sum.toFixed(2))
+        sum = parseFloat(sum.toFixed(2));
         
         if (sum !== 100) {
-            alert('La suma de los pesos debe ser 100')
-            return
+            alert('La suma de los pesos debe ser 100');
+            return;
         }
         try {
-            await addLevelNode(data, props.id)
+            await addLevelNode(data, props.id);
         } catch (error) {
             console.log(error);
         }
-    }
+    };
 
     return (
         <form   onSubmit={handleSubmit}
@@ -153,5 +153,5 @@ export const NodeForm = ( props : NodeFormProps ) => {
                                 tw-rounded tw-w-full
                                 tw-p-2 tw-mt-2"/>
         </form>
-    )
+    );
 }

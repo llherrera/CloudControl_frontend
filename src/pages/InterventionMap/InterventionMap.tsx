@@ -1,13 +1,25 @@
-import React, { useState, useCallback, useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-import { GoogleMap, useJsApiLoader } from '@react-google-maps/api';
+import React, { 
+        useState, 
+        useCallback, 
+        useEffect } from 'react';
+import {useNavigate, 
+        useLocation } from 'react-router-dom';
+import {GoogleMap, 
+        useJsApiLoader } from '@react-google-maps/api';
 
 import { useAppDispatch, useAppSelector } from '@/store';
 import { setEvidences } from '@/store/evidence/evidenceSlice';
 
-import { BackBtn, Frame, MarkerComponent } from '@/components';
-import { Coordinates, NodoInterface, Node, EvidenceInterface, UbicationDB } from '@/interfaces';
-import { getLevelNodes, getUbiEvidences, getCodeEvidences } from '@/services/api';
+import {BackBtn, 
+        Frame, 
+        MarkerComponent } from '@/components';
+import {Coordinates, 
+        NodoInterface, 
+        Node, 
+        EvidenceInterface } from '@/interfaces';
+import {getLevelNodes, 
+        getUbiEvidences, 
+        getCodeEvidences } from '@/services/api';
 
 export const InterventionMap = () => {
     return (
@@ -31,7 +43,7 @@ const Section = () => {
     const location = useLocation();
 
     const { levels, planLocation } = useAppSelector(state => state.plan);
-    const { evidence } = useAppSelector(store => store.evidence);
+    const { evidences } = useAppSelector(store => store.evidence);
     const { id_plan } = useAppSelector(store => store.content);
 
     const id = location.state?.id;
@@ -216,7 +228,7 @@ const Section = () => {
                     options={mapOptions}
                     onLoad={onLoad}
                     onUnmount={onUnmount}>
-                    {evidence && evidence.map((item) => (
+                    {evidences && evidences.map((item) => (
                         item.ubicaciones.map((location, index) => (
                             <MarkerComponent key={index} item={location} />
                         ))
