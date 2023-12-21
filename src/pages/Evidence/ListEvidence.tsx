@@ -18,7 +18,7 @@ const Evidence = () => {
     const navigate = useNavigate();
 
     const { plan } = useAppSelector(store => store.plan);
-    const { evidences, eviCount } = useAppSelector(store => store.evidence);
+    const { evidences, evi_count } = useAppSelector(store => store.evidence);
     const { id_plan } = useAppSelector(store => store.content);
     
     const [page, setPage] = useState(1);
@@ -40,7 +40,7 @@ const Evidence = () => {
         }else{
             dispatch(thunkGetEvidences( {id: id_plan, page}));
         }
-    }, [page, eviCount]);
+    }, [page, evi_count]);
 
     useEffect(() => {
         if (opt === 0) {
@@ -164,7 +164,7 @@ const Evidence = () => {
                                     tw-rounded tw-border">{'<'}</button>
                 : <div></div>
                 }
-                {page*10 < eviCount ?
+                {page*10 < evi_count ?
                 <button onClick={()=>handlePage(page+1)}
                         className=" tw-py-2 tw-px-3
                                     tw-font-bold tw-text-xl

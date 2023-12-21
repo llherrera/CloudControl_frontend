@@ -12,11 +12,11 @@ export const RegisterForm = (props: RegisterFormProps) => {
     const navigate = useNavigate();
 
     const [form, setForm] = useState<RegisterInterface>({
-        usuario: '',
-        apellido: '',
-        correo: '',
-        contraseña: '',
-        confirmarContraseña: '',
+        username: '',
+        lastname: '',
+        email: '',
+        password: '',
+        confirm_password: '',
         rol: 'sectorialista'
     });
 
@@ -31,9 +31,9 @@ export const RegisterForm = (props: RegisterFormProps) => {
 
     const submitForm = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        if (form.contraseña !== form.confirmarContraseña) return alert("Las contraseñas no coinciden");
-        if (form.usuario === '' || form.apellido === '' || form.correo === '' || form.contraseña === '') return alert("Por favor llene todos los campos");
-        if (!validateEmail(form.correo)) return alert("El correo no es válido");
+        if (form.password !== form.confirm_password) return alert("Las contraseñas no coinciden");
+        if (form.username === '' || form.lastname === '' || form.email === '' || form.password === '') return alert("Por favor llene todos los campos");
+        if (!validateEmail(form.email)) return alert("El correo no es válido");
         doRegister(props.id, form)
             .then(() => {
                 navigate(`/pdt/PlanIndicativo`, { state:{ id:props.id }, replace: true})
@@ -69,31 +69,31 @@ export const RegisterForm = (props: RegisterFormProps) => {
                         type={"text"}
                         id={"usuario"}
                         name={"usuario"}
-                        value={form.usuario}
+                        value={form.username}
                         onChange={ (event) => handleInputChange(event)}/>
                 <Input  label={"Apellido"}
                         type={"text"}
                         id={"apellido"}
                         name={"apellido"}
-                        value={form.apellido}
+                        value={form.lastname}
                         onChange={ (event) => handleInputChange(event)}/>
                 <Input  label={"Correo"}
                         type={"text"}
                         id={"correo"}
                         name={"correo"}
-                        value={form.correo}
+                        value={form.email}
                         onChange={ (event) => handleInputChange(event)}/>
                 <Input  label={"Contraseña"}
                         type={"password"}
                         id={"contraseña"}
                         name={"contraseña"}
-                        value={form.contraseña}
+                        value={form.password}
                         onChange={ (event) => handleInputChange(event)}/>
                 <Input  label={"Confirmar Contraseña"}
                         type={"password"}
                         id={"confirmarContraseña"}
                         name={"confirmarContraseña"}
-                        value={form.confirmarContraseña}
+                        value={form.confirm_password}
                         onChange={ (event) => handleInputChange(event)}/>
                 <div className="tw-flex tw-justify-center tw-mb-3">
                     <button

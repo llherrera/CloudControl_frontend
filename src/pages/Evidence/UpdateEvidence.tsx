@@ -8,7 +8,7 @@ export const UpdateEvidence = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
-    const { eviSelected } = useAppSelector(store => store.evidence);
+    const { evi_selected } = useAppSelector(store => store.evidence);
 
     const handleCancel = () => {
         //dispatch();
@@ -16,12 +16,12 @@ export const UpdateEvidence = () => {
     };
 
     return (
-        (eviSelected !== undefined) ? (
+        (evi_selected !== undefined) ? (
             <div>
                 <p className="  tw-text-center tw-text-2xl
                                 tw-font-bold
                                 tw-mt-3 ">
-                    <BackBtn id={eviSelected.id_evidencia} handle={handleCancel} />
+                    <BackBtn id={evi_selected.id_evidence} handle={handleCancel} />
                     Actualizar Evidencia
                 </p>
                 <EvidenceForm/>

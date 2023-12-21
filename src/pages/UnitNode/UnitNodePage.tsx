@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { useAppSelector, useAppDispatch } from "@/store";
 import { thunkGetLevelName } from "@/store/plan/thunks";
@@ -14,14 +14,11 @@ import { EvidenceDetail, BackBtn, SettingsBtn } from "@/components";
 export const UnitNodePage = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
-    const location = useLocation();
-
-    const idPDT = location.state?.idPDT;
-    const idNodo = location.state?.idNodo;
 
     const { namesTree } = useAppSelector(store => store.plan);
     const { unit } = useAppSelector(store => store.unit);
     const { evidences } = useAppSelector(store => store.evidence);
+    const { id_plan, node } = useAppSelector(store => store.content)
 
     const [acum, setAcum] = useState(0);
     const [acumFinan, setAcumFinan] = useState(0);
@@ -46,7 +43,8 @@ export const UnitNodePage = () => {
     }, []);
 
     useEffect(() => {
-        const ids = idNodo!.split('.');
+        if (node === undefined) return;
+        const ids = node.id_node.split('.');
         let ids2 = ids.reduce((acumulator:string[], currentValue: string) => {
             if (acumulator.length === 0) {
                 return [currentValue];
@@ -61,7 +59,8 @@ export const UnitNodePage = () => {
     }, []);
 
     useEffect(() => {
-        dispatch(thunkGetUnit({idPDT:idPDT!, idNode:idNodo!}))
+        if (id_plan === undefined || node === undefined) return;
+        dispatch(thunkGetUnit({id_plan:id_plan.toString(), id_node: node.id_node}))
     }, []);
 
     useEffect(() => {
@@ -70,9 +69,9 @@ export const UnitNodePage = () => {
         let acumPhisical = 0;
         let acumFinalcial = 0;
         for (let i = 0; i < unit!.years.length; i++) {
-            acumProgramed += unit!.years[i].programed;
-            acumPhisical += unit!.years[i].phisicalExecuted;
-            acumFinalcial += unit!.years[i].finalcialExecuted;
+            acumProgramed += unit!.years[i].physical_programming;
+            acumPhisical += unit!.years[i].physical_execution;
+            acumFinalcial += unit!.years[i].financial_execution;
         }
         setAcum( acumPhisical/acumProgramed );
         setAcumFinan( acumFinalcial );
@@ -83,8 +82,8 @@ export const UnitNodePage = () => {
     }
 
     const handleEvidence = () => {
-        const id_ = parseInt(idPDT!)
-        dispatch(thunkGetEvidence({id_plan: id_, codigo: unit!.code}))
+        const id_ = parseInt(id_plan.toString())
+        dispatch(thunkGetEvidence({id_plan: id_, code: unit!.code}))
         .unwrap()
         .then((res) => {
             if (res.length === 0) {
@@ -99,7 +98,7 @@ export const UnitNodePage = () => {
     }
 
     const handleSettings = () => {
-        navigate(`/pdt/PlanIndicativo/Meta/configuracion`, {state: {id_plan: idPDT, id_nodo: idNodo}})
+        navigate(`/pdt/PlanIndicativo/Meta/configuracion`, {state: {id_plan: id_plan, id_nodo: node?.id_node!}})
     }
 
     const unidadForm = () => {
@@ -132,7 +131,7 @@ export const UnitNodePage = () => {
                             tw-bg-white 
                             tw-px-2 tw-mt-3 tw-mx-2 md:tw-mx-10">
                 <div className="tw-flex tw-justify-center tw-mt-2">
-                {(rol === "admin") || (rol === 'funcionario' && id === parseInt(idPDT!)) ?
+                {(rol === "admin") || (rol === 'funcionario' && id === id_plan) ?
                 <button onClick={handleSubmitButton}
                         className="tw-bg-slate-400 hover:tw-bg-slate-200 
                                     tw-rounded tw-p-2
@@ -171,7 +170,7 @@ export const UnitNodePage = () => {
                                                     tw-mx-2
                                                     tw-absolute
                                                     tw-bottom-0 tw-inset-x-0">
-                                        {unit.years[index].programed}
+                                        {unit.years[index].physical_programming}
                                     </p>
                                 </div>
                                 <div className="tw-flex tw-flex-col tw-justify-center 
@@ -182,7 +181,7 @@ export const UnitNodePage = () => {
                                     </p>
                                     <p className="  tw-text-center
                                                     tw-border-t tw-border-black">
-                                        {unit.years[index].phisicalExecuted}
+                                        {unit.years[index].physical_execution}
                                     </p>
                                 </div>
                                 <div className="tw-flex tw-flex-col tw-justify-center
@@ -192,7 +191,7 @@ export const UnitNodePage = () => {
                                     </p>
                                     <p className="  tw-text-center
                                                     tw-border-t tw-border-black">
-                                        ${unit.years[index].finalcialExecuted}
+                                        ${unit.years[index].financial_execution}
                                     </p>
                                 </div>
                             </div>
@@ -253,8 +252,8 @@ export const UnitNodePage = () => {
                 <img src="/src/assets/images/Logo-Municipio.png" alt="" width={250} className="tw-invisible" />
                 <img src="/src/assets/images/Plan-indicativo.png" alt="" width={60} />
             </div>
-            <BackBtn handle={handleBack} id={parseInt(idPDT!)}/>
-            <SettingsBtn handle={handleSettings} id={idPDT}/>
+            <BackBtn handle={handleBack} id={id_plan}/>
+            <SettingsBtn handle={handleSettings} id={id_plan}/>
             <ol className="tw-col-start-1 tw-col-span-full tw-flex tw-justify-center tw-flex-wrap">
             {namesTree.length > 0 && namesTree.map((name, index) => {
                 return (

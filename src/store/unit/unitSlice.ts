@@ -21,27 +21,27 @@ const getInitialState = (): InitialStateUnitInterface => {
             years: [
                 {
                     year: 0,
-                    programed: 0,
-                    phisicalExecuted: 0,
-                    finalcialExecuted: 0
+                    physical_programming: 0,
+                    physical_execution: 0,
+                    financial_execution: 0
                 },
                 {
                     year: 0,
-                    programed: 0,
-                    phisicalExecuted: 0,
-                    finalcialExecuted: 0
+                    physical_programming: 0,
+                    physical_execution: 0,
+                    financial_execution: 0
                 },
                 {
                     year: 0,
-                    programed: 0,
-                    phisicalExecuted: 0,
-                    finalcialExecuted: 0
+                    physical_programming: 0,
+                    physical_execution: 0,
+                    financial_execution: 0
                 },
                 {
                     year: 0,
-                    programed: 0,
-                    phisicalExecuted: 0,
-                    finalcialExecuted: 0
+                    physical_programming: 0,
+                    physical_execution: 0,
+                    financial_execution: 0
                 },
             ]
         

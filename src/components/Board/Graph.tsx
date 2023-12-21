@@ -37,7 +37,7 @@ export const Graph = ( props: GraphProps ) => {
         },
     ];
 
-    const categories = nodes.map((node) => node.NodeName);
+    const categories = nodes.map((node) => node.name);
     const pieValues = props.dataValues.map((value, index) => {
         return {
             name: categories[index],

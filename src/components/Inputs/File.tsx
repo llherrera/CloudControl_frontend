@@ -6,8 +6,17 @@ import { Spinner } from "@/assets/icons";
 import { useAppSelector, useAppDispatch } from "@/store";
 import { setLevels } from "@/store/plan/planSlice";
 
-import { ExcelPlan, NodoInterface, NivelInterface, Secretary, UnitInterface } from "@/interfaces";
-import { addLevel, addLevelNode, addUnitNodeAndYears, addSecretaries } from "@/services/api";
+import { 
+    ExcelPlan, 
+    NodoInterface, 
+    NivelInterface, 
+    Secretary, 
+    UnitInterface } from "@/interfaces";
+import { 
+    addLevel, 
+    addLevelNode, 
+    addUnitNodeAndYears, 
+    addSecretaries } from "@/services/api";
 import { getCityId } from "@/services/col_api";
 
 interface idsInterface {
@@ -32,8 +41,8 @@ export const FileInput = () => {
         levelsName = levels.map((reg) => (reg.Niveles));
         levels_ = levelsName.map((reg) => {
             const level: NivelInterface = {
-                LevelName: reg,
-                Description: reg,
+                name: reg,
+                description: reg,
             }
             return level;
         });
@@ -63,11 +72,11 @@ export const FileInput = () => {
             let nodes_ = nodes.map((reg) => {
                 const node: NodoInterface = {
                     id_node: `${ids.result[0]}.`+reg.Id,
-                    NodeName: reg.Nodos,
-                    Description: reg.Descripcion,
+                    name: reg.Nodos,
+                    description: reg.Descripcion,
                     id_level: 0,
-                    Parent: reg.Id.split('.').length === 1 ? null : `${ids.result[0]}.${reg.Id.split('.').slice(0, -1).join('.')}`,
-                    Weight: reg.Peso
+                    parent: reg.Id.split('.').length === 1 ? null : `${ids.result[0]}.${reg.Id.split('.').slice(0, -1).join('.')}`,
+                    weight: reg.Peso
                 }
                 return node;
             });
@@ -77,7 +86,7 @@ export const FileInput = () => {
 
     const addUnits = async (data: ExcelPlan[], ids:idsInterface) => {
         if (plan === undefined) return;
-        const id_city = await getCityId(plan.Municipio);
+        const id_city = await getCityId(plan.municipaly);
         const units = data.filter((reg) => reg.Id.split('.').length === levels_.length);
         for (let i = 0; i < units.length; i++) {
             const unit: UnitInterface = {
@@ -90,27 +99,27 @@ export const FileInput = () => {
                 years: [
                     {
                         year: years[0],
-                        programed: units[i].ProgramadoAño1??0,
-                        phisicalExecuted: 0,
-                        finalcialExecuted: 0
+                        physical_programming: units[i].ProgramadoAño1??0,
+                        physical_execution: 0,
+                        financial_execution: 0
                     },
                     {
                         year: years[1],
-                        programed: units[i].ProgramadoAño2??0,
-                        phisicalExecuted: 0,
-                        finalcialExecuted: 0
+                        physical_programming: units[i].ProgramadoAño2??0,
+                        physical_execution: 0,
+                        financial_execution: 0
                     },
                     {
                         year: years[2],
-                        programed: units[i].ProgramadoAño3??0,
-                        phisicalExecuted: 0,
-                        finalcialExecuted: 0
+                        physical_programming: units[i].ProgramadoAño3??0,
+                        physical_execution: 0,
+                        financial_execution: 0
                     },
                     {
                         year: years[3],
-                        programed: units[i].ProgramadoAño4??0,
-                        phisicalExecuted: 0,
-                        finalcialExecuted: 0
+                        physical_programming: units[i].ProgramadoAño4??0,
+                        physical_execution: 0,
+                        financial_execution: 0
                     }
                 ]
             }

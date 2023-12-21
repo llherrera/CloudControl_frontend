@@ -7,6 +7,7 @@ import {incrementLevelIndex,
         setParent, 
         setProgressNodes, 
         setFinancial } from '@/store/plan/planSlice';
+import { setNode } from "@/store/content/contentSlice";
 
 import {NodoInterface, 
         PesosNodos, 
@@ -43,14 +44,14 @@ export const NodesList = ( props : NodeListProps ) => {
         let programacion = [] as number[];
         let financiacion = [] as number[];
         pesosNodo.forEach((item: PesosNodos) => {
-            if (ids.includes(item.id_nodo)) {
-                const { porcentajes } = item;
-                if (porcentajes) {
-                    porcentajes.forEach((porcentaje: Porcentaje) => {
-                        if (porcentaje.año === yearSelect) {
-                            progreso.push(porcentaje.progreso);
-                            programacion.push(porcentaje.programacion);
-                            financiacion.push(porcentaje.ejecucionFinanciera);
+            if (ids.includes(item.id_node)) {
+                const { percents } = item;
+                if (percents) {
+                    percents.forEach((porcentaje: Porcentaje) => {
+                        if (porcentaje.year === yearSelect) {
+                            progreso.push(porcentaje.progress);
+                            programacion.push(porcentaje.physical_programming);
+                            financiacion.push(porcentaje.financial_execution);
                         }
                     });
                 }else {
@@ -70,12 +71,14 @@ export const NodesList = ( props : NodeListProps ) => {
             dispatch(incrementLevelIndex(indexLevel!+1));
             dispatch(thunkGetNodes({id_level: nodes[index].id_level+1, parent:nodes[index].id_node}));
         } else {
+            dispatch(setNode(nodes[index]));
             navigate(`/pdt/PlanIndicativo/Meta`, {state: {idPDT: props.id, idNodo: nodes[index].id_node}});
         }
     };
 
     return (
-        <ul className={`${indexLevel === levels.length-1 ? 'tw-flex tw-flex-row tw-flex-wrap': 'tw-flex-col tw-flex-wrap'} `}>
+        <ul className={`${indexLevel === levels.length-1 ? 'tw-flex tw-flex-row tw-flex-wrap':
+                        'tw-flex-col tw-flex-wrap'} `}>
             {nodes.map((item: NodoInterface, index: number) => {
                 return(
                 <div className="tw-my-2 tw-flex tw-transition hover:tw-scale-110"
@@ -84,17 +87,22 @@ export const NodesList = ( props : NodeListProps ) => {
                                         tw-flex tw-justify-center tw-items-center
                                         tw-border-4
                                         ${
-                                        parseInt( ((progressNodes[index]??0)*100).toString()) < 0 ? 'tw-border-gray-400 hover:tw-border-gray-200' :
-                                        parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[0] ? 'tw-border-redColory hover:tw-border-red-200'      :
-                                        parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[1] ? 'tw-border-yellowColory hover:tw-border-yellow-200':
-                                        parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[2] ? 'tw-border-greenColory hover:tw-border-green-200'  :
+                                        parseInt( ((progressNodes[index]??0)*100).toString()) < 0 ? 
+                                        'tw-border-gray-400 hover:tw-border-gray-200' :
+                                        parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[0] ? 
+                                        'tw-border-redColory hover:tw-border-red-200' :
+                                        parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[1] ?
+                                        'tw-border-yellowColory hover:tw-border-yellow-200':
+                                        parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[2] ? 
+                                        'tw-border-greenColory hover:tw-border-green-200':
                                         'tw-border-blueColory hover:tw-border-blue-200'}
                                         tw-ml-3
                                         tw-w-12 tw-h-12
                                         tw-font-bold`}
                             onClick={ () => handleButton(index)}
-                            title={item.Description}>
-                        { parseInt( ((progressNodes[index] === undefined || progressNodes[index] < 0 ? 0 : progressNodes[index])*100).toString())}%
+                            title={item.description}>
+                        { parseInt( ((progressNodes[index] === undefined || 
+                            progressNodes[index] < 0 ? 0 : progressNodes[index])*100).toString())}%
                     </button>
                     {indexLevel !== levels.length-1 ?
                     <button className={`${
@@ -109,8 +117,8 @@ export const NodesList = ( props : NodeListProps ) => {
                                         tw-text-white tw-font-bold
                                         tw-font-montserrat`}
                             onClick={ () => handleButton(index)}
-                            title={item.Description}>
-                        <p>{item.NodeName}</p>
+                            title={item.description}>
+                        <p>{item.name}</p>
                     </button>
                     :null}
                     {mode ? 
@@ -118,7 +126,7 @@ export const NodesList = ( props : NodeListProps ) => {
                                         tw-border tw-rounded
                                         tw-w-12'
                             placeholder='peso'
-                            value={item.Weight}/> 
+                            value={item.weight}/> 
                     : null}
                 </div>
             )})}

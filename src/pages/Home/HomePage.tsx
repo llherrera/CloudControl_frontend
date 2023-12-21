@@ -36,18 +36,18 @@ export const HomePage = () => {
             text='Funcionario' 
             src="\src\assets\icons\Funcionario.svg" 
             onClick={() => navigate('/login')}
-            bgColor="tw-bg-greenBtn"/>,
+            bg_color="tw-bg-greenBtn"/>,
         <ButtonComponent 
             inside={false} 
             text='Ciudadano' 
             src="\src\assets\icons\Ciudadanos.svg" 
             onClick={handleBtnCiudadano}
-            bgColor="tw-bg-greenBtn"/>
+            bg_color="tw-bg-greenBtn"/>
     ];
 
     return (
         <div>
-            <Header componentes={buttons} />
+            <Header components={buttons} />
         </div>
     );
 }

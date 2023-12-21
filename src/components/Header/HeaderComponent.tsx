@@ -1,6 +1,6 @@
 import { HeaderProps } from "@/interfaces";
 
-export const Header = ( {componentes}: HeaderProps) => {
+export const Header = ( {components}: HeaderProps) => {
     return (
         <main className="   tw-mx-auto tw-my-4
                             tw-grid 
@@ -16,9 +16,9 @@ export const Header = ( {componentes}: HeaderProps) => {
                     Selecciona un usuario en la derecha para comenzar</p>
             </div>
             <ul className="tw-pl-3 tw-flex md:tw-flex-col tw-justify-center">
-                {componentes.map((componente, index) => (
+                {components.map((component, index) => (
                     <li key={index} className="tw-m-3">
-                        {componente}
+                        {component}
                     </li>
                 ))
                 }

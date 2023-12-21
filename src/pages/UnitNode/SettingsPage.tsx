@@ -23,7 +23,7 @@ export const SettingsPage = () => {
     const { unit } = useAppSelector(store => store.unit);
 
     useEffect(() => {
-        dispatch(thunkGetUnit({idPDT: id_plan, idNode: id_nodo}))
+        dispatch(thunkGetUnit({id_plan: id_plan, id_node: id_nodo}))
     }, []);
 
     useEffect(() => {
@@ -96,7 +96,7 @@ export const SettingsPage = () => {
             alert('Debe ingresar una programación');
             return;
         }
-        const id_city = await getCityId(plan.Municipio);
+        const id_city = await getCityId(plan.municipaly);
         addUnitNodeAndYears(id_plan, id_nodo, unit, unit.years, id_city)
         .then(() => {
             alert('Se ha guardado la información de la meta');
@@ -156,7 +156,7 @@ export const SettingsPage = () => {
                             onChange={ (e)=>handleChangeUnit(e) }
                             className='tw-m-3 tw-p-2 tw-rounded tw-border-2 tw-border-gray-400'>
                         {secretaries.map((secretary, index) => (
-                            <option key={index} value={secretary}>{secretary}</option>
+                            <option key={index} value={secretary.name}>{secretary.name}</option>
                         ))}
                     </select>
                 </form>
@@ -172,7 +172,7 @@ export const SettingsPage = () => {
                             <label  htmlFor="">{years[index]}</label>
                             <input  className="tw-m-2 tw-p-2 tw-rounded tw-border-2 tw-border-gray-400"
                                     onChange={ (e) => handleChangeYear(e, index) } 
-                                    value={ year.programed??0 }
+                                    value={ year.physical_programming??0 }
                                     type="number" 
                                     name="programed" 
                                     placeholder="Programacion" 

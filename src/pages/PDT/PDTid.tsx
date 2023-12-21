@@ -17,7 +17,7 @@ export const PDTid = () => {
 
     useEffect(() => {
         if (plan){
-            let years = getYears(plan.Fecha_inicio)
+            let years = getYears(plan.start_date)
             dispatch(thunkUpdateYears(years))
         }
     }, [plan])

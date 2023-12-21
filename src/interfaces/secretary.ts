@@ -16,9 +16,9 @@ export interface PropsUpdateSecretary {
 }
 
 export interface SecretaryDB {
-    id_secretaria: number;
+    id_secretary: number;
     id_plan: number;
-    Nombre: string;
-    correo: string;
-    telefono: number;
+    name: string;
+    email: string;
+    phone: number;
 }

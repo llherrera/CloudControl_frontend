@@ -16,11 +16,11 @@ export const SecretaryForm = () => {
         if (secretaries && secretaries.length > 0) {
             const secretaries_ = secretaries.map((secretary) => {
                 return {
-                    id_secretary: secretary.id_secretaria,
-                    name: secretary.Nombre,
+                    id_secretary: secretary.id_secretary,
+                    name: secretary.name,
                     id_plan: secretary.id_plan,
-                    email: secretary.correo,
-                    phone: secretary.telefono,
+                    email: secretary.email,
+                    phone: secretary.phone,
                 }
             });
             setData(secretaries_);

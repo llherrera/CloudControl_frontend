@@ -33,10 +33,10 @@ export const ModalTotalPDT = () => {
         const data: ReportPDTInterface[] = []
 
         await Promise.all(pesos.map(async (peso: PesosNodos) => {
-            const { id_nodo, porcentajes } = peso
-            const ids = id_nodo.split('.');
+            const { id_node, percents } = peso
+            const ids = id_node.split('.');
             if (ids.length !== levels.length + 1) return
-            const percentages = porcentajes?.map((porcentaje: Porcentaje) => porcentaje.progreso*100)
+            const percentages = percents?.map((porcentaje: Porcentaje) => porcentaje.progress*100)
             let ids2 = ids.reduce((acumulator:string[], currentValue: string) => {
                 if (acumulator.length === 0) {
                     return [currentValue];
@@ -49,19 +49,19 @@ export const ModalTotalPDT = () => {
             ids2 = ids2.slice(1);
             let root = await getLevelName(ids2)
             root = root.map((item: any) => item[0])
-            const nodeYears = detalle.filter((item: YearDetail) => item.id_nodo === id_nodo) as YearDetail[]
+            const nodeYears = detalle.filter((item: YearDetail) => item.id_node === id_node) as YearDetail[]
 
-            const executed = nodeYears.map((item: YearDetail) => item.Ejecucion_fisica)
-            const programed = nodeYears.map((item: YearDetail) => item.Programacion_fisica)
+            const executed = nodeYears.map((item: YearDetail) => item.physical_execution)
+            const programed = nodeYears.map((item: YearDetail) => item.physical_programming)
             
             const item: ReportPDTInterface = {
-                responsible: nodeYears[0].responsable??'',
-                goalCode: id_nodo,
-                goalDescription: nodeYears[0].Descripcion,
+                responsible: nodeYears[0].responsible??'',
+                goalCode: id_node,
+                goalDescription: nodeYears[0].description,
                 percentExecuted: percentages!,
                 planSpecific: root,
-                indicator: nodeYears[0].Indicador,
-                base: nodeYears[0].Linea_base,
+                indicator: nodeYears[0].indicator,
+                base: nodeYears[0].base_line,
                 executed: executed,
                 programed: programed
             }
@@ -123,7 +123,7 @@ const ModalPDT = ( props: ModalPDTProps ) => {
                             <th className=' tw-border tw-bg-gray-400
                                             tw-p-2' 
                                 key={index}>
-                                {level.LevelName}
+                                {level.name}
                             </th>
                         ))}
                         <th className='tw-border tw-bg-gray-400 tw-p-2'>Indicador</th>

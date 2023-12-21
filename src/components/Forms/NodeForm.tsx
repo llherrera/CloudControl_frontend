@@ -11,35 +11,35 @@ export const NodeForm = ( props : NodeFormProps ) => {
     let id_nodo_gen : number = 1;
     const [data, setData] = useState<NodoInterface[]>([
         {   id_node: `${parent ?? props.id}.${id_nodo_gen++}`,
-            NodeName: "", 
-            Description: "", 
+            name: "", 
+            description: "", 
             id_level: props.id, 
-            Parent: parent,
-            Weight: 33.33
+            parent: parent,
+            weight: 33.33
         },
         {   id_node: `${parent ?? props.id}.${id_nodo_gen++}`, 
-            NodeName: "", 
-            Description: "", 
+            name: "", 
+            description: "", 
             id_level: props.id, 
-            Parent: parent,
-            Weight: 33.33
+            parent: parent,
+            weight: 33.33
         },
         {   id_node: `${parent ?? props.id}.${id_nodo_gen++}`, 
-            NodeName: "", 
-            Description: "", 
+            name: "", 
+            description: "", 
             id_level: props.id, 
-            Parent: parent,
-            Weight: 33.33
+            parent: parent,
+            weight: 33.33
         }
     ]);
 
     let nodo: NodoInterface = ({
         id_node: `${parent ?? props.id}.${data.length + 1}`,
-        NodeName: "",
-        Description: "",
+        name: "",
+        description: "",
         id_level: props.id,
-        Parent: parent,
-        Weight: 0
+        parent: parent,
+        weight: 0
     });
 
     const agregarNodo = () => {
@@ -47,11 +47,11 @@ export const NodeForm = ( props : NodeFormProps ) => {
         setData(newData);
         nodo = ({ 
             id_node: `${parent ?? props.id}.${newData.length + 1}`, 
-            NodeName: "", 
-            Description: "", 
+            name: "", 
+            description: "", 
             id_level: props.id, 
-            Parent: parent,
-            Weight: 100/data.length
+            parent: parent,
+            weight: 100/data.length
         });
     };
 
@@ -61,11 +61,11 @@ export const NodeForm = ( props : NodeFormProps ) => {
             setData(newData);
             nodo = ({ 
                 id_node: `${parent ?? props.id}.${newData.length }`, 
-                NodeName: "", 
-                Description: "", 
+                name: "", 
+                description: "", 
                 id_level: props.id, 
-                Parent: parent,
-                Weight: 100/data.length
+                parent: parent,
+                weight: 100/data.length
             });
         }
     };
@@ -80,7 +80,7 @@ export const NodeForm = ( props : NodeFormProps ) => {
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         let sum: number=0;
-        data.map((e) => sum += Number(e.Weight));
+        data.map((e) => sum += Number(e.weight));
         sum = parseFloat(sum.toFixed(2));
         
         if (sum !== 100) {
@@ -106,14 +106,14 @@ export const NodeForm = ( props : NodeFormProps ) => {
                                 placeholder={`Nombre del nodo`}
                                 id={"NodeName"}
                                 name={"NodeName"}
-                                value={e.NodeName}
+                                value={e.name}
                                 className='tw-rounded tw-my-1 tw-w-5/6 tw-border '
                                 onChange={ (event) => handleInputFormChange(event, index) }/><br/>
                         <input  type={"text"}
                                 placeholder="Descripción del Nodo"
                                 id={"Description"}
                                 name={"Description"}
-                                value={e.Description}
+                                value={e.description}
                                 className='rounded my-1 tw-w-5/6 tw-border'
                                 onChange={ (event) => handleInputFormChange(event, index) }/><br/>
                     </li>
@@ -121,7 +121,7 @@ export const NodeForm = ( props : NodeFormProps ) => {
                             placeholder='Peso'
                             id='Weight'
                             name='Weight'
-                            value={e.Weight}
+                            value={e.weight}
                             className=' tw-w-1/6 tw-absolute tw-border tw-right-4 tw-h-7 tw-rounded'
                             onChange={ (event) => handleInputFormChange(event, index) } />
                 </div>

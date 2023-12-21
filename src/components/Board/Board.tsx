@@ -40,35 +40,35 @@ export const Board = ( {id}:{id: number} ) => {
         
         detalleAño.forEach((item: YearDetail) => {
             let progreso = 0
-            if (item.Programacion_fisica !== 0)
-                progreso = item.Ejecucion_fisica / item.Programacion_fisica
+            if (item.physical_programming !== 0)
+                progreso = item.physical_execution / item.physical_programming
                 if (progreso > 1) progreso = 1
                 progreso = parseFloat(progreso.toFixed(2))
-            let peso = pesosNodo.find((peso: PesosNodos) => peso.id_nodo === item.id_nodo)
+            let peso = pesosNodo.find((peso: PesosNodos) => peso.id_node === item.id_node)
             if (peso) {
-                peso.porcentajes = peso.porcentajes ? peso.porcentajes : []
-                peso.porcentajes.push({ progreso : progreso, año: item.Año, programacion: item.Programacion_fisica, ejecucionFinanciera: item.Ejecucion_financiera })
+                peso.percents = peso.percents ? peso.percents : []
+                peso.percents.push({ progress : progreso, year: item.year, physical_programming: item.physical_programming, financial_execution: item.financial_execution })
             }
         })
 
         pesosNodo.forEach((item: PesosNodos) => {
-            const { porcentajes, Padre } = item
-            if (porcentajes) {
-                if (Padre){
-                    porcentajes.forEach((porcentaje: Porcentaje) => {
-                        let padre = pesosNodo.find((e: PesosNodos) => e.id_nodo === Padre)
+            const { percents, parent } = item
+            if (percents) {
+                if (parent){
+                    percents.forEach((porcentaje: Porcentaje) => {
+                        let padre = pesosNodo.find((e: PesosNodos) => e.id_node === parent)
                         if (padre) {
-                            let progresoPeso = porcentaje.progreso * (item.Peso / 100)
+                            let progresoPeso = porcentaje.progress * (item.weight / 100)
                             progresoPeso = parseFloat(progresoPeso.toFixed(2))
-                            let financiado = porcentaje.ejecucionFinanciera
-                            padre.porcentajes = padre.porcentajes ? padre.porcentajes : []
-                            const temp = padre.porcentajes.find((e: Porcentaje) => e.año === porcentaje.año)
+                            let financiado = porcentaje.financial_execution
+                            padre.percents = padre.percents ? padre.percents : []
+                            const temp = padre.percents.find((e: Porcentaje) => e.year === porcentaje.year)
                             if (temp) {
-                                temp.progreso += progresoPeso
-                                temp.progreso = parseFloat(temp.progreso.toFixed(2))
-                                temp.ejecucionFinanciera += financiado
+                                temp.progress += progresoPeso
+                                temp.progress = parseFloat(temp.progress.toFixed(2))
+                                temp.financial_execution += financiado
                             } else {
-                                padre.porcentajes.push({ progreso : progresoPeso, año: porcentaje.año, programacion: 0, ejecucionFinanciera: financiado })
+                                padre.percents.push({ progress : progresoPeso, year: porcentaje.year, physical_programming: 0, financial_execution: financiado })
                             }
                         }
                     })

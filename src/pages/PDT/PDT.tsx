@@ -36,7 +36,7 @@ export const PDT = () => {
 
     return (
         <Header
-            componentes={[
+            components={[
                 <ListPDT data={data} rol={rol}/>
             ]}
         />
@@ -84,9 +84,9 @@ const ListPDT = ( props: PDTPageProps ) => {
                                         tw-bg-gray-200 hover:tw-bg-gray-300
                                         tw-border-4 tw-border-gray-400"
                             onClick={() => handlePdtid(e.id_plan!)}
-                            title={e.Descripcion}>
-                        <p className="tw-mr-4">{e.Nombre}</p>
-                        <p className="tw-ml-4">{e.Departamento}</p>
+                            title={e.description}>
+                        <p className="tw-mr-4">{e.name}</p>
+                        <p className="tw-ml-4">{e.department}</p>
                     </button>
                     <IconButton color="success"
                                 aria-label="delete"

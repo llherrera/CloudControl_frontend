@@ -1,5 +1,5 @@
 import { ChangeEventHandler } from "react";
-import { EvidenceInterface, LocationInterface, NodoInterface, PDTInterface, UbicationDB } from "./formInterfaces";
+import { EvidenceInterface, LocationInterface, PDTInterface } from "./formInterfaces";
 
 export interface ContentProps {
     id: number;
@@ -20,8 +20,8 @@ export interface GraphProps {
 }
 
 export interface TimeLineProps {
-    yearProgress: number[];
-    yearsProgress: number;
+    year_progress: number[];
+    years_progress: number;
 }
 
 export interface BtnProps {
@@ -68,7 +68,7 @@ export interface FrameProps {
 }
 
 export interface HeaderProps {
-    componentes: React.ReactNode[];
+    components: React.ReactNode[];
 }
 
 export interface InputProps {

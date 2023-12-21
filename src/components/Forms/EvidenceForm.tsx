@@ -11,34 +11,34 @@ export const EvidenceForm = () => {
 
     const { plan } = useAppSelector((state) => state.plan);
     const { unit } = useAppSelector((state) => state.unit);
-    const { listPoints, eviSelected } = useAppSelector((state) => state.evidence);
+    const { list_points, evi_selected } = useAppSelector((state) => state.evidence);
 
     const [loading, setLoading] = useState(false);
-    const [data, setData] = useState<EvidenceInterface>(eviSelected??
+    const [data, setData] = useState<EvidenceInterface>(evi_selected??
         {
-        id_evidencia: 0,
-        codigo: unit!.code,
-        fecha: new Date().toISOString(),
-        descripcionActividades: "",
-        unidad: "num",
-        cantidad: 0,
-        comuna: "Tubara",
-        barrio: "Soledad",
-        correguimiento: "Carrizal",
+        id_evidence: 0,
+        code: unit!.code,
+        date: new Date().toISOString(),
+        activitiesDesc: "",
+        unit: "num",
+        amount: 0,
+        commune: "Tubara",
+        neighborhood: "Soledad",
+        corregimiento: "Carrizal",
         vereda: "Eden",
-        poblacionBeneficiada: "AdultoMayor",
-        numeroPoblacionBeneficiada: 0,
-        recursosEjecutados: 0,
-        fuenteRecursos: "Privado",
-        nombreDocumento: "",
-        lugar: "",
-        fecha2: "",
-        enlace: "",
-        ubicaciones: [],
-        estado: 0,
+        benefited_population: "AdultoMayor",
+        benefited_population_number: 0,
+        executed_resources: 0,
+        resources_font: "Privado",
+        name_file: "",
+        place: "",
+        date_file: "",
+        file_link: "",
+        locations: [],
+        state: 0,
     });
     const [documento, setDocumento] = useState<FileList | null>(
-        eviSelected!.enlace === '' ? null : null
+        evi_selected!.file_link === '' ? null : null
     );
 
     useEffect(()=> {
@@ -46,10 +46,10 @@ export const EvidenceForm = () => {
     }, []);
 
     useEffect(()=> {
-        if (eviSelected !== undefined) {
-            dispatch(thunkGetUbiEvidence(eviSelected.id_evidencia));
+        if (evi_selected !== undefined) {
+            dispatch(thunkGetUbiEvidence(evi_selected.id_evidence));
         }
-    }, [eviSelected]);
+    }, [evi_selected]);
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value } = event.target;
@@ -77,31 +77,31 @@ export const EvidenceForm = () => {
         e.preventDefault();
         if (unit === undefined) return alert('No se ha seleccionado una meta');
         if (documento === null) return alert('No se ha seleccionado un documento');
-        if (data.barrio === "") return alert('No se ha seleccionado un barrio');
-        if (data.cantidad <= 0) return alert('No se ha seleccionado una cantidad');
-        if (data.comuna === "") return alert('No se ha seleccionado una comuna');
-        if (data.correguimiento === "") return alert('No se ha seleccionado un correguimiento');
-        if (data.descripcionActividades === "") return alert('No se ha seleccionado una descripcion de actividades');
-        if (data.fecha === "") return alert('No se ha seleccionado una fecha');
-        if (data.fecha2 === "") return alert('No se ha seleccionado una fecha de archivo');
-        if (data.fuenteRecursos === "") return alert('No se ha seleccionado una fuente de recursos');
-        if (data.lugar === "") return alert('No se ha seleccionado un lugar');
-        if (data.nombreDocumento === "") return alert('No se ha seleccionado un nombre de documento');
-        if (data.numeroPoblacionBeneficiada === 0) return alert('No se ha seleccionado un numero de poblacion beneficiada');
-        if (data.poblacionBeneficiada === "") return alert('No se ha seleccionado una poblacion beneficiada');
-        if (data.recursosEjecutados <= 0) return alert('No se ha seleccionado un recurso ejecutado');
-        if (data.unidad === "") return alert('No se ha seleccionado una unidad');
+        if (data.neighborhood === "") return alert('No se ha seleccionado un barrio');
+        if (data.amount <= 0) return alert('No se ha seleccionado una cantidad');
+        if (data.commune === "") return alert('No se ha seleccionado una comuna');
+        if (data.corregimiento === "") return alert('No se ha seleccionado un correguimiento');
+        if (data.activitiesDesc === "") return alert('No se ha seleccionado una descripcion de actividades');
+        if (data.date === "") return alert('No se ha seleccionado una fecha');
+        if (data.date_file === "") return alert('No se ha seleccionado una fecha de archivo');
+        if (data.resources_font === "") return alert('No se ha seleccionado una fuente de recursos');
+        if (data.place === "") return alert('No se ha seleccionado un lugar');
+        if (data.name_file === "") return alert('No se ha seleccionado un nombre de documento');
+        if (data.benefited_population_number === 0) return alert('No se ha seleccionado un numero de poblacion beneficiada');
+        if (data.benefited_population === "") return alert('No se ha seleccionado una poblacion beneficiada');
+        if (data.executed_resources <= 0) return alert('No se ha seleccionado un recurso ejecutado');
+        if (data.unit === "") return alert('No se ha seleccionado una unidad');
         if (data.vereda === "") return alert('No se ha seleccionado una vereda');
-        if (listPoints.length === 0) return alert('No se ha seleccionado una ubicacion');
+        if (list_points.length === 0) return alert('No se ha seleccionado una ubicacion');
         setLoading(true);
 
-        if (eviSelected === undefined) {
+        if (evi_selected === undefined) {
             dispatch(thunkAddEvidenceGoal({
                 id_plan: plan?.id_plan!,
                 code: unit.code,
                 data: data,
                 file: documento![0],
-                listPoints: listPoints
+                list_points: list_points
             }))
             .unwrap()
             .then(() => {
@@ -116,7 +116,7 @@ export const EvidenceForm = () => {
             dispatch(thunkUpdateEvidence({
                 data: data,
                 file: documento![0],
-                listPoints: listPoints
+                list_points: list_points
             }))
             .unwrap()
             .then(()=> {
@@ -144,7 +144,7 @@ export const EvidenceForm = () => {
                 <label >Código meta:</label>
                 <label className="  tw-m-3 tw-p-2 tw-rounded
                                     tw-border-2 tw-border-gray-400
-                                    tw-bg-white ">{unit.code === '' ? eviSelected?.codigo : unit.code}</label>
+                                    tw-bg-white ">{unit.code === '' ? evi_selected?.code : unit.code}</label>
             </div>
 
             <label className="tw-mt-4">Descripcion Actividades:</label>
@@ -152,7 +152,7 @@ export const EvidenceForm = () => {
                 name="descripcionActividades" 
                 id="descripcionActividades" 
                 required
-                value={data.descripcionActividades}
+                value={data.activitiesDesc}
                 className=" tw-p-2 tw-rounded
                             tw-border-2 tw-border-gray-400
                             tw-bg-white tw-resize-none"
@@ -172,7 +172,7 @@ export const EvidenceForm = () => {
                                     tw-bg-white"
                         onChange={(e) => handleInputChange(e)}
                         required
-                        value={data.unidad}>
+                        value={data.unit}>
                         <option value="num">M</option>
                         <option value="num">M2</option>
                         <option value="num">M3</option>
@@ -193,7 +193,7 @@ export const EvidenceForm = () => {
                                     tw-border-2 tw-border-gray-400
                                     tw-bg-white"
                         required
-                        value={data.cantidad}
+                        value={data.amount}
                         onChange={(e)=> handleInputChange(e)}/>
                 </div>
             </div>
@@ -212,7 +212,7 @@ export const EvidenceForm = () => {
                                     tw-bg-white"
                         onChange={(e)=> handleInputChange(e)}
                         required
-                        value={data.comuna}
+                        value={data.commune}
                         >
                         <option value="Tubara">Todas</option>
                     </select>
@@ -227,7 +227,7 @@ export const EvidenceForm = () => {
                                     tw-bg-white"
                         onChange={(e)=> handleInputChange(e)}
                         required
-                        value={data.barrio}
+                        value={data.neighborhood}
                         >
                         <option value="Soledad">Todas</option>
                         <option value="Galapa">Galapa</option>
@@ -251,7 +251,7 @@ export const EvidenceForm = () => {
                                     tw-bg-white"
                         onChange={(e)=> handleInputChange(e)}
                         required
-                        value={data.poblacionBeneficiada}>
+                        value={data.benefited_population}>
                         <option value="AdultoMayor">Adulto Mayor</option>
                         <option value="Afrodescendientes">Afrodescendientes</option>
                         <option value="Docentes">Docentes</option>
@@ -283,7 +283,7 @@ export const EvidenceForm = () => {
                                     tw-border-2 tw-border-gray-400
                                     tw-bg-white"
                         required
-                        value={data.numeroPoblacionBeneficiada}
+                        value={data.benefited_population_number}
                         onChange={(e)=> handleInputChange(e)}/>
                 </div>
                 <div className="tw-flex tw-flex-col tw-ml-3">
@@ -297,7 +297,7 @@ export const EvidenceForm = () => {
                                     tw-border-2 tw-border-gray-400
                                     tw-bg-white"
                         required
-                        value={data.recursosEjecutados}
+                        value={data.executed_resources}
                         onChange={(e)=> handleInputChange(e)}/>
                 </div>
                 <div className="tw-flex tw-flex-col tw-ml-3">
@@ -310,7 +310,7 @@ export const EvidenceForm = () => {
                                     tw-bg-white"
                         onChange={(e)=> handleInputChange(e)}
                         required
-                        value={data.fuenteRecursos}>
+                        value={data.resources_font}>
                         <option value="Privado">Recursos Propios ICLD</option>
                         <option value="Publico">Recursos Propios ICDE</option>
                         <option value="Publico">SGP</option>
@@ -357,7 +357,7 @@ export const EvidenceForm = () => {
                                     tw-border-2 tw-border-gray-400
                                     tw-bg-white"
                         required
-                        value={data.nombreDocumento}
+                        value={data.name_file}
                         onChange={(e) => handleInputChange(e)}/><br />
                 </div>
                 <div className="tw-flex tw-flex-col tw-ml-3">
@@ -371,7 +371,7 @@ export const EvidenceForm = () => {
                                     tw-border-2 tw-border-gray-400
                                     tw-bg-white"
                         required
-                        value={data.lugar}
+                        value={data.place}
                         onChange={(e) => handleInputChange(e)}/><br />
                 </div>
                 <div className="tw-flex tw-flex-col tw-ml-3">
@@ -384,7 +384,7 @@ export const EvidenceForm = () => {
                                     tw-border-2 tw-border-gray-400
                                     tw-bg-white"
                         required
-                        value={data.fecha2}
+                        value={data.date_file}
                         onChange={(e) => handleInputChange(e)}/><hr />
                 </div>
             </div>

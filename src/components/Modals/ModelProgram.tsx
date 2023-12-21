@@ -30,26 +30,26 @@ export const ModalProgram = () => {
             let response = [] as NodoInterface[][];
             for (let i = 0; i < levels.length; i++) {
                 if (i === levels.length-1) {
-                    const res = await getLevelNodes({id_level: levels[i].id_nivel!, parent: parent});
+                    const res = await getLevelNodes({id_level: levels[i].id_level!, parent: parent});
                     dispatch(setNodesReport(res));
                 } else {
-                    const { id_nivel } = levels_[i];
-                    if (id_nivel) {
-                        const res = await getLevelNodes({id_level: id_nivel, parent: parent});
+                    const { id_level } = levels_[i];
+                    if (id_level) {
+                        const res = await getLevelNodes({id_level: id_level, parent: parent});
                         const temp_ = [] as NodoInterface[];
                         res.forEach((item:Node) => {
                             temp_.push({
-                                id_node: item.id_nodo,
-                                NodeName: item.Nombre,
-                                Description: item.Descripcion,
-                                Parent: item.Padre,
-                                id_level: item.id_nivel,
-                                Weight: 0,
+                                id_node: item.id_node,
+                                name: item.name,
+                                description: item.description,
+                                parent: item.parent,
+                                id_level: item.id_level,
+                                weight: 0,
                             });
                         });
                         const temp = [...programs];
                         temp[i] = temp_;
-                        parent = res[index_[i]].id_nodo;
+                        parent = res[index_[i]].id_node;
                         response.push(temp_);
                     }
                 }
@@ -78,16 +78,16 @@ export const ModalProgram = () => {
         const pesosStr = localStorage.getItem('pesosNodo');
         const detalleStr = localStorage.getItem('detalleAño');
         let pesos = pesosStr ? JSON.parse(pesosStr) : [];
-        const nodesReport_ = nodesReport.map((item: Node) => item.id_nodo);
-        pesos = pesos.filter((item:PesosNodos)=> nodesReport_.includes(item.id_nodo) );
+        const nodesReport_ = nodesReport.map((item: Node) => item.id_node);
+        pesos = pesos.filter((item:PesosNodos)=> nodesReport_.includes(item.id_node) );
         const detalle = detalleStr ? JSON.parse(detalleStr) : [];
         const data: ReportPDTInterface[] = [];
 
         await Promise.all(pesos.map(async (peso: PesosNodos) => {
-            const { id_nodo, porcentajes } = peso;
-            const ids = id_nodo.split('.');
+            const { id_node, percents } = peso;
+            const ids = id_node.split('.');
             if (ids.length !== levels.length + 1) return;
-            const percentages = porcentajes?.map((porcentaje: Porcentaje) => porcentaje.progreso*100);
+            const percentages = percents?.map((porcentaje: Porcentaje) => porcentaje.progress*100);
             let ids2 = ids.reduce((acumulator:string[], currentValue: string) => {
                 if (acumulator.length === 0) {
                     return [currentValue];
@@ -100,19 +100,19 @@ export const ModalProgram = () => {
             ids2 = ids2.slice(1);
             let root = await getLevelName(ids2);
             root = root.map((item: any) => item[0]);
-            const nodeYears = detalle.filter((item: YearDetail) => item.id_nodo === id_nodo) as YearDetail[];
+            const nodeYears = detalle.filter((item: YearDetail) => item.id_node === id_node) as YearDetail[];
 
-            const executed = nodeYears.map((item: YearDetail) => item.Ejecucion_fisica);
-            const programed = nodeYears.map((item: YearDetail) => item.Programacion_fisica);
+            const executed = nodeYears.map((item: YearDetail) => item.physical_execution);
+            const programed = nodeYears.map((item: YearDetail) => item.physical_programming);
             
             const item: ReportPDTInterface = {
-                responsible: nodeYears[0].responsable??'',
-                goalCode: id_nodo,
-                goalDescription: nodeYears[0].Descripcion,
+                responsible: nodeYears[0].responsible??'',
+                goalCode: id_node,
+                goalDescription: nodeYears[0].description,
                 percentExecuted: percentages!,
                 planSpecific: root,
-                indicator: nodeYears[0].Indicador,
-                base: nodeYears[0].Linea_base,
+                indicator: nodeYears[0].indicator,
+                base: nodeYears[0].base_line,
                 executed: executed,
                 programed: programed
             };
@@ -145,11 +145,11 @@ export const ModalProgram = () => {
                 <div className='tw-flex tw-relative'>
                     <h1 className='tw-bg-slate-300 tw-rounded tw-p-1 tw-mr-3'>Programas</h1>
                     {programs.map((program, index) => (
-                        <select value={program[index_[index]].NodeName}
+                        <select value={program[index_[index]].name}
                                 onChange={(e)=>handleChangePrograms(index, e)}
                                 className='tw-border tw-border-gray-300 tw-rounded tw-mr-3'
                                 key={index}>
-                            {program.map((node, index) => (<option value={node.NodeName} key={index}>{node.NodeName}</option>))}
+                            {program.map((node, index) => (<option value={node.name} key={index}>{node.name}</option>))}
                         </select>
                     
                     ))}
@@ -174,7 +174,7 @@ export const ModalProgram = () => {
                             <th className='tw-border tw-bg-gray-400 tw-p-2'>Codigo de la meta producto</th>
                             <th className='tw-border tw-bg-gray-400 tw-p-2'>Descripción Meta producto</th>
                             {years.map((year, index) => (<th className='tw-border tw-bg-gray-400 tw-p-2' key={index}>% ejecución{year}</th>))}
-                            {levels.map((level, index) => (<th className='tw-border tw-bg-gray-400 tw-p-2' key={index}>{level.LevelName}</th>))}
+                            {levels.map((level, index) => (<th className='tw-border tw-bg-gray-400 tw-p-2' key={index}>{level.name}</th>))}
                             <th className='tw-border tw-bg-gray-400 tw-p-2'>Indicador</th>
                             <th className='tw-border tw-bg-gray-400 tw-p-2'>Línea base</th>
                             {years.map((year, index) => (<th className='tw-border tw-bg-gray-400 tw-p-2' key={index}>Programado {year}</th>))}

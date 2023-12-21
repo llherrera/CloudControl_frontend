@@ -9,6 +9,6 @@ export const LoginPage = () => {
     ]
 
     return (
-        <Header componentes={componentes}/>
+        <Header components={componentes}/>
     )
 }

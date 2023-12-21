@@ -24,7 +24,7 @@ export const thunkGetEvidence = createAsyncThunk<EvidenceInterface[], GetEvidenc
     "evidence/getEvidence", 
     async (props: GetEvidenceProps, { rejectWithValue }) => {
         try {
-            const res = await getEvidence(props.id_plan, props.codigo);
+            const res = await getEvidence(props.id_plan, props.code);
             return res;
         } catch (err) {
             const result = parseErrorAxios(err);
@@ -76,7 +76,7 @@ export const thunkAddEvidenceGoal = createAsyncThunk<EvidenceInterface, AddEvide
     "evidence/addEvidenceGoal", 
     async (props: AddEvidenceProps, { rejectWithValue }) => {
         try {
-            const res = await addEvicenceGoal(props.id_plan, props.code, props.data, props.file, props.listPoints);
+            const res = await addEvicenceGoal(props.id_plan, props.code, props.data, props.file, props.list_points);
             return res;
         } catch (err) {
             const result = parseErrorAxios(err);
@@ -89,7 +89,7 @@ export const thunkUpdateEvidence = createAsyncThunk<EvidenceInterface, UpdateEvi
     "evidence/updateEvidence",
     async (props: UpdateEvidenceProps, { rejectWithValue}) => {
         try {
-            const res = await updateEvicenceGoal(props.data, props.file, props.listPoints);
+            const res = await updateEvicenceGoal(props.data, props.file, props.list_points);
             return res;
         } catch (err) {
             const result = parseErrorAxios(err);
@@ -104,7 +104,7 @@ export const thunkGetUbiEvidence = createAsyncThunk<Coordinates[], number, { rej
         try {
             const res = await getUbiEvidences(undefined,id);
             const result: Coordinates[] = res.map((item: UbicationDB) => {
-                return {lat: item.Latitud, lng: item.Longitud};
+                return {lat: item.lat, lng: item.lng};
             });
             return result;
         } catch (err) {

@@ -206,12 +206,12 @@ export const planSlice = createSlice({
             const temp = [] as NodoInterface[]
             action.payload.forEach((item:Node) => {
                 temp.push({
-                    id_node: item.id_nodo,
-                    NodeName: item.Nombre,
-                    Description: item.Descripcion,
-                    Parent: item.Padre,
-                    id_level: item.id_nivel,
-                    Weight: 0,
+                    id_node: item.id_node,
+                    name: item.name,
+                    description: item.description,
+                    parent: item.parent,
+                    id_level: item.id_level,
+                    weight: 0,
                 })
             });
             state.nodes = temp;

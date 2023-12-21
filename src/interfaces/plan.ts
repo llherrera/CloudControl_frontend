@@ -51,11 +51,11 @@ export interface GetNodeProps {
 }
 
 export interface Node {
-    id_nodo: string;
-    Nombre: string;
-    Descripcion: string;
-    Padre: string | null;
-    id_nivel: number;
+    id_node: string;
+    name: string;
+    description: string;
+    parent: string | null;
+    id_level: number;
 }
 
 export interface AddColorsProps {
@@ -65,9 +65,9 @@ export interface AddColorsProps {
 
 export interface Nivel {
     id_plan: number;
-    Nombre: string;
-    Descripcion: string;
-    id_nivel: number;
+    name: string;
+    description: string;
+    id_level: number;
 }
 
 export interface ExcelPlan {

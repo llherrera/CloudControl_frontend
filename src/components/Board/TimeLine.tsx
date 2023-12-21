@@ -32,7 +32,7 @@ export const TimeLine = () => {
         
         let pesosNodo = JSON.parse(pesosStr as string)
         let progreso = [] as number[]
-        const nodoss = pesosNodo.filter((item: PesosNodos) => item.Padre === parent)
+        const nodoss = pesosNodo.filter((item: PesosNodos) => item.parent === parent)
         
         if (nodoss.length === 0) {
             setYearsProgress(-1)
@@ -42,9 +42,9 @@ export const TimeLine = () => {
         for (let i = 0; i < years.length; i++) {
             let temp = 0
             nodoss.forEach((item: PesosNodos) => {
-                const { porcentajes } = item
-                if (porcentajes) {
-                    temp += (porcentajes[i].progreso)*(item.Peso/100)
+                const { percents } = item
+                if (percents) {
+                    temp += (percents[i].progress)*(item.weight/100)
                 }else {
                     
                 }

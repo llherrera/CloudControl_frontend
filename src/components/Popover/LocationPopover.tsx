@@ -161,7 +161,7 @@ const mapContainer = (props: PopoverProps) => {
 
 const mapContainerUbi = () => {
     const dispatch = useAppDispatch();
-    const { listPoints } = useAppSelector(state => state.evidence);
+    const { list_points } = useAppSelector(state => state.evidence);
 
     const [map, setMap] = useState<google.maps.Map|null>(null);
     let centerLocation = { lat: 4.713237, lng: -74.78132 };
@@ -185,14 +185,14 @@ const mapContainerUbi = () => {
         const lat = event.latLng?.lat();
         const lng = event.latLng?.lng();
         if (lat && lng) {
-            const exist = listPoints.find((point) => point.lat === lat && point.lng === lng)
+            const exist = list_points.find((point) => point.lat === lat && point.lng === lng)
             if (exist) return;
-            dispatch(setPoints([...listPoints, {lat, lng}]))
+            dispatch(setPoints([...list_points, {lat, lng}]))
         }
     }
 
     const handleDeleteMarker = (index: number) => {
-        const newList = listPoints.filter((point, i) => i !== index);
+        const newList = list_points.filter((point, i) => i !== index);
         dispatch(setPoints(newList));
     }
 
@@ -207,7 +207,7 @@ const mapContainerUbi = () => {
                     onLoad={onLoad}
                     onUnmount={onUnmount}
                     onClick={handleMapClick}>
-                    {listPoints.map((point, index) => (
+                    {list_points.map((point, index) => (
                         <Marker key={index} 
                                 position={{lat:point.lat, lng:point.lng}}
                                 onClick={()=>handleDeleteMarker(index)} />

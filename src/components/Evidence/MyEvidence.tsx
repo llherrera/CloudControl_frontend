@@ -9,11 +9,9 @@ interface Props {
     evidence: EvidenceInterface;
 }
 
-export const MyEvidence = (props: Props) => {
+export const MyEvidence = ({evidence}: Props) => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
-
-    const { evidence } = props;
 
     const handleUpdate = () => {
         dispatch(resetPoints());
@@ -26,19 +24,19 @@ export const MyEvidence = (props: Props) => {
             <th className="tw-bg-blue-200 tw-rounded 
                             tw-my-1 tw-px-3
                             tw-border tw-border-black">
-                {evidence.id_evidencia}
+                {evidence.id_evidence}
             </th>
             <th className="tw-bg-blue-200 tw-rounded 
                             tw-my-1 tw-px-3 
                             tw-border tw-border-black">
-                {evidence.codigo}
+                {evidence.code}
             </th>
             <th className={`tw-rounded 
                             tw-my-1 tw-px-3
                             tw-border tw-border-black
-                            ${evidence.estado === 0 ? 'tw-bg-gray-300': 
-                            evidence.estado === 1 ? 'tw-bg-greenBtn': 'tw-bg-redBtn'}`}>
-                {evidence.estado === 0 ? "Pendiente" : evidence.estado === 1 ? "Aprobado" : "Rechazado"}
+                            ${evidence.state === 0 ? 'tw-bg-gray-300': 
+                            evidence.state === 1 ? 'tw-bg-greenBtn': 'tw-bg-redBtn'}`}>
+                {evidence.state === 0 ? "Pendiente" : evidence.state === 1 ? "Aprobado" : "Rechazado"}
             </th>
             <th className="tw-bg-blue-200 tw-rounded
                             tw-my-1 tw-px-3

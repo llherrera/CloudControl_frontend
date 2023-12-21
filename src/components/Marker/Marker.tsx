@@ -12,7 +12,7 @@ export const MarkerComponent = ( {item}: {item:UbicationDB} ) => {
     }
 
     return (
-        <Marker position={{lat: item.Latitud, lng: item.Longitud}}
+        <Marker position={{lat: item.lat, lng: item.lng}}
                 onClick={handleShowTooltip}
                 icon={{
                     url: icono,
@@ -21,7 +21,7 @@ export const MarkerComponent = ( {item}: {item:UbicationDB} ) => {
             {showTooltip && (
                 <InfoWindow onCloseClick={()=>setShowTooltip(false)}>
                     <div>
-                        <p>{item.codigo}</p>
+                        <p>{item.code}</p>
                     </div>
                 </InfoWindow>
             )}

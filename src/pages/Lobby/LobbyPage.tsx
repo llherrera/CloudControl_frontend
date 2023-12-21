@@ -42,7 +42,7 @@ export const LobbyPage = () => {
     useEffect(() => {
         if (!plan || !isLoaded || loadError) return;
         const geocoder = new google.maps.Geocoder();
-        geocoder.geocode({address: `Colombia, ${plan?.Departamento}, ${plan?.Municipio}`}).then((res) => {
+        geocoder.geocode({address: `Colombia, ${plan?.department}, ${plan?.municipaly}`}).then((res) => {
             let location = res.results[0].geometry.location;
             dispatch(setPlanLocation({
                 lat: location.lat(),
@@ -60,7 +60,7 @@ export const LobbyPage = () => {
                 dispatch(selectOption(0))
                 navigate(`/pdt/PlanIndicativo`, {state: {id: id_plan}})
             }}
-            bgColor="tw-bg-greenBtn" />,
+            bg_color="tw-bg-greenBtn" />,
         <ButtonComponent
             inside={false}
             text='Banco de proyectos'
@@ -69,7 +69,7 @@ export const LobbyPage = () => {
                 dispatch(selectOption(1))
                 navigate('/PlanIndicativo/Banco-proyectos', {state: {id: id_plan}})
             }}
-            bgColor="tw-bg-greenBtn" />,
+            bg_color="tw-bg-greenBtn" />,
         <ButtonComponent
             inside={false}
             text='POAI'
@@ -78,7 +78,7 @@ export const LobbyPage = () => {
                 dispatch(selectOption(2))
                 navigate('/PlanIndicativo/POAI', {state: {id: id_plan}})
             }}
-            bgColor="tw-bg-greenBtn" />,
+            bg_color="tw-bg-greenBtn" />,
         <ButtonComponent
             inside={false}
             text='Mapa de intervención'
@@ -86,11 +86,11 @@ export const LobbyPage = () => {
                 dispatch(selectOption(3))
                 navigate('/PlanIndicativo/Mapa', {state: {id: id_plan}})
             }}
-            bgColor="tw-bg-greenBtn"
+            bg_color="tw-bg-greenBtn"
             icon={<MapICon color='white'/>}/>,
     ]
 
     return (
-        <Header componentes={buttons}/>
+        <Header components={buttons}/>
     );
 }

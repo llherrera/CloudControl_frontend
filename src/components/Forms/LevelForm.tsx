@@ -16,14 +16,14 @@ export const LevelForm = ( props: LevelFormProps ) => {
     const dispatch = useAppDispatch();
 
     const [data, setData] = useState<NivelInterface[]>([
-        { LevelName: "", Description: "" },
-        { LevelName: "", Description: "" },
-        { LevelName: "", Description: "" }
+        { name: "", description: "" },
+        { name: "", description: "" },
+        { name: "", description: "" }
     ]);
 
     const [nivel, setNivel] = useState<NivelInterface>({
-        LevelName: "",
-        Description: ""
+        name: "",
+        description: ""
     });
 
     const [rol, setRol] = useState("");
@@ -61,7 +61,7 @@ export const LevelForm = ( props: LevelFormProps ) => {
     const agregarNivel = () => {
         const newData = [...data, nivel];
         setData(newData);
-        setNivel({ LevelName: "", Description: "" } as NivelInterface);
+        setNivel({ name: "", description: "" } as NivelInterface);
     }
 
     const eliminarNivel = () => {
@@ -112,13 +112,13 @@ export const LevelForm = ( props: LevelFormProps ) => {
                                 label="Nombre del Nivel:"
                                 id={"LevelName"}
                                 name={"LevelName"}
-                                value={e.LevelName}
+                                value={e.name}
                                 onChange={ (event) => handleInputFormChange(event, index) }/>
                         <Input  type={"text"}
                                 label="Descripción:"
                                 id={"Description"}
                                 name={"Description"}
-                                value={e.Description}
+                                value={e.description}
                                 onChange={ (event) => handleInputFormChange(event, index) }/>
                     </li>
                 )}

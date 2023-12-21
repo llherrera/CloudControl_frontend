@@ -24,12 +24,12 @@ export const PDTForm = () => {
     const [municipioOptions, setMunicipioOptions] = useState<selectOption[]|null>(null);
     const [selectedDepartamento, setSelectedDepartamento] = useState<selectOption|null>(null);
     const [planData, setPlanData] = useState<PDTInterface>({
-        Nombre: "",
-        Departamento: "",
-        Municipio: "",
-        Fecha_inicio: new Date().getUTCFullYear().toString(),
-        Fecha_fin: (new Date().getUTCFullYear() + 3).toString(),
-        Descripcion: "",
+        name: "",
+        department: "",
+        municipaly: "",
+        start_date: new Date().getUTCFullYear().toString(),
+        end_date: (new Date().getUTCFullYear() + 3).toString(),
+        description: "",
     });
 
     useEffect(() => {
@@ -51,8 +51,8 @@ export const PDTForm = () => {
         const { value } = e.target;
         setPlanData({
             ...planData,
-            Fecha_inicio: new Date(parseInt(value), 0, 1).toISOString(),
-            Fecha_fin: new Date(parseInt(value) + 3, 11, 31).toISOString(),
+            start_date: new Date(parseInt(value), 0, 1).toISOString(),
+            end_date: new Date(parseInt(value) + 3, 11, 31).toISOString(),
         });
     };
 
@@ -71,8 +71,8 @@ export const PDTForm = () => {
         setSelectedDepartamento(departamentOptions[parseInt(value)]);
         setPlanData({
             ...planData,
-            Departamento: departamentOptions[parseInt(value)].name,
-            Municipio: ''
+            department: departamentOptions[parseInt(value)].name,
+            municipaly: ''
         });
     };
 
@@ -81,7 +81,7 @@ export const PDTForm = () => {
         if (!municipioOptions) return;
         setPlanData({
             ...planData,
-            Municipio: municipioOptions[parseInt(value)].name,
+            municipaly: municipioOptions[parseInt(value)].name,
         });
     };
 
@@ -121,7 +121,7 @@ export const PDTForm = () => {
                         label="Nombre:"
                         id={"Nombre"}
                         name={"Nombre"}
-                        value={planData.Nombre}
+                        value={planData.name}
                         onChange={handleInputChange}/>
                 <Select label="Departamento:"
                         id="Departamento"
@@ -142,7 +142,7 @@ export const PDTForm = () => {
                         label="Descripción:"
                         id={"Descripcion"}
                         name={"Descripcion"}
-                        value={planData.Descripcion}
+                        value={planData.description}
                         onChange={handleInputChange}/>
 
                 <Select label="Fecha de inicio:"

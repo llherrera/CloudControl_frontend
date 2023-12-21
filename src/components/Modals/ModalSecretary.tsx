@@ -10,7 +10,7 @@ import IconButton from "@mui/material/IconButton";
 import { Spinner } from "@/assets/icons";
 
 import { exportFile } from "@/utils";
-import { ReportPDTInterface, YearDetail, ModalsecretaryProps } from "@/interfaces";
+import { ReportPDTInterface, YearDetail, ModalsecretaryProps, PesosNodos } from "@/interfaces";
 
 export const ModalSecretary = () => {
     const [modalSecretaryIsOpen, setModalSecretaryIsOpen] = useState(false);
@@ -41,56 +41,83 @@ const ModalPDT = ( props: ModalsecretaryProps ) => {
     const [indexYear, setIndexYear] = useState<number>(0);
 
     useEffect(() => {
-        dispatch(thunkGetSecretaries(plan?.id_plan!))
+        dispatch(thunkGetSecretaries(plan?.id_plan!));
     }, []);
 
     useEffect(() => {
-        setSecretary(secretaries[0])
+        setSecretary(secretaries[0].name);
     }, [secretaries]);
 
     useEffect(() => {
         genReport();
     }, [secretary, indexYear, props.modalIsOpen]);
 
+    const findRoot = (id: string) => {
+        let root = [] as string[];
+        const pesosStr = localStorage.getItem('pesosNodo');
+        const pesos: PesosNodos[] = pesosStr ? JSON.parse(pesosStr) : [];
+        let ids = id.split('.');
+        if (ids.length !== levels.length + 1) return root;
+        let ids2 = ids.reduce((acumulator:string[], currentValue: string) => {
+            if (acumulator.length === 0) {
+                return [currentValue];
+            } else {
+                const ultimoElemento = acumulator[acumulator.length - 1];
+                const concatenado = `${ultimoElemento}.${currentValue}`;
+                return [...acumulator, concatenado];
+            }
+        }, []);
+        ids2 = ids2.slice(1);
+        ids2.forEach((id) => {
+            const node = pesos.find((item) => item.id_node === id);
+            if (node) {
+                root.push(node.name);
+            }
+        });
+        return root;
+    };
+
     const genReport = () => {
         const detalleStr = localStorage.getItem('detalleAño');
         const detalle = detalleStr ? JSON.parse(detalleStr) : [];
-        const nodes = detalle.filter((item: YearDetail) => (item.responsable === secretary && item.Año === years[indexYear]));
+        const nodes = detalle.filter((item: YearDetail) => (item.responsible === secretary && item.year === years[indexYear]));
         const data: ReportPDTInterface[] = [];
 
         nodes.forEach( async (item: YearDetail) => {
-            let percent = (item.Ejecucion_fisica/item.Programacion_fisica)*100;
+            let percent = (item.physical_execution/item.physical_programming)*100;
             percent = percent ? percent : 0;
             percent = Math.round(percent*100)/100;
+            const root = findRoot(item.id_node);
             const item_: ReportPDTInterface = {
-                responsible: item.responsable??'',
-                goalCode: item.id_nodo,
-                goalDescription: item.Descripcion,
+                responsible: item.responsible??'',
+                goalCode: item.id_node,
+                goalDescription: item.description,
                 percentExecuted: [percent],
-                planSpecific: [],
-                indicator: item.Indicador,
-                base: item.Linea_base,
-                executed: [item.Ejecucion_fisica],
-                programed: [item.Programacion_fisica]
+                planSpecific: root,
+                indicator: item.indicator,
+                base: item.base_line,
+                executed: [item.physical_execution],
+                programed: [item.physical_programming]
             };
             data.push(item_);
         });
         dispatch(setLoadingReport(false));
         setData(data);
-    }
+    };
 
     const handleChangeSecretary = (e: React.ChangeEvent<HTMLSelectElement>) => {
         dispatch(setLoadingReport(true))
         setSecretary(e.target.value)
-    }
+    };
 
     const handleBtn = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, index:number) => {
         e.preventDefault()
         dispatch(setLoadingReport(true))
         setIndexYear(index)
-    }
+    };
 
     return (
+        (props.modalIsOpen && secretaries.length > 0 ) &&
         <Modal  isOpen={props.modalIsOpen}
                 onRequestClose={()=>props.callback(false)}
                 contentLabel='Modal de secretarias'>
@@ -118,7 +145,7 @@ const ModalPDT = ( props: ModalsecretaryProps ) => {
                             value={secretary} 
                             onChange={(e)=>handleChangeSecretary(e)}
                             className="tw-border-2 tw-p-1 tw-mb-2 tw-rounded">
-                        {secretaries.map((sec, index) => (<option value={sec} key={index}>{sec}</option>))}
+                        {secretaries.map((sec, index) => (<option value={sec.name} key={index}>{sec.name}</option>))}
                     </select>
                 </div>
                 <button className=' tw-bg-gray-300 hover:tw-bg-gray-500
@@ -150,7 +177,7 @@ const ModalPDT = ( props: ModalsecretaryProps ) => {
                             <th className=' tw-border tw-bg-gray-400
                                             tw-p-2' 
                                 key={index}>
-                                {level.LevelName}
+                                {level.name}
                             </th>
                         ))}
                         <th className='tw-border tw-bg-gray-400 tw-p-2'>Indicador</th>

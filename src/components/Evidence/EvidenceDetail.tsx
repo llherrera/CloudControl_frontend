@@ -20,7 +20,7 @@ export const EvidenceDetail = ( {evi, index}: EvidenceDetailProps ) => {
     const handleInputModal = async () => {
         try {
             setModalIsOpen(false);
-            await approveEvidence(evi.id_evidencia, 2, evi.codigo, evi.cantidad, evi.fecha2, reason);
+            await approveEvidence(evi.id_evidencia, 2, evi.code, evi.amount, evi.date_file, reason);
             dispatch(removeEvidence(index));
         } catch (error) {
             console.log(error);
@@ -32,7 +32,7 @@ export const EvidenceDetail = ( {evi, index}: EvidenceDetailProps ) => {
             setModalIsOpen(true);
         } else {
             try {
-                await approveEvidence(evi.id_evidencia, approve, evi.codigo, evi.cantidad, evi.fecha2);
+                await approveEvidence(evi.id_evidencia, approve, evi.code, evi.amount, evi.date_file);
                 dispatch(removeEvidence(index));
             } catch (error) {
                 console.log(error);
@@ -43,34 +43,34 @@ export const EvidenceDetail = ( {evi, index}: EvidenceDetailProps ) => {
     return (
         <tr>
             <th  className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
-                {new Date(evi.fecha).getDate()}/{new Date(evi.fecha).getMonth()}/{new Date(evi.fecha).getFullYear()}
+                {new Date(evi.date).getDate()}/{new Date(evi.date).getMonth()}/{new Date(evi.date).getFullYear()}
             </th>
             <th  className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
-                {evi.descripcionActividades}
+                {evi.activitiesDesc}
             </th>
             <th  className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
-                {evi.comuna}
+                {evi.commune}
             </th>
             <th  className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
-                {evi.barrio}
+                {evi.neighborhood}
             </th>
             <th  className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
-                {evi.unidad}
+                {evi.unit}
             </th>
             <th  className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
-                {evi.cantidad}
+                {evi.amount}
             </th>
             <th  className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
-                {evi.poblacionBeneficiada}
+                {evi.benefited_population}
             </th>
             <th  className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
-                {evi.numeroPoblacionBeneficiada}
+                {evi.benefited_population_number}
             </th>
             <th  className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
-                {new Date(evi.fecha2).getDate()}/{new Date(evi.fecha2).getMonth()}/{new Date(evi.fecha2).getFullYear()}
+                {new Date(evi.date_file).getDate()}/{new Date(evi.date_file).getMonth()}/{new Date(evi.date_file).getFullYear()}
             </th>
             <th  className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
-                <a href={evi.enlace}>Visitar</a>
+                <a href={evi.file_link}>Visitar</a>
             </th>
             <th  className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
                 <button className="tw-bg-greenBtn hover:tw-bg-green-400 

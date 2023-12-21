@@ -110,18 +110,18 @@ const Section = () => {
             let parent: (string | null) = null;
             let response = [] as NodoInterface[][];
             for (let i = 0; i < 2; i++) {
-                const { id_nivel } = levels[i];
-                if (id_nivel) {
-                    const res = await getLevelNodes({id_level: id_nivel, parent: parent});
+                const { id_level } = levels[i];
+                if (id_level) {
+                    const res = await getLevelNodes({id_level: id_level, parent: parent});
                     let temp_ = [] as NodoInterface[];
                     res.forEach((item:Node) => {
                         temp_.push({
-                            id_node: item.id_nodo,
-                            NodeName: item.Nombre,
-                            Description: item.Descripcion,
-                            Parent: item.Padre,
-                            id_level: item.id_nivel,
-                            Weight: 0,
+                            id_node: item.id_node,
+                            name: item.name,
+                            description: item.description,
+                            parent: item.parent,
+                            id_level: item.id_level,
+                            weight: 0,
                         });
                     });
                     if (res.length === 0) break;
@@ -133,11 +133,11 @@ const Section = () => {
             }
             response[0].push({
                 id_node: '',
-                NodeName: 'Todas',
-                Description: '',
-                Parent: null,
+                name: 'Todas',
+                description: '',
+                parent: null,
                 id_level: 0,
-                Weight: 0,
+                weight: 0,
             })
             setPrograms(response);
         }
@@ -161,7 +161,7 @@ const Section = () => {
         const evidens = JSON.parse(evidencesLocal as string) as EvidenceInterface[];
         let temp = [] as EvidenceInterface[];
         evidens.forEach((item: EvidenceInterface) => {
-            if (codes.includes(item.codigo)) {
+            if (codes.includes(item.code)) {
                 temp.push(item);
             }
         });
@@ -210,12 +210,12 @@ const Section = () => {
                 {programs.map((program, index) => (
                     <div className='tw-flex tw-flex-col' key={index}>
                         <label className='tw-text-center'>
-                            {levels[index].LevelName}
+                            {levels[index].name}
                         </label>
-                        <select value={program[index_[index]].NodeName}
+                        <select value={program[index_[index]].name}
                                 onChange={(e)=>handleChangePrograms(index, e)}
                                 className='tw-border tw-border-gray-300 tw-rounded tw-mr-3 '>
-                            {program.map((node, index) => (<option value={node.NodeName} key={index}>{node.NodeName}</option>))}
+                            {program.map((node, index) => (<option value={node.name} key={index}>{node.name}</option>))}
                         </select>
                     </div>
                 ))}
@@ -229,7 +229,7 @@ const Section = () => {
                     onLoad={onLoad}
                     onUnmount={onUnmount}>
                     {evidences && evidences.map((item) => (
-                        item.ubicaciones.map((location, index) => (
+                        item.locations.map((location, index) => (
                             <MarkerComponent key={index} item={location} />
                         ))
                     ))}

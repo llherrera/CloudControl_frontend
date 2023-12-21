@@ -7,7 +7,7 @@ import { thunkAddLocations } from "@/store/plan/thunks";
 export const LocationsForm = () => {
     const dispatch = useAppDispatch();
     const { plan } = useAppSelector((state) => state.plan);
-    const blankLocation = { id_plan: plan?.id_plan!, type: locationTypes.Barrio, name: '' };
+    const blankLocation = { id_plan: plan?.id_plan!, type: locationTypes.neighborhood, name: '' };
     const locationTypeOptions = Object.values(locationTypes);
 
     const [data, setData] = useState<LocationInterface[]>([

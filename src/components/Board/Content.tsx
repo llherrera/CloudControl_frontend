@@ -38,7 +38,7 @@ export const Content = ( props : ContentProps ) => {
     }, []);
 
     useEffect(() => {
-        dispatch(thunkGetNodes({id_level: levels[indexLevel!].id_nivel!, parent: parent}))
+        dispatch(thunkGetNodes({id_level: levels[indexLevel!].id_level!, parent: parent}))
         .unwrap()
         .catch((err) => {console.log(err)});
     }, [years, indexLevel]);
@@ -110,7 +110,7 @@ export const Content = ( props : ContentProps ) => {
                                 xl:tw-row-span-2">
                     <p className="tw-ml-4 tw-mt-3 tw-font-montserrat tw-font-bold">
                         <BackBtn handle={handleBack} id={props.id}/>
-                        {levels[indexLevel!].LevelName}
+                        {levels[indexLevel!].name}
                         <button className={`tw-ml-4 tw-p-2 
                                             tw-rounded
                                             ${mode? 'tw-bg-red-300 hover:tw-bg-red-500' :
@@ -124,7 +124,7 @@ export const Content = ( props : ContentProps ) => {
                         <div>
                             {(rol === "admin") || (rol === 'funcionario' && id === props.id) ?
                             <NodeForm   index={indexLevel!}
-                                        id={levels[indexLevel!].id_nivel!}/>
+                                        id={levels[indexLevel!].id_level!}/>
                             : <div>
                                 <p className="tw-mx-4 tw-text-center">De momemnto no hay contenido en este Plan</p>
                             </div>
@@ -143,7 +143,7 @@ export const Content = ( props : ContentProps ) => {
                                 md:tw-col-span-full
                                 lg:tw-col-start-2">
                     <p className="tw-font-montserrat tw-mt-3">
-                        Cuatrenio  {new Date(plan!.Fecha_inicio).getUTCFullYear()} - {new Date(plan!.Fecha_fin).getUTCFullYear()}
+                        Cuatrenio  {new Date(plan!.start_date).getUTCFullYear()} - {new Date(plan!.end_date).getUTCFullYear()}
                     </p><br />
                     <Graph
                         dataValues={ radioBtn === 'fisica' ? progressNodes : financial}/>

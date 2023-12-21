@@ -140,10 +140,10 @@ export const doRegister = async (id: number, user_data: RegisterInterface) => {
     try {
         const response = await api.post('/usuarios/registrar', {
             id_plan:  id,
-            username: user_data.usuario,
-            lastname: user_data.apellido,
-            password: user_data.contraseña,
-            email:    user_data.correo,
+            username: user_data.username,
+            lastname: user_data.lastname,
+            password: user_data.password,
+            email:    user_data.email,
             rol:      user_data.rol,
         });
         return response.data;
@@ -167,12 +167,12 @@ export const changePermissions = async (id: number, rol: string) => {
 export const addPDT = async (pdt: PDTInterface) => {
     try {
         const response = await api.post("/plan-territorial", {
-            PlanName:     pdt.Nombre,
-            TownHall:     pdt.Departamento,
-            Municipality: pdt.Municipio,
-            StartDate:    pdt.Fecha_inicio.slice(0, 19).replace('T', ' '),
-            EndDate:      pdt.Fecha_fin.slice(0, 19).replace('T', ' '),
-            Description:  pdt.Descripcion,
+            PlanName:     pdt.name,
+            TownHall:     pdt.department,
+            Municipality: pdt.municipaly,
+            StartDate:    pdt.start_date.slice(0, 19).replace('T', ' '),
+            EndDate:      pdt.end_date.slice(0, 19).replace('T', ' '),
+            Description:  pdt.description,
         });
         return response.data;
     } catch (error) {
@@ -183,12 +183,12 @@ export const addPDT = async (pdt: PDTInterface) => {
 export const updatePDT = async (id: number, pdt: PDTInterface) => {
     try {
         const response = await api.put(`/plan-territorial/${id}`, {
-            PlanName:     pdt.Nombre,
-            TownHall:     pdt.Departamento,
-            Municipality: pdt.Municipio,
-            StartDate:    pdt.Fecha_inicio,
-            EndDate:      pdt.Fecha_fin,
-            Description:  pdt.Descripcion,
+            PlanName:     pdt.name,
+            TownHall:     pdt.department,
+            Municipality: pdt.municipaly,
+            StartDate:    pdt.start_date,
+            EndDate:      pdt.end_date,
+            Description:  pdt.description,
         });
         return response.data;
     } catch (error) {
@@ -544,7 +544,7 @@ export const getUserEvidences = async (page: number) => {
         }
     });
     return response.data;
-};
+}
 
 export const addSecretaries = async (id_plan: number, secretaries: Secretary[]) => {
     const response = await api.post(`/plan-territorial/secretarias`, {
@@ -563,16 +563,12 @@ export const updateSecretaries = async (id_plan: number, secretaries: Secretary[
 }
 
 export const getSecretaries = async (id_plan: number) => {
-    try {
-        const response = await api.get(`/plan-territorial/secretarias`, {
-            params: {
-                id_plan: id_plan
-            }
-        });
-        return response.data;
-    } catch (error) {
-        return error;
-    }
+    const response = await api.get(`/plan-territorial/secretarias`, {
+        params: {
+            id_plan: id_plan
+        }
+    });
+    return response.data;
 }
 
 export const addLocations = async (id_plan: number, locations: any) => {

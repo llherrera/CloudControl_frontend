@@ -71,7 +71,7 @@ export const thunkGetColors = createAsyncThunk<number[], string, { rejectValue: 
                 const result = parseErrorAxios(res);
                 return rejectWithValue(result);
             }
-            return [res[0].value1, res[0].value2, res[0].value3, res[0].value4];
+            return [res[0].value_1, res[0].value_2, res[0].value_3, res[0].value_4];
         } catch (err) {
             const result = parseErrorAxios(err);
             return rejectWithValue(result);
@@ -120,9 +120,9 @@ export const thunkGetLevelsById = createAsyncThunk<NivelInterface[], string, { r
             const temp = [] as NivelInterface[];
             resArr.forEach((item: Nivel) => {
                 temp.push({
-                    id_nivel: item.id_nivel,
-                    LevelName: item.Nombre,
-                    Description: item.Descripcion,
+                    id_level: item.id_level,
+                    name: item.name,
+                    description: item.description,
                 })
             });
             return temp;

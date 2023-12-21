@@ -6,14 +6,14 @@ export interface InitialStateEvidenceInterface {
     loadingEvidence: boolean;
     errorLoadingEvidence: ErrorTypeInterface;
     evidences: EvidenceInterface[];
-    eviSelected?: EvidenceInterface;
-    eviCount: number;
-    listPoints: Coordinates[];
+    evi_selected?: EvidenceInterface;
+    evi_count: number;
+    list_points: Coordinates[];
 }
 
 export interface GetEvidenceProps {
     id_plan: number;
-    codigo: string;
+    code: string;
 }
 
 export interface GetEvidencesProps {
@@ -26,11 +26,11 @@ export interface AddEvidenceProps {
     code: string;
     data: EvidenceInterface;
     file: File;
-    listPoints: Coordinates[];
+    list_points: Coordinates[];
 }
 
 export interface UpdateEvidenceProps {
     data: EvidenceInterface;
     file: File;
-    listPoints: Coordinates[];
+    list_points: Coordinates[];
 }

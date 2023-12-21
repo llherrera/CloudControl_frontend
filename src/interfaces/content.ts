@@ -1,5 +1,5 @@
 import { ErrorTypeInterface } from "./common";
-import { UnitInterface, YearInterface } from "./formInterfaces";
+import { UnitInterface, YearInterface, NodoInterface } from "./formInterfaces";
 
 export interface ContentInterface {
     id: number;
@@ -9,19 +9,20 @@ export interface InitialStateContentInterface {
     loading: boolean;
     error: ErrorTypeInterface;
     index: number;
-    listDepartment: string[];
+    list_department: string[];
     id_plan: number;
     mode: boolean;
+    node?: NodoInterface;
 }
 
 export interface GetUnitProps {
-    idPDT: string;
-    idNode: string;
+    id_plan: string;
+    id_node: string;
 }
 
 export interface AddUnitProps {
-    idPDT: string;
-    idNode: string;
+    id_plan: string;
+    id_node: string;
     unit: UnitInterface;
     years: YearInterface[];
     id_city: number;

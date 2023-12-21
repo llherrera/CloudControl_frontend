@@ -23,9 +23,9 @@ const getInitialState = (): InitialStateEvidenceInterface => {
         loadingEvidence: false,
         errorLoadingEvidence: undefined,
         evidences: [],
-        eviSelected: undefined,
-        eviCount: 0,
-        listPoints: [],
+        evi_selected: undefined,
+        evi_count: 0,
+        list_points: [],
     };
 };
 
@@ -38,11 +38,11 @@ export const evidenceSlice = createSlice({
         },
         resetEvidence: () => getInitialState(),
         setEvidence: (state, action: PayloadAction<EvidenceInterface>) => {
-            state.eviSelected = action.payload;
+            state.evi_selected = action.payload;
             setGenericState('evidence', state);
         },
         setPoints: (state, action: PayloadAction<Coordinates[]>) => {
-            state.listPoints = action.payload;
+            state.list_points = action.payload;
             setGenericState('evidence', state);
         },
         setEvidences: (state, action: PayloadAction<EvidenceInterface[]>) => {
@@ -50,7 +50,7 @@ export const evidenceSlice = createSlice({
             setGenericState('evidence', state);
         },
         resetPoints: (state) => {
-            state.listPoints = [];
+            state.list_points = [];
             removeGenericState('evidence');
         },
     },
@@ -62,7 +62,7 @@ export const evidenceSlice = createSlice({
         builder.addCase(thunkGetEvidence.fulfilled, (state, action) => {
             state.loadingEvidence = false;
             state.evidences = action.payload;
-            state.eviSelected = action.payload[0];
+            state.evi_selected = action.payload[0];
             setGenericState('evidence', state);
         });
         builder.addCase(thunkGetEvidence.rejected, (state, action) => {
@@ -92,7 +92,7 @@ export const evidenceSlice = createSlice({
         });
         builder.addCase(thunkGetEvidenceCount.fulfilled, (state, action) => {
             state.loadingEvidence = false;
-            state.eviCount = action.payload;
+            state.evi_count = action.payload;
             setGenericState('evidence', state);
         });
         builder.addCase(thunkGetEvidenceCount.rejected, (state, action) => {
@@ -107,7 +107,7 @@ export const evidenceSlice = createSlice({
         });
         builder.addCase(thunkAddEvidenceGoal.fulfilled, (state, action) => {
             state.loadingEvidence = false;
-            state.eviSelected = action.payload;
+            state.evi_selected = action.payload;
             setGenericState('evidence', state);
         });
         builder.addCase(thunkAddEvidenceGoal.rejected, (state, action) => {
@@ -137,7 +137,7 @@ export const evidenceSlice = createSlice({
         });
         builder.addCase(thunkUpdateEvidence.fulfilled, (state, action) => {
             state.loadingEvidence = false;
-            state.eviSelected = action.payload;
+            state.evi_selected = action.payload;
             setGenericState('evidence', state);
         });
         builder.addCase(thunkUpdateEvidence.rejected, (state, action) => {
@@ -152,7 +152,7 @@ export const evidenceSlice = createSlice({
         });
         builder.addCase(thunkGetUbiEvidence.fulfilled, (state, action) => {
             state.loadingEvidence = false;
-            state.listPoints = action.payload;
+            state.list_points = action.payload;
             setGenericState('evidence', state);
         });
         builder.addCase(thunkGetUbiEvidence.rejected, (state, action) => {

@@ -1,6 +1,7 @@
 import { InitialStateContentInterface } from "@/interfaces/content";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { RootState } from "../store";
+import { NodoInterface } from "@/interfaces";
 import { setGenericState, getGenericState, removeGenericState } from "@/utils";
 
 const getInitialState = (): InitialStateContentInterface => {
@@ -10,9 +11,10 @@ const getInitialState = (): InitialStateContentInterface => {
         loading: false,
         error: undefined,
         index: 0,
-        listDepartment: [],
+        list_department: [],
         id_plan: 0,
         mode: false,
+        node: undefined
     };
 };
 
@@ -31,10 +33,17 @@ export const contentSlice = createSlice({
         setMode(state, action: PayloadAction<boolean>) {
             state.mode = action.payload;
         },
+        setNode(state, action: PayloadAction<NodoInterface>) {
+            state.node = action.payload;
+        }
     }
 });
 
-export const { selectOption, setIdPlan, setMode } = contentSlice.actions;
+export const { 
+    selectOption, 
+    setIdPlan, 
+    setMode,
+    setNode } = contentSlice.actions;
 export const selectContent = (state: RootState) => state.content.index;
 
 export default contentSlice.reducer;
