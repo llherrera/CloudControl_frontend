@@ -36,13 +36,13 @@ export const HomePage = () => {
             text='Funcionario' 
             src="\src\assets\icons\Funcionario.svg" 
             onClick={() => navigate('/login')}
-            bg_color="tw-bg-greenBtn"/>,
+            bgColor="tw-bg-greenBtn"/>,
         <ButtonComponent 
             inside={false} 
             text='Ciudadano' 
             src="\src\assets\icons\Ciudadanos.svg" 
             onClick={handleBtnCiudadano}
-            bg_color="tw-bg-greenBtn"/>
+            bgColor="tw-bg-greenBtn"/>
     ];
 
     return (

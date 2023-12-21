@@ -70,7 +70,8 @@ export const SecretaryForm = () => {
         <div className="tw-flex tw-justify-center tw-border-t-4 tw-mt-4 tw-pt-2">
             <form   
                 onSubmit={ handleSubmit }
-                className="tw-shadow-2xl tw-p-2">
+                className=" tw-shadow-2xl
+                            tw-p-2">
                 <label htmlFor="">Añadir secretarias</label>
                 {data.map((secretary, index) => (
                     <div key={index}>
