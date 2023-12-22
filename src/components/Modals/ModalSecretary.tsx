@@ -118,7 +118,7 @@ const ModalPDT = ( props: ModalsecretaryProps ) => {
     };
 
     return (
-        (props.modalIsOpen && secretaries.length > 0 ) &&
+        (props.modalIsOpen && secretaries.length > 0 ) ?
         <Modal  isOpen={props.modalIsOpen}
                 onRequestClose={()=>props.callback(false)}
                 contentLabel='Modal de secretarias'>
@@ -224,5 +224,6 @@ const ModalPDT = ( props: ModalsecretaryProps ) => {
             </table>
             </div>}
         </Modal>
+        : <div></div>
     )
 }

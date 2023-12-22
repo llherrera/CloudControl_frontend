@@ -111,7 +111,7 @@ const Section = () => {
             for (let i = 0; i < 2; i++) {
                 const { id_level } = levels[i];
                 if (id_level) {
-                    const res = await getLevelNodes({id_level: id_level, parent: parent});
+                    const res: NodoInterface[] = await getLevelNodes({id_level: id_level, parent: parent});
                     let temp_ = [] as NodoInterface[];
                     res.forEach((item:Node) => {
                         temp_.push({
