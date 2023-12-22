@@ -22,6 +22,8 @@ export interface PDTInterface {
     description: string;
     start_date: string;
     end_date: string;
+    logo_link_plan?: string;
+    logo_link_city?: string;
 }
 
 export interface NivelInterface {

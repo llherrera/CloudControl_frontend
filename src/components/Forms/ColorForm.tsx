@@ -1,16 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Slider from '@mui/material/Slider';
 import Box from '@mui/material/Box';
 
-import { useAppDispatch } from '@/store';
-import { thunkAddColors } from '@/store/plan/thunks';
+import { useAppDispatch, useAppSelector } from '@/store';
+import { thunkAddColors, thunkGetColors } from '@/store/plan/thunks';
 
 import { ColorFromProps } from '@/interfaces';
 
 export const ColorForm = ( props : ColorFromProps ) => {
     const dispatch = useAppDispatch();
+    const { colorimeter } = useAppSelector((state) => state.plan);
+    const { id_plan } = useAppSelector((state) => state.content);
     
-    const [value, setValue] = useState([[0, 24], [25, 49], [50, 74], [75, 100]]);
+    const [value, setValue] = useState(
+        colorimeter.length === 0 ? [[0, 24], [25, 49], [50, 74], [75, 100]] :
+        colorimeter.map((item: number, index) => [colorimeter[(index-1) < 0 ? 0 : index-1]+1, item])
+    );
+
+    useEffect(() => {
+        if (colorimeter.length === 0) {
+            dispatch(thunkGetColors(id_plan.toString()))
+            .unwrap()
+            .then((res: number[]) => {
+                if (res) {
+                    const colors = res.map((item: number, index) => [res[(index-1) < 0 ? 0 : index-1]+1, item]);
+                    setValue(colors);
+                }
+            });
+        }
+    }, []);
 
     const handleChange = (index: number) => (event: Event, newValue: number | number[]) => {
         const updateValue = [...value];
@@ -23,8 +41,8 @@ export const ColorForm = ( props : ColorFromProps ) => {
 
     const handleInput = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         event.preventDefault();
-        const colors = value.map((item: number[]) => item[1])
-        dispatch(thunkAddColors({id_plan: props.id, colors: colors}))
+        const colors = value.map((item: number[]) => item[1]);
+        dispatch(thunkAddColors({id_plan: props.id, colors: colors}));
     }
 
     return (
@@ -65,5 +83,5 @@ export const ColorForm = ( props : ColorFromProps ) => {
                 Guardar
             </button>
         </form>
-    )
+    );
 }

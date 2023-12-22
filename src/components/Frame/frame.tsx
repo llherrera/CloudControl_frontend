@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IconButton } from '@mui/material';
 import LogoutIcon from '@mui/icons-material/Logout';
 
 import { useAppDispatch, useAppSelector } from '../../store';
 import { thunkLogout } from '@/store/auth/thunks';
+import { setLogo } from '@/store/content/contentSlice';
 
 import { NavBar } from '..';
 import { BancoProyectoIcon, PlanIndicativoIcon, 
@@ -15,8 +16,8 @@ export const Frame = (props: FrameProps) => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
 
-    const urlLogo = useAppSelector(state => state.plan.url);
-    const { index, id_plan } = useAppSelector(store => store.content);
+    const { plan } = useAppSelector(state => state.plan);
+    const { index, id_plan, url_logo } = useAppSelector(store => store.content);
     
     const bgcolor='greenBtn';
     const logocolor='#008432';
@@ -57,6 +58,15 @@ export const Frame = (props: FrameProps) => {
         }
     ];
 
+    useEffect(() => {
+        if (plan !== undefined) {
+            const { logo_link_plan } = plan;
+            if (logo_link_plan) {
+                dispatch(setLogo(logo_link_plan));
+            }
+        }
+    }, []);
+
     const handleBtn = () => {
         dispatch(thunkLogout())
             .unwrap()
@@ -69,7 +79,7 @@ export const Frame = (props: FrameProps) => {
         <div className='tw-min-h-screen tw-flex tw-flex-col'>
             <header className={`tw-flex tw-justify-between tw-bg-header tw-drop-shadow-xl`}>
                 <img src="\src\assets\images\CloudControlIcon.png" alt="" width={100} height={100}/>
-                {urlLogo && <img src={urlLogo} alt="" width={300} height={100} className='tw-invisible'/> }
+                {url_logo && <img src={url_logo} alt="" width={200} /> }
                 <IconButton onClick={handleBtn}>
                     <LogoutIcon sx={{color: 'green'}}/>
                 </IconButton>

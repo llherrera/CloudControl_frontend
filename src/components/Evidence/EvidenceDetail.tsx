@@ -20,7 +20,7 @@ export const EvidenceDetail = ( {evi, index}: EvidenceDetailProps ) => {
     const handleInputModal = async () => {
         try {
             setModalIsOpen(false);
-            await approveEvidence(evi.id_evidencia, 2, evi.code, evi.amount, evi.date_file, reason);
+            await approveEvidence(evi.id_evidence, 2, evi.code, evi.amount, evi.date_file, reason);
             dispatch(removeEvidence(index));
         } catch (error) {
             console.log(error);
@@ -32,7 +32,7 @@ export const EvidenceDetail = ( {evi, index}: EvidenceDetailProps ) => {
             setModalIsOpen(true);
         } else {
             try {
-                await approveEvidence(evi.id_evidencia, approve, evi.code, evi.amount, evi.date_file);
+                await approveEvidence(evi.id_evidence, approve, evi.code, evi.amount, evi.date_file);
                 dispatch(removeEvidence(index));
             } catch (error) {
                 console.log(error);

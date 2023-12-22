@@ -78,7 +78,7 @@ const SettingPageWrapper = () => {
         <div>
             <BackBtn handle={handleBack} id={id}/><br />
             <FileInput/>
-            <UploadImage id={id_}/>
+            <UploadImage/>
             <div className='tw-border-t-4 tw-mt-4'>
                 {((rol === "admin") || (rol === 'funcionario' && id === plan!.id_plan!)) ?
                     <div className='tw-flex tw-justify-center'>

@@ -7,18 +7,17 @@ import {InitialStatePlanInterface,
         NivelInterface } from "@/interfaces";
 import { setGenericState, getGenericState, removeGenericState } from "@/utils";
 
-import {thunkGetPDTid, 
-        thunkAddPDT, 
-        thunkGetColors, 
+import {thunkGetPDTid,
+        thunkAddPDT,
+        thunkGetColors,
         thunkAddColors,
-        thunkGetNodes, 
-        thunkUpdateYears, 
+        thunkGetNodes,
+        thunkUpdateYears,
         thunkGetLevelsById, 
         thunkGetLevelName,
-        thunkGetLogo, 
-        thunkGetSecretaries, 
-        thunkAddSecretaries, 
-        thunkAddLocations, 
+        thunkGetSecretaries,
+        thunkAddSecretaries,
+        thunkAddLocations,
         thunkGetLocations } from "./thunks";
 
 const getInitialState = (): InitialStatePlanInterface => {
@@ -56,7 +55,6 @@ const getInitialState = (): InitialStatePlanInterface => {
         financial: [],
         namesTree: [['Dimension', 'Nivel']],
         radioBtn: 'fisica',
-        url: undefined,
         secretaries: [],
         locations: [],
         planLocation: undefined
@@ -256,21 +254,6 @@ export const planSlice = createSlice({
         builder.addCase(thunkGetLevelName.rejected, (state, action) => {
             state.loadingNamesTree = false;
             state.errorLoadingNamesTree = action.payload;
-        });
-
-
-        builder.addCase(thunkGetLogo.pending, state => {
-            if (!state.loadingLogo) state.loadingLogo = true;
-            state.errorLoadingLogo = undefined;
-        });
-        builder.addCase(thunkGetLogo.fulfilled, (state, action) => {
-            state.loadingLogo = false;
-            state.url = action.payload;
-            setGenericState('plan', state);
-        });
-        builder.addCase(thunkGetLogo.rejected, (state, action) => {
-            state.loadingLogo = false;
-            state.errorLoadingLogo = action.payload;
         });
 
 

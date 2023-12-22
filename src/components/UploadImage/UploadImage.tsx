@@ -1,72 +1,88 @@
-import React, { useCallback, useState } from 'react'
-import { useDropzone, FileRejection, DropEvent } from 'react-dropzone';
+import React, { useState } from 'react';
+
+import { useAppSelector } from '@/store';
 
 import { uploadLogoPlan } from '@/services/api';
 import { LoadIcon } from '@/assets/icons';
 
-export const UploadImage = ( {id}:{id:number} ) => {
+export const UploadImage = () => {
 
-    const [logo, setLogo] = useState<File | null>(null)
+    const { id_plan } = useAppSelector(store => store.content)
 
-    const onDrop = useCallback((acceptedFiles: File[], fileRejections: FileRejection[], event: DropEvent) => {
-        const file = acceptedFiles[0];
-        if(file.type === 'image/png' ||
-            file.type === 'image/jpeg' || 
-            file.type === 'image/jpg') {
-            setLogo(file)
+    const [logoPlan, setLogoPlan] = useState<FileList | null>(null);
+    const [logoPlanStr, setLogoPlanStr] = useState<string | null>(null);
+    const types = ['image/png', 'image/jpeg'];
+
+    const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const reader = new FileReader();
+        const file = e.target.files;
+        if (file) {
+            if (file.length > 1) {
+                alert('Solo se puede subir un archivo');
+                return;
+            }
+            if (types.includes(file[0].type) === false) {
+                alert('El archivo tiene que ser PNG o JPG');
+                return;
+            }
+            reader.onloadend = () => {
+                if (logoPlan === null) {
+                    setLogoPlanStr(reader.result as string);
+                    setLogoPlan(file);
+                }
+            }
+            reader.readAsDataURL(file[0]);
         }
-        else {
-            alert('Archivo incorrecto')
-        }
-    }, []);
-
-    const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
+    };
 
     const handleSaveLogo = async () => {
-        if (logo === null) {
-            alert('No hay archivo')
-            return
+        if (logoPlan === null || logoPlan.length === 0) {
+            alert('No hay archivo');
+            return;
         }
-        await uploadLogoPlan( id, logo)
+        await uploadLogoPlan( id_plan, logoPlan![0])
         .then(() => {
-            alert('Logo subido')
+            alert('Logo subido');
         })
         .catch((err) => {
             console.log(err);
-            alert('error al subir logo')
-        })
-    }
+            alert('error al subir logo');
+        });
+    };
 
     return (
         <form   id='logoForm'
                 encType='multipart/form-data'
-                onSubmit={handleSaveLogo}
                 className=' tw-mt-2 tw-ml-2'>
-            <div {...getRootProps()}>
-                <input {...getInputProps()} />
-                {isDragActive ? (
-                    <div>
-                        <p className='tw-text-center tw-bg-blue-400'>Guardar logo</p>
-                        <div className='tw-flex tw-justify-center'>
-                            <LoadIcon/>
-                        </div>
-                    </div>
-                ) : (
-                    <div>
-                        <p className='tw-text-2xl tw-text-center tw-font-bold'>Cargar logo</p>
-                        <div className='tw-flex tw-justify-center'>
-                            <LoadIcon/>
-                        </div>
-                    </div>
-                )}
-                <div className='tw-flex tw-justify-center'>
-                    <button className='tw-bg-greenBtn hover:tw-bg-green-400 
-                                        tw-text-white hover:tw-text-black tw-font-bold
-                                        tw-p-2 tw-rounded'>
-                        Guardar
-                    </button>
-                </div>
+            <div className='tw-flex tw-justify-center tw-gap-4'>
+                {logoPlan === null ? 
+                <label className='tw-text-center'>
+                    Cargar logo del plan
+                    <LoadIcon/>
+                </label> :
+                <img    
+                    src={logoPlanStr!}
+                    alt="Uploaded"
+                    style={{ width: '200px' }}
+                    className='tw-mb-2'/>
+                }
+            </div>
+            <div className='tw-flex tw-justify-center'>
+                <input  
+                    type='file'
+                    onChange={handleUpload}/>
+            </div>
+            <div className='tw-flex tw-justify-center'>
+                <button
+                    type='button'
+                    className=' tw-bg-greenBtn hover:tw-bg-green-400 
+                                tw-text-white hover:tw-text-black 
+                                tw-font-bold tw-text-center
+                                tw-p-2 tw-mt-2 tw-rounded'
+                    onClick={handleSaveLogo}>
+                    Guardar
+                </button>
             </div>
         </form>
-    )
+    );
 }

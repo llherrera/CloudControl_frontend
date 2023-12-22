@@ -13,6 +13,7 @@ export interface InitialStateContentInterface {
     id_plan: number;
     mode: boolean;
     node?: NodoInterface;
+    url_logo: string;
 }
 
 export interface GetUnitProps {

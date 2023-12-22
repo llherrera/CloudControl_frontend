@@ -5,7 +5,7 @@ import {
     NodoInterface, 
     LocationInterface } from "./formInterfaces";
 import { Coordinates } from "./ubication";
-import { SecretaryDB } from "./secretary";
+import { Secretary } from "./secretary";
 
 export interface InitialStatePlanInterface {
     loadingPlan: boolean;
@@ -39,8 +39,7 @@ export interface InitialStatePlanInterface {
     financial: number[];
     namesTree: [string[]];
     radioBtn: string;
-    url?: string;
-    secretaries: SecretaryDB[];
+    secretaries: Secretary[];
     locations: LocationInterface[];
     planLocation: Coordinates | undefined
 }

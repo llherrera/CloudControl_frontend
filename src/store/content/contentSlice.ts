@@ -14,7 +14,8 @@ const getInitialState = (): InitialStateContentInterface => {
         list_department: [],
         id_plan: 0,
         mode: false,
-        node: undefined
+        node: undefined,
+        url_logo: '',
     };
 };
 
@@ -35,7 +36,10 @@ export const contentSlice = createSlice({
         },
         setNode(state, action: PayloadAction<NodoInterface>) {
             state.node = action.payload;
-        }
+        },
+        setLogo(state, action: PayloadAction<string>) {
+            state.url_logo = action.payload;
+        },
     }
 });
 
@@ -43,7 +47,8 @@ export const {
     selectOption, 
     setIdPlan, 
     setMode,
-    setNode } = contentSlice.actions;
+    setNode,
+    setLogo } = contentSlice.actions;
 export const selectContent = (state: RootState) => state.content.index;
 
 export default contentSlice.reducer;

@@ -10,25 +10,7 @@ export const SecretaryForm = () => {
     const dispatch = useAppDispatch();
     const { plan, secretaries } = useAppSelector((state) => state.plan);
 
-    const [data, setData] = useState<Secretary[]>([]);
-
-    useEffect(() => {
-        if (secretaries && secretaries.length > 0) {
-            const secretaries_ = secretaries.map((secretary) => {
-                return {
-                    id_secretary: secretary.id_secretary,
-                    name: secretary.name,
-                    id_plan: secretary.id_plan,
-                    email: secretary.email,
-                    phone: secretary.phone,
-                }
-            });
-            setData(secretaries_);
-        }else {
-            const data_ = [{ name: "", id_plan: plan?.id_plan!, email: "", phone: 0 },]
-            setData(data_);
-        }
-    }, []);
+    const [data, setData] = useState<Secretary[]>(secretaries);
 
     const addSecretary = () => {
         const newData = [...data, { name: "", id_plan: plan?.id_plan!, email: "", phone: 0 }];

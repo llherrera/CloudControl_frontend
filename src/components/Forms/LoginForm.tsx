@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 import { useAppDispatch } from '../../store';
 import { thunkLogin } from '../../store/auth/thunks';
+import { setIdPlan } from "@/store/content/contentSlice";
 
 import { decode } from '../../utils/decode';
 
@@ -19,30 +20,33 @@ export const LoginForm = () => {
         setuser({
             ...user,
             [e.target.name]: e.target.value
-        })
+        });
     };
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
+        e.preventDefault();
         await dispatch(thunkLogin(user))
             .unwrap()
             .then((res) => {
-                if (res === undefined) return alert("Usuario o contraseña incorrectos")
-                const info = decode(res.token)
+                if (res === undefined) return alert("Usuario o contraseña incorrectos");
+                const info = decode(res.token);
                 info.rol === "admin" ? 
                 navigate('/pdt') :
                 (info.rol === "funcionario" || info.rol === 'planeacion' || info.rol === 'sectorialista') ?
-                navigate('/pdt/PlanIndicativo', {state: {id: info.id_plan}}) :
+                (
+                    dispatch(setIdPlan(info.id_plan)),
+                    navigate('/pdt/PlanIndicativo', {state: {id: info.id_plan}})
+                ) :
                 navigate('/')
             })
             .catch((err) => {
                 console.log(err)
             }
-        )
+        );
     };
 
     const handleCancelar = () => {
-        navigate('/')
+        navigate('/');
     };
 
     return (

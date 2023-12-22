@@ -1,36 +1,33 @@
 import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
 
 import { useAppDispatch, useAppSelector } from "@/store";
-import { thunkUpdateYears, thunkGetLogo } from "@/store/plan/thunks";
+import { thunkUpdateYears } from "@/store/plan/thunks";
 import { incrementLevelIndex } from "@/store/plan/planSlice";
 
 import { LevelForm, Board, Frame } from "../../components";
 import { getYears } from "@/utils";
 
 export const PDTid = () => {
-    const dispatch = useAppDispatch()
-    const location = useLocation();
+    const dispatch = useAppDispatch();
 
-    const { levels, indexLevel, plan } = useAppSelector(store => store.plan)
-    const id = location.state?.id;
+    const { levels, indexLevel, plan } = useAppSelector(store => store.plan);
+    const { id_plan } = useAppSelector(store => store.content);
 
     useEffect(() => {
         if (plan){
-            let years = getYears(plan.start_date)
-            dispatch(thunkUpdateYears(years))
+            let years = getYears(plan.start_date);
+            dispatch(thunkUpdateYears(years));
         }
-    }, [plan])
+    }, [plan]);
 
     useEffect(() => {
-        let i = indexLevel ?? 0
-        dispatch(incrementLevelIndex(i))
-        dispatch(thunkGetLogo(id))
+        let i = indexLevel ?? 0;
+        dispatch(incrementLevelIndex(i));
     }, []);
 
     return (
         <Frame
-            data={levels.length === 0 ? <LevelForm id={id!} /> : <Board id={id}/>}
+            data={levels.length === 0 ? <LevelForm id={id_plan.toString()} /> : <Board/>}
         />
-    )
+    );
 }

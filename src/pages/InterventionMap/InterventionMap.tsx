@@ -95,10 +95,9 @@ const Section = () => {
         const fetch = async () => {
             await getUbiEvidences(id_plan)
             .then((res)=> {
+                localStorage.setItem('evidences', JSON.stringify(res));
                 if (res.length === 0) {
                     alert('No hay evidencias para esta unidad')
-                }else {
-                    localStorage.setItem('evidence', JSON.stringify(res));
                 }
             });
         }
@@ -127,7 +126,7 @@ const Section = () => {
                     if (res.length === 0) break;
                     const temp = [...programs];
                     temp[i] = temp_;
-                    parent = res[index_[i]].id_nodo;
+                    parent = res[index_[i]].id_node;
                     response.push(temp_);
                 }
             }
@@ -157,7 +156,7 @@ const Section = () => {
 
     useEffect(() => {
         if (codes.length === 0) return;
-        const evidencesLocal = localStorage.getItem('evidence');
+        const evidencesLocal = localStorage.getItem('evidences');
         const evidens = JSON.parse(evidencesLocal as string) as EvidenceInterface[];
         let temp = [] as EvidenceInterface[];
         evidens.forEach((item: EvidenceInterface) => {
@@ -185,7 +184,7 @@ const Section = () => {
         let newIndex_ = [...index_];
         if (newIndex === 0) {
             newIndex_[index] = newIndex;
-        } else if (newIndex === programs[0].length - 1) {
+        } else if (newIndex === programs[index].length) {
             const evidencesLocal = localStorage.getItem('evidence');
             const evidens = JSON.parse(evidencesLocal as string);
             dispatch(setEvidences(evidens));
@@ -228,11 +227,11 @@ const Section = () => {
                     options={mapOptions}
                     onLoad={onLoad}
                     onUnmount={onUnmount}>
-                    {evidences && evidences.map((item) => (
+                    {evidences && evidences.length > 0 ? evidences.map((item) => (
                         item.locations.map((location, index) => (
                             <MarkerComponent key={index} item={location} />
                         ))
-                    ))}
+                    )):null}
                 </GoogleMap>
             </div>
             ) : <p>Cargando...</p>}

@@ -4,23 +4,23 @@ import { Content } from './Content';
 import { PesosNodos, Porcentaje, YearDetail } from '../../interfaces';
 import { getTotalProgress } from '../../services/api';
 
-import { useAppDispatch } from '@/store';
+import { useAppDispatch, useAppSelector } from '@/store';
 import { thunkGetPDTid, thunkGetColors } from '@/store/plan/thunks';
-import { useAppSelector } from "@/store";
 
-export const Board = ( {id}:{id: number} ) => {
-    const dispatch = useAppDispatch()
-    const { plan } = useAppSelector(store => store.plan)
+export const Board = () => {
+    const dispatch = useAppDispatch();
+    const { id_plan } = useAppSelector(store => store.content);
+    const { plan } = useAppSelector(store => store.plan);
 
     const [getProgress, setGetProgress] = useState(false);
 
     useEffect(() => {
         const abortController = new AbortController()
 
-        dispatch(thunkGetPDTid(id.toString())).unwrap()
-        dispatch(thunkGetColors(id.toString())).unwrap()
+        dispatch(thunkGetPDTid(id_plan.toString())).unwrap()
+        dispatch(thunkGetColors(id_plan.toString())).unwrap()
         
-        getTotalProgress(id)
+        getTotalProgress(id_plan)
             .then((res) => {
                 if (!res) return
                 localStorage.setItem('pesosNodo', JSON.stringify(res[0]))
@@ -81,7 +81,7 @@ export const Board = ( {id}:{id: number} ) => {
     return (
         (plan ? 
         <Content    
-            id={ parseInt(id.toString()) }
+            id={ id_plan }
             progress={getProgress}
         /> : <p>Cargando</p>
         )

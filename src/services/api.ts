@@ -197,33 +197,25 @@ export const updatePDT = async (id: number, pdt: PDTInterface) => {
 }
 
 export const getLogoPlan = async (id: number) => {
-    try {
-        const response = await api.get(`/plan-territorial/logo`, {
-            params: {
-                id_plan: id
-            }
-        });
-        return response.data;
-    } catch (error) {
-        return error;
-    }
+    const response = await api.get(`/plan-territorial/logo`, {
+        params: {
+            id_plan: id
+        }
+    });
+    return response.data;
 }
 
-export const uploadLogoPlan = async ( id: number, logo: File ) => {
-    try {
-        const response = await api.post("/plan-territorial/logo", 
-        {
-            id_plan: id,
-            file: logo
-        },{
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
-        });
-        return response.data;
-    } catch (error) {
-        return error;
-    }
+export const uploadLogoPlan = async ( id: number, logos: File ) => {
+    const response = await api.post("/plan-territorial/logo", 
+    {
+        id_plan: id,
+        photos: logos,
+    },{
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    });
+    return response.data;
 }
 
 export const deletePDT = async (id: number) => {
@@ -484,11 +476,11 @@ export const deleteEvidence = async (id_evidence: number) => {
     }
 }
 
-export const addColor = async (props: AddColorsProps) => {
+export const addColor = async (id_plan: number, colors: number[]) => {
     try {
         const response = await api.post(`/plan-territorial/color`, {
-            id_plan:     props.id_plan,
-            percentages: props.colors
+            id_plan:     id_plan,
+            percentages: colors
         });
         return response.data;
     } catch (error) {
