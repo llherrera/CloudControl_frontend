@@ -55,6 +55,7 @@ export interface Node {
     description: string;
     parent: string | null;
     id_level: number;
+    weight: number;
 }
 
 export interface AddColorsProps {
@@ -83,4 +84,9 @@ export interface ExcelPlan {
     ProgramadoAño3: number | null;
     ProgramadoAño4: number | null;
     Responsable: string | null;
+}
+
+export interface UpdateWProps {
+    ids: string[];
+    weights: number[];
 }

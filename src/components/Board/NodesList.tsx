@@ -1,8 +1,8 @@
-import {useEffect } from 'react';
-import {useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from "react-router-dom";
 
 import {useAppSelector, useAppDispatch } from "@/store";
-import {thunkGetNodes } from '@/store/plan/thunks';
+import {thunkGetNodes, thunkUpdateWeight } from '@/store/plan/thunks';
 import {incrementLevelIndex, 
         setParent, 
         setProgressNodes, 
@@ -13,6 +13,7 @@ import {NodoInterface,
         PesosNodos, 
         Porcentaje, 
         NodeListProps } from '@/interfaces';
+import { Spinner } from '@/assets/icons';
 
 export const NodesList = ( props : NodeListProps ) => {
     const navigate = useNavigate();
@@ -22,8 +23,12 @@ export const NodesList = ( props : NodeListProps ) => {
             levels, 
             indexLevel, 
             progressNodes, 
-            colorimeter } = useAppSelector(store => store.plan);
+            colorimeter,
+            loadingNodes } = useAppSelector(store => store.plan);
     const { mode } = useAppSelector(store => store.content);
+    const [ pesos, setPesos ] = useState<number[]>(
+        nodes.map((item: NodoInterface) => item.weight)
+    );
 
     useEffect(() => {
         const ids = nodes.map((item: NodoInterface) => item.id_node);
@@ -76,9 +81,32 @@ export const NodesList = ( props : NodeListProps ) => {
         }
     };
 
+    const handleUpdateWeight = ( index: number, e: React.ChangeEvent<HTMLInputElement> ) => {
+        const value = parseInt(e.target.value);
+        const newNodes = [...pesos];
+        newNodes[index] = value;
+        setPesos(newNodes);
+    };
+
+    const hangleSubmitUpdateWeight = () => {
+        const acmu = pesos.reduce((a, b) => a + b, 0);
+        if (acmu !== 100) {
+            alert('La suma de los pesos debe ser 100');
+            return;
+        }
+        const ids = nodes.map((item) => item.id_node);
+        dispatch(thunkUpdateWeight({ids: ids, weights: pesos}));
+    };
+
     return (
-        <ul className={`${indexLevel === levels.length-1 ? 'tw-flex tw-flex-row tw-flex-wrap':
+        nodes.length === 0 ? null :
+        <ul className={`${indexLevel === levels.length-1 ? 
+                        'tw-flex tw-flex-row tw-flex-wrap':
                         'tw-flex-col tw-flex-wrap'} `}>
+            {loadingNodes ?
+            <div className='tw-flex tw-justify-center tw-items-center tw-h-80'>
+                <Spinner />
+            </div>:<div>
             {nodes.map((item: NodoInterface, index: number) => {
                 return(
                 <div className="tw-my-2 tw-flex tw-transition hover:tw-scale-110"
@@ -106,10 +134,14 @@ export const NodesList = ( props : NodeListProps ) => {
                     </button>
                     {indexLevel !== levels.length-1 ?
                     <button className={`${
-                                        parseInt( ((progressNodes[index]??0)*100).toString()) < 0 ? 'tw-bg-gray-400 hover:tw-bg-gray-200' :
-                                        parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[0] ? 'tw-bg-redColory hover:tw-bg-red-200'      :
-                                        parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[1] ? 'tw-bg-yellowColory hover:tw-bg-yellow-200':
-                                        parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[2] ? 'tw-bg-greenColory hover:tw-bg-green-200'  : 
+                                        parseInt( ((progressNodes[index]??0)*100).toString()) < 0 ? 
+                                        'tw-bg-gray-400 hover:tw-bg-gray-200' :
+                                        parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[0] ? 
+                                        'tw-bg-redColory hover:tw-bg-red-200'      :
+                                        parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[1] ? 
+                                        'tw-bg-yellowColory hover:tw-bg-yellow-200':
+                                        parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[2] ? 
+                                        'tw-bg-greenColory hover:tw-bg-green-200'  : 
                                         'tw-bg-blueColory hover:tw-ring-blue-200'}
                                         tw-h-8 tw-my-2
                                         tw-w-2/3
@@ -125,11 +157,25 @@ export const NodesList = ( props : NodeListProps ) => {
                     <input  className=' tw-px-2 tw-mx-2 
                                         tw-border tw-rounded
                                         tw-w-12'
+                            type='number'
                             placeholder='peso'
-                            value={item.weight}/> 
+                            value={ isNaN(pesos[index]) ? 0 : pesos[index]}
+                            onChange={(e)=>handleUpdateWeight(index, e)}/> 
                     : null}
                 </div>
             )})}
+            {mode ?
+            <div className='tw-flex tw-justify-center'>
+                <button className='tw-px-2 tw-mx-2 
+                                    tw-bg-greenBtn tw-text-white
+                                    tw-font-bold
+                                    tw-border tw-rounded'
+                        onClick={hangleSubmitUpdateWeight}>
+                    Guardar
+                </button>
+            </div>
+            : null}
+            </div>}
         </ul>
     );
 }

@@ -15,6 +15,7 @@ import {thunkGetPDTid,
         thunkUpdateYears,
         thunkGetLevelsById, 
         thunkGetLevelName,
+        thunkUpdateWeight,
         thunkGetSecretaries,
         thunkAddSecretaries,
         thunkAddLocations,
@@ -209,7 +210,7 @@ export const planSlice = createSlice({
                     description: item.description,
                     parent: item.parent,
                     id_level: item.id_level,
-                    weight: 0,
+                    weight: item.weight,
                 })
             });
             state.nodes = temp;
@@ -347,6 +348,19 @@ export const planSlice = createSlice({
         builder.addCase(thunkGetSecretaries.rejected, (state, action) => {
             state.loadingSecretaries = false;
             state.errorLoadingSecretaries = action.payload;
+        });
+
+
+        builder.addCase(thunkUpdateWeight.pending, state => {
+            if (!state.loadingNodes) state.loadingNodes = true;
+            state.errorLoadingNodes = undefined;
+        });
+        builder.addCase(thunkUpdateWeight.fulfilled, (state, action) => {
+            state.loadingNodes = false;
+        });
+        builder.addCase(thunkUpdateWeight.rejected, (state, action) => {
+            state.loadingNodes = false;
+            state.errorLoadingNodes = action.payload;
         });
     }
 });

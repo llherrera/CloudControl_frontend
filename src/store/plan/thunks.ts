@@ -9,7 +9,8 @@ import { PDTInterface,
         Secretary, 
         PropsSecretary, 
         PropsLocations, 
-        LocationInterface } from '../../interfaces';
+        LocationInterface,
+        UpdateWProps } from '../../interfaces';
 import { parseErrorAxios } from '../../utils';
 
 import {getPDTid, 
@@ -20,12 +21,12 @@ import {getPDTid,
         updateColor,
         getPDTLevelsById, 
         getLevelName, 
-        getLogoPlan,
         getSecretaries,
         addSecretaries, 
         addLocations, 
         getLocations,
-        updateSecretaries } from '@/services/api';
+        updateSecretaries,
+        updateWeights } from '@/services/api';
 
 
 
@@ -109,6 +110,19 @@ export const thunkGetNodes = createAsyncThunk<[], GetNodeProps, { rejectValue: E
     async (props: GetNodeProps, { rejectWithValue }) => {
         try {
             const res = await getLevelNodes(props);
+            return res;
+        } catch (err) {
+            const result = parseErrorAxios(err);
+            return rejectWithValue(result);
+        }
+    }
+)
+
+export const thunkUpdateWeight = createAsyncThunk<[], UpdateWProps, { rejectValue: ErrorBasicInterface }>(
+    'pdt/updateWeight',
+    async (props: UpdateWProps, { rejectWithValue }) => {
+        try {
+            const res = await updateWeights(props.ids, props.weights);
             return res;
         } catch (err) {
             const result = parseErrorAxios(err);

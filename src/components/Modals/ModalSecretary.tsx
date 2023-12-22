@@ -45,7 +45,8 @@ const ModalPDT = ( props: ModalsecretaryProps ) => {
     }, []);
 
     useEffect(() => {
-        setSecretary(secretaries[0].name);
+        if (secretaries.length > 0)
+            setSecretary(secretaries[0].name);
     }, [secretaries]);
 
     useEffect(() => {

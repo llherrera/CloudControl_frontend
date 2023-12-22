@@ -246,6 +246,20 @@ export const getLevelNodes = async (props: GetNodeProps) => {
     }
 }
 
+export const updateWeights = async (ids: string[], weights: number[]) => {
+    try {
+        const response = await api.put("/plan-territorial/nivel", 
+            {   
+                ids: ids,
+                weights: weights,
+            }
+        );
+        return response.data;
+    } catch (error) {
+        return error;
+    }
+}
+
 export const addLevelNode = async (nodes: NodoInterface[], id_level: number) => {
     try {
         const response = await api.post("/plan-territorial/nivel", { 
