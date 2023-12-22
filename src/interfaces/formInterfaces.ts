@@ -1,9 +1,9 @@
 export interface RegisterInterface {
-    usuario: string;
-    apellido: string;
-    correo: string;
-    contraseña: string;
-    confirmarContraseña: string;
+    username: string;
+    lastname: string;
+    email: string;
+    password: string;
+    confirm_password: string;
     rol: string;
 }
 
@@ -16,58 +16,90 @@ export interface UserInterface {
 
 export interface PDTInterface {
     id_plan?: number;
-    Nombre: string;
-    Alcaldia: string;
-    Municipio: string;
-    Descripcion: string;
-    Fecha_inicio: string;
-    Fecha_fin: string;
+    name: string;
+    department: string;
+    municipaly: string;
+    description: string;
+    start_date: string;
+    end_date: string;
+    logo_link_plan?: string;
+    logo_link_city?: string;
 }
 
 export interface NivelInterface {
-    id_nivel?: number;
-    Nombre: string;
-    Descripcion: string;
+    id_level?: number;
+    name: string;
+    description: string;
 }
 
 export interface NodoInterface {
-    id_nodo: string;
-    Nombre: string;
-    Descripcion: string;
-    Padre: (string | null);
-    id_nivel: number;
-    Peso: number;
+    id_node: string;
+    name: string;
+    description: string;
+    parent: (string | null);
+    id_level: number;
+    weight: number;
 }
 
-export interface UnidadInterface {
-    codigo: string,
-    descripcion: string,
-    indicador: string,
+export interface UnitInterface {
+    code: string,
+    description: string,
+    indicator: string,
     base: number,
-    meta: number,
+    goal: number,
+    responsible: string,
+    years: YearInterface[]
 }
 
-export interface AñoInterface {
-    año: number[];
-    programacion: number[];
-    ejecFisica: number[];
-    ejecFinanciera: number[];
+export interface YearInterface {
+    year: number;
+    physical_programming: number;
+    physical_execution: number;
+    financial_execution: number;
 }
 
-export interface EvidenciaInterface {
-    Fecha: string;
-    DescripcionActividades: string;
-    Unidad: string;
-    Cantidad: number;
-    Comuna: string;
-    Barrio: string;
-    Correguimiento: string;
-    Vereda: string;
-    PoblacionBeneficiada: string;
-    NumeroPoblacionBeneficiada: number;
-    RecursosEjecutados: number;
-    FuenteRecursos: string;
-    NombreDocumento: string;
-    Lugar: string;
-    Fecha2: string;
+export interface EvidenceInterface {
+    id_evidence: number;
+    code: string;
+    date: string;
+    activitiesDesc: string;
+    unit: string;
+    amount: number;
+    commune: string;
+    neighborhood: string;
+    corregimiento: string;
+    vereda: string;
+    benefited_population: string;
+    benefited_population_number: number;
+    executed_resources: number;
+    resources_font: string;
+    name_file: string;
+    place: string;
+    date_file: string;
+    file_link: string;
+    locations: UbicationDB[];
+    state: number;
+}
+
+export interface LoginProps {
+    username: string
+    password: string
+}
+
+export interface UbicationDB {
+    id_evi_loc: number;
+    code: string;
+    lat: number;
+    lng: number;
+}
+export enum locationTypes {
+    neighborhood = 'Barrio / Vereda',
+    commune = 'Comuna / Corregimiento',
+}
+export interface LocationInterface {
+    id_plan: number
+    type: locationTypes
+    name: string;
+    lat?: number
+    lng?: number
 }

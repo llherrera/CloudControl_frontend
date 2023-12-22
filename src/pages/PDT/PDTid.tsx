@@ -1,23 +1,33 @@
-import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import { getPDTid } from "../../services/api";
-import { NivelForm, Tablero } from "../../components";
-import { NivelInterface } from "../../interfaces";
+import { useEffect } from "react";
+
+import { useAppDispatch, useAppSelector } from "@/store";
+import { thunkUpdateYears } from "@/store/plan/thunks";
+import { incrementLevelIndex } from "@/store/plan/planSlice";
+
+import { LevelForm, Board, Frame } from "../../components";
+import { getYears } from "@/utils";
 
 export const PDTid = () => {
-    const { id } = useParams();
-    const [data, setData] = useState<NivelInterface[]>([]);
+    const dispatch = useAppDispatch();
+
+    const { levels, indexLevel, plan } = useAppSelector(store => store.plan);
+    const { id_plan } = useAppSelector(store => store.content);
 
     useEffect(() => {
-        getPDTid(id!)
-            .then((res) => {
-                setData(res)
-            })
+        if (plan){
+            let years = getYears(plan.start_date);
+            dispatch(thunkUpdateYears(years));
+        }
+    }, [plan]);
+
+    useEffect(() => {
+        let i = indexLevel ?? 0;
+        dispatch(incrementLevelIndex(i));
     }, []);
 
     return (
-        <div>
-            {data.length === 0 ? <NivelForm id={id!} /> : <Tablero data={data} />}
-        </div>
-    )
+        <Frame
+            data={levels.length === 0 ? <LevelForm id={id_plan.toString()} /> : <Board/>}
+        />
+    );
 }

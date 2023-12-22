@@ -1,195 +1,244 @@
 import axios from "axios";
-import { AñoInterface, UnidadInterface, NodoInterface, 
-    NivelInterface, RegisterInterface, PDTInterface, EvidenciaInterface } from "../interfaces";
-import Cookies from "js-cookie";
+import jwtDecode from "jwt-decode";
+import { getEnvironment } from '../utils/environment';
 
-//const token = sessionStorage.getItem('token');
-const token = Cookies.get('token');
-if (token) {
-    axios.defaults.headers.common['authorization'] = `Bearer ${token}`;
+import { 
+    YearInterface, 
+    UnitInterface, 
+    NodoInterface, 
+    NivelInterface, 
+    RegisterInterface, 
+    PDTInterface, 
+    EvidenceInterface, 
+    GetNodeProps, 
+    AddColorsProps, 
+    Secretary, 
+    LoginProps, 
+    Coordinates } from "../interfaces";
+
+import { getToken } from "@/utils";
+
+const { BASE_URL } = getEnvironment();
+const api = axios.create({
+    baseURL: BASE_URL,
+})
+
+let isRefreshingToken = false;
+let failedQueue: { resolve: (value?: unknown) => void; reject: (reason?: unknown) => void }[] = [];
+
+const processFailedQueue = (error?: unknown) => {
+    failedQueue.forEach(promise => {
+        if (error) promise.reject(error)
+        else promise.resolve()
+    })
+    failedQueue = []
 }
 
-// Obtiene todos los PDTs
+api.interceptors.request.use(
+    async request => {
+        try {
+            let token = getToken();
+            if (token) {
+                token = token.token;
+                // @ts-expect-error request.headers
+                request.headers = {
+                    ...request.headers,
+                    Authorization: `Bearer ${token}`
+                }
+                const decoder: {exp: number} = jwtDecode(token);
+                const isExpired = new Date(decoder.exp * 1000) < new Date();
+                //if (!isExpired) return request
+                //    const newToken = await refreshToken();
+                //if (newToken)
+                //// @ts-expect-error request.headers
+                //    request.headers = {
+                //        ...request.headers,
+                //        Authorization: `Bearer ${newToken}`
+                //    }
+                return request;
+            }
+            return request;
+        } catch (error) {
+            console.log(error);
+        }
+    return request;
+    }, error => {
+        console.log(error);
+        
+        return Promise.reject(error);
+    }
+)
+
 export const getPDTs = async () => {
     try {
-        const response = await axios.get("/pdt",
-            { headers: { 'authorization': `Bearer ${token}` } });
+        const response = await api.get("/plan-territorial");
         return response.data;
     } catch (error) {
         return error;
     }
 }
 
-// Obtiene los niveles de un PDT 
 export const getPDTid = async (id: string) => {
     try {
-        const response = await axios.get(`/pdt/${id}`);
+        const response = await api.get(`/plan-territorial/${id}`);
         return response.data;
     } catch (error) {
         return error;
     }
 }
 
-// Obtiene el ultimo PDT
+export const getPDTLevelsById = async (id: string) => {
+    try {
+        const response = await api.get(`/plan-territorial/${id}/nivel`);
+        return response.data;
+    } catch (error) {
+        return error;
+    }
+}
+
 export const getLastPDT = async () => {
     try {
-        const response = await axios.get("/pdt/last");
-        return response.data;
+        const response = await api.get("/plan-territorial/ultimo");
+        return response.data[0];
     } catch (error) {
         return error;
     }
 }
 
-// Hace login con el usuario y contraseña
-export const doLogin = async (username: string, password: string) => {
+export const doLogin = async (data:LoginProps) => {
+    const { username, password } = data;
     try {
-        const response = await axios.post('/users/login', {
-            usuario: username,
-            clave:   password
-        },
-        { headers: { 'authorization': `Bearer ${token}` } });
+        const response = await api.post('/usuarios/inicio', {
+            username: username,
+            password: password
+        });
         return response.data;
     } catch (error) {
         return error;
     }
 }
 
-// Hacer logout
 export const doLogout = async () => {
     try {
-        Cookies.remove('token');
-        const response = await axios.post('/users/logout');
+        const response = await api.post('/usuarios/cerrar');
         return response.data;
     } catch (error) {
         return error;
     }
 }
 
-// Crea un usuario funcionario para un PDT especifico
-export const doRegister = async (id: number, userData: RegisterInterface) => {
+export const doRefreshToken = async () => {
     try {
-        const response = await axios.post('/users/register', {
-            id_plan:  id,
-            usuario:  userData.usuario,
-            apellido: userData.apellido,
-            clave:    userData.contraseña,
-            correo:   userData.correo,
-            rol:      userData.rol,
-        },
-        { headers: { 'authorization': `Bearer ${token}` } });
+        const response = await api.post('/usuarios/refrescar');
         return response.data;
     } catch (error) {
         return error;
     }
 }
 
-// Cambiar permisos de un usuario
+export const doRegister = async (id: number, user_data: RegisterInterface) => {
+    try {
+        const response = await api.post('/usuarios/registrar', {
+            id_plan:  id,
+            username: user_data.username,
+            lastname: user_data.lastname,
+            password: user_data.password,
+            email:    user_data.email,
+            rol:      user_data.rol,
+        });
+        return response.data;
+    } catch (error) {
+        return error;
+    }
+}
+
 export const changePermissions = async (id: number, rol: string) => {
     try {
-        const response = await axios.post('/users/update', {
+        const response = await api.put('/usuarios/actualizar', {
             id_user: id,
             rol:     rol
-        },
-        { headers: { 'authorization': `Bearer ${token}` } });
+        });
         return response.data;
     } catch (error) {
         return error;
     }
 }
 
-// Añade un nuevo PDT
 export const addPDT = async (pdt: PDTInterface) => {
     try {
-        const response = await axios.post("/pdt", {
-            Nombre:       pdt.Nombre,
-            Alcaldia:     pdt.Alcaldia,
-            Municipio:    pdt.Municipio,
-            Fecha_inicio: pdt.Fecha_inicio,
-            Fecha_fin:    pdt.Fecha_fin,
-            Descripcion:  pdt.Descripcion,
-        },
-        { headers: { 'authorization': `Bearer ${token}` } });
+        const response = await api.post("/plan-territorial", {
+            PlanName:     pdt.name,
+            TownHall:     pdt.department,
+            Municipality: pdt.municipaly,
+            StartDate:    pdt.start_date.slice(0, 19).replace('T', ' '),
+            EndDate:      pdt.end_date.slice(0, 19).replace('T', ' '),
+            Description:  pdt.description,
+        });
         return response.data;
     } catch (error) {
         return error;
     }
-};
+}
 
-// Actualiza un PDT
 export const updatePDT = async (id: number, pdt: PDTInterface) => {
     try {
-        const response = await axios.put(`/pdt/${id}`, {
-            Nombre:       pdt.Nombre,
-            Alcaldia:     pdt.Alcaldia,
-            Municipio:    pdt.Municipio,
-            Fecha_inicio: pdt.Fecha_inicio,
-            Fecha_fin:    pdt.Fecha_fin,
-            Descripcion:  pdt.Descripcion,
-        },
-        { headers: { 'authorization': `Bearer ${token}` } });
+        const response = await api.put(`/plan-territorial/${id}`, {
+            PlanName:     pdt.name,
+            TownHall:     pdt.department,
+            Municipality: pdt.municipaly,
+            StartDate:    pdt.start_date,
+            EndDate:      pdt.end_date,
+            Description:  pdt.description,
+        });
         return response.data;
     } catch (error) {
         return error;
     }
 }
 
-// Borrar un PDT
+export const getLogoPlan = async (id: number) => {
+    const response = await api.get(`/plan-territorial/logo`, {
+        params: {
+            id_plan: id
+        }
+    });
+    return response.data;
+}
+
+export const uploadLogoPlan = async ( id: number, logos: File ) => {
+    const response = await api.post("/plan-territorial/logo", 
+    {
+        id_plan: id,
+        photos: logos,
+    },{
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    });
+    return response.data;
+}
+
 export const deletePDT = async (id: number) => {
     try {
-        const response = await axios.delete(`/pdt/${id}`,
-            { headers: { 'authorization': `Bearer ${token}` } });
+        const response = await api.delete(`/plan-territorial/${id}`);
         return response.data;
     } catch (error) {
         return error;
     }
 }
 
-// Añade todos los niveles a un PDT
-export const addNivel = async (nivel: NivelInterface[], id : string) => {
-    try {
-        const response = await axios.post(`/pdt/${id}`, { niveles: nivel },
-            { headers: { 'authorization': `Bearer ${token}` } });
-        return response.data;
-    } catch (error) {
-        return error;
-    }
+export const addLevel = async (levels: NivelInterface[], id : string) => {
+    const response = await api.post(`/plan-territorial/${id}`, { levels: levels });
+    return response.data;
 }
 
-// Obtiene todos los nodos de un nivel de un PDT
-export const getNodosNivel = async (id: number, Padre: (string | null)) => {
+export const getLevelNodes = async (props: GetNodeProps) => {
     try {
-        const response = await axios.get(`/pdt/nivel`, { 
-            params: { 
-                id_nivel: id, 
-                Padre:    Padre 
-            },
-            headers: { 'authorization': `Bearer ${token}` }
-        });
-        return response.data;
-    } catch (error) {
-        return error;
-    }
-}
-
-// Añade todos los nodos a un nivel de un PDT
-export const addNodoNivel = async (nodo: NodoInterface[]) => {
-    try {
-        const response = await axios.post("/pdt/nivel", { nodos: nodo },
-            { headers: { 'authorization': `Bearer ${token}` } });
-        return response.data;
-    } catch (error) {
-        return error;
-    }
-}
-
-// Borrar un nivel de un PDT
-export const deleteNivel = async (id: number) => {
-    try {
-        const response = await axios.delete(`/pdt/nivel`, {
+        const response = await api.get(`/plan-territorial/nivel`, { 
             params: {
-                id_nivel: id
-            },
-            headers: { 'authorization': `Bearer ${token}` }
+                id_level: props.id_level,
+                Parent:   props.parent
+            }
         });
         return response.data;
     } catch (error) {
@@ -197,14 +246,25 @@ export const deleteNivel = async (id: number) => {
     }
 }
 
-// Obtiene los nombres de cada nivel que tienen los nodos
-export const getNombreNivel = async (ids: string[]) => {
+export const updateWeights = async (ids: string[], weights: number[]) => {
     try {
-        const response = await axios.get(`/nodo/nombres`, {
-            params: { 
-                id_nodos: ids 
-            },
-            headers: { 'authorization': `Bearer ${token}` }
+        const response = await api.put("/plan-territorial/nivel", 
+            {   
+                ids: ids,
+                weights: weights,
+            }
+        );
+        return response.data;
+    } catch (error) {
+        return error;
+    }
+}
+
+export const addLevelNode = async (nodes: NodoInterface[], id_level: number) => {
+    try {
+        const response = await api.post("/plan-territorial/nivel", { 
+            nodes: nodes,
+            id_level: id_level
         });
         return response.data;
     } catch (error) {
@@ -212,61 +272,12 @@ export const getNombreNivel = async (ids: string[]) => {
     }
 }
 
-// Añade una unidad de nodo donde se registre la programacion financiera por años
-export const addNodoUnidadYAños = async (idPDT: string, idNodo: string, nodoUnidad: UnidadInterface, años: AñoInterface) => {
+export const deleteLevel = async (id: number) => {
     try {
-        const response = await axios.post("/nodo", { 
-            id_plan: idPDT,
-            id_nodo: idNodo,
-            nodo:    nodoUnidad,
-            años:    años
-        },
-        { headers: { 'authorization': `Bearer ${token}` } });
-        return response.data;
-    } catch (error) {
-        return error;
-    }
-}
-
-// Obtiene una unidad de nodo donde se registre la programacion financiera por años
-export const getNodoUnidadYAños = async (idPDT: string, idNodo: string) => {
-    try {
-        const response = await axios.get(`/nodo`, {
-            params: { 
-                id_plan: idPDT, 
-                id_nodo: idNodo 
-            },
-            headers: { 'authorization': `Bearer ${token}` }
-        });
-        return response.data;
-    } catch (error) {
-        return error;
-    }
-}
-
-// Añade una evidencia a una unidad de nodo
-export const addEvicenciaMeta = async (codigo: string, evidencia: EvidenciaInterface) => {
-    try {
-        const response = await axios.post("/nodo/evidencia", { 
-            codigo:    codigo,
-            evidencia: evidencia
-        },
-        { headers: { 'authorization': `Bearer ${token}` } });
-        return response.data;
-    } catch (error) {
-        return error;
-    }
-}
-
-// Obtiene los porcentajes de avance de un año de una unidad de nodo
-export const getProgresoAño = async (ids_nodos: string[], año: number) => {
-    try {
-        const response = await axios.get(`/nodo/progreso`, {
+        const response = await api.delete(`/plan-territorial/nivel`, {
             params: {
-                ids: ids_nodos,
-                año: año
-            },
-            headers: { 'authorization': `Bearer ${token}` }
+                id_level: id
+            }
         });
         return response.data;
     } catch (error) {
@@ -274,14 +285,138 @@ export const getProgresoAño = async (ids_nodos: string[], año: number) => {
     }
 }
 
-// Obtiene la informacion de todos los nodos y el progreso de las metas
-export const getProgresoTotal = async (id_plan: number) => {
+export const getLevelName = async (ids: string[]) => {
     try {
-        const response = await axios.get(`/nodo/progresoTotal`, {
+        const response = await api.get(`/nodo/nombres`, {
+            params: { 
+                id_nodes: ids 
+            }
+        });
+        return response.data;
+    } catch (error) {
+        return error;
+    }
+}
+
+export const addUnitNodeAndYears = async (id_plan: string, id_node: string, node_unidad: UnitInterface, years: YearInterface[], id_city: number) => {
+    const response = await api.post("/nodo", { 
+        id_plan: id_plan,
+        id_node: id_node,
+        node:    node_unidad,
+        years:   years,
+        id_city: id_city
+    });
+    return response.data;
+}
+
+export const getUnitNodeAndYears = async (id_plan: string, id_node: string) => {
+    try {
+        const response = await api.get(`/nodo`, {
+            params: { 
+                id_plan: id_plan,
+                id_node: id_node
+            }
+        });
+        return response.data;
+    } catch (error) {
+        return error;
+    }
+}
+
+export const addEvicenceGoal = async (id_plan: number, code: string, evidence: EvidenceInterface, file: File, points: Coordinates[]) => {
+    const response = await api.post("/nodo/evidencia", 
+    {
+        id_plan: id_plan,
+        code: code,
+        evidence: evidence,
+        file: file,
+        points: points
+    },{
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    });
+    return response.data;
+}
+
+export const updateEvicenceGoal = async (evidence: EvidenceInterface, file: File, points: Coordinates[]) => {
+    const response = await api.put("/nodo/evidencia", 
+    {
+        evidence: evidence,
+        file: file,
+        points: points
+    },{
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    });
+    return response.data;
+}
+
+export const getUbiEvidences = async (id_plan?: number, id_evidence?: number) => {
+    if (id_plan == undefined && id_evidence == undefined)
+        return alert("Error: falta el parametro id_plan o id_evidence");
+    try {
+        const response = await api.get(`/nodo/evidencia-ubicacion`, {
+            params: {
+                id_plan,
+                id_evidence
+            }
+        });
+        return response.data;
+    } catch (error) {
+        return error;   
+    }
+}
+
+export const getCodeEvidences = async (id_node: string, id_plan: number) => {
+    try {
+        const response = await api.get(`/nodo/evidencia-codigo`, {
+            params: {
+                id_node: id_node,
+                id_plan: id_plan
+            }
+        });
+        return response.data;
+    } catch (error) {
+        return error;
+    }
+}
+
+export const getEvidence = async (id_plan: number, code: string) => {
+    try {
+        const response = await api.get("/nodo/evidencia", {
+            params: {
+                id_plan: id_plan,
+                code: code
+            }
+        });
+        return response.data;
+    } catch (error) {
+        return error;
+    }
+}
+
+export const getEvidences = async (id_plan: number, page: number) => {
+    try {
+        const response = await api.get("/nodo/evidencias", {
+            params: {
+                id_plan: id_plan,
+                page: page
+            }
+        });
+        return response.data;
+    } catch (error) {
+        return error;
+    }
+}
+
+export const getEvidenceCount = async (id_plan: number) => {
+    try {
+        const response = await api.get("/nodo/evidencia-contar", {
             params: {
                 id_plan: id_plan
-            },
-            headers: { 'authorization': `Bearer ${token}` }
+            }
         });
         return response.data;
     } catch (error) {
@@ -289,44 +424,13 @@ export const getProgresoTotal = async (id_plan: number) => {
     }
 }
 
-// Actualizar una unidad de nodo
-export const updateNodo = async (idPDT: string, idNodo: string, nodo: UnidadInterface, años: AñoInterface) => {
+export const getYearProgress = async (ids_nodes: string[], year: number) => {
     try {
-        const response = await axios.put("/nodo", { 
-            id_plan: idPDT,
-            id_nodo: idNodo,
-            nodo:    nodo,
-            años:    años
-        },
-        { headers: { 'authorization': `Bearer ${token}` } });
-        return response.data;
-    } catch (error) {
-        return error;
-    }
-}
-
-// Actualizar evidencia de una unidad de nodo
-export const updateEvidencia = async (codigo: string, evidencia: EvidenciaInterface) => {
-    try {
-        const response = await axios.put("/nodo/evidencia", { 
-            codigo:     codigo,
-            evidencia:  evidencia
-        },
-        { headers: { 'authorization': `Bearer ${token}` } });
-        return response.data;
-    } catch (error) {
-        return error;
-    }
-}
-
-// Borrar evidencia de una unidad de nodo
-export const deleteEvidencia = async (id_evidencia: number) => {
-    try {
-        const response = await axios.delete("/nodo/evidencia", {
+        const response = await api.get(`/nodo/progreso`, {
             params: {
-                id_evidencia: id_evidencia
-            },
-            headers: { 'authorization': `Bearer ${token}` }
+                ids:  ids_nodes,
+                year: year
+            }
         });
         return response.data;
     } catch (error) {
@@ -334,28 +438,63 @@ export const deleteEvidencia = async (id_evidencia: number) => {
     }
 }
 
-// Añade los valores de los porcentajes de cada rango de color
+export const getTotalProgress = async (id_plan: number) => {
+    try {
+        const response = await api.get(`/nodo/progreso-total`, {
+            params: {
+                id_plan: id_plan
+            }
+        });        
+        return response.data;
+    } catch (error) {
+        return error;
+    }
+}
+
+export const updateNode = async (id_plan: string, id_node: string, node: UnitInterface, years: YearInterface) => {
+    try {
+        const response = await api.put("/nodo", { 
+            id_plan: id_plan,
+            id_node: id_node,
+            node:    node,
+            years:   years
+        });
+        return response.data;
+    } catch (error) {
+        return error;
+    }
+}
+
+export const updateEvidence = async (code: string, evidence: EvidenceInterface) => {
+    try {
+        const response = await api.put("/nodo/evidencia", { 
+            code:      code,
+            evidence:  evidence
+        });
+        return response.data;
+    } catch (error) {
+        return error;
+    }
+}
+
+export const deleteEvidence = async (id_evidence: number) => {
+    try {
+        const response = await api.delete("/nodo/evidencia", {
+            params: {
+                id_evidence: id_evidence
+            }
+        });
+        return response.data;
+    } catch (error) {
+        return error;
+    }
+}
+
 export const addColor = async (id_plan: number, colors: number[]) => {
     try {
-        const response = await axios.post(`/pdt/color`, {
+        const response = await api.post(`/plan-territorial/color`, {
             id_plan:     id_plan,
-            porcentajes: colors
-        },
-        { headers: { 'authorization': `Bearer ${token}` } });
-        return response.data;
-    } catch (error) {
-        return error;
-    }
-}
-
-// Obtiene los valores de los porcentajes de cada rango de color
-export const getColors = async (id_plan: number) => {
-    try {
-        const response = await axios.get(`/pdt/color`, {
-            params: {
-                id_plan: id_plan
-            },
-            headers: { 'authorization': `Bearer ${token}` }
+            percentages: colors
         });
         return response.data;
     } catch (error) {
@@ -363,16 +502,90 @@ export const getColors = async (id_plan: number) => {
     }
 }
 
-// Actualiza los valores de los porcentajes de cada rango de color
-export const updateColor = async (id_plan: number, colors: number[]) => {
+export const getColors = async (id_plan: string) => {
     try {
-        const response = await axios.put(`/pdt/color`, {
-            id_plan:     id_plan,
-            porcentajes: colors
-        },
-        { headers: { 'authorization': `Bearer ${token}` } });
+        const response = await api.get(`/plan-territorial/color`, {
+            params: {
+                id_plan: id_plan
+            }
+        });
         return response.data;
     } catch (error) {
         return error;
     }
+}
+
+export const updateColor = async (id_plan: number, colors: number[]) => {
+    try {
+        const response = await api.put(`/plan-territorial/color`, {
+            id_plan:     id_plan,
+            percentages: colors
+        });
+        return response.data;
+    } catch (error) {
+        return error;
+    }
+}
+
+export const approveEvidence = async (id_evidence: number, approve: number, code: string, value: number, file_date: string, reason?: string) => {
+    try {
+        const response = await api.put(`/nodo/evidencia`, {
+            id_evidence: id_evidence,
+            approve:     approve,
+            code:        code,
+            value:       value,
+            file_date:   file_date,
+            reason:      reason
+        });
+        return response.data;
+    } catch (error) {
+        return error;
+    }
+}
+
+export const getUserEvidences = async (page: number) => {
+    const response = await api.get(`/nodo/evidencia-usuario`, {
+        params: {
+            page: page
+        }
+    });
+    return response.data;
+}
+
+export const addSecretaries = async (id_plan: number, secretaries: Secretary[]) => {
+    const response = await api.post(`/plan-territorial/secretarias`, {
+        id_plan:     id_plan,
+        secretaries: secretaries
+    });
+    return response.data;
+}
+
+export const updateSecretaries = async (id_plan: number, secretaries: Secretary[]) => {
+    const response = await api.put(`/plan-territorial/secretarias`, {
+        id_plan:     id_plan,
+        secretaries: secretaries
+    });
+    return response.data;
+}
+
+export const getSecretaries = async (id_plan: number) => {
+    const response = await api.get(`/plan-territorial/secretarias`, {
+        params: {
+            id_plan: id_plan
+        }
+    });
+    return response.data;
+}
+
+export const addLocations = async (id_plan: number, locations: any) => {
+    const response = await api.post(`/plan-territorial/localidades`, {
+        id_plan,
+        locations
+    });
+    return response.data;
+}
+
+export const getLocations = async (id_plan: number) => {
+    const response = await api.get(`/plan-territorial/${id_plan}/localidades`);
+    return response.data;
 }

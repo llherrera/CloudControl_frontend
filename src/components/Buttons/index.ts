@@ -1,7 +1,3 @@
-import { ButtonComponent } from "./ButtonComponent";
-import { ButtonPlan } from "./ButtonPlan";
-
-export { 
-    ButtonComponent,
-    ButtonPlan
-};
+export * from "./ButtonComponent";
+export * from "./ButtonPlan";
+export * from './BackBtn'

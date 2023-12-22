@@ -1,5 +1,3 @@
-import { Input } from "./Input";
-
-export {
-    Input,
-};
+export * from "./Input";
+export * from "./Select";
+export * from './File'

@@ -1,101 +1,96 @@
-import { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getLastPDT } from '../../services/api';
-import { ButtonPlan } from '../../components';
+
+import { Header, ButtonComponent } from '../../components';
+import { MapICon } from '@/assets/icons';
 import { decode } from '../../utils/decode';
-import { Token } from '../../interfaces';
-import Cookies from 'js-cookie';
+
+import { useAppDispatch, useAppSelector } from '@/store';
+import { selectOption } from '@/store/content/contentSlice';
+import { thunkGetLevelsById } from '@/store/plan/thunks';
+import { setPlanLocation, setZeroLevelIndex } from '@/store/plan/planSlice';
+
+import { getGoogleApiKey } from '@/utils';
+import { useJsApiLoader } from '@react-google-maps/api';
+
+const { API_KEY } = getGoogleApiKey();
 
 export const LobbyPage = () => {
+    const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
-    const [rol, setRol] = useState("");
-    const [id, setId] = useState(0);
+    const { token_info } = useAppSelector(state => state.auth)
+    const { id_plan } = useAppSelector(state => state.content)
+    const { plan } = useAppSelector(store => store.plan)
+    const { isLoaded, loadError} = useJsApiLoader({
+        id: 'google-map-script',
+        googleMapsApiKey: API_KEY
+    });
+
+    let rol = "";
+
+    if (token_info?.token !== undefined) {
+        const decoded = decode(token_info.token)
+        rol = decoded.rol
+    }
 
     useEffect(() => {
-        //const token = sessionStorage.getItem('token')
-        const token = Cookies.get('token')
-        try {
-            if (token !== null && token !== undefined) {
-                const decoded = decode(token) as Token
-                setId(decoded.id_plan)
-                setRol(decoded.rol)
-            }
-        } catch (error) {
-            console.log(error);
-        }
+        dispatch(thunkGetLevelsById(id_plan.toString()));
+        dispatch(setZeroLevelIndex());
     }, [])
 
-    const handleButton = () => {
-        if (rol === "admin") {
-            navigate('/pdt')
-            return
-        }else if (rol === "funcionario") {
-            navigate(`/pdt/${id}`)
-            return
-        }
-        getLastPDT()
-            .then((e) => {
-                if (e.id_plan)
-                    navigate(`/pdt/${e.id_plan}`)
-                else
-                    alert("No hay un PDT disponible")             
-            })
-    }
+    useEffect(() => {
+        if (!plan || !isLoaded || loadError) return;
+        const geocoder = new google.maps.Geocoder();
+        geocoder.geocode({address: `Colombia, ${plan?.department}, ${plan?.municipaly}`}).then((res) => {
+            let location = res.results[0].geometry.location;
+            dispatch(setPlanLocation({
+                lat: location.lat(),
+                lng: location.lng()
+            }));
+        });
+    });
 
-    const handleLogout = () => {
-        //sessionStorage.removeItem('token')
-        Cookies.remove('token')
-        navigate('/')
-    }
+    const buttons: React.ReactNode[] = [
+        <ButtonComponent
+            inside={false}
+            text='Plan indicativo'
+            src="/src/assets/icons/plan-indicativo.svg"
+            onClick={() => {
+                dispatch(selectOption(0))
+                navigate(`/pdt/PlanIndicativo`, {state: {id: id_plan}})
+            }}
+            bgColor="tw-bg-greenBtn" />,
+        <ButtonComponent
+            inside={false}
+            text='Banco de proyectos'
+            src="/src/assets/icons/Banco-proyectos.svg"
+            onClick={() => {
+                dispatch(selectOption(1))
+                navigate('/PlanIndicativo/Banco-proyectos', {state: {id: id_plan}})
+            }}
+            bgColor="tw-bg-greenBtn" />,
+        <ButtonComponent
+            inside={false}
+            text='POAI'
+            src="/src/assets/icons/POAI.svg"
+            onClick={() => {
+                dispatch(selectOption(2))
+                navigate('/PlanIndicativo/POAI', {state: {id: id_plan}})
+            }}
+            bgColor="tw-bg-greenBtn" />,
+        <ButtonComponent
+            inside={false}
+            text='Mapa de intervención'
+            onClick={() => {
+                dispatch(selectOption(3))
+                navigate('/PlanIndicativo/Mapa', {state: {id: id_plan}})
+            }}
+            bgColor="tw-bg-greenBtn"
+            icon={<MapICon color='white'/>}/>,
+    ]
 
     return (
-        <div className="mx-10 mt-4 pb-10
-                        h-96
-                        border">
-            <header className=" grid grid-cols-6
-                                shadow p-2
-                                border-4 border-double
-                                bg-gray-400">
-                <h1 className=" col-start-2 col-span-4
-                                text-3xl
-                                font-bold
-                                text-blue-700">
-                    Alcalcia Municipal, Nombre Plan, PISAMI
-                </h1>
-                {rol === '' ? <div></div>:
-                    <button type='submit'
-                            className='bg-red-500 hover:bg-red-300
-                                        rounded shadow'
-                            onClick={handleLogout}>
-                        <p>Cerrar sesion</p>
-                    </button>
-                }
-            </header>
-            <div className='flex justify-center'>
-                <ButtonPlan text="Plan indicativo" 
-                            handleButton={handleButton}
-                            x={Math.cos(2 * Math.PI * 1 / 5) * 200}
-                            y={Math.sin(2 * Math.PI * 1 / 5) * 200} />
-                <ButtonPlan text="Banco de proyectos"
-                            handleButton={handleButton}
-                            x={Math.cos(2 * Math.PI * 2 / 5) * 100}
-                            y={Math.sin(2 * Math.PI * 2 / 5) * 100} />
-                <div className="shadow px-32
-                                bg-gray-400
-                                rounded-b-3xl"
-                    style={{ left: 0, top:0 }}>
-                    Cloud Control
-                </div>
-                <ButtonPlan text="POAI" 
-                            handleButton={handleButton}
-                            x={Math.cos(2 * Math.PI * 3 / 5) * 100}
-                            y={Math.sin(2 * Math.PI * 3 / 5) * 100} />
-                <ButtonPlan text="Plan de accion"
-                            handleButton={handleButton}
-                            x={Math.cos(2 * Math.PI * 4 / 5) * 100}
-                            y={Math.sin(2 * Math.PI * 4 / 5) * 100} />
-            </div>
-        </div>
+        <Header components={buttons}/>
     );
 }

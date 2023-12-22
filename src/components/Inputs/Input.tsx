@@ -1,14 +1,16 @@
-import { InputProps } from "../../interfaces";
+import { InputProps } from "@/interfaces";
 
 export const Input = (props: InputProps) => {
     return(
-        <div className="flex justify-center">
-            <label htmlFor={props.id}>{props.label}</label>
+        <div className="tw-flex tw-justify-between">
+            <label  htmlFor={props.id}
+                    className="tw-self-center">{props.label}</label>
             <input
                 type={props.type}
                 id={props.id}
                 name={props.name}
-                className="border rounded ml-3"
+                placeholder={props.name}
+                className="tw-m-3 tw-p-2 tw-rounded tw-border-2 tw-border-gray-400"
                 value={props.value}
                 onChange={props.onChange}
                 required/>

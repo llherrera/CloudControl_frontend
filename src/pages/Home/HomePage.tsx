@@ -1,25 +1,53 @@
-import { ButtonComponent } from "../../components"
+import React from "react";
+import { useNavigate } from "react-router-dom";
+
+import { ButtonComponent, Header } from "../../components";
+
+import { thunkLogout } from "@/store/auth/thunks";
+import { useAppDispatch, useAppSelector } from '../../store';
+import { removeGenericState } from "@/utils";
 
 export const HomePage = () => {
+    const dispatch = useAppDispatch();
+    const { logged } = useAppSelector(store => store.auth);
+    const navigate = useNavigate();
+
+    removeGenericState('unit');
+    removeGenericState('content');
+    removeGenericState('chart');
+    removeGenericState('evidence');
+    removeGenericState('plan');
+
+    const handleBtnCiudadano = () => {
+        try {
+            if (logged) {
+                dispatch(thunkLogout())
+                    .unwrap()
+                    .then(() => navigate('/lobby'));
+            }else {
+                navigate('/lobby');
+            }
+        } catch (error) {}
+    };
+
+    const buttons: React.ReactNode[] = [
+        <ButtonComponent 
+            inside={false} 
+            text='Funcionario' 
+            src="\src\assets\icons\Funcionario.svg" 
+            onClick={() => navigate('/login')}
+            bgColor="tw-bg-greenBtn"/>,
+        <ButtonComponent 
+            inside={false} 
+            text='Ciudadano' 
+            src="\src\assets\icons\Ciudadanos.svg" 
+            onClick={handleBtnCiudadano}
+            bgColor="tw-bg-greenBtn"/>
+    ];
+
     return (
-        <div className="container mx-auto border my-4 pb-10">
-            <div className="grid grid-cols-12 grid-row-6 gap-6">
-                <div className="col-start-4
-                                col-span-6
-                                bg-gray-400">
-                    Alcalcia Municipal, Nombre Plan, PISAMI
-                </div>
-                <div className="row-start-2
-                                col-start-5
-                                col-span-4
-                                row-end-5
-                                bg-gray-400
-                                rounded-b-3xl">
-                    Cloud Control
-                </div>
-                <ButtonComponent lado={"izq"} dir={"izq"}/>
-                <ButtonComponent lado={"der"} dir={"der"}/>
-            </div>
+        <div>
+            <Header components={buttons} />
         </div>
-    )
+    );
 }

@@ -1,85 +1,80 @@
-import React, { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
-import Cookies from 'js-cookie'
-import { doLogin } from '../../services/api'
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+import { useAppDispatch } from '../../store';
+import { thunkLogin } from '../../store/auth/thunks';
+import { setIdPlan } from "@/store/content/contentSlice";
+
+import { decode } from '../../utils/decode';
 
 export const LoginForm = () => {
-    const navigate = useNavigate()
+    const dispatch = useAppDispatch();
+    const navigate = useNavigate();
 
-    const [username, setusername] = useState("")
-    const [password, setpassword] = useState("")
+    const [user, setuser] = useState({
+        username: "",
+        password: ""
+    });
 
-    const handleUsername = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setusername(e.target.value)
-    }
-
-    const handlePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setpassword(e.target.value)
-    }
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setuser({
+            ...user,
+            [e.target.name]: e.target.value
+        });
+    };
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
-        try {
-            doLogin(username, password)
+        e.preventDefault();
+        await dispatch(thunkLogin(user))
+            .unwrap()
             .then((res) => {
-                if (res.token === undefined) {
-                    alert('Usuario o contraseña incorrectos')
-                    return
-                }
-                Cookies.set('token', res.token, { expires: 1 })
-                //sessionStorage.setItem('token', JSON.stringify(res.token))
-                navigate('/lobby')
+                if (res === undefined) return alert("Usuario o contraseña incorrectos");
+                const info = decode(res.token);
+                info.rol === "admin" ? 
+                navigate('/pdt') :
+                (info.rol === "funcionario" || info.rol === 'planeacion' || info.rol === 'sectorialista') ?
+                (
+                    dispatch(setIdPlan(info.id_plan)),
+                    navigate('/pdt/PlanIndicativo', {state: {id: info.id_plan}})
+                ) :
+                navigate('/')
             })
-        } catch (error) {
-            console.log(error);
-            
-        }
-    }
+            .catch((err) => {
+                console.log(err)
+            }
+        );
+    };
 
     const handleCancelar = () => {
-        setusername("")
-        setpassword("")
-    }
+        navigate('/');
+    };
 
     return (
-        <form   onSubmit={handleSubmit}
-                className=' col-start-2
-                            row-start-1 row-span-3'>
-            <div>
-                <label htmlFor="user">Usuario</label>
-                <input
-                    type="text"
-                    name="user"
-                    id="user"
-                    className='border rounded'
-                    value={username}
-                    onChange={handleUsername}
-                />
-            </div>
-            <div>
-                <label htmlFor="password">Contraseña</label>
-                <input
-                    type="password"
-                    name="password"
-                    id="password"
-                    className='border rounded'
-                    value={password}
-                    onChange={handlePassword}
-                />
-            </div>
-            <div className='flex '>
-                <button type="submit" 
-                        className='bg-green-500 hover:bg-green-300 py-1 px-3 rounded'
-                        title='Entrar'>
-                    Entrar
-                </button>
-                <button type="button" 
-                        className='bg-red-500 py-1 hover:bg-red-300 px-3 rounded' 
-                        onClick={handleCancelar}
-                        title='Cancelar'>
-                    Cancelar
-                </button>
-            </div>
+        <form className='   tw-rounded
+                            tw-flex tw-flex-col
+                            tw-px-10 tw-mx-6
+                            tw-bg-[#FCFCFE]
+                            tw-shadow-2xl'
+                onSubmit={handleSubmit}>
+            <label className='tw-font-montserrat'>Usuario</label>
+            <input  type="text" 
+                    name="username" 
+                    onChange={handleChange}
+                    className='tw-border tw-rounded'
+                    required/><br/>
+            <label className='tw-font-montserrat'>Clave</label>
+            <input  type="password" 
+                    name="password" 
+                    onChange={handleChange}
+                    className='tw-border tw-rounded'
+                    required/><br/>
+            <button className='tw-bg-greenBtn hover:tw-opacity-50
+                                tw-text-white tw-font-montserrat
+                                tw-rounded tw-py-2'>
+                Iniciar sesión</button><br />
+            <input  type="button" 
+                    value={'¿Olvidaste tu contraseña?'}
+                    className='tw-pb-10 hover:tw-bg-black-50' />
         </form>
-    )
+    );
 }

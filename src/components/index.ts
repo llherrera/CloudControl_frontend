@@ -1,13 +1,11 @@
-import { ButtonComponent, ButtonPlan } from "./Buttons";
-import { LoginForm, PDTForm, NivelForm, RegisterForm } from "./Forms";
-import { Tablero } from "./Tablero";
-
-export { 
-    ButtonComponent, 
-    LoginForm, 
-    PDTForm,
-    NivelForm,
-    Tablero,
-    ButtonPlan,
-    RegisterForm
-};
+export * from "./Buttons";
+export * from "./Forms";
+export * from "./Board";
+export * from './Header'
+export * from './NavBar'
+export * from './Frame'
+export * from './Evidence'
+export * from './UploadImage'
+export * from './Inputs'
+export * from './Marker'
+export * from './Popover'

@@ -1,3 +1,1 @@
-import { LobbyPage } from "./LobbyPage";
-
-export default LobbyPage;
+export * from "./LobbyPage";

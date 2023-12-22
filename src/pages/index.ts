@@ -1,21 +1,12 @@
-import HomePage from './Home';
-import PingPage from './Ping';
-import LobbyPage from './Lobby';
-import {LoginPage, RegisterPage} from './Login';
-import AñadirPDT from './AñadirPDT';
-import {PDT, PDTid} from './PDT';
-import AñadirNodoUni from './AñadirNodoUnidad';
-import AñadirEvidencia from './AñadirEvidencia';
-
-export {
-    HomePage,
-    PingPage,
-    LobbyPage,
-    LoginPage,
-    RegisterPage,
-    AñadirPDT,
-    PDT,
-    PDTid,
-    AñadirNodoUni,
-    AñadirEvidencia
-}
+export * from './Home';
+export * from './Ping';
+export * from './Lobby';
+export * from './Login';
+export * from './AddPDT';
+export * from './PDT';
+export * from './UnitNode';
+export * from './Evidence';
+export * from './Setting';
+export * from './InterventionMap';
+export * from './POAI';
+export * from './ProjectBank';

@@ -1,7 +1,2 @@
-import { PDT } from "./PDT";
-import { PDTid } from "./PDTid";
-
-export {
-    PDT,
-    PDTid
-};
+export * from "./PDT";
+export * from "./PDTid";

@@ -1,21 +1,28 @@
 export interface Porcentaje {
-    progreso: number;
-    año: number;
-    programacion: number;
+    progress: number;
+    year: number;
+    physical_programming: number;
+    financial_execution: number;
 }
 
 export interface PesosNodos {
-    Nombre: string;
-    id_nodo: string;
-    Peso: number;
-    Padre: string | null;
-    porcentajes: Porcentaje[] | null;
+    name: string;
+    id_node: string;
+    weight: number;
+    parent: string | null;
+    percents: Porcentaje[] | null;
 }
 
-export interface DetalleAño {
-    id_nodo: string;
-    Año: number;
-    Programacion_fisica: number;
-    Ejecucion_Fisica: number;
-    Ejecucion_financiera: number;
+export interface YearDetail {
+    id_node: string;
+    year: number;
+    code: string;
+    description: string;
+    indicator: string;
+    base_line: number;
+    goal: number;
+    responsible: string|null;
+    physical_programming: number;
+    physical_execution: number;
+    financial_execution: number;
 }

@@ -1,3 +1,1 @@
-import {PingPage} from './PingPage';
-
-export default PingPage;
+export * from './PingPage';

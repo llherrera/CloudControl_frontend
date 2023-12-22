@@ -1,24 +1,14 @@
+import React from "react"
 import { LoginForm } from "../../components"
+import { Header } from "@/components/Header"
 
 export const LoginPage = () => {
+    
+    const componentes: React.ReactNode[] = [
+        <LoginForm/>
+    ]
+
     return (
-        <div className="container mx-auto border my-4 pb-10">
-            <div className="grid grid-cols-12 grid-row-6 gap-6">
-                <LoginForm/>
-                <div className="col-start-4
-                                col-span-6
-                                bg-gray-400">
-                    Alcalcia Municipal, Nombre Plan, PISAMI
-                </div>
-                <div className="row-start-2
-                                col-start-5
-                                col-span-4
-                                row-end-5
-                                bg-gray-400
-                                rounded-b-3xl">
-                    Cloud Control
-                </div>
-            </div>
-        </div>
+        <Header components={componentes}/>
     )
 }
