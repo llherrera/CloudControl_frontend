@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IconButton } from '@mui/material';
 import LogoutIcon from '@mui/icons-material/Logout';
+import cclogo from '@/assets/images/CloudControlIcon.png';
 
 import { useAppDispatch, useAppSelector } from '../../store';
 import { thunkLogout } from '@/store/auth/thunks';
@@ -78,7 +79,7 @@ export const Frame = (props: FrameProps) => {
     return (
         <div className='tw-min-h-screen tw-flex tw-flex-col'>
             <header className={`tw-flex tw-justify-between tw-bg-header tw-drop-shadow-xl`}>
-                <img src="\src\assets\images\CloudControlIcon.png" alt="" width={100} height={100}/>
+                <img src={cclogo} alt="" width={100} height={100}/>
                 {url_logo && <img src={url_logo} alt="" width={200} /> }
                 <IconButton onClick={handleBtn}>
                     <LogoutIcon sx={{color: 'green'}}/>

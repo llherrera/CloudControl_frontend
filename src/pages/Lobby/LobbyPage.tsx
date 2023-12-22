@@ -1,6 +1,10 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
+import planLogo from '@/assets/icons/plan-indicativo.svg';
+import bankLogo from '@/assets/icons/Banco-proyectos.svg';
+import POAILogo from '@/assets/icons/Point.svg';
+
 import { Header, ButtonComponent } from '../../components';
 import { MapICon } from '@/assets/icons';
 import { decode } from '../../utils/decode';
@@ -55,7 +59,7 @@ export const LobbyPage = () => {
         <ButtonComponent
             inside={false}
             text='Plan indicativo'
-            src="/src/assets/icons/plan-indicativo.svg"
+            src={planLogo}
             onClick={() => {
                 dispatch(selectOption(0))
                 navigate(`/pdt/PlanIndicativo`, {state: {id: id_plan}})
@@ -64,7 +68,7 @@ export const LobbyPage = () => {
         <ButtonComponent
             inside={false}
             text='Banco de proyectos'
-            src="/src/assets/icons/Banco-proyectos.svg"
+            src={bankLogo}
             onClick={() => {
                 dispatch(selectOption(1))
                 navigate('/PlanIndicativo/Banco-proyectos', {state: {id: id_plan}})
@@ -73,7 +77,7 @@ export const LobbyPage = () => {
         <ButtonComponent
             inside={false}
             text='POAI'
-            src="/src/assets/icons/POAI.svg"
+            src={POAILogo}
             onClick={() => {
                 dispatch(selectOption(2))
                 navigate('/PlanIndicativo/POAI', {state: {id: id_plan}})

@@ -2,6 +2,8 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 
 import { ButtonComponent, Header } from "../../components";
+import funcLogo from "@/assets/icons/Funcionario.svg";
+import citiLogo from "@/assets/icons/Ciudadanos.svg";
 
 import { thunkLogout } from "@/store/auth/thunks";
 import { useAppDispatch, useAppSelector } from '../../store';
@@ -34,13 +36,13 @@ export const HomePage = () => {
         <ButtonComponent 
             inside={false} 
             text='Funcionario' 
-            src="\src\assets\icons\Funcionario.svg" 
+            src={funcLogo} 
             onClick={() => navigate('/login')}
             bgColor="tw-bg-greenBtn"/>,
         <ButtonComponent 
             inside={false} 
             text='Ciudadano' 
-            src="\src\assets\icons\Ciudadanos.svg" 
+            src={citiLogo} 
             onClick={handleBtnCiudadano}
             bgColor="tw-bg-greenBtn"/>
     ];
