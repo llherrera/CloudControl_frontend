@@ -18,7 +18,7 @@ export const UnitNodePage = () => {
     const { namesTree } = useAppSelector(store => store.plan);
     const { unit } = useAppSelector(store => store.unit);
     const { evidences } = useAppSelector(store => store.evidence);
-    const { id_plan, node } = useAppSelector(store => store.content)
+    const { id_plan, node } = useAppSelector(store => store.content);
 
     const [acum, setAcum] = useState(0);
     const [acumFinan, setAcumFinan] = useState(0);

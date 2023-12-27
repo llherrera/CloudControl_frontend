@@ -3,6 +3,9 @@ import * as XLSX from 'xlsx';
 import Modal from 'react-modal';
 import { Spinner } from "@/assets/icons";
 
+import IconButton from "@mui/material/IconButton";
+import DownloadIcon from '@mui/icons-material/Download';
+
 import { useAppSelector, useAppDispatch } from "@/store";
 import { setLevels } from "@/store/plan/planSlice";
 
@@ -80,7 +83,7 @@ export const FileInput = () => {
                 }
                 return node;
             });
-            await addLevelNode(nodes_, ids.result[i])
+            await addLevelNode(nodes_, ids.result[i]);
         }
     };
 
@@ -126,7 +129,7 @@ export const FileInput = () => {
             const code = `${ids.result[0]}.`+units[i].Id;
             await addUnitNodeAndYears(id_plan.toString(), code, unit, unit.years, id_city);
         };
-    }
+    };
 
     const readExcel = (file: File) => {
         const promise = new Promise((resolve, reject) => {
@@ -166,20 +169,20 @@ export const FileInput = () => {
             alert('Plan cargado con éxito');
             dispatch(setLevels(levels_));
         });
-    }
+    };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         e.preventDefault();
         if (e.target.files === null) return;
         const file = e.target.files[0];
         setData(file);
-    }
+    };
 
     const handleSubmit = () => {
         if (data === undefined) return;
         setIsOpen(true);
         readExcel(data);
-    }
+    };
 
     const ModalSpinner = () => {
         return (
@@ -193,11 +196,23 @@ export const FileInput = () => {
                     Cargando Plan...
                 </label>
             </Modal>
-        )
-    }
+        );
+    };
 
     return (
         <div className='tw-border-b-4 tw-pb-4 tw-pl-4'>
+            <a  className="tw-text-[#222222]
+                            tw-font-bold tw-text-lg
+                            tw-font-montserrat"
+                href="/src/docs/Plantilla_Plan_CC.xlsx"
+                download='Plantilla_Excel.xlsx'>
+                Descargar plantilla de Excel
+                <IconButton className='tw-p-1 tw-ml-3'
+                            size='large'>
+                    <DownloadIcon/>
+                </IconButton>
+            </a><br />
+
             <label className='tw-text-[#222222] 
                                 tw-font-bold tw-text-lg 
                                 tw-font-montserrat'>
@@ -215,5 +230,5 @@ export const FileInput = () => {
             </button>
             <ModalSpinner/>
         </div>
-    )
+    );
 }

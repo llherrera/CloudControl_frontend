@@ -35,12 +35,12 @@ export const LoginForm = () => {
                 (info.rol === "funcionario" || info.rol === 'planeacion' || info.rol === 'sectorialista') ?
                 (
                     dispatch(setIdPlan(info.id_plan)),
-                    navigate('/pdt/PlanIndicativo', {state: {id: info.id_plan}})
+                    navigate('/pdt/PlanIndicativo')
                 ) :
                 navigate('/')
             })
             .catch((err) => {
-                console.log(err)
+                console.log(err);
             }
         );
     };

@@ -62,7 +62,7 @@ export const LobbyPage = () => {
             src={planLogo}
             onClick={() => {
                 dispatch(selectOption(0))
-                navigate(`/pdt/PlanIndicativo`, {state: {id: id_plan}})
+                navigate(`/pdt/PlanIndicativo`)
             }}
             bgColor="tw-bg-greenBtn" />,
         <ButtonComponent
@@ -71,7 +71,7 @@ export const LobbyPage = () => {
             src={bankLogo}
             onClick={() => {
                 dispatch(selectOption(1))
-                navigate('/PlanIndicativo/Banco-proyectos', {state: {id: id_plan}})
+                navigate('/PlanIndicativo/Banco-proyectos')
             }}
             bgColor="tw-bg-greenBtn" />,
         <ButtonComponent
@@ -80,7 +80,7 @@ export const LobbyPage = () => {
             src={POAILogo}
             onClick={() => {
                 dispatch(selectOption(2))
-                navigate('/PlanIndicativo/POAI', {state: {id: id_plan}})
+                navigate('/PlanIndicativo/POAI')
             }}
             bgColor="tw-bg-greenBtn" />,
         <ButtonComponent
@@ -88,7 +88,7 @@ export const LobbyPage = () => {
             text='Mapa de intervención'
             onClick={() => {
                 dispatch(selectOption(3))
-                navigate('/PlanIndicativo/Mapa', {state: {id: id_plan}})
+                navigate('/PlanIndicativo/Mapa')
             }}
             bgColor="tw-bg-greenBtn"
             icon={<MapICon color='white'/>}/>,

@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 import { useAppSelector, useAppDispatch } from '@/store';
 import { thunkGetSecretaries, thunkGetLevelName } from '@/store/plan/thunks';
@@ -14,20 +14,19 @@ import { getCityId } from '@/services/col_api';
 export const SettingsPage = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
-    const location = useLocation();
 
-    const id_plan = location.state?.id_plan;
-    const id_nodo = location.state?.id_nodo;
-
-    const { plan, years, namesTree, secretaries } = useAppSelector(store => store.plan);
+    const { id_plan, node } = useAppSelector(store => store.content);
     const { unit } = useAppSelector(store => store.unit);
+    const { plan, years, namesTree, secretaries } = useAppSelector(store => store.plan);
 
     useEffect(() => {
-        dispatch(thunkGetUnit({id_plan: id_plan, id_node: id_nodo}))
+        if (node === undefined) return;
+        dispatch(thunkGetUnit({id_plan: id_plan.toString(), id_node: node.id_node}));
     }, []);
 
     useEffect(() => {
-        const ids = id_nodo!.split('.');
+        if (node === undefined) return;
+        const ids = node.id_node!.split('.');
         let ids2 = ids.reduce((acumulator:string[], currentValue: string) => {
             if (acumulator.length === 0) {
                 return [currentValue];
@@ -50,9 +49,9 @@ export const SettingsPage = () => {
         const unit_: UnitInterface = {
             ...unit,
             [name]: value,
-        }
+        };
         dispatch(setUnit(unit_));
-    }
+    };
 
     const handleChangeYear = (event: React.ChangeEvent<HTMLInputElement>, index: number) => {
         const { name, value } = event.target;
@@ -72,7 +71,7 @@ export const SettingsPage = () => {
             })
         }
         dispatch(setUnit(unit_));
-    }
+    };
 
     const handleSubmit = async () => {
         if (plan === undefined) return;
@@ -97,7 +96,7 @@ export const SettingsPage = () => {
             return;
         }
         const id_city = await getCityId(plan.municipaly);
-        addUnitNodeAndYears(id_plan, id_nodo, unit, unit.years, id_city)
+        addUnitNodeAndYears(id_plan.toString(), node!.id_node, unit, unit.years, id_city)
         .then(() => {
             alert('Se ha guardado la información de la meta');
         }).catch(() => {

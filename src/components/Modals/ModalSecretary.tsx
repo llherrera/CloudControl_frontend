@@ -41,7 +41,8 @@ const ModalPDT = ( props: ModalsecretaryProps ) => {
     const [indexYear, setIndexYear] = useState<number>(0);
 
     useEffect(() => {
-        dispatch(thunkGetSecretaries(plan?.id_plan!));
+        if (plan !== undefined && plan.id_plan !== undefined)
+            dispatch(thunkGetSecretaries(plan?.id_plan!));
     }, []);
 
     useEffect(() => {

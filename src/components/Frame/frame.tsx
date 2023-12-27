@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IconButton } from '@mui/material';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -9,8 +9,11 @@ import { thunkLogout } from '@/store/auth/thunks';
 import { setLogo } from '@/store/content/contentSlice';
 
 import { NavBar } from '..';
-import { BancoProyectoIcon, PlanIndicativoIcon, 
-        POAIIcon, MapICon } from '../../assets/icons';
+import { 
+    BancoProyectoIcon, 
+    PlanIndicativoIcon, 
+    POAIIcon, 
+    MapICon } from '../../assets/icons';
 import { FrameProps } from '@/interfaces';
 
 export const Frame = (props: FrameProps) => {
@@ -65,6 +68,8 @@ export const Frame = (props: FrameProps) => {
             if (logo_link_plan) {
                 dispatch(setLogo(logo_link_plan));
             }
+        } else {
+            dispatch(setLogo(''));
         }
     }, []);
 
@@ -72,8 +77,8 @@ export const Frame = (props: FrameProps) => {
         dispatch(thunkLogout())
             .unwrap()
             .then(() => {
-                navigate('/')
-            })
+                navigate('/');
+            });
     };
 
     return (
@@ -92,5 +97,5 @@ export const Frame = (props: FrameProps) => {
                 </div>
             </div>
         </div>
-    )
+    );
 }

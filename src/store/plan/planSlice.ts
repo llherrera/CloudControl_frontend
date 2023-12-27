@@ -4,7 +4,7 @@ import {InitialStatePlanInterface,
         NodoInterface, 
         Node, 
         Coordinates, 
-        NivelInterface } from "@/interfaces";
+        NivelInterface} from "@/interfaces";
 import { setGenericState, getGenericState, removeGenericState } from "@/utils";
 
 import {thunkGetPDTid,
@@ -115,6 +115,10 @@ export const planSlice = createSlice({
             state.levels = action.payload;
             setGenericState('plan', state);
         },
+        resetPlan: (state) => {
+            state = getInitialState();
+            setGenericState('plan', state);
+        }
     },
     extraReducers: builder => {
         builder.addCase(thunkGetPDTid.pending, state => {
@@ -124,6 +128,14 @@ export const planSlice = createSlice({
         builder.addCase(thunkGetPDTid.fulfilled, (state, action) => {
             state.loadingPlan = false;
             state.plan = action.payload;
+            state.indexLevel = 0;
+            state.parent = null;
+            state.progressNodes = [];
+            state.financial = [];
+            state.nodes = [];
+            state.nodesReport = [];
+            state.secretaries = [];
+            state.colorimeter = [];
             setGenericState('plan', state);
         });
         builder.addCase(thunkGetPDTid.rejected, (state, action) => {
@@ -139,6 +151,15 @@ export const planSlice = createSlice({
         builder.addCase(thunkAddPDT.fulfilled, (state, action) => {
             state.loadingPlan = false;
             state.plan = action.payload;
+            state.levels = [];
+            state.indexLevel = 0;
+            state.parent = null;
+            state.progressNodes = [];
+            state.financial = [];
+            state.nodes = [];
+            state.nodesReport = [];
+            state.secretaries = [];
+            state.colorimeter = [];
             setGenericState('plan', state);
         });
         builder.addCase(thunkAddPDT.rejected, (state, action) => {
@@ -378,5 +399,6 @@ export const {
     setLoadingReport, 
     setNodesReport, 
     setPlanLocation,
-    setLevels } = planSlice.actions;
+    setLevels,
+    resetPlan } = planSlice.actions;
 export default planSlice.reducer;

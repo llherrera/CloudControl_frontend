@@ -5,20 +5,23 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 
 import { Input, Select } from "../Inputs";
 import { PDTInterface } from "../../interfaces";
-
-import { useAppDispatch } from '@/store';
-import { thunkAddPDT } from "@/store/plan/thunks";
 import { getDepartmentCities, getDepartments } from "@/services/col_api";
 
+import { useAppDispatch, useAppSelector } from '@/store';
+import { thunkAddPDT } from "@/store/plan/thunks";
+import { setIdPlan, setLogo } from "@/store/content/contentSlice";
+
 interface selectOption {
-    id: number
-    name: string
+    id: number;
+    name: string;
 }
 export const PDTForm = () => {
-    const dispatch = useAppDispatch()
+    const dispatch = useAppDispatch();
     const navigate = useNavigate();
+    const { plan } = useAppSelector(state => state.plan);
+    const { id_plan } = useAppSelector(state => state.content);
 
-    const fechaInicio = new Date().getFullYear()
+    const fechaInicio = new Date().getFullYear();
 
     const [departamentOptions, setDepartamentOptions] = useState<selectOption[]|null>(null);
     const [municipioOptions, setMunicipioOptions] = useState<selectOption[]|null>(null);
@@ -40,7 +43,7 @@ export const PDTForm = () => {
     }, []);
     
     useEffect(() => {
-        if (!selectedDepartamento || selectedDepartamento.id < 0) return
+        if (!selectedDepartamento || selectedDepartamento.id < 0) return;
         getDepartmentCities(selectedDepartamento.id)
             .then((res) => {
                 setMunicipioOptions([{id: -1, name: ''}, ...res]);
@@ -85,16 +88,16 @@ export const PDTForm = () => {
         });
     };
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        await dispatch(thunkAddPDT(planData))
-            .unwrap()
-            .then((res) => {
-                navigate(`/pdt/PlanIndicativo`, { state: { id: res.id_plan } })
-            })
-            .catch((err) => {
-                console.log(err);
-            });
+        dispatch(thunkAddPDT(planData))
+        .then(() => {
+            dispatch(setIdPlan(id_plan));
+            dispatch(setLogo(''));
+            navigate(`/register`);
+        }).catch((err) => {
+            console.log(err);
+        });
     };
 
     const backIconButton = () => {
@@ -107,7 +110,7 @@ export const PDTForm = () => {
                 <ArrowBackIosIcon/>
             </IconButton>
         )
-    }
+    };
 
     return (
         <div className="tw-flex tw-justify-center">
@@ -119,20 +122,19 @@ export const PDTForm = () => {
                 <div>
                 <Input  type={"text"}
                         label="Nombre:"
-                        id={"Nombre"}
-                        name={"Nombre"}
-                        value={planData.name}
+                        id={"name"}
+                        name={"name"}
                         onChange={handleInputChange}/>
                 <Select label="Departamento:"
-                        id="Departamento"
-                        name="Departamento"
+                        id="department"
+                        name="department"
                         onChange={handleDepartmentChange}
                         options={departamentOptions ? departamentOptions : []}
                         optionLabelFn={(e, i) => <option key={e.id} value={i}>{e.name}</option>}
                 />
                 <Select label="Municipio:"
-                        id="Municipio"
-                        name="Municipio"
+                        id="municipaly"
+                        name="municipaly"
                         onChange={handleMunicipioChange}
                         options={municipioOptions ? municipioOptions : []}
                         optionLabelFn={(e, i) => <option key={e.id} value={i}>{e.name}</option>}
@@ -140,14 +142,13 @@ export const PDTForm = () => {
                 />
                 <Input  type={"text"}
                         label="Descripción:"
-                        id={"Descripcion"}
-                        name={"Descripcion"}
-                        value={planData.description}
+                        id={"description"}
+                        name={"description"}
                         onChange={handleInputChange}/>
 
                 <Select label="Fecha de inicio:"
-                        id="Fecha_inicio"
-                        name="Fecha_inicio"
+                        id="start_date"
+                        name="start_date"
                         onChange={handleInputYearChange}
                         options={Array.from(Array(5).keys())}
                         optionLabelFn={(e) => <option key={e} value={fechaInicio + e}>{fechaInicio + e}</option>}
@@ -165,5 +166,5 @@ export const PDTForm = () => {
                 </div>
             </form>
         </div>
-    )
+    );
 }

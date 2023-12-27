@@ -20,14 +20,14 @@ export const PDT = () => {
     let rol = "";
     
     if (token_info?.token !== undefined) {
-        const decoded = decode(token_info.token)
-        rol = decoded.rol
+        const decoded = decode(token_info.token);
+        rol = decoded.rol;
     }
 
     useEffect(() => {
         getPDTs()
             .then((res) => {
-                setData(res)
+                setData(res);
             })
             .catch((err) => {
                 console.log(err);
@@ -40,8 +40,7 @@ export const PDT = () => {
                 <ListPDT data={data} rol={rol}/>
             ]}
         />
-        
-    )
+    );
 }
 
 const ListPDT = ( props: PDTPageProps ) => {
@@ -49,18 +48,18 @@ const ListPDT = ( props: PDTPageProps ) => {
     const navigate = useNavigate();
 
     const handleAddPdt = () => {
-        navigate('/anadirPDT')
-    }
+        navigate('/anadirPDT');
+    };
 
     const handlePdtid = (id: number) => {
-        dispatch(setIdPlan(id))
-        dispatch(thunkGetPDTid(id.toString())).unwrap()
-        navigate(`/lobby`)
-    }
+        dispatch(setIdPlan(id));
+        dispatch(thunkGetPDTid(id.toString()));
+        navigate(`/lobby`);
+    };
 
     const handleAdd = (id: number) => {
-        navigate(`/register`, {state: {id}})
-    }
+        navigate(`/register`, {state: {id}});
+    };
 
     return (
         <div className="tw-flex tw-relative tw-justify-center tw-mt-10">
@@ -69,6 +68,7 @@ const ListPDT = ( props: PDTPageProps ) => {
             </div>
             {props.rol === "admin" ? 
             <ul className="tw-shadow-2xl tw-p-4 tw-border-2 tw-rounded">
+                <li>
                 <button className=" tw-bg-greenBtn hover:tw-bg-green-300 
                                     tw-text-white hover:tw-text-black tw-font-bold
                                     tw-rounded tw-w-full tw-py-2 tw-mb-4"
@@ -76,6 +76,7 @@ const ListPDT = ( props: PDTPageProps ) => {
                         title="Agregar un nuevo plan">
                     Añadir Plan +
                 </button>
+                </li>
                 { props.data!.map(( e:PDTInterface, index: number )=>
                 <li className="tw-flex"
                     key={index}>

@@ -36,7 +36,7 @@ export const RegisterForm = (props: RegisterFormProps) => {
         if (!validateEmail(form.email)) return alert("El correo no es válido");
         doRegister(props.id, form)
             .then(() => {
-                navigate(`/pdt/PlanIndicativo`, { state:{ id:props.id }, replace: true})
+                navigate(`/pdt/PlanIndicativo`, {replace: true})
             })
             .catch(() => {
                 alert("Error al registrar usuario");
@@ -67,33 +67,28 @@ export const RegisterForm = (props: RegisterFormProps) => {
                 <div>
                 <Input  label={"Usuario"}
                         type={"text"}
-                        id={"usuario"}
-                        name={"usuario"}
-                        value={form.username}
+                        id={"username"}
+                        name={"username"}
                         onChange={ (event) => handleInputChange(event)}/>
                 <Input  label={"Apellido"}
                         type={"text"}
-                        id={"apellido"}
-                        name={"apellido"}
-                        value={form.lastname}
+                        id={"lastname"}
+                        name={"lastname"}
                         onChange={ (event) => handleInputChange(event)}/>
                 <Input  label={"Correo"}
                         type={"text"}
-                        id={"correo"}
-                        name={"correo"}
-                        value={form.email}
+                        id={"email"}
+                        name={"email"}
                         onChange={ (event) => handleInputChange(event)}/>
                 <Input  label={"Contraseña"}
                         type={"password"}
-                        id={"contraseña"}
-                        name={"contraseña"}
-                        value={form.password}
+                        id={"password"}
+                        name={"password"}
                         onChange={ (event) => handleInputChange(event)}/>
                 <Input  label={"Confirmar Contraseña"}
                         type={"password"}
-                        id={"confirmarContraseña"}
-                        name={"confirmarContraseña"}
-                        value={form.confirm_password}
+                        id={"confirm_password"}
+                        name={"confirm_password"}
                         onChange={ (event) => handleInputChange(event)}/>
                 <div className="tw-flex tw-justify-center tw-mb-3">
                     <button

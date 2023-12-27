@@ -1,11 +1,19 @@
-import { useLocation } from 'react-router-dom';
-import { RegisterForm } from '../../components';
-import { Frame } from '../../components';
+import React, { useEffect } from 'react';
+import { Frame, RegisterForm } from '../../components';
+
+import { useAppSelector, useAppDispatch } from '@/store';
+import { setIdPlan } from '@/store/content/contentSlice';
 
 export const RegisterPage = () => {
-    const location = useLocation();
-    const id = location.state?.id;
-    const id_ = parseInt(id!);
+    const dispatch = useAppDispatch();
+    const { plan } = useAppSelector(state => state.plan);
+    let id_ = 0;
+
+    useEffect(() => {
+        if (plan === undefined) return;
+        dispatch(setIdPlan(id_));
+        id_ = plan.id_plan!;
+    }, []);
 
     return (
         <Frame data={

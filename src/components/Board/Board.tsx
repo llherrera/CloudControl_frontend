@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react';
 
 import { Content } from './Content';
 import { PesosNodos, Porcentaje, YearDetail } from '../../interfaces';
@@ -15,23 +15,20 @@ export const Board = () => {
     const [getProgress, setGetProgress] = useState(false);
 
     useEffect(() => {
-        const abortController = new AbortController()
-
-        dispatch(thunkGetPDTid(id_plan.toString())).unwrap()
-        dispatch(thunkGetColors(id_plan.toString())).unwrap()
+        dispatch(thunkGetPDTid(id_plan.toString()));
+        dispatch(thunkGetColors(id_plan.toString()));
         
         getTotalProgress(id_plan)
-            .then((res) => {
-                if (!res) return
-                localStorage.setItem('pesosNodo', JSON.stringify(res[0]))
-                localStorage.setItem('detalleAño', JSON.stringify(res[1]))
-                calcProgress( res )
-                setGetProgress(true)
-            })
-            .catch((err) => {
-                console.log(err);
-            })
-        return () => abortController.abort()
+        .then((res) => {
+            if (!res) return
+            localStorage.setItem('pesosNodo', JSON.stringify(res[0]))
+            localStorage.setItem('detalleAño', JSON.stringify(res[1]))
+            calcProgress( res )
+            setGetProgress(true)
+        })
+        .catch((err) => {
+            console.log(err);
+        })
     }, [])
 
     const calcProgress = ( res: [PesosNodos[], YearDetail[]] ) => {

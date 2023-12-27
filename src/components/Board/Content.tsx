@@ -7,8 +7,13 @@ import { decrementLevelIndex, setParent } from "@/store/plan/planSlice";
 import { setMode } from "@/store/content/contentSlice";
 
 import { Token, ContentProps } from "@/interfaces";
-import { NodeForm, NodesList, TimeLine, Graph,
-         BackBtn, SettingsBtn } from "@/components";
+import { 
+    NodeForm, 
+    NodesList, 
+    TimeLine, 
+    Graph,
+    BackBtn, 
+    SettingsBtn } from "@/components";
 import { getToken, decode } from "@/utils";
 
 export const Content = ( props : ContentProps ) => {
@@ -66,8 +71,8 @@ export const Content = ( props : ContentProps ) => {
     };
 
     const handleMode = () => {
-        dispatch(setMode(!mode))
-    }
+        dispatch(setMode(!mode));
+    };
 
     return (
         <div className="tw-h-full tw-border

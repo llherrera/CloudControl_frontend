@@ -74,9 +74,7 @@ export const LevelForm = ( props: LevelFormProps ) => {
     const handleInputFormChange = (event: React.ChangeEvent<HTMLInputElement>, index: number) => {
         const { name, value } = event.target;
         const newData = [...data];
-    
         newData[index] = { ...newData[index], [name]: value };
-    
         setData(newData);
     }
 
@@ -98,7 +96,7 @@ export const LevelForm = ( props: LevelFormProps ) => {
             (<div>
                 <FileInput/>
                 <form   onSubmit={ handleSubmit}
-                className="tw-grid tw-grid-cols-12 tw-mt-5">
+                        className="tw-grid tw-grid-cols-12 tw-mt-5">
                 <ul className=" tw-col-start-5 tw-col-span-4
                                 md:tw-col-start-4 md:tw-col-span-6 
                                 lg:tw-col-start-4 lg:tw-col-span-6 
@@ -112,13 +110,11 @@ export const LevelForm = ( props: LevelFormProps ) => {
                                 label="Nombre del Nivel:"
                                 id={"LevelName"}
                                 name={"LevelName"}
-                                value={e.name}
                                 onChange={ (event) => handleInputFormChange(event, index) }/>
                         <Input  type={"text"}
                                 label="Descripción:"
                                 id={"Description"}
                                 name={"Description"}
-                                value={e.description}
                                 onChange={ (event) => handleInputFormChange(event, index) }/>
                     </li>
                 )}
@@ -134,9 +130,9 @@ export const LevelForm = ( props: LevelFormProps ) => {
                                         hover:tw-bg-red-300 
                                         tw-text-white tw-font-bold
                                         tw-w-12 tw-p-2 tw-rounded"
-                                        type="button"
-                                        title="Eliminar un nivel"
-                                        onClick={ eliminarNivel }>-</button>
+                            type="button"
+                            title="Eliminar un nivel"
+                            onClick={ eliminarNivel }>-</button>
                 </div>
                 </ul>
                 <input  type="submit"
