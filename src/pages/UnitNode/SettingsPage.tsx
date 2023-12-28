@@ -102,7 +102,7 @@ export const SettingsPage = () => {
         }).catch(() => {
             alert('Ha ocurrido un error guardando la información de la meta');
         });
-    }
+    };
 
     return (
         <div className="tw-container tw-mx-auto tw-my-3

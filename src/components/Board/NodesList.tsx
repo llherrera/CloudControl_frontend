@@ -100,13 +100,11 @@ export const NodesList = ( props : NodeListProps ) => {
 
     return (
         nodes.length === 0 ? null :
-        <ul className={`${indexLevel === levels.length-1 ? 
+        (loadingNodes ?
+        <Spinner />
+        :<ul className={`${indexLevel === levels.length-1 ? 
                         'tw-flex tw-flex-row tw-flex-wrap':
-                        'tw-flex-col tw-flex-wrap'} `}>
-            {loadingNodes ?
-            <div className='tw-flex tw-justify-center tw-items-center tw-h-80'>
-                <Spinner />
-            </div>:<div>
+                        'tw-flex-col tw-flex-wrap'} `} >
             {nodes.map((item: NodoInterface, index: number) => {
                 return(
                 <div className="tw-my-2 tw-flex tw-transition hover:tw-scale-110"
@@ -153,17 +151,17 @@ export const NodesList = ( props : NodeListProps ) => {
                         <p>{item.name}</p>
                     </button>
                     :null}
-                    {mode ? 
-                    <input  className=' tw-px-2 tw-mx-2 
+                    <input  className={`tw-px-2 tw-mx-2 
                                         tw-border tw-rounded
-                                        tw-w-12'
+                                        tw-w-12
+                                        ${mode ? '' : 'tw-hidden'}`}
                             type='number'
                             placeholder='peso'
                             value={ isNaN(pesos[index]) ? 0 : pesos[index]}
                             onChange={(e)=>handleUpdateWeight(index, e)}/> 
-                    : null}
                 </div>
-            )})}
+                );
+            })}
             {mode ?
             <div className='tw-flex tw-justify-center'>
                 <button className='tw-px-2 tw-mx-2 
@@ -173,9 +171,7 @@ export const NodesList = ( props : NodeListProps ) => {
                         onClick={hangleSubmitUpdateWeight}>
                     Guardar
                 </button>
-            </div>
-            : null}
-            </div>}
-        </ul>
+            </div>:null}
+        </ul>)
     );
 }

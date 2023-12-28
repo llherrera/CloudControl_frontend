@@ -37,18 +37,15 @@ export const EvidenceForm = () => {
         locations: [],
         state: 0,
     });
-    const [documento, setDocumento] = useState<FileList | null>(
-        evi_selected!.file_link === '' ? null : null
-    );
+    const [documento, setDocumento] = useState<FileList | null>();
 
     useEffect(()=> {
         //To DO: obtener localidades para hacer el select
     }, []);
 
     useEffect(()=> {
-        if (evi_selected !== undefined) {
+        if (evi_selected !== undefined)
             dispatch(thunkGetUbiEvidence(evi_selected.id_evidence));
-        }
     }, [evi_selected]);
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
@@ -112,7 +109,7 @@ export const EvidenceForm = () => {
                 setLoading(false);
                 alert('Error al añadir evidencia');
             });
-        }else { 
+        } else { 
             dispatch(thunkUpdateEvidence({
                 data: data,
                 file: documento![0],
@@ -149,10 +146,9 @@ export const EvidenceForm = () => {
 
             <label className="tw-mt-4">Descripcion Actividades:</label>
             <textarea 
-                name="descripcionActividades" 
-                id="descripcionActividades" 
+                name="activitiesDesc" 
+                id="activitiesDesc" 
                 required
-                value={data.activitiesDesc}
                 className=" tw-p-2 tw-rounded
                             tw-border-2 tw-border-gray-400
                             tw-bg-white tw-resize-none"
@@ -165,14 +161,13 @@ export const EvidenceForm = () => {
                 <div className="tw-flex tw-flex-col">
                     <label>Unidad</label>
                     <select
-                        name="unidad"
-                        id="unidad"
+                        name="unit"
+                        id="unit"
                         className=" tw-p-2 tw-rounded
                                     tw-border-2 tw-border-gray-400
                                     tw-bg-white"
                         onChange={(e) => handleInputChange(e)}
-                        required
-                        value={data.unit}>
+                        required>
                         <option value="num">M</option>
                         <option value="num">M2</option>
                         <option value="num">M3</option>
@@ -187,13 +182,12 @@ export const EvidenceForm = () => {
                     <label>Cantidad</label>
                     <input
                         type="number" 
-                        name="cantidad" 
-                        id="cantidad" 
+                        name="amount" 
+                        id="amount" 
                         className=" tw-p-2 tw-rounded
                                     tw-border-2 tw-border-gray-400
                                     tw-bg-white"
                         required
-                        value={data.amount}
                         onChange={(e)=> handleInputChange(e)}/>
                 </div>
             </div>
@@ -205,30 +199,26 @@ export const EvidenceForm = () => {
                 <div className="tw-flex tw-flex-col">
                     <label>Comuna o Corregimiento</label>
                     <select 
-                        name="comuna"
-                        id="comuna"
+                        name="commune"
+                        id="commune"
                         className=" tw-p-2 tw-rounded
                                     tw-border-2 tw-border-gray-400
                                     tw-bg-white"
                         onChange={(e)=> handleInputChange(e)}
-                        required
-                        value={data.commune}
-                        >
+                        required>
                         <option value="Tubara">Todas</option>
                     </select>
                 </div>
                 <div className="tw-flex tw-flex-col tw-ml-3">
                     <label>Barrio o Vereda</label>
                     <select 
-                        name="barrio"
-                        id="barrio"
+                        name="neighborhood"
+                        id="neighborhood"
                         className=" tw-p-2 tw-rounded
                                     tw-border-2 tw-border-gray-400
                                     tw-bg-white"
                         onChange={(e)=> handleInputChange(e)}
-                        required
-                        value={data.neighborhood}
-                        >
+                        required>
                         <option value="Soledad">Todas</option>
                         <option value="Galapa">Galapa</option>
                     </select>
@@ -244,14 +234,13 @@ export const EvidenceForm = () => {
                 <div className="tw-flex tw-flex-col">
                     <label>Poblacion beneficiada</label>
                     <select 
-                        name="poblacionBeneficiada" 
-                        id="poblacionBeneficiada" 
+                        name="benefited_population" 
+                        id="benefited_population" 
                         className=" tw-p-2 tw-rounded
                                     tw-border-2 tw-border-gray-400
                                     tw-bg-white"
                         onChange={(e)=> handleInputChange(e)}
-                        required
-                        value={data.benefited_population}>
+                        required>
                         <option value="AdultoMayor">Adulto Mayor</option>
                         <option value="Afrodescendientes">Afrodescendientes</option>
                         <option value="Docentes">Docentes</option>
@@ -276,41 +265,38 @@ export const EvidenceForm = () => {
                     <label>Numero de poblacion beneficiada</label>
                     <input  
                         type="number" 
-                        name="numeroPoblacionBeneficiada" 
-                        id="numeroPoblacionBeneficiada"
+                        name="benefited_population_number" 
+                        id="benefited_population_number"
                         placeholder="Numero de beneficiados"
                         className=" tw-p-2 tw-rounded
                                     tw-border-2 tw-border-gray-400
                                     tw-bg-white"
                         required
-                        value={data.benefited_population_number}
                         onChange={(e)=> handleInputChange(e)}/>
                 </div>
                 <div className="tw-flex tw-flex-col tw-ml-3">
                     <label>Recursos ejecutados</label>
                     <input  
                         type="number" 
-                        name="recursosEjecutados" 
-                        id="recursosEjecutados"
+                        name="executed_resources" 
+                        id="executed_resources"
                         placeholder="Recursos ejecutados"
                         className=" tw-p-2 tw-rounded
                                     tw-border-2 tw-border-gray-400
                                     tw-bg-white"
                         required
-                        value={data.executed_resources}
                         onChange={(e)=> handleInputChange(e)}/>
                 </div>
                 <div className="tw-flex tw-flex-col tw-ml-3">
                     <label>Fuente de recursos</label>
                     <select 
-                        name="fuenteRecursos" 
-                        id="fuenteRecursos" 
+                        name="resources_font" 
+                        id="resources_font" 
                         className=" tw-p-2 tw-rounded
                                     tw-border-2 tw-border-gray-400
                                     tw-bg-white"
                         onChange={(e)=> handleInputChange(e)}
-                        required
-                        value={data.resources_font}>
+                        required>
                         <option value="Privado">Recursos Propios ICLD</option>
                         <option value="Publico">Recursos Propios ICDE</option>
                         <option value="Publico">SGP</option>
@@ -348,43 +334,40 @@ export const EvidenceForm = () => {
                 </div>
                 <div className="tw-flex tw-flex-col tw-ml-3">
                     <label>Nombre documento</label>
-                    <input  
-                        type="text" 
-                        name="nombreDocumento" 
-                        id="nombreDocumento"
+                    <input
+                        type="text"
+                        name="name_file"
+                        id="name_file"
                         placeholder="Nombre del documento"
                         className=" tw-p-2 tw-rounded
                                     tw-border-2 tw-border-gray-400
                                     tw-bg-white"
                         required
-                        value={data.name_file}
                         onChange={(e) => handleInputChange(e)}/><br />
                 </div>
                 <div className="tw-flex tw-flex-col tw-ml-3">
                     <label>Lugar</label>
-                    <input  
-                        type="text" 
-                        name="lugar" 
-                        id="lugar"
+                    <input
+                        type="text"
+                        name="place"
+                        id="place"
                         placeholder="Lugar de las actividades"
                         className=" tw-p-2 tw-rounded
                                     tw-border-2 tw-border-gray-400
                                     tw-bg-white"
                         required
-                        value={data.place}
                         onChange={(e) => handleInputChange(e)}/><br />
                 </div>
                 <div className="tw-flex tw-flex-col tw-ml-3">
                     <label>Fecha del archivo</label>
-                    <input  
-                        type="date" 
-                        name="fecha2" 
-                        id="fecha2"
+                    <input
+                        type="date"
+                        name="date_file"
+                        id="date_file"
                         className=" tw-p-2 tw-rounded
                                     tw-border-2 tw-border-gray-400
                                     tw-bg-white"
                         required
-                        value={data.date_file}
                         onChange={(e) => handleInputChange(e)}/><hr />
                 </div>
             </div>

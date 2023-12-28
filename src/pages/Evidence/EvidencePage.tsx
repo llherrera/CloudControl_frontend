@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import { useAppSelector } from "@/store";
 
@@ -7,12 +7,10 @@ import { BackBtn, EvidenceForm } from "@/components";
 
 export const EvidencePage = () => {
     const navigate = useNavigate();
-    const location = useLocation();
-
-    const idPDT = location.state?.idPDT;
 
     const { namesTree } = useAppSelector((state) => state.plan);
     const { unit } = useAppSelector((state) => state.unit);
+    const { id_plan } = useAppSelector((state) => state.content);
     
     const [cargar, setCargar] = useState(false);
 
@@ -20,18 +18,19 @@ export const EvidencePage = () => {
         navigate(-1);
     };
 
-    const handleSubmitButton = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const handleSubmitButton = () => {
         setCargar(!cargar);
     };
 
     const memorias = () => {
-        if (unit === undefined) return <div className="tw-text-center">No hay una meta seleccionada</div>;
+        if (unit === undefined) 
+            return <div className="tw-text-center">No hay una meta seleccionada</div>;
         return(
             <div className="tw-mx-3 tw-mt-2">
                 <header className=" tw-border-4 tw-border-double
                                     tw-border-gray-500 
                                     tw-flex tw-bg-slate-200">
-                    <BackBtn handle={handleBack} id={idPDT}/>
+                    <BackBtn handle={handleBack} id={id_plan}/>
                     <h1 className=" tw-text-3xl tw-text-center 
                                     tw-font-bold tw-text-blue-700
                                     tw-grow">
@@ -138,28 +137,29 @@ export const EvidencePage = () => {
                                             tw-p-4
                                             tw-rounded
                                             tw-text-white tw-font-bold"
-                                            onClick={handleSubmitButton}>
+                                            onClick={()=>handleSubmitButton()}>
                             cargar evidencias de esta meta
                         </button>
                     </div>
                 </section>
             </div>
-        )
+        );
     };
 
     const evidencias = () => {
-        if (unit === undefined) return <div className="tw-text-center">No hay una meta seleccionada</div>;
+        if (unit === undefined) 
+            return <div className="tw-text-center">No hay una meta seleccionada</div>;
         return(
             <div className="tw-mx-3 tw-mt-2">
                 <header className=" tw-flex tw-flex-col
                                     tw-border-4 tw-border-double
                                     tw-border-gray-500 tw-bg-slate-200">
                     <h1 className=" tw-text-3xl tw-font-bold tw-text-center tw-text-blue-700">Evidencias de la meta</h1>
-                    <button className="inline-block" onClick={ (e) => handleSubmitButton(e)} >return</button>
+                    <button className="inline-block" onClick={()=>handleSubmitButton()} >return</button>
                 </header>
                 <EvidenceForm />
             </div>
-        )
+        );
     };
 
     return (

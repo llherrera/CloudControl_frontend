@@ -9,7 +9,7 @@ export const MarkerComponent = ( {item}: {item:UbicationDB} ) => {
 
     const handleShowTooltip = () => {
         setShowTooltip(true);
-    }
+    };
 
     return (
         <Marker position={{lat: item.lat, lng: item.lng}}

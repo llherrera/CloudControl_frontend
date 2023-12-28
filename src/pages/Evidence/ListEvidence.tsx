@@ -2,7 +2,10 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useAppSelector, useAppDispatch } from "@/store";
-import { thunkGetEvidences, thunkGetEvidenceCount, thunkGetUserEvidences } from "@/store/evidence/thunks";
+import { 
+    thunkGetEvidences, 
+    thunkGetEvidenceCount, 
+    thunkGetUserEvidences } from "@/store/evidence/thunks";
 import { resetEvidence } from "@/store/evidence/evidenceSlice";
 
 import { Frame, EvidenceDetail, BackBtn, MyEvidence } from "@/components";
@@ -121,7 +124,7 @@ const Evidence = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {evidences.length === 0 ? evidences.map((evi, index) => (
+                    {evidences.length > 0 ? evidences.map((evi, index) => (
                         <EvidenceDetail evi={evi} index={index} key={index}/>
                     )) : <span>No hay evidencias</span>}
                 </tbody>
@@ -145,7 +148,7 @@ const Evidence = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {evidences.length === 0 || evidences ? evidences.map((evi, index) => (
+                    {evidences.length > 0 ? evidences.map((evi, index) => (
                         <MyEvidence evidence={evi} key={index}/>
                     )) : <span>No hay evidencias</span>}
                 </tbody>

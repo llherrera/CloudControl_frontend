@@ -8,21 +8,30 @@ import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 import IconButton from "@mui/material/IconButton";
 import { Spinner } from "@/assets/icons";
 
-import { PesosNodos, Porcentaje, ReportPDTInterface, 
-        YearDetail, NodoInterface, Node } from "@/interfaces";
+import { 
+    PesosNodos, 
+    Porcentaje, 
+    ReportPDTInterface, 
+    YearDetail, 
+    NodoInterface, 
+    Node } from "@/interfaces";
 import { getLevelName, getLevelNodes } from "@/services/api";
 import { exportFile } from "@/utils";
 
 export const ModalProgram = () => {
     const dispatch = useAppDispatch();
 
-    const { levels, nodesReport, years, loadingReport, colorimeter } = useAppSelector((state) => state.plan);
-    let levels_ = levels.slice(0, -1)
+    const { levels, 
+            nodesReport, 
+            years, 
+            loadingReport, 
+            colorimeter } = useAppSelector((state) => state.plan);
+    let levels_ = levels.slice(0, -1);
 
     const [modalProgramsIsOpen, setModalProgramsIsOpen] = useState(false);
     const [data, setData] = useState<ReportPDTInterface[]>([]);
-    const [programs, setPrograms] = useState<NodoInterface[][]>([])
-    const [index_, setIndex] = useState<number[]>(levels_.map(() => 0))
+    const [programs, setPrograms] = useState<NodoInterface[][]>([]);
+    const [index_, setIndex] = useState<number[]>(levels_.map(() => 0));
 
     useEffect(() => {
         const fetch = async () => {
@@ -68,11 +77,11 @@ export const ModalProgram = () => {
     }, [programs]);
 
     const handleProgramBtn = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        e.preventDefault()
-        setModalProgramsIsOpen(true)
-        dispatch(setLoadingReport(true))
-        genReport()
-    }
+        e.preventDefault();
+        setModalProgramsIsOpen(true);
+        dispatch(setLoadingReport(true));
+        genReport();
+    };
 
     const genReport = async () => {
         const pesosStr = localStorage.getItem('pesosNodo');

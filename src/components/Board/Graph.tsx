@@ -118,7 +118,7 @@ export const Graph = ( props: GraphProps ) => {
         const value = typeList[newIndex].value;
         dispatch(setType(value));
         setIndexType(newIndex);
-    }
+    };
 
     return (
         <div className="tw-flex tw-flex-col 

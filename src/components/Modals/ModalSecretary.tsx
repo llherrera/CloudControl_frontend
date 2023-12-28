@@ -10,31 +10,43 @@ import IconButton from "@mui/material/IconButton";
 import { Spinner } from "@/assets/icons";
 
 import { exportFile } from "@/utils";
-import { ReportPDTInterface, YearDetail, ModalsecretaryProps, PesosNodos } from "@/interfaces";
+import { 
+    ReportPDTInterface, 
+    YearDetail, 
+    ModalsecretaryProps, 
+    PesosNodos } from "@/interfaces";
 
 export const ModalSecretary = () => {
     const [modalSecretaryIsOpen, setModalSecretaryIsOpen] = useState(false);
 
     return (
         <div>
-            <ModalPDT modalIsOpen={modalSecretaryIsOpen} callback={setModalSecretaryIsOpen}/>
+            <ModalPDT 
+                modalIsOpen={modalSecretaryIsOpen} 
+                callback={setModalSecretaryIsOpen}/>
             <IconButton aria-label="delete" 
                         size="large" 
                         color='secondary' 
                         title='Generar reporte por Secretarias'
-                        className="tw-transition hover:tw--translate-y-1 hover:tw-scale-[1.4]"
+                        className=" tw-transition 
+                                    hover:tw--translate-y-1 
+                                    hover:tw-scale-[1.4]"
                         onClick={()=>setModalSecretaryIsOpen(true)}>
                 <LibraryBooksIcon />
             </IconButton>
         </div>
-    )
+    );
 }
 
 const ModalPDT = ( props: ModalsecretaryProps ) => {
     const dispatch = useAppDispatch();
 
-    const { years, levels, plan, secretaries, 
-            loadingReport, colorimeter } = useAppSelector((state) => state.plan);
+    const { years, 
+            levels, 
+            plan, 
+            secretaries, 
+            loadingReport, 
+            colorimeter } = useAppSelector((state) => state.plan);
 
     const [data, setData] = useState<ReportPDTInterface[]>([]);
     const [secretary, setSecretary] = useState<string>('');
@@ -82,7 +94,8 @@ const ModalPDT = ( props: ModalsecretaryProps ) => {
     const genReport = () => {
         const detalleStr = localStorage.getItem('detalleAño');
         const detalle = detalleStr ? JSON.parse(detalleStr) : [];
-        const nodes = detalle.filter((item: YearDetail) => (item.responsible === secretary && item.year === years[indexYear]));
+        const nodes = detalle.filter((item: YearDetail) => 
+            (item.responsible === secretary && item.year === years[indexYear]));
         const data: ReportPDTInterface[] = [];
 
         nodes.forEach( async (item: YearDetail) => {
@@ -108,18 +121,17 @@ const ModalPDT = ( props: ModalsecretaryProps ) => {
     };
 
     const handleChangeSecretary = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        dispatch(setLoadingReport(true))
-        setSecretary(e.target.value)
+        dispatch(setLoadingReport(true));
+        setSecretary(e.target.value);
     };
 
     const handleBtn = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, index:number) => {
-        e.preventDefault()
-        dispatch(setLoadingReport(true))
-        setIndexYear(index)
+        e.preventDefault();
+        dispatch(setLoadingReport(true));
+        setIndexYear(index);
     };
 
     return (
-        (props.modalIsOpen && secretaries.length > 0 ) ?
         <Modal  isOpen={props.modalIsOpen}
                 onRequestClose={()=>props.callback(false)}
                 contentLabel='Modal de secretarias'>
@@ -225,6 +237,5 @@ const ModalPDT = ( props: ModalsecretaryProps ) => {
             </table>
             </div>}
         </Modal>
-        : <div></div>
-    )
+    );
 }
