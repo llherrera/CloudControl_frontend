@@ -90,10 +90,8 @@ export const NodesList = ( props : NodeListProps ) => {
 
     const hangleSubmitUpdateWeight = () => {
         const acmu = pesos.reduce((a, b) => a + b, 0);
-        if (acmu !== 100) {
-            alert('La suma de los pesos debe ser 100');
-            return;
-        }
+        if (acmu !== 100) 
+            return alert('La suma de los pesos debe ser 100');
         const ids = nodes.map((item) => item.id_node);
         dispatch(thunkUpdateWeight({ids: ids, weights: pesos}));
     };

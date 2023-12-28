@@ -75,10 +75,10 @@ export const Frame = (props: FrameProps) => {
 
     const handleBtn = () => {
         dispatch(thunkLogout())
-            .unwrap()
-            .then(() => {
-                navigate('/');
-            });
+        .unwrap()
+        .then(() => {
+            navigate('/');
+        });
     };
 
     return (

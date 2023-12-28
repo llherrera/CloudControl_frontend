@@ -7,7 +7,7 @@ import { LoadIcon } from '@/assets/icons';
 
 export const UploadImage = () => {
 
-    const { id_plan } = useAppSelector(store => store.content)
+    const { id_plan } = useAppSelector(store => store.content);
 
     const [logoPlan, setLogoPlan] = useState<FileList | null>(null);
     const [logoPlanStr, setLogoPlanStr] = useState<string | null>(null);

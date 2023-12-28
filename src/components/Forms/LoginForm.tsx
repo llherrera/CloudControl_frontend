@@ -26,22 +26,22 @@ export const LoginForm = () => {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         await dispatch(thunkLogin(user))
-            .unwrap()
-            .then((res) => {
-                if (res === undefined) return alert("Usuario o contraseña incorrectos");
-                const info = decode(res.token);
-                info.rol === "admin" ? 
-                navigate('/pdt') :
-                (info.rol === "funcionario" || info.rol === 'planeacion' || info.rol === 'sectorialista') ?
-                (
-                    dispatch(setIdPlan(info.id_plan)),
-                    navigate('/pdt/PlanIndicativo')
-                ) :
-                navigate('/')
-            })
-            .catch((err) => {
-                console.log(err);
-            }
+        .unwrap()
+        .then((res) => {
+            if (res === undefined) return alert("Usuario o contraseña incorrectos");
+            const info = decode(res.token);
+            info.rol === "admin" ? 
+            navigate('/pdt') :
+            (info.rol === "funcionario" || info.rol === 'planeacion' || info.rol === 'sectorialista') ?
+            (
+                dispatch(setIdPlan(info.id_plan)),
+                navigate('/pdt/PlanIndicativo')
+            ) :
+            navigate('/')
+        })
+        .catch((err) => {
+            console.log(err);
+        }
         );
     };
 

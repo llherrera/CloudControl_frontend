@@ -9,7 +9,7 @@ export * from './common';
 export * from './plan';
 export * from './unit';
 export * from './evidence';
-export * from './ComponentProps';
+export * from './componentProps';
 export * from './report';
 export * from './secretary';
 export * from './ubication';

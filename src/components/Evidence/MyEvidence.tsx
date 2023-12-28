@@ -7,7 +7,7 @@ import { EvidenceInterface } from "@/interfaces";
 
 interface Props {
     evidence: EvidenceInterface;
-}
+};
 
 export const MyEvidence = ({evidence}: Props) => {
     const navigate = useNavigate();

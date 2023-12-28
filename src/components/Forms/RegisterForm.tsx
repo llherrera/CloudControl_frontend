@@ -23,25 +23,28 @@ export const RegisterForm = (props: RegisterFormProps) => {
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = event.target;
         setForm({ ...form, [name]: value });
-    }
+    };
 
     const handleChangeRol = (value: string) => {
         setForm({ ...form, ['rol']: value });
-    }
+    };
 
     const submitForm = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        if (form.password !== form.confirm_password) return alert("Las contraseñas no coinciden");
-        if (form.username === '' || form.lastname === '' || form.email === '' || form.password === '') return alert("Por favor llene todos los campos");
-        if (!validateEmail(form.email)) return alert("El correo no es válido");
+        if (form.password !== form.confirm_password) 
+            return alert("Las contraseñas no coinciden");
+        if (form.username === '' || form.lastname === '' || form.email === '' || form.password === '') 
+            return alert("Por favor llene todos los campos");
+        if (!validateEmail(form.email)) 
+            return alert("El correo no es válido");
         doRegister(props.id, form)
-            .then(() => {
-                navigate(`/pdt/PlanIndicativo`, {replace: true})
-            })
-            .catch(() => {
-                alert("Error al registrar usuario");
-            })
-    }
+        .then(() => {
+            navigate(`/pdt/PlanIndicativo`, {replace: true})
+        })
+        .catch(() => {
+            alert("Error al registrar usuario");
+        })
+    };
 
     const backIconButton = () => {
         return (
@@ -52,7 +55,7 @@ export const RegisterForm = (props: RegisterFormProps) => {
                         title="Regresar">
                 <ArrowBackIosIcon/>
             </IconButton>
-        )
+        );
     }
 
     return (

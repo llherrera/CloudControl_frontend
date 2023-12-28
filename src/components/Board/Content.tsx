@@ -20,9 +20,15 @@ export const Content = ( props : ContentProps ) => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
 
-    const { plan, years, indexLevel, levels, 
-        parent, progressNodes, financial, 
-        radioBtn, nodes } = useAppSelector(store => store.plan);
+    const { plan,
+            years,
+            indexLevel,
+            levels,
+            parent,
+            progressNodes,
+            financial,
+            radioBtn,
+            nodes } = useAppSelector(store => store.plan);
     const { mode } = useAppSelector(store => store.content);
 
     const [rol, setRol] = useState("");
@@ -66,13 +72,9 @@ export const Content = ( props : ContentProps ) => {
         }
     };
 
-    const handleSettings = () => {
-        navigate(`/pdt/PlanIndicativo/configuracion`, {state: {id: props.id}});
-    };
+    const handleSettings = () => navigate(`/pdt/PlanIndicativo/configuracion`, {state: {id: props.id}});
 
-    const handleMode = () => {
-        dispatch(setMode(!mode));
-    };
+    const handleMode = () => dispatch(setMode(!mode));
 
     return (
         <div className="tw-h-full tw-border

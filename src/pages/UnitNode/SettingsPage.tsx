@@ -75,26 +75,17 @@ export const SettingsPage = () => {
 
     const handleSubmit = async () => {
         if (plan === undefined) return;
-        if (unit.description === '') {
-            alert('Debe ingresar una descripción');
-            return;
-        }
-        if (unit.indicator === '') {
-            alert('Debe ingresar un indicador');
-            return;
-        }
-        if (unit.goal === 0) {
-            alert('Debe ingresar una meta');
-            return;
-        }
-        if (unit.responsible === '') {
-            alert('Debe ingresar un responsable');
-            return;
-        }
-        if (unit.years.length === 0) {
-            alert('Debe ingresar una programación');
-            return;
-        }
+        if (unit.description === '')
+            return alert('Debe ingresar una descripción');
+        if (unit.indicator === '')
+            return alert('Debe ingresar un indicador');
+        if (unit.goal === 0)
+            return alert('Debe ingresar una meta');
+        if (unit.responsible === '')
+            return alert('Debe ingresar un responsable');
+        if (unit.years.length === 0)
+            return alert('Debe ingresar una programación');
+        
         const id_city = await getCityId(plan.municipaly);
         addUnitNodeAndYears(id_plan.toString(), node!.id_node, unit, unit.years, id_city)
         .then(() => {

@@ -39,23 +39,21 @@ const Evidence = () => {
     useEffect(() => {
         if (plan) {
             const { id_plan } = plan;
-            if (id_plan) dispatch(thunkGetEvidences({id: id_plan, page}));
+            if (id_plan) 
+                dispatch(thunkGetEvidences({id: id_plan, page}));
         }else{
             dispatch(thunkGetEvidences( {id: id_plan, page}));
         }
     }, [page, evi_count]);
 
     useEffect(() => {
-        if (opt === 0) {
+        if (opt === 0)
             dispatch(thunkGetEvidences( {id: id_plan, page}));
-        } else if (opt === 1) {
+        else if (opt === 1)
             dispatch(thunkGetUserEvidences(page));
-        }
     }, [opt]);
 
-    const handlePage = (page: number) => {
-        setPage(page);
-    };
+    const handlePage = (page: number) => setPage(page);
 
     const handleBack = () => {
         dispatch(resetEvidence());

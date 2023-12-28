@@ -21,9 +21,8 @@ export const TimeLine = () => {
     const [yearsProgress, setYearsProgress] = useState(0);
 
     useEffect(() => {
-        if (years.length !== 0) {
+        if (years.length !== 0)
             dispatch(selectYear(years[0]));
-        }
     }, [years]);
 
     useEffect(() => {
@@ -48,10 +47,8 @@ export const TimeLine = () => {
             let temp = 0;
             nodoss.forEach((item: PesosNodos) => {
                 const { percents } = item;
-                if (percents) {
+                if (percents) 
                     temp += (percents[i].progress)*(item.weight/100);
-                } else {
-                }
             });
             temp = Math.round(temp*100)/100;
             progreso.push(temp);

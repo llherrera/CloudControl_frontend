@@ -1,32 +1,39 @@
-import React, { 
-        useState, 
+import  React, 
+    {   useState, 
         useCallback, 
         useEffect } from 'react';
-import {useNavigate, 
-        useLocation } from 'react-router-dom';
-import {GoogleMap, 
-        useJsApiLoader } from '@react-google-maps/api';
+import {useNavigate } from 'react-router-dom';
+import {
+    GoogleMap, 
+    useJsApiLoader, 
+    InfoWindow, 
+    Marker } from '@react-google-maps/api';
+import { ToastContainer, toast } from 'react-toastify';
+import "react-toastify/dist/ReactToastify.css";
+import icono from "@/assets/icons/location.svg";
 
 import { useAppDispatch, useAppSelector } from '@/store';
 import { setEvidences } from '@/store/evidence/evidenceSlice';
 
-import {BackBtn, 
-        Frame, 
-        MarkerComponent } from '@/components';
-import {Coordinates, 
-        NodoInterface, 
-        Node, 
-        EvidenceInterface } from '@/interfaces';
-import {getLevelNodes, 
-        getUbiEvidences, 
-        getCodeEvidences } from '@/services/api';
+import {
+    BackBtn, 
+    Frame } from '@/components';
+import {
+    Coordinates, 
+    NodoInterface, 
+    Node, 
+    EvidenceInterface } from '@/interfaces';
+import { 
+    getLevelNodes, 
+    getUbiEvidences, 
+    getCodeEvidences } from '@/services/api';
 
 export const InterventionMap = () => {
     return (
         <Frame
             data={<Section/>}
         />
-    )
+    );
 }
 
 const API_KEY = import.meta.env.VITE_API_KEY_MAPS as string;
@@ -37,35 +44,31 @@ const containerStyle = {
     borderRadius: '15px'
 };
 
+const mapOptions = {
+    disableDefaultUI: true,
+    zoom: 0,
+    restriction: {
+        latLngBounds: {
+            north: 13.011493,
+            east: -66.9,
+            south: -4.334669,
+            west: -79.314914
+        }
+    },
+};
+
 const Section = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
-    const location = useLocation();
 
     const { levels, planLocation } = useAppSelector(state => state.plan);
     const { evidences } = useAppSelector(store => store.evidence);
     const { id_plan } = useAppSelector(store => store.content);
 
-    const id = location.state?.id;
     const { isLoaded } = useJsApiLoader({
         id: 'google-map-script',
         googleMapsApiKey: API_KEY
     });
-
-    const mapOptions = {
-        restriction: {
-            latLngBounds: {
-                north: 13.011493,
-                east: -66.9,
-                south: -4.334669,
-                west: -79.314914
-            }
-        },
-        fullscreenControl: false,
-        zoom: 12,
-        streetViewControl: false,
-        mapTypeControl: false
-    }
 
     const [map, setMap] = useState<google.maps.Map|null>(null);
     const [ubication, setUbication] = useState<Coordinates>({lat: 10.96854, lng: -74.78132});
@@ -74,16 +77,18 @@ const Section = () => {
     const [index_, setIndex] = useState<number[]>([0, 0]);
     const [codes, setCodes] = useState<string[]>([]);
 
+    const [showTooltip, setShowTooltip] = useState<boolean>(false);
+
     useEffect(() => {
-        navigator.geolocation.watchPosition((position) => {
-            setUbication({lat: position.coords.latitude, lng: position.coords.longitude})
+        navigator.geolocation.getCurrentPosition((position) => {
+            setUbication({lat: position.coords.latitude, lng: position.coords.longitude});
         }, (error) => {
-            console.log(error)
+            console.log(error);
         }, {
             enableHighAccuracy: true,
             timeout: 5000,
             maximumAge: 0
-        })
+        });
     }, []);
 
     useEffect(() => {
@@ -96,9 +101,8 @@ const Section = () => {
             await getUbiEvidences(id_plan)
             .then((res)=> {
                 localStorage.setItem('evidences', JSON.stringify(res));
-                if (res.length === 0) {
-                    alert('No hay evidencias para esta unidad')
-                }
+                if (res.length === 0)
+                    notify();
             });
         }
         fetch();
@@ -168,16 +172,14 @@ const Section = () => {
     }, [codes]);
 
     const onLoad = useCallback(function callback(map: google.maps.Map) {
-        setMap(map)
+        setMap(map);
     }, []);
 
     const onUnmount = useCallback(function callback() {
-        setMap(null)
+        setMap(null);
     }, []);
 
-    const handleBack = () => {
-        navigate(-1)
-    };
+    const handleBack = () => navigate(-1);
 
     const handleChangePrograms = (index: number, event: React.ChangeEvent<HTMLSelectElement>) => {
         const newIndex = event.target.selectedIndex;
@@ -197,13 +199,27 @@ const Section = () => {
         setIndex(newIndex_);
     };
 
+    const handleShowTooltip = () => setShowTooltip(true);
+
+    const notify = () => toast("No hay evidencias para mostrar", { 
+        position: "top-center",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "light",
+    });
+
     return (
         <div className={`tw-bg-[url('/src/assets/images/bg-plan-indicativo.png')]
                         tw-pb-3`} >
             <div className='tw-flex tw-my-4'>
-                <BackBtn handle={handleBack} id={id} />
+                <BackBtn handle={handleBack} id={id_plan} />
                 <h1 className='tw-grow tw-text-center'>Mapa de intervenciones</h1>
             </div>
+            <ToastContainer />
 
             <div className='tw-flex tw-justify-center tw-mb-3'>
                 {programs.map((program, index) => (
@@ -223,18 +239,33 @@ const Section = () => {
                 <GoogleMap
                     mapContainerStyle={containerStyle}
                     center={{lat: ubication.lat, lng: ubication.lng}}
-                    zoom={14}
+                    zoom={10}
                     options={mapOptions}
                     onLoad={onLoad}
                     onUnmount={onUnmount}>
-                    {evidences && evidences.length > 0 ? evidences.map((item) => (
-                        item.locations.map((location, index) => (
-                            <MarkerComponent key={index} item={location} />
-                        ))
+                    {evidences.length > 0 ? evidences.map((item) => (
+                        item.locations.map((location, index) => {
+                            const { lat, lng } = location;
+                            return <Marker 
+                                position={{lat, lng}}
+                                onClick={handleShowTooltip}
+                                icon={{
+                                    url: icono,
+                                    scaledSize: new window.google.maps.Size(30, 30),
+                                }}>
+                                {showTooltip && (
+                                    <InfoWindow onCloseClick={()=>setShowTooltip(false)}>
+                                        <div>
+                                            <p>{item.code}</p>
+                                        </div>
+                                    </InfoWindow>
+                                )}
+                            </Marker>
+                        })
                     )):null}
                 </GoogleMap>
             </div>
             ) : <p>Cargando...</p>}
         </div>
-    )
+    );
 }

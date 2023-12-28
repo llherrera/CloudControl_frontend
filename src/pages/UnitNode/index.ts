@@ -1,2 +1,2 @@
 export * from "./UnitNodePage";
-export * from './SettingsPage'
+export * from './SettingsPage';

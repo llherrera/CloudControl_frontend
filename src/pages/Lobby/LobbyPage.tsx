@@ -23,9 +23,9 @@ export const LobbyPage = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
-    const { token_info } = useAppSelector(state => state.auth)
-    const { id_plan } = useAppSelector(state => state.content)
-    const { plan } = useAppSelector(store => store.plan)
+    const { token_info } = useAppSelector(state => state.auth);
+    const { id_plan } = useAppSelector(state => state.content);
+    const { plan } = useAppSelector(store => store.plan);
     const { isLoaded, loadError} = useJsApiLoader({
         id: 'google-map-script',
         googleMapsApiKey: API_KEY
@@ -34,8 +34,8 @@ export const LobbyPage = () => {
     let rol = "";
 
     if (token_info?.token !== undefined) {
-        const decoded = decode(token_info.token)
-        rol = decoded.rol
+        const decoded = decode(token_info.token);
+        rol = decoded.rol;
     }
 
     useEffect(() => {
@@ -92,7 +92,7 @@ export const LobbyPage = () => {
             }}
             bgColor="tw-bg-greenBtn"
             icon={<MapICon color='white'/>}/>,
-    ]
+    ];
 
     return (
         <Header components={buttons}/>

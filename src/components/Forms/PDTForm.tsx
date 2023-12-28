@@ -14,11 +14,11 @@ import { setIdPlan, setLogo } from "@/store/content/contentSlice";
 interface selectOption {
     id: number;
     name: string;
-}
+};
+
 export const PDTForm = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
-    const { plan } = useAppSelector(state => state.plan);
     const { id_plan } = useAppSelector(state => state.content);
 
     const fechaInicio = new Date().getFullYear();
@@ -37,17 +37,17 @@ export const PDTForm = () => {
 
     useEffect(() => {
         getDepartments()
-            .then((res) => {
-                setDepartamentOptions([{id: -1, name: ''}, ...res]);
-            });
+        .then((res) => {
+            setDepartamentOptions([{id: -1, name: ''}, ...res]);
+        });
     }, []);
     
     useEffect(() => {
         if (!selectedDepartamento || selectedDepartamento.id < 0) return;
         getDepartmentCities(selectedDepartamento.id)
-            .then((res) => {
-                setMunicipioOptions([{id: -1, name: ''}, ...res]);
-            });
+        .then((res) => {
+            setMunicipioOptions([{id: -1, name: ''}, ...res]);
+        });
     }, [selectedDepartamento]);
 
     const handleInputYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -109,7 +109,7 @@ export const PDTForm = () => {
                         title="Regresar">
                 <ArrowBackIosIcon/>
             </IconButton>
-        )
+        );
     };
 
     return (

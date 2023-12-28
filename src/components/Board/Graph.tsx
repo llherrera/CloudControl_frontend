@@ -167,5 +167,5 @@ export const Graph = ( props: GraphProps ) => {
                     containerProps={{ style: {width: '100%', height:'100%'} }}/>
             </div>
         </div>
-    )
+    );
 }

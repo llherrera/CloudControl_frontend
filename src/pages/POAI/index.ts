@@ -1,1 +1,1 @@
-export * from './POAI'
+export * from './POAI';

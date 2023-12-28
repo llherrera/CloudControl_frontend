@@ -55,7 +55,7 @@ export const LevelForm = ( props: LevelFormProps ) => {
                         key={data.length}>
                 <ArrowBackIosIcon/>
             </IconButton>
-        )
+        );
     }
 
     const agregarNivel = () => {
@@ -148,6 +148,5 @@ export const LevelForm = ( props: LevelFormProps ) => {
             </div>)
             : <p className="tw-text-center tw-text-2xl">Plan en proceso</p>}
             </div>
-            
-    )
+    );
 }

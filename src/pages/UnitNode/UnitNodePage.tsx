@@ -29,13 +29,13 @@ export const UnitNodePage = () => {
     const [id, setId] = useState(0);
 
     useEffect(() => {
-        const gettoken = getToken()
+        const gettoken = getToken();
         try {
             const {token} = gettoken ? gettoken : null
             if (token !== null && token !== undefined) {
-                const decoded = decode(token) as Token
-                setId(decoded.id_plan)
-                setRol(decoded.rol)
+                const decoded = decode(token) as Token;
+                setId(decoded.id_plan);
+                setRol(decoded.rol);
             }
         } catch (error) {
             console.log(error);
@@ -55,12 +55,12 @@ export const UnitNodePage = () => {
             }
         }, []);
         ids2 = ids2.slice(1);
-        dispatch(thunkGetLevelName(ids2))
+        dispatch(thunkGetLevelName(ids2));
     }, []);
 
     useEffect(() => {
         if (id_plan === undefined || node === undefined) return;
-        dispatch(thunkGetUnit({id_plan:id_plan.toString(), id_node: node.id_node}))
+        dispatch(thunkGetUnit({id_plan:id_plan.toString(), id_node: node.id_node}));
     }, []);
 
     useEffect(() => {
@@ -77,29 +77,24 @@ export const UnitNodePage = () => {
         setAcumFinan( acumFinalcial );
     }, [unit]);
 
-    const handleSubmitButton = () => {
-        navigate(`/pdt/PlanIndicativo/Meta/evidencia`)
-    }
+    const handleSubmitButton = () => navigate(`/pdt/PlanIndicativo/Meta/evidencia`);
 
     const handleEvidence = () => {
-        const id_ = parseInt(id_plan.toString())
+        const id_ = parseInt(id_plan.toString());
         dispatch(thunkGetEvidence({id_plan: id_, code: unit!.code}))
         .unwrap()
         .then((res) => {
-            if (res.length === 0) {
-                alert('No hay evidencias para esta unidad')
-            }
+            if (res.length === 0)
+                alert('No hay evidencias para esta unidad');
         })
-    }
+    };
 
     const handleBack = () => {
-        dispatch(resetEvidence())
-        navigate(-1)
-    }
+        dispatch(resetEvidence());
+        navigate(-1);
+    };
 
-    const handleSettings = () => {
-        navigate(`/pdt/PlanIndicativo/Meta/configuracion`, {state: {id_plan: id_plan, id_nodo: node?.id_node!}})
-    }
+    const handleSettings = () => navigate(`/pdt/PlanIndicativo/Meta/configuracion`, {state: {id_plan: id_plan, id_nodo: node?.id_node!}});
 
     const unidadForm = () => {
         if (unit === undefined || unit === null) return;
@@ -121,7 +116,7 @@ export const UnitNodePage = () => {
                     <p className="tw-text-2xl tw-font-bold">Meta: {unit.goal}</p>
                 </div>
             </div>
-        )
+        );
     }
 
     const añosForm = () => {

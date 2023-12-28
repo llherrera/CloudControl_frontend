@@ -26,12 +26,12 @@ export const PDT = () => {
 
     useEffect(() => {
         getPDTs()
-            .then((res) => {
-                setData(res);
-            })
-            .catch((err) => {
-                console.log(err);
-            })
+        .then((res) => {
+            setData(res);
+        })
+        .catch((err) => {
+            console.log(err);
+        })
     }, []);
 
     return (
@@ -47,9 +47,7 @@ const ListPDT = ( props: PDTPageProps ) => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
-    const handleAddPdt = () => {
-        navigate('/anadirPDT');
-    };
+    const handleAddPdt = () => navigate('/anadirPDT');
 
     const handlePdtid = (id: number) => {
         dispatch(setIdPlan(id));
@@ -57,9 +55,7 @@ const ListPDT = ( props: PDTPageProps ) => {
         navigate(`/lobby`);
     };
 
-    const handleAdd = (id: number) => {
-        navigate(`/register`, {state: {id}});
-    };
+    const handleAdd = (id: number) => navigate(`/register`, {state: {id}});
 
     return (
         <div className="tw-flex tw-relative tw-justify-center tw-mt-10">
@@ -100,5 +96,5 @@ const ListPDT = ( props: PDTPageProps ) => {
             </ul> 
             : <p className="tw-text-3xl tw-font-bold">No tiene suficientes permisos</p>}
         </div>
-    )
+    );
 }

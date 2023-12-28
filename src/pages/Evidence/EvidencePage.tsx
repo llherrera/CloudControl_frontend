@@ -14,13 +14,9 @@ export const EvidencePage = () => {
     
     const [cargar, setCargar] = useState(false);
 
-    const handleBack = () => {
-        navigate(-1);
-    };
+    const handleBack = () => navigate(-1);
 
-    const handleSubmitButton = () => {
-        setCargar(!cargar);
-    };
+    const handleSubmitButton = () => setCargar(!cargar);
 
     const memorias = () => {
         if (unit === undefined) 

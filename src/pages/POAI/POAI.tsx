@@ -8,5 +8,5 @@ export const POAI = () => {
                 <h1>POAI</h1>
             </div>}
         />
-    )
+    );
 }
