@@ -11,10 +11,10 @@ import {
     PDTInterface, 
     EvidenceInterface, 
     GetNodeProps, 
-    AddColorsProps, 
     Secretary, 
     LoginProps, 
-    Coordinates } from "../interfaces";
+    Coordinates,
+    ExcelFinancial } from "../interfaces";
 
 import { getToken } from "@/utils";
 
@@ -298,11 +298,11 @@ export const getLevelName = async (ids: string[]) => {
     }
 }
 
-export const addUnitNodeAndYears = async (id_plan: string, id_node: string, node_unidad: UnitInterface, years: YearInterface[], id_city: number) => {
+export const addUnitNodeAndYears = async (id_plan: string, id_node: string, node_unit: UnitInterface, years: YearInterface[], id_city: number) => {
     const response = await api.post("/nodo", { 
         id_plan: id_plan,
         id_node: id_node,
-        node:    node_unidad,
+        node:    node_unit,
         years:   years,
         id_city: id_city
     });
@@ -321,6 +321,26 @@ export const getUnitNodeAndYears = async (id_plan: string, id_node: string) => {
     } catch (error) {
         return error;
     }
+}
+
+export const updateUnitNodeAndYears = async (id_plan: string, id_node: string, node_unit: UnitInterface, years: YearInterface[]) => {
+    const response = await api.put("/nodo", { 
+        id_plan: id_plan,
+        id_node: id_node,
+        node:    node_unit,
+        years:   years
+    });
+    return response.data;
+}
+
+export const updateFinancial = async (id_plan: number, id_city: number, data: ExcelFinancial[], years: number[]) => {
+    const response = await api.put("/nodo/financiero", { 
+        id_plan: id_plan,
+        id_city: id_city,
+        data:    data,
+        years:   years
+    });
+    return response.data;
 }
 
 export const addEvicenceGoal = async (id_plan: number, code: string, evidence: EvidenceInterface, file: File, points: Coordinates[]) => {
@@ -588,4 +608,9 @@ export const addLocations = async (id_plan: number, locations: any) => {
 export const getLocations = async (id_plan: number) => {
     const response = await api.get(`/plan-territorial/${id_plan}/localidades`);
     return response.data;
+}
+
+export const loadFinancialExcel =async () => {
+    const response = await api.put('/plan-territorial/');
+    return response;
 }

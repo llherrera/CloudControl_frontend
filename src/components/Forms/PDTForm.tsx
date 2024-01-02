@@ -29,7 +29,7 @@ export const PDTForm = () => {
     const [planData, setPlanData] = useState<PDTInterface>({
         name: "",
         department: "",
-        municipaly: "",
+        municipality: "",
         start_date: new Date().getUTCFullYear().toString(),
         end_date: (new Date().getUTCFullYear() + 3).toString(),
         description: "",
@@ -75,7 +75,7 @@ export const PDTForm = () => {
         setPlanData({
             ...planData,
             department: departamentOptions[parseInt(value)].name,
-            municipaly: ''
+            municipality: ''
         });
     };
 
@@ -84,7 +84,7 @@ export const PDTForm = () => {
         if (!municipioOptions) return;
         setPlanData({
             ...planData,
-            municipaly: municipioOptions[parseInt(value)].name,
+            municipality: municipioOptions[parseInt(value)].name,
         });
     };
 
@@ -133,8 +133,8 @@ export const PDTForm = () => {
                         optionLabelFn={(e, i) => <option key={e.id} value={i}>{e.name}</option>}
                 />
                 <Select label="Municipio:"
-                        id="municipaly"
-                        name="municipaly"
+                        id="municipality"
+                        name="municipality"
                         onChange={handleMunicipioChange}
                         options={municipioOptions ? municipioOptions : []}
                         optionLabelFn={(e, i) => <option key={e.id} value={i}>{e.name}</option>}

@@ -10,7 +10,8 @@ import { Frame,
         SecretaryForm, 
         UploadImage, 
         LocationsForm,
-        FileInput} from '@/components';
+        FileInput,
+        FileFinancialInput } from '@/components';
 import { getToken, decode } from "@/utils";
 import { Token } from '@/interfaces';
 
@@ -73,6 +74,7 @@ const SettingPageWrapper = () => {
         <div>
             <BackBtn handle={handleBack} id={id_plan}/><br />
             <FileInput/>
+            <FileFinancialInput/>
             <UploadImage/>
             <div className='tw-border-t-4 tw-mt-4'>
                 {((rol === "admin") || (rol === 'funcionario' && id_plan === plan!.id_plan!)) ?

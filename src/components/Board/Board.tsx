@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 
 import { Content } from './Content';
 import { PesosNodos, Porcentaje, YearDetail } from '../../interfaces';
@@ -12,8 +12,6 @@ export const Board = () => {
     const { id_plan } = useAppSelector(store => store.content);
     const { plan } = useAppSelector(store => store.plan);
 
-    const [getProgress, setGetProgress] = useState(false);
-
     useEffect(() => {
         dispatch(thunkGetPDTid(id_plan.toString()));
         dispatch(thunkGetColors(id_plan.toString()));
@@ -24,7 +22,6 @@ export const Board = () => {
             localStorage.setItem('pesosNodo', JSON.stringify(res[0]));
             localStorage.setItem('detalleAño', JSON.stringify(res[1]));
             calcProgress( res );
-            setGetProgress(true);
         })
         .catch((err) => {
             console.log(err);
@@ -37,15 +34,15 @@ export const Board = () => {
         
         detalleAño.forEach((item: YearDetail) => {
             let progreso = 0;
-            if (item.physical_programming !== 0)
-                progreso = item.physical_execution / item.physical_programming;
-                if (progreso > 1) 
-                    progreso = 1;
-                progreso = parseFloat(progreso.toFixed(2));
+            let progresoFinan = 0;
+            if (item.physical_programming !== 0) progreso = item.physical_execution / item.physical_programming;
+            if (progreso > 1) progreso = 1;
+            progreso = parseFloat(progreso.toFixed(2));
+            progresoFinan = item.financial_execution /1000000;
             let peso = pesosNodo.find((peso: PesosNodos) => peso.id_node === item.id_node);
             if (peso) {
                 peso.percents = peso.percents ? peso.percents : [];
-                peso.percents.push({ progress : progreso, year: item.year, physical_programming: item.physical_programming, financial_execution: item.financial_execution });
+                peso.percents.push({ progress : progreso, year: item.year, physical_programming: item.physical_programming, financial_execution: progresoFinan });
             }
         })
 
@@ -80,7 +77,6 @@ export const Board = () => {
         (plan ? 
         <Content    
             id={ id_plan }
-            progress={getProgress}
         /> : <p>Cargando</p>
         )
     );

@@ -86,6 +86,14 @@ export interface ExcelPlan {
     Responsable: string | null;
 }
 
+export interface ExcelFinancial {
+    IdNodo: string;
+    Año1: number | null;
+    Año2: number | null;
+    Año3: number | null;
+    Año4: number | null;
+}
+
 export interface UpdateWProps {
     ids: string[];
     weights: number[];

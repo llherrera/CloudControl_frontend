@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 
 import { useAppDispatch, useAppSelector } from "@/store";
+import { setEvidence } from "@/store/evidence/evidenceSlice";
 
 import { EvidenceForm, BackBtn } from "@/components";
 
@@ -11,7 +12,7 @@ export const UpdateEvidence = () => {
     const { evi_selected } = useAppSelector(store => store.evidence);
 
     const handleCancel = () => {
-        //dispatch();
+        dispatch(setEvidence(undefined));
         navigate(-1);
     };
 

@@ -46,7 +46,7 @@ export const LobbyPage = () => {
     useEffect(() => {
         if (!plan || !isLoaded || loadError) return;
         const geocoder = new google.maps.Geocoder();
-        geocoder.geocode({address: `Colombia, ${plan?.department}, ${plan?.municipaly}`}).then((res) => {
+        geocoder.geocode({address: `Colombia, ${plan?.department}, ${plan?.municipality}`}).then((res) => {
             let location = res.results[0].geometry.location;
             dispatch(setPlanLocation({
                 lat: location.lat(),

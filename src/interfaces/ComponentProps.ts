@@ -3,7 +3,6 @@ import { EvidenceInterface, LocationInterface, PDTInterface } from "./formInterf
 
 export interface ContentProps {
     id: number;
-    progress: boolean;
 }
 
 export interface NodeListProps {

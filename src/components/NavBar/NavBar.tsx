@@ -1,4 +1,3 @@
-import React from 'react';
 import { useAppSelector, useAppDispatch } from '../../store';
 import { selectOption } from '@/store/content/contentSlice';
 

@@ -124,7 +124,7 @@ const Evidence = () => {
                 <tbody>
                     {evidences.length > 0 ? evidences.map((evi, index) => (
                         <EvidenceDetail evi={evi} index={index} key={index}/>
-                    )) : <span>No hay evidencias</span>}
+                    )) : <p>No hay evidencias</p>}
                 </tbody>
             </table>
             :
@@ -148,7 +148,7 @@ const Evidence = () => {
                 <tbody>
                     {evidences.length > 0 ? evidences.map((evi, index) => (
                         <MyEvidence evidence={evi} key={index}/>
-                    )) : <span>No hay evidencias</span>}
+                    )) : <p>No hay evidencias</p>}
                 </tbody>
             </table>
             }

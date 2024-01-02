@@ -5,20 +5,26 @@ import { useAppSelector, useAppDispatch } from "@/store";
 import { thunkGetLevelName } from "@/store/plan/thunks";
 import { thunkGetUnit } from "@/store/unit/thunks";
 import { thunkGetEvidence } from '@/store/evidence/thunks'
-import { resetEvidence } from "@/store/evidence/evidenceSlice";
+import { resetEvidence, setPoints } from "@/store/evidence/evidenceSlice";
+import { resetUnit } from "@/store/unit/unitSlice";
 
 import { Token } from "../../interfaces";
 import { getToken, decode } from "@/utils";
 import { EvidenceDetail, BackBtn, SettingsBtn } from "@/components";
+import cclogo from '@/assets/images/CloudControlIcon.png';
+import { Spinner } from "@/assets/icons";
 
 export const UnitNodePage = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
     const { namesTree } = useAppSelector(store => store.plan);
-    const { unit } = useAppSelector(store => store.unit);
+    const { unit, loadingUnit } = useAppSelector(store => store.unit);
     const { evidences } = useAppSelector(store => store.evidence);
-    const { id_plan, node } = useAppSelector(store => store.content);
+    const { 
+        id_plan, 
+        node, 
+        url_logo } = useAppSelector(store => store.content);
 
     const [acum, setAcum] = useState(0);
     const [acumFinan, setAcumFinan] = useState(0);
@@ -77,7 +83,10 @@ export const UnitNodePage = () => {
         setAcumFinan( acumFinalcial );
     }, [unit]);
 
-    const handleSubmitButton = () => navigate(`/pdt/PlanIndicativo/Meta/evidencia`);
+    const handleSubmitButton = () => {
+        dispatch(setPoints([]));
+        navigate(`/pdt/PlanIndicativo/Meta/evidencia`);
+    };
 
     const handleEvidence = () => {
         const id_ = parseInt(id_plan.toString());
@@ -91,33 +100,44 @@ export const UnitNodePage = () => {
 
     const handleBack = () => {
         dispatch(resetEvidence());
+        dispatch(resetUnit());
         navigate(-1);
     };
 
-    const handleSettings = () => navigate(`/pdt/PlanIndicativo/Meta/configuracion`, {state: {id_plan: id_plan, id_nodo: node?.id_node!}});
+    const handleSettings = () => navigate(`/pdt/PlanIndicativo/Meta/configuracion`);
 
     const unidadForm = () => {
         if (unit === undefined || unit === null) return;
         return (
             <div className="tw-border tw-border-gray-400 tw-bg-white tw-mx-2 md:tw-mx-10">
                 <div className="tw-px-1">
-                    <p className="tw-text-2xl tw-font-bold">Codigo: {unit.code}</p>
+                    <p className="tw-text-2xl tw-font-bold">
+                        Codigo: {unit.code}
+                    </p>
                 </div>
                 <div className="tw-px-1 tw-mt-2 tw-border-y tw-border-black">
-                    <p className="tw-text-2xl tw-font-bold tw-text-justify">Descripcion: {unit.description}</p>
+                    <p className="tw-text-2xl tw-font-bold tw-text-justify">
+                        Descripcion: {unit.description}
+                    </p>
                 </div>
                 <div className="tw-mx-1 tw-mt-2">
-                    <p className="tw-text-2xl tw-font-bold tw-text-justify">Indicador: {unit.indicator}</p>
+                    <p className="tw-text-2xl tw-font-bold tw-text-justify">
+                        Indicador: {unit.indicator}
+                    </p>
                 </div>
                 <div className="tw-px-1 tw-mt-2 tw-border-y tw-border-black">
-                    <p className="tw-text-2xl tw-font-bold">Línea base: {unit.base}</p>
+                    <p className="tw-text-2xl tw-font-bold">
+                        Línea base: {unit.base}
+                    </p>
                 </div>
                 <div className="tw-px-1 tw-mt-2">
-                    <p className="tw-text-2xl tw-font-bold">Meta: {unit.goal}</p>
+                    <p className="tw-text-2xl tw-font-bold">
+                        Meta: {unit.goal}
+                    </p>
                 </div>
             </div>
         );
-    }
+    };
 
     const añosForm = () => {
         if (unit === undefined || unit === null) return;
@@ -229,9 +249,10 @@ export const UnitNodePage = () => {
                 </div>
             </div>
         );
-    }
+    };
 
     return (
+        loadingUnit ? <Spinner/>:
         <div className="tw-container tw-mx-auto tw-my-3
                         tw-bg-gray-200
                         tw-grid tw-grid-cols-12
@@ -243,8 +264,8 @@ export const UnitNodePage = () => {
                             tw-shadow-2xl
                             tw-border-b-2 tw-border-gray-400
                             tw-z-40'>
-                <img src="/src/assets/images/CloudControlIcon.png" alt="" width={100}/>
-                <img src="/src/assets/images/Logo-Municipio.png" alt="" width={250} className="tw-invisible" />
+                <img src={cclogo} alt="" width={100} height={100}/>
+                {url_logo && <img src={url_logo} alt="" width={200} /> }
                 <img src="/src/assets/images/Plan-indicativo.png" alt="" width={60} />
             </div>
             <BackBtn handle={handleBack} id={id_plan}/>

@@ -18,7 +18,7 @@ export interface PDTInterface {
     id_plan?: number;
     name: string;
     department: string;
-    municipaly: string;
+    municipality: string;
     description: string;
     start_date: string;
     end_date: string;

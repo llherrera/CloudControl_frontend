@@ -3,21 +3,29 @@ import { useNavigate } from 'react-router-dom';
 
 import { useAppSelector, useAppDispatch } from '@/store';
 import { thunkGetSecretaries, thunkGetLevelName } from '@/store/plan/thunks';
-import { thunkGetUnit, thunkAddUnit } from '@/store/unit/thunks';
+import { thunkGetUnit, thunkAddUnit, thunkUpdateUnit } from '@/store/unit/thunks';
 import { setUnit } from '@/store/unit/unitSlice';
 
 import { BackBtn } from '@/components';
 import { UnitInterface, YearInterface } from '@/interfaces';
-import { addUnitNodeAndYears } from '@/services/api';
 import { getCityId } from '@/services/col_api';
+import { Spinner } from "@/assets/icons";
+import cclogo from '@/assets/images/CloudControlIcon.png';
 
 export const SettingsPage = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
-    const { id_plan, node } = useAppSelector(store => store.content);
-    const { unit } = useAppSelector(store => store.unit);
-    const { plan, years, namesTree, secretaries } = useAppSelector(store => store.plan);
+    const { 
+        id_plan, 
+        node, 
+        url_logo } = useAppSelector(store => store.content);
+    const { unit, loadingUnit } = useAppSelector(store => store.unit);
+    const { 
+        plan, 
+        years, 
+        namesTree, 
+        secretaries } = useAppSelector(store => store.plan);
 
     useEffect(() => {
         if (node === undefined) return;
@@ -44,7 +52,10 @@ export const SettingsPage = () => {
         dispatch(thunkGetSecretaries(id_plan!));
     }, []);
 
-    const handleChangeUnit = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const handleChangeUnit = (event: React.ChangeEvent<
+            HTMLInputElement | 
+            HTMLSelectElement | 
+            HTMLTextAreaElement>) => {
         const { name, value } = event.target;
         const unit_: UnitInterface = {
             ...unit,
@@ -86,27 +97,37 @@ export const SettingsPage = () => {
         if (unit.years.length === 0)
             return alert('Debe ingresar una programación');
         
-        const id_city = await getCityId(plan.municipaly);
-        addUnitNodeAndYears(id_plan.toString(), node!.id_node, unit, unit.years, id_city)
-        .then(() => {
-            alert('Se ha guardado la información de la meta');
-        }).catch(() => {
-            alert('Ha ocurrido un error guardando la información de la meta');
-        });
+        const id_city = await getCityId(plan.municipality);
+        if (unit.code.length > 0) {
+            dispatch(thunkUpdateUnit({
+                id_plan: id_plan.toString(),
+                id_node: node!.id_node,
+                unit: unit,
+                years: unit.years,
+            }))
+        } else {
+            dispatch(thunkAddUnit({
+                id_plan: id_plan.toString(),
+                id_node: node!.id_node,
+                unit: unit,
+                years: unit.years,
+                id_city: id_city
+            }))
+        }
     };
 
     return (
+        loadingUnit ? <Spinner/>:
         <div className="tw-container tw-mx-auto tw-my-3
                         tw-bg-gray-200
                         tw-border-8 tw-border-gray-400 
                         tw-rounded-md">
             <div className='tw-flex tw-justify-between
-                            tw-px-3 tw-my-4
                             tw-shadow-2xl
                             tw-border-b-2 tw-border-gray-400
                             tw-z-40'>
-                <img src="/src/assets/images/CloudControlIcon.png" alt="" width={100}/>
-                <img src="/src/assets/images/Logo-Municipio.png" alt="" width={250} className="tw-invisible" />
+                <img src={cclogo} alt="" width={100} height={100}/>
+                {url_logo && <img src={url_logo} alt="" width={200} /> }
                 <img src="/src/assets/images/Plan-indicativo.png" alt="" width={60} />
             </div>
             <BackBtn handle={() => navigate(-1)} id={plan?.id_plan!} />
@@ -124,29 +145,52 @@ export const SettingsPage = () => {
                 <p className='tw-block'>Información de la meta:</p>
                 <form   className=' tw-shadow-2xl tw-rounded tw-border-2
                                     tw-flex tw-flex-wrap
-                                    tw-p-2 
+                                    tw-p-2
                                     tw-bg-white'>
-                    <input  className='tw-m-3 tw-p-2 tw-rounded tw-border-2 tw-border-gray-400'
-                            placeholder='Descripción de la meta'
-                            onChange={ (e)=>handleChangeUnit(e)}
-                            type="text" name='description' required/><br />
-                    <input  className='tw-m-3 tw-p-2 tw-rounded tw-border-2 tw-border-gray-400'
+                    <textarea
+                            name="description"
+                            placeholder='Descripción'
+                            className=' tw-m-3 tw-p-2
+                                        tw-rounded tw-border-2
+                                        tw-border-gray-400'
+                            value={unit.description}
+                            onChange={(e) => handleChangeUnit(e)}/><br />
+                    <input  className=' tw-m-3 tw-p-2
+                                        tw-rounded tw-border-2
+                                        tw-border-gray-400'
                             placeholder='Indicador'
+                            value={unit.indicator}
                             onChange={ (e)=>handleChangeUnit(e)}
-                            type="text" name='indicator' required/><br />
-                    <input  className='tw-m-3 tw-p-2 tw-rounded tw-border-2 tw-border-gray-400'
+                            type="text"
+                            name='indicator'
+                            required/><br />
+                    <input  className=' tw-m-3 tw-p-2
+                                        tw-rounded tw-border-2
+                                        tw-border-gray-400'
                             placeholder='Meta'
+                            value={unit.goal}
                             onChange={ (e)=>handleChangeUnit(e)}
-                            type="number" name='goal' required/><br />
-                    <input  className='tw-m-3 tw-p-2 tw-rounded tw-border-2 tw-border-gray-400'
+                            type="number"
+                            name='goal'
+                            required/><br />
+                    <input  className=' tw-m-3 tw-p-2
+                                        tw-rounded tw-border-2
+                                        tw-border-gray-400'
                             placeholder='Línea base'
+                            value={unit.base}
                             onChange={ (e)=>handleChangeUnit(e)}
-                            type="text" name='base' required/>
+                            type="text"
+                            name='base'
+                            required/>
                     <select name="responsible"
                             onChange={ (e)=>handleChangeUnit(e) }
-                            className='tw-m-3 tw-p-2 tw-rounded tw-border-2 tw-border-gray-400'>
+                            className=' tw-m-3 tw-p-2
+                                        tw-rounded tw-border-2
+                                        tw-border-gray-400'>
                         {secretaries.map((secretary, index) => (
-                            <option key={index} value={secretary.name}>{secretary.name}</option>
+                            <option key={index} value={secretary.name}>
+                                {secretary.name}
+                            </option>
                         ))}
                     </select>
                 </form>
@@ -164,8 +208,28 @@ export const SettingsPage = () => {
                                     onChange={ (e) => handleChangeYear(e, index) } 
                                     value={ year.physical_programming??0 }
                                     type="number" 
-                                    name="programed" 
+                                    name="physical_programming" 
                                     placeholder="Programacion" 
+                                    required/>
+                        </div>
+                    ))}
+                </form>
+            </div>
+            <div className="tw-p-3">
+                <p>Información de la ejecución financiera</p>
+                <form   className=' tw-shadow-2xl tw-rounded tw-border-2
+                                    tw-flex tw-flex-wrap
+                                    tw-p-2 
+                                    tw-bg-white'>
+                    {unit.years.map((year, index) => (
+                        <div key={index}>
+                            <label  htmlFor="">{years[index]}</label>
+                            <input  className="tw-m-2 tw-p-2 tw-rounded tw-border-2 tw-border-gray-400"
+                                    onChange={ (e) => handleChangeYear(e, index) } 
+                                    value={ year.financial_execution??0 }
+                                    type="number" 
+                                    name="financial_execution" 
+                                    placeholder="Recursos ejecutados" 
                                     required/>
                         </div>
                     ))}
