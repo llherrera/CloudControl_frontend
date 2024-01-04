@@ -1,14 +1,14 @@
 import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
 
-import { PDTInterface, 
-        ErrorBasicInterface, 
-        GetNodeProps, 
-        AddColorsProps, 
-        NivelInterface, 
-        Nivel, 
-        Secretary, 
-        PropsSecretary, 
-        PropsLocations, 
+import { PDTInterface,
+        ErrorBasicInterface,
+        GetNodeProps,
+        AddColorsProps,
+        LevelInterface,
+        Level,
+        Secretary,
+        PropsSecretary,
+        PropsLocations,
         LocationInterface,
         UpdateWProps } from '../../interfaces';
 import { parseErrorAxios } from '../../utils';
@@ -27,8 +27,6 @@ import {getPDTid,
         getLocations,
         updateSecretaries,
         updateWeights } from '@/services/api';
-
-
 
 export const thunkGetPDTid = createAsyncThunk<PDTInterface, string, { rejectValue: ErrorBasicInterface }>(
     'pdt/getPDTid',
@@ -137,14 +135,14 @@ export const thunkUpdateYears = createAction('plan/updateYears', (years:number[]
     }
 })
 
-export const thunkGetLevelsById = createAsyncThunk<NivelInterface[], string, { rejectValue: ErrorBasicInterface }>(
+export const thunkGetLevelsById = createAsyncThunk<LevelInterface[], string, { rejectValue: ErrorBasicInterface }>(
     'pdt/getLevelsId',
     async (props: string, {rejectWithValue}) => {
         try {
             const res = await getPDTLevelsById(props);
             const resArr = [...res];
-            const temp = [] as NivelInterface[];
-            resArr.forEach((item: Nivel) => {
+            const temp = [] as LevelInterface[];
+            resArr.forEach((item: Level) => {
                 temp.push({
                     id_level: item.id_level,
                     name: item.name,
@@ -213,7 +211,7 @@ export const thunkUpdateSecretaries = createAsyncThunk<Secretary[], PropsSecreta
 
 export const thunkAddLocations = createAsyncThunk<LocationInterface[], PropsLocations, { rejectValue: ErrorBasicInterface }>(
     'pdt/addLocations',
-    async (props: any, { rejectWithValue }) => {
+    async (props: PropsLocations, { rejectWithValue }) => {
         try {
             const { id_plan, locations } = props;
             const res = await addLocations(id_plan, locations);

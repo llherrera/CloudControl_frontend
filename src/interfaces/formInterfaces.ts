@@ -26,13 +26,13 @@ export interface PDTInterface {
     logo_link_city?: string;
 }
 
-export interface NivelInterface {
+export interface LevelInterface {
     id_level?: number;
     name: string;
     description: string;
 }
 
-export interface NodoInterface {
+export interface NodeInterface {
     id_node: string;
     name: string;
     description: string;

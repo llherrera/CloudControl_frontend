@@ -8,22 +8,21 @@ import { setLevels } from "@/store/plan/planSlice";
 
 import { Input, FileInput } from "../Inputs";
 import { addLevel } from "@/services/api";
-import { NivelInterface, Token, LevelFormProps } from "@/interfaces";
+import { LevelInterface, Token, LevelFormProps } from "@/interfaces";
 import { getToken, decode } from "@/utils";
 
 export const LevelForm = ( props: LevelFormProps ) => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
 
-    const [data, setData] = useState<NivelInterface[]>([
+    const [data, setData] = useState<LevelInterface[]>([
         { name: "", description: "" },
         { name: "", description: "" },
         { name: "", description: "" }
     ]);
 
-    const [nivel, setNivel] = useState<NivelInterface>({
-        name: "",
-        description: ""
+    const [nivel, setNivel] = useState<LevelInterface>({
+        name: "", description: ""
     });
 
     const [rol, setRol] = useState("");
@@ -61,7 +60,7 @@ export const LevelForm = ( props: LevelFormProps ) => {
     const agregarNivel = () => {
         const newData = [...data, nivel];
         setData(newData);
-        setNivel({ name: "", description: "" } as NivelInterface);
+        setNivel({ name: "", description: "" } as LevelInterface);
     }
 
     const eliminarNivel = () => {
@@ -101,7 +100,7 @@ export const LevelForm = ( props: LevelFormProps ) => {
                                 md:tw-col-start-4 md:tw-col-span-6 
                                 lg:tw-col-start-4 lg:tw-col-span-6 
                                 tw-gap-3">
-                {data.map(( e:NivelInterface, index: number )=> 
+                {data.map(( e:LevelInterface, index: number )=> 
                     <li className=" tw-mb-3 tw-p-2 
                                     tw-bg-white 
                                     tw-shadow-lg tw-border tw-rounded"

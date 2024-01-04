@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from "@/store";
 import { selectYear } from '@/store/plan/planSlice'; 
 
-import { PesosNodos } from '@/interfaces';
+import { NodesWeight } from '@/interfaces';
 
 export const TimeLine = () => {
     const dispatch = useAppDispatch();
@@ -30,13 +30,15 @@ export const TimeLine = () => {
     }, [yearSelect, nodes]);
 
     const getYearProgress = () => {
-        let pesosStr = localStorage.getItem('pesosNodo');
+        let pesosStr = localStorage.getItem('UnitNode');
         if (pesosStr == undefined) 
             pesosStr = '[]';
         
         let pesosNodo = JSON.parse(pesosStr as string);
         let progreso = [] as number[];
-        const nodoss = pesosNodo.filter((item: PesosNodos) => item.parent === parent);
+        const nodoss = pesosNodo.filter(
+            (item: NodesWeight) => item.parent === parent
+        );
 
         if (nodoss.length === 0) {
             setYearsProgress(-1);
@@ -45,7 +47,7 @@ export const TimeLine = () => {
         }
         for (let i = 0; i < years.length; i++) {
             let temp = 0;
-            nodoss.forEach((item: PesosNodos) => {
+            nodoss.forEach((item: NodesWeight) => {
                 const { percents } = item;
                 if (percents) 
                     temp += (percents[i].progress)*(item.weight/100);
@@ -59,7 +61,7 @@ export const TimeLine = () => {
         setYearProgress(progreso);
     };
 
-    const handleAños = ( event: React.MouseEvent<HTMLButtonElement>, year: number ) => {
+    const handleYears = ( event: React.MouseEvent<HTMLButtonElement>, year: number ) => {
         event.preventDefault();
         dispatch(selectYear(year));
     };
@@ -97,8 +99,8 @@ export const TimeLine = () => {
                                     tw-border-4
                                     tw-w-12 tw-h-12
                                     tw-font-bold`}
-                        onClick={ (event) => handleAños(event, year)}
-                        title={`Dar click para ver los porcentajes de ejecucion del año ${year}`}>
+                        onClick={ (event) => handleYears(event, year)}
+                        title={`Dar click para ver los Percentagess de ejecucion del año ${year}`}>
                     { parseInt ( ((yearProgress[index] === undefined || yearProgress[index] < 0 ?
                          0 : yearProgress[index])*100).toString())}%
                 </button>
@@ -135,7 +137,7 @@ export const TimeLine = () => {
                                                 (yearProgress[index]??0)*100 < 
                                                 colorimeter[2] ? 'tw-bg-greenColory' :
                                                 'tw-bg-blueColory'}`}
-                                    onClick={ (event) => handleAños(event, year)}>
+                                    onClick={ (event) => handleYears(event, year)}>
                             </button>
                         : null}
                         <button className={`tw-self-center 
@@ -156,7 +158,7 @@ export const TimeLine = () => {
                                             (yearProgress[index]??0)*100 < 
                                             colorimeter[2] ? 'tw-text-greenColory' :
                                             'tw-text-blueColory'}`}
-                                onClick={ (event) => handleAños(event, year)}>
+                                onClick={ (event) => handleYears(event, year)}>
                             {year}
                         </button>
                         {index%2 === 1 ? 
@@ -172,7 +174,7 @@ export const TimeLine = () => {
                                                 (yearProgress[index]??0)*100 
                                                 < colorimeter[2] ? 'tw-bg-greenColory' :
                                                 'tw-bg-blueColory'}`}
-                                    onClick={ (event) => handleAños(event, year)}>
+                                    onClick={ (event) => handleYears(event, year)}>
                             </button>
                         : null}
                     </div>

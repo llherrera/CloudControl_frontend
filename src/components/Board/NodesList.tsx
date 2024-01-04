@@ -9,9 +9,9 @@ import {incrementLevelIndex,
         setFinancial } from '@/store/plan/planSlice';
 import { setNode } from "@/store/content/contentSlice";
 
-import {NodoInterface, 
-        PesosNodos, 
-        Porcentaje, 
+import {NodeInterface, 
+        NodesWeight, 
+        Percentages, 
         NodeListProps } from '@/interfaces';
 import { Spinner } from '@/assets/icons';
 
@@ -27,16 +27,16 @@ export const NodesList = ( props : NodeListProps ) => {
             loadingNodes } = useAppSelector(store => store.plan);
     const { mode } = useAppSelector(store => store.content);
     const [ pesos, setPesos ] = useState<number[]>(
-        nodes.map((item: NodoInterface) => item.weight)
+        nodes.map((item: NodeInterface) => item.weight)
     );
 
     useEffect(() => {
-        const ids = nodes.map((item: NodoInterface) => item.id_node);
+        const ids = nodes.map((item: NodeInterface) => item.id_node);
         getProgress(ids);
     }, [yearSelect, nodes]);
 
     const getProgress = (ids: string[]) => {
-        const pesosStr = localStorage.getItem('pesosNodo');
+        const pesosStr = localStorage.getItem('UnitNode');
         if (pesosStr == undefined) 
             return 0;
         let pesosNodo = [];
@@ -48,15 +48,15 @@ export const NodesList = ( props : NodeListProps ) => {
         let progreso = [] as number[];
         let programacion = [] as number[];
         let financiacion = [] as number[];
-        pesosNodo.forEach((item: PesosNodos) => {
+        pesosNodo.forEach((item: NodesWeight) => {
             if (ids.includes(item.id_node)) {
                 const { percents } = item;
                 if (percents) {
-                    percents.forEach((porcentaje: Porcentaje) => {
-                        if (porcentaje.year === yearSelect) {
-                            progreso.push(porcentaje.progress);
-                            programacion.push(porcentaje.physical_programming);
-                            financiacion.push(porcentaje.financial_execution);
+                    percents.forEach((percentages: Percentages) => {
+                        if (percentages.year === yearSelect) {
+                            progreso.push(percentages.progress);
+                            programacion.push(percentages.physical_programming);
+                            financiacion.push(percentages.financial_execution);
                         }
                     });
                 }else {
@@ -103,7 +103,7 @@ export const NodesList = ( props : NodeListProps ) => {
         :<ul className={`${indexLevel === levels.length-1 ? 
                         'tw-flex tw-flex-row tw-flex-wrap':
                         'tw-flex-col tw-flex-wrap'} `} >
-            {nodes.map((item: NodoInterface, index: number) => {
+            {nodes.map((item: NodeInterface, index: number) => {
                 return(
                 <div className="tw-my-2 tw-flex tw-transition hover:tw-scale-110"
                     key={index}>

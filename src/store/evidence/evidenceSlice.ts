@@ -163,4 +163,4 @@ export const {  removeEvidence,
                 setEvidence, 
                 setPoints,
                 setEvidences } = evidenceSlice.actions;
-export const evidenceReducer = evidenceSlice.reducer;
+export default evidenceSlice.reducer;

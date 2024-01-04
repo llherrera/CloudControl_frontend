@@ -7,7 +7,7 @@ import contentReducer from './content/contentSlice';
 import planRedurcer from './plan/planSlice';
 import chartReducer from './chart/chartSlice';
 import unitReducer from './unit/unitSlice';
-import { evidenceReducer } from './evidence/evidenceSlice';
+import evidenceReducer from './evidence/evidenceSlice';
 
 export const reducers = {
   auth: authReducer,

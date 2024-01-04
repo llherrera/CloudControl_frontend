@@ -10,8 +10,8 @@ import { Spinner } from "@/assets/icons";
 
 import { 
     ReportPDTInterface, 
-    PesosNodos, 
-    Porcentaje, 
+    NodesWeight, 
+    Percentages, 
     YearDetail, 
     ModalPDTProps } from "@/interfaces";
 import { getLevelName } from "@/services/api";
@@ -31,17 +31,17 @@ export const ModalTotalPDT = () => {
     };
 
     const genReport = async () => {
-        const pesosStr = localStorage.getItem('pesosNodo');
-        const detalleStr = localStorage.getItem('detalleAño');
+        const pesosStr = localStorage.getItem('UnitNode');
+        const detalleStr = localStorage.getItem('YearDeta');
         const pesos = pesosStr ? JSON.parse(pesosStr) : [];
         const detalle = detalleStr ? JSON.parse(detalleStr) : [];
         const data: ReportPDTInterface[] = [];
 
-        await Promise.all(pesos.map(async (peso: PesosNodos) => {
+        await Promise.all(pesos.map(async (peso: NodesWeight) => {
             const { id_node, percents } = peso;
             const ids = id_node.split('.');
             if (ids.length !== levels.length + 1) return;
-            const percentages = percents?.map((porcentaje: Porcentaje) => porcentaje.progress*100);
+            const percentages = percents?.map((Percentages: Percentages) => Percentages.progress*100);
             let ids2 = ids.reduce((acumulator:string[], currentValue: string) => {
                 if (acumulator.length === 0) {
                     return [currentValue];

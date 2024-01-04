@@ -6,7 +6,7 @@ import { useAppSelector } from '../store'
 import { PrivateRouter } from './adminRouter'
 import { PublicRouter } from './publicRouter'
 import { OfficerRouter } from './funcionarioRoutes'
-import { SecretaryRouter } from './secretaryRouter'
+import { PlanningRouter } from './planningRouter'
 import { SectorialistRouter } from './sectorialistRouter'
 
 import { decode } from '@/utils'
@@ -29,7 +29,7 @@ export const AppRouter = () => {
             </Routes>
         ): token === 'planeacion' ? (
             <Routes>
-                
+                <Route path="*" element={<PlanningRouter />} />
             </Routes>
         ): token === 'sectorialista' ? (
             <Routes>

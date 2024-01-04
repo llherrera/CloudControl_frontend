@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 
 import { useAppSelector } from '@/store';
 
-import { NodoInterface, NodeFormProps } from '../../interfaces';
+import { NodeInterface, NodeFormProps } from '../../interfaces';
 import { addLevelNode } from '../../services/api';
 
 export const NodeForm = ( props : NodeFormProps ) => {
     const { parent } = useAppSelector(store => store.plan);
 
     let id_nodo_gen : number = 1;
-    const [data, setData] = useState<NodoInterface[]>([
+    const [data, setData] = useState<NodeInterface[]>([
         {   id_node: `${parent ?? props.id}.${id_nodo_gen++}`,
             name: "", 
             description: "", 
@@ -33,7 +33,7 @@ export const NodeForm = ( props : NodeFormProps ) => {
         }
     ]);
 
-    let nodo: NodoInterface = ({
+    let nodo: NodeInterface = ({
         id_node: `${parent ?? props.id}.${data.length + 1}`,
         name: "",
         description: "",
@@ -98,7 +98,7 @@ export const NodeForm = ( props : NodeFormProps ) => {
         <form   onSubmit={handleSubmit}
                 className='tw-mx-4'>
             <ul className=''>
-                {data.map(( e: NodoInterface, index: number )=> 
+                {data.map(( e: NodeInterface, index: number )=> 
                 <div className='tw-mb-3 tw-p-1 tw-relative tw-shadow-lb tw-bg-gray-300 tw-border tw-flex tw-rounded'
                     key={e.id_node}>
                     <li className="tw-ml-3">

@@ -11,8 +11,8 @@ import { setLevels } from "@/store/plan/planSlice";
 
 import { 
     ExcelPlan, 
-    NodoInterface, 
-    NivelInterface, 
+    NodeInterface, 
+    LevelInterface, 
     Secretary, 
     UnitInterface,
     ExcelFinancial } from "@/interfaces";
@@ -51,7 +51,7 @@ export const FileInput = () => {
     const { id_plan } = useAppSelector((state) => state.content);
     const { plan, years } = useAppSelector((state) => state.plan);
 
-    let levels_: NivelInterface[] = [];
+    let levels_: LevelInterface[] = [];
     let levelsName = [];
 
     const addLevels = async (data: ExcelPlan[]) => {
@@ -60,7 +60,7 @@ export const FileInput = () => {
         });
         levelsName = levels.map((reg) => (reg.Niveles));
         levels_ = levelsName.map((reg) => {
-            const level: NivelInterface = {
+            const level: LevelInterface = {
                 name: reg,
                 description: reg,
             }
@@ -90,7 +90,7 @@ export const FileInput = () => {
         for (let i = 0; i < levelsName.length; i++) {
             const nodes = data.filter((reg) => reg.Id.split('.').length === i + 1);
             let nodes_ = nodes.map((reg) => {
-                const node: NodoInterface = {
+                const node: NodeInterface = {
                     id_node: `${ids.result[0]}.`+reg.Id,
                     name: reg.Nodos,
                     description: reg.Descripcion,

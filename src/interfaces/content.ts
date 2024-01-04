@@ -1,5 +1,5 @@
 import { ErrorTypeInterface } from "./common";
-import { UnitInterface, YearInterface, NodoInterface } from "./formInterfaces";
+import { UnitInterface, YearInterface, NodeInterface } from "./formInterfaces";
 
 export interface ContentInterface {
     id: number;
@@ -12,7 +12,7 @@ export interface InitialStateContentInterface {
     list_department: string[];
     id_plan: number;
     mode: boolean;
-    node?: NodoInterface;
+    node?: NodeInterface;
     url_logo: string;
 }
 

@@ -82,7 +82,7 @@ export const Graph = ( props: GraphProps ) => {
         ],
         yAxis: {
             title: {
-                text: radioBtn === 'fisica' ? 'Porcentaje de ejecución fisica' : 'Ejecución financiera',
+                text: radioBtn === 'fisica' ? 'Percentages de ejecución fisica' : 'Ejecución financiera',
             },
             labels: {
                 formatter: function () {
@@ -92,7 +92,7 @@ export const Graph = ( props: GraphProps ) => {
         },
         series: [
             {
-                name: radioBtn === 'fisica' ? 'Porcentaje de ejecución fisica año' : 'Ejecución financiera año',
+                name: radioBtn === 'fisica' ? 'Percentages de ejecución fisica año' : 'Ejecución financiera año',
                 type: type === 'donut' ? 'pie' : type.valueOf() as any,
                 data: pieValues,
                 zones: radioBtn === 'fisica' ? [

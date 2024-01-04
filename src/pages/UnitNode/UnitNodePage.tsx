@@ -139,7 +139,7 @@ export const UnitNodePage = () => {
         );
     };
 
-    const añosForm = () => {
+    const yearsForm = () => {
         if (unit === undefined || unit === null) return;
         return(
             <div className="tw-border tw-border-slate-500 tw-rounded
@@ -284,7 +284,7 @@ export const UnitNodePage = () => {
                 {unidadForm()}
             </div>
             <div className="tw-col-start-1 tw-col-span-full tw-flex tw-justify-center">
-                {añosForm()}
+                {yearsForm()}
             </div>
 
             <div className="tw-col-start-1 tw-col-span-full tw-flex tw-justify-center">

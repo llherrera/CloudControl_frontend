@@ -5,8 +5,8 @@ import { getEnvironment } from '../utils/environment';
 import { 
     YearInterface, 
     UnitInterface, 
-    NodoInterface, 
-    NivelInterface, 
+    NodeInterface, 
+    LevelInterface, 
     RegisterInterface, 
     PDTInterface, 
     EvidenceInterface, 
@@ -169,7 +169,7 @@ export const addPDT = async (pdt: PDTInterface) => {
         const response = await api.post("/plan-territorial", {
             PlanName:     pdt.name,
             TownHall:     pdt.department,
-            Municipality: pdt.municipaly,
+            Municipality: pdt.municipality,
             StartDate:    pdt.start_date.slice(0, 19).replace('T', ' '),
             EndDate:      pdt.end_date.slice(0, 19).replace('T', ' '),
             Description:  pdt.description,
@@ -185,7 +185,7 @@ export const updatePDT = async (id: number, pdt: PDTInterface) => {
         const response = await api.put(`/plan-territorial/${id}`, {
             PlanName:     pdt.name,
             TownHall:     pdt.department,
-            Municipality: pdt.municipaly,
+            Municipality: pdt.municipality,
             StartDate:    pdt.start_date,
             EndDate:      pdt.end_date,
             Description:  pdt.description,
@@ -227,7 +227,7 @@ export const deletePDT = async (id: number) => {
     }
 }
 
-export const addLevel = async (levels: NivelInterface[], id : string) => {
+export const addLevel = async (levels: LevelInterface[], id : string) => {
     const response = await api.post(`/plan-territorial/${id}`, { levels: levels });
     return response.data;
 }
@@ -260,7 +260,7 @@ export const updateWeights = async (ids: string[], weights: number[]) => {
     }
 }
 
-export const addLevelNode = async (nodes: NodoInterface[], id_level: number) => {
+export const addLevelNode = async (nodes: NodeInterface[], id_level: number) => {
     try {
         const response = await api.post("/plan-territorial/nivel", { 
             nodes: nodes,
@@ -459,16 +459,12 @@ export const getYearProgress = async (ids_nodes: string[], year: number) => {
 }
 
 export const getTotalProgress = async (id_plan: number) => {
-    try {
-        const response = await api.get(`/nodo/progreso-total`, {
-            params: {
-                id_plan: id_plan
-            }
-        });        
-        return response.data;
-    } catch (error) {
-        return error;
-    }
+    const response = await api.get(`/nodo/progreso-total`, {
+        params: {
+            id_plan: id_plan
+        }
+    });        
+    return response.data;
 }
 
 export const updateNode = async (id_plan: string, id_node: string, node: UnitInterface, years: YearInterface) => {

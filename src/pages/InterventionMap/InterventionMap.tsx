@@ -20,7 +20,7 @@ import {
     Frame } from '@/components';
 import {
     Coordinates, 
-    NodoInterface, 
+    NodeInterface, 
     Node, 
     EvidenceInterface } from '@/interfaces';
 import { 
@@ -73,7 +73,7 @@ const Section = () => {
     const [map, setMap] = useState<google.maps.Map|null>(null);
     const [ubication, setUbication] = useState<Coordinates>({lat: 10.96854, lng: -74.78132});
 
-    const [programs, setPrograms] = useState<NodoInterface[][]>([]);
+    const [programs, setPrograms] = useState<NodeInterface[][]>([]);
     const [index_, setIndex] = useState<number[]>([0, 0]);
     const [codes, setCodes] = useState<string[]>([]);
 
@@ -111,12 +111,12 @@ const Section = () => {
     useEffect(() => {
         const fetch = async () => {
             let parent: (string | null) = null;
-            let response = [] as NodoInterface[][];
+            let response = [] as NodeInterface[][];
             for (let i = 0; i < 2; i++) {
                 const { id_level } = levels[i];
                 if (id_level) {
-                    const res: NodoInterface[] = await getLevelNodes({id_level: id_level, parent: parent});
-                    let temp_ = [] as NodoInterface[];
+                    const res: NodeInterface[] = await getLevelNodes({id_level: id_level, parent: parent});
+                    let temp_ = [] as NodeInterface[];
                     res.forEach((item:Node) => {
                         temp_.push({
                             id_node: item.id_node,

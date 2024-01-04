@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 
 import { Content } from './Content';
-import { PesosNodos, Porcentaje, YearDetail } from '../../interfaces';
+import { NodesWeight, Percentages, YearDetail } from '../../interfaces';
 import { getTotalProgress } from '../../services/api';
 
 import { useAppDispatch, useAppSelector } from '@/store';
@@ -19,8 +19,8 @@ export const Board = () => {
         getTotalProgress(id_plan)
         .then((res) => {
             if (!res) return;
-            localStorage.setItem('pesosNodo', JSON.stringify(res[0]));
-            localStorage.setItem('detalleAño', JSON.stringify(res[1]));
+            localStorage.setItem('UnitNode', JSON.stringify(res[0]));
+            localStorage.setItem('YearDeta', JSON.stringify(res[1]));
             calcProgress( res );
         })
         .catch((err) => {
@@ -28,49 +28,71 @@ export const Board = () => {
         })
     }, []);
 
-    const calcProgress = ( res: [PesosNodos[], YearDetail[]] ) => {
+    const calcProgress = ( res: [NodesWeight[], YearDetail[]] ) => {
         let pesosNodo = res[0];
-        let detalleAño = res[1];
+        let detalleAnno = res[1];
         
-        detalleAño.forEach((item: YearDetail) => {
+        detalleAnno.forEach((item: YearDetail) => {
             let progreso = 0;
             let progresoFinan = 0;
-            if (item.physical_programming !== 0) progreso = item.physical_execution / item.physical_programming;
-            if (progreso > 1) progreso = 1;
+            if (item.physical_programming !== 0) 
+                progreso = item.physical_execution / item.physical_programming;
+            if (progreso > 1) 
+                progreso = 1;
             progreso = parseFloat(progreso.toFixed(2));
             progresoFinan = item.financial_execution /1000000;
-            let peso = pesosNodo.find((peso: PesosNodos) => peso.id_node === item.id_node);
+            let peso = pesosNodo.find(
+                (peso: NodesWeight) => peso.id_node === item.id_node
+            );
             if (peso) {
                 peso.percents = peso.percents ? peso.percents : [];
-                peso.percents.push({ progress : progreso, year: item.year, physical_programming: item.physical_programming, financial_execution: progresoFinan });
+                peso.percents.push(
+                    { 
+                        progress : progreso,
+                        year: item.year,
+                        physical_programming: item.physical_programming,
+                        financial_execution: progresoFinan
+                    }
+                );
             }
         })
 
-        pesosNodo.forEach((item: PesosNodos) => {
+        pesosNodo.forEach((item: NodesWeight) => {
             const { percents, parent } = item;
             if (percents) {
-                if (parent){
-                    percents.forEach((porcentaje: Porcentaje) => {
-                        let padre = pesosNodo.find((e: PesosNodos) => e.id_node === parent);
+                if (parent) {
+                    percents.forEach((Percentages: Percentages) => {
+                        let padre = pesosNodo.find(
+                            (e: NodesWeight) => e.id_node === parent
+                        );
                         if (padre) {
-                            let progresoPeso = porcentaje.progress * (item.weight / 100);
+                            let progresoPeso = Percentages.progress * (item.weight / 100);
                             progresoPeso = parseFloat(progresoPeso.toFixed(2));
-                            let financiado = porcentaje.financial_execution;
+                            let financiado = Percentages.financial_execution;
                             padre.percents = padre.percents ? padre.percents : [];
-                            const temp = padre.percents.find((e: Porcentaje) => e.year === porcentaje.year);
+                            const temp = padre.percents.find(
+                                (e: Percentages) => e.year === Percentages.year
+                            );
                             if (temp) {
                                 temp.progress += progresoPeso;
                                 temp.progress = parseFloat(temp.progress.toFixed(2));
                                 temp.financial_execution += financiado;
                             } else {
-                                padre.percents.push({ progress : progresoPeso, year: porcentaje.year, physical_programming: 0, financial_execution: financiado });
+                                padre.percents.push(
+                                    {
+                                        progress : progresoPeso,
+                                        year: Percentages.year,
+                                        physical_programming: 0,
+                                        financial_execution: financiado
+                                    }
+                                );
                             }
                         }
                     })
                 }
             }
         })
-        localStorage.setItem('pesosNodo', JSON.stringify(pesosNodo));
+        localStorage.setItem('UnitNode', JSON.stringify(pesosNodo));
     }
 
     return (

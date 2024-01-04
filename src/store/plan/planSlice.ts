@@ -1,10 +1,10 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 import {InitialStatePlanInterface, 
-        NodoInterface, 
+        NodeInterface, 
         Node, 
         Coordinates, 
-        NivelInterface} from "@/interfaces";
+        LevelInterface} from "@/interfaces";
 import { setGenericState, getGenericState, removeGenericState } from "@/utils";
 
 import {thunkGetPDTid,
@@ -111,7 +111,7 @@ export const planSlice = createSlice({
             state.planLocation = action.payload;
             setGenericState('plan', state);
         },
-        setLevels: (state, action: PayloadAction<NivelInterface[]>) => {
+        setLevels: (state, action: PayloadAction<LevelInterface[]>) => {
             state.levels = action.payload;
             setGenericState('plan', state);
         },
@@ -221,7 +221,7 @@ export const planSlice = createSlice({
         });
         builder.addCase(thunkGetNodes.fulfilled, (state, action) => {
             state.loadingNodes = false;
-            const temp = [] as NodoInterface[]
+            const temp = [] as NodeInterface[]
             action.payload.forEach((item:Node) => {
                 temp.push({
                     id_node: item.id_node,

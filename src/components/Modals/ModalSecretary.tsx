@@ -14,7 +14,7 @@ import {
     ReportPDTInterface, 
     YearDetail, 
     ModalsecretaryProps, 
-    PesosNodos } from "@/interfaces";
+    NodesWeight } from "@/interfaces";
 
 export const ModalSecretary = () => {
     const [modalSecretaryIsOpen, setModalSecretaryIsOpen] = useState(false);
@@ -68,8 +68,8 @@ const ModalPDT = ( props: ModalsecretaryProps ) => {
 
     const findRoot = (id: string) => {
         let root = [] as string[];
-        const pesosStr = localStorage.getItem('pesosNodo');
-        const pesos: PesosNodos[] = pesosStr ? JSON.parse(pesosStr) : [];
+        const pesosStr = localStorage.getItem('UnitNode');
+        const pesos: NodesWeight[] = pesosStr ? JSON.parse(pesosStr) : [];
         let ids = id.split('.');
         if (ids.length !== levels.length + 1) return root;
         let ids2 = ids.reduce((acumulator:string[], currentValue: string) => {
@@ -92,7 +92,7 @@ const ModalPDT = ( props: ModalsecretaryProps ) => {
     };
 
     const genReport = () => {
-        const detalleStr = localStorage.getItem('detalleAño');
+        const detalleStr = localStorage.getItem('YearDeta');
         const detalle = detalleStr ? JSON.parse(detalleStr) : [];
         const nodes = detalle.filter((item: YearDetail) => 
             (item.responsible === secretary && item.year === years[indexYear]));

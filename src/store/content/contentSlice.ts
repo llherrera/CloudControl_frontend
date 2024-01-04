@@ -1,7 +1,7 @@
 import { InitialStateContentInterface } from "@/interfaces/content";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { RootState } from "../store";
-import { NodoInterface } from "@/interfaces";
+import { NodeInterface } from "@/interfaces";
 import { setGenericState, getGenericState, removeGenericState } from "@/utils";
 
 const getInitialState = (): InitialStateContentInterface => {
@@ -34,7 +34,7 @@ export const contentSlice = createSlice({
         setMode(state, action: PayloadAction<boolean>) {
             state.mode = action.payload;
         },
-        setNode(state, action: PayloadAction<NodoInterface>) {
+        setNode(state, action: PayloadAction<NodeInterface>) {
             state.node = action.payload;
         },
         setLogo(state, action: PayloadAction<string>) {
