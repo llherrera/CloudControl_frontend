@@ -10,6 +10,12 @@ export const getColombiaApi = () => {
     }
 }
 
+export const getGeoportalApi = () => {
+    return {
+        GEOPORTAL_BASE_URL: import.meta.env.VITE_GEOPORTAL_DANE_API,
+    }
+}
+
 export const getGoogleApiKey = () => {
     return {
         API_KEY: import.meta.env.VITE_API_KEY_MAPS as string

@@ -21,12 +21,9 @@ import {
     addLevelNode, 
     addUnitNodeAndYears, 
     addSecretaries,
-    updateFinancial } from "@/services/api";
+    updateFinancial,
+    loadExcel } from "@/services/api";
 import { getCityId } from "@/services/col_api";
-
-interface idsInterface {
-    result: number[],
-}
 
 const ModalSpinner = ({isOpen}:{isOpen: boolean}) => {
     return (
@@ -49,106 +46,12 @@ export const FileInput = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [data, setData] = useState<File>();
     const { id_plan } = useAppSelector((state) => state.content);
-    const { plan, years } = useAppSelector((state) => state.plan);
+    const { years, plan } = useAppSelector((state) => state.plan);
 
     let levels_: LevelInterface[] = [];
-    let levelsName = [];
-
-    const addLevels = async (data: ExcelPlan[]) => {
-        const levels = data.filter((reg, index) => {
-            return data.findIndex((reg2) => reg2.Niveles === reg.Niveles) === index;
-        });
-        levelsName = levels.map((reg) => (reg.Niveles));
-        levels_ = levelsName.map((reg) => {
-            const level: LevelInterface = {
-                name: reg,
-                description: reg,
-            }
-            return level;
-        });
-        return await addLevel(levels_, id_plan.toString());
-    };
-
-    const addSecretariess = async (data: ExcelPlan[]) => {
-        const secretaries = data.filter((reg, index) => {
-            return data.findIndex((reg2) => reg2.Responsable === reg.Responsable && reg2.Responsable !== 'NULL') === index;
-        });
-        const secretariesName = secretaries.map((reg) => (reg.Responsable));
-        let secretaries_ = secretariesName.map((reg) => {
-            const secretary: Secretary = {
-                id_plan: id_plan,
-                name: reg??'',
-                email: '',
-                phone: 0,
-            }
-            return secretary;
-        });
-        await addSecretaries(id_plan, secretaries_);
-    };
-    
-    const addNodes = async (data: ExcelPlan[], ids:idsInterface) => {
-        for (let i = 0; i < levelsName.length; i++) {
-            const nodes = data.filter((reg) => reg.Id.split('.').length === i + 1);
-            let nodes_ = nodes.map((reg) => {
-                const node: NodeInterface = {
-                    id_node: `${ids.result[0]}.`+reg.Id,
-                    name: reg.Nodos,
-                    description: reg.Descripcion,
-                    id_level: 0,
-                    parent: reg.Id.split('.').length === 1 ? null : `${ids.result[0]}.${reg.Id.split('.').slice(0, -1).join('.')}`,
-                    weight: reg.Peso
-                }
-                return node;
-            });
-            await addLevelNode(nodes_, ids.result[i]);
-        }
-    };
-
-    const addUnits = async (data: ExcelPlan[], ids:idsInterface) => {
-        if (plan === undefined) return;
-        const id_city = await getCityId(plan.municipality);
-        const units = data.filter((reg) => reg.Id.split('.').length === levels_.length);
-        for (let i = 0; i < units.length; i++) {
-            const unit: UnitInterface = {
-                code: units[i].Id,
-                description: units[i].Descripcion,
-                indicator: units[i].Indicador,
-                base: units[i].LineaBase ?? 0,
-                goal: units[i].Meta ?? 0,
-                responsible: units[i].Responsable ?? '',
-                years: [
-                    {
-                        year: years[0],
-                        physical_programming: units[i].ProgramadoAño1??0,
-                        physical_execution: 0,
-                        financial_execution: 0
-                    },
-                    {
-                        year: years[1],
-                        physical_programming: units[i].ProgramadoAño2??0,
-                        physical_execution: 0,
-                        financial_execution: 0
-                    },
-                    {
-                        year: years[2],
-                        physical_programming: units[i].ProgramadoAño3??0,
-                        physical_execution: 0,
-                        financial_execution: 0
-                    },
-                    {
-                        year: years[3],
-                        physical_programming: units[i].ProgramadoAño4??0,
-                        physical_execution: 0,
-                        financial_execution: 0
-                    }
-                ]
-            }
-            const code = `${ids.result[0]}.`+units[i].Id;
-            await addUnitNodeAndYears(id_plan.toString(), code, unit, unit.years, id_city);
-        };
-    };
 
     const readExcel = (file: File) => {
+        if (plan === undefined) return;
         const promise = new Promise((resolve, reject) => {
             const fileReader = new FileReader();
             fileReader.readAsArrayBuffer(file);
@@ -169,22 +72,17 @@ export const FileInput = () => {
 
         promise.then( async (d) => {
             const data = d as ExcelPlan[];
-            
-            const ids = await addLevels(data)
-            .catch(() => (alert('Ha ocurrido un error cargando los niveles del plan')));
 
-            await addSecretariess(data)
-            .catch(() => (alert('Ha ocurrido un error cargando las secretarías del plan')));
-
-            await addNodes(data, ids)
-            .catch(() => (alert('Ha ocurrido un error cargando los nodos del plan')));
-            
-            await addUnits(data, ids)
-            .catch(() => (alert('Ha ocurrido un error cargando las unidades del plan')));
-
-            setIsOpen(false);
-            alert('Plan cargado con éxito');
-            dispatch(setLevels(levels_));
+            await loadExcel(id_plan, data, years, plan.id_municipality)
+            .then((res) => {
+                setIsOpen(false);
+                alert('Plan cargado con éxito');
+                dispatch(setLevels(levels_));
+            })
+            .catch(() => {
+                alert('Ha ocurrido un error cargando el plan');
+                setIsOpen(false);
+            });
         });
     };
 
@@ -271,7 +169,7 @@ export const FileFinancialInput = () => {
 
         promise.then( async (d) => {
             const data = d as ExcelFinancial[];
-            
+
             await updateFinancials(data)
             .catch(() => (alert('Ha ocurrido un error cargando las ejecuciones del plan')));
 

@@ -13,3 +13,4 @@ export * from './componentProps';
 export * from './report';
 export * from './secretary';
 export * from './ubication';
+export * from './responseGeoportal';

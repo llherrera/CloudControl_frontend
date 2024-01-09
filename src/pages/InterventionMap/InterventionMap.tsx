@@ -110,6 +110,7 @@ const Section = () => {
 
     useEffect(() => {
         const fetch = async () => {
+            if (levels.length === 0) return;
             let parent: (string | null) = null;
             let response = [] as NodeInterface[][];
             for (let i = 0; i < 2; i++) {

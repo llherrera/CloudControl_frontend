@@ -19,6 +19,7 @@ export interface PDTInterface {
     name: string;
     department: string;
     municipality: string;
+    id_municipality: string;
     description: string;
     start_date: string;
     end_date: string;

@@ -14,7 +14,8 @@ import {
     Secretary, 
     LoginProps, 
     Coordinates,
-    ExcelFinancial } from "../interfaces";
+    ExcelFinancial, 
+    ExcelPlan} from "../interfaces";
 
 import { getToken } from "@/utils";
 
@@ -167,12 +168,13 @@ export const changePermissions = async (id: number, rol: string) => {
 export const addPDT = async (pdt: PDTInterface) => {
     try {
         const response = await api.post("/plan-territorial", {
-            PlanName:     pdt.name,
-            TownHall:     pdt.department,
-            Municipality: pdt.municipality,
-            StartDate:    pdt.start_date.slice(0, 19).replace('T', ' '),
-            EndDate:      pdt.end_date.slice(0, 19).replace('T', ' '),
-            Description:  pdt.description,
+            PlanName:           pdt.name,
+            TownHall:           pdt.department,
+            Municipality:       pdt.municipality,
+            id_municipality:    pdt.id_municipality,
+            StartDate:          pdt.start_date.slice(0, 19).replace('T', ' '),
+            EndDate:            pdt.end_date.slice(0, 19).replace('T', ' '),
+            Description:        pdt.description,
         });
         return response.data;
     } catch (error) {
@@ -609,4 +611,14 @@ export const getLocations = async (id_plan: number) => {
 export const loadFinancialExcel =async () => {
     const response = await api.put('/plan-territorial/');
     return response;
+}
+
+export const loadExcel = async (id_plan: number, data: ExcelPlan[], years: number[], id_municipality: string) => {
+    const response = await api.post('/plan-territorial/excel', {
+        id_plan:         id_plan,
+        data:            data,
+        years:           years,
+        id_municipality: id_municipality
+    });
+    return response.data;
 }

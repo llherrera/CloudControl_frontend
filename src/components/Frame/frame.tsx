@@ -21,7 +21,7 @@ export const Frame = (props: FrameProps) => {
     const dispatch = useAppDispatch();
 
     const { plan } = useAppSelector(state => state.plan);
-    const { index, id_plan, url_logo } = useAppSelector(store => store.content);
+    const { index, url_logo } = useAppSelector(store => store.content);
     
     const bgcolor='greenBtn';
     const logocolor='#008432';
@@ -30,7 +30,7 @@ export const Frame = (props: FrameProps) => {
     const buttons = [
         {
             inside: true,
-            onClick: () => navigate('/pdt/PlanIndicativo', {state: {id: id_plan}}), 
+            onClick: () => navigate('/pdt/PlanIndicativo'), 
             text: 'Plan indicativo', 
             bgColor: bgcolor,
             textColor: textcolor,
@@ -38,7 +38,7 @@ export const Frame = (props: FrameProps) => {
         },
         {
             inside: true, 
-            onClick: () => navigate('/PlanIndicativo/Banco-proyectos', {state: {id: id_plan}}), 
+            onClick: () => navigate('/PlanIndicativo/Banco-proyectos'), 
             text: 'Banco de proyectos', 
             bgColor: bgcolor,
             textColor: textcolor,
@@ -46,7 +46,7 @@ export const Frame = (props: FrameProps) => {
         },
         {
             inside: true, 
-            onClick: () => navigate('/PlanIndicativo/POAI', {state: {id: id_plan}}), 
+            onClick: () => navigate('/PlanIndicativo/POAI'), 
             text: 'POAI', 
             bgColor: bgcolor,
             textColor: textcolor,
@@ -54,7 +54,7 @@ export const Frame = (props: FrameProps) => {
         },
         {
             inside: true, 
-            onClick: () => navigate('/PlanIndicativo/Mapa', {state: {id: id_plan}}),
+            onClick: () => navigate('/PlanIndicativo/Mapa'),
             text: 'Mapa de intervención', 
             bgColor: bgcolor,
             textColor: textcolor,

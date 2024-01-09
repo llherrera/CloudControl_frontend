@@ -73,6 +73,9 @@ const ListPDT = ( props: PDTPageProps ) => {
                     Añadir Plan +
                 </button>
                 </li>
+                {
+                    props.data.length === 0 ? <p>No hay planes de momento</p> : null
+                }
                 { props.data!.map(( e:PDTInterface, index: number )=>
                 <li className="tw-flex"
                     key={index}>

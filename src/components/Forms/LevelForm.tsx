@@ -30,9 +30,10 @@ export const LevelForm = ( props: LevelFormProps ) => {
 
     useEffect(() => {
         const abortController = new AbortController();
-        const gettoken = getToken();
+        const token_info = getToken();
         try {
-            const {token} = gettoken;
+            if (token_info === null || token_info === undefined) return;
+            const {token} = token_info;
             if (token !== null || token !== undefined) {
                 const decoded = decode(token) as Token;
                 setId(decoded.id_plan);

@@ -7,7 +7,10 @@ export const Select = (props: SelectProps) => {
             <select name={props.name}
                 id={props.id}
                 onChange={props.onChange}
-                className="tw-m-3 tw-p-2 tw-rounded tw-border-2 tw-border-gray-400"
+                className=" tw-m-3 tw-p-2 
+                            tw-w-1/2
+                            tw-rounded 
+                            tw-border-2 tw-border-gray-400"
                 disabled={props.disabled}
                 required={!!props.isRequired}>
                 {props.optionLabelFn && props.options.map((e, i) => props.optionLabelFn && props.optionLabelFn(e, i))}

@@ -4,17 +4,13 @@ import IconButton from "@mui/material/IconButton";
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 
 import { Input, Select } from "../Inputs";
-import { PDTInterface } from "../../interfaces";
-import { getDepartmentCities, getDepartments } from "@/services/col_api";
+import { PDTInterface, DepartmentGeoPortal, MunicipalityGeoPortal } from "../../interfaces";
+import { getDepartmentCities, getDepartments, 
+    getDepartmentsGeoportal, getMunicipalities } from "@/services/col_api";
 
 import { useAppDispatch, useAppSelector } from '@/store';
 import { thunkAddPDT } from "@/store/plan/thunks";
 import { setIdPlan, setLogo } from "@/store/content/contentSlice";
-
-interface selectOption {
-    id: number;
-    name: string;
-};
 
 export const PDTForm = () => {
     const dispatch = useAppDispatch();
@@ -23,30 +19,59 @@ export const PDTForm = () => {
 
     const fechaInicio = new Date().getFullYear();
 
-    const [departamentOptions, setDepartamentOptions] = useState<selectOption[]|null>(null);
-    const [municipioOptions, setMunicipioOptions] = useState<selectOption[]|null>(null);
-    const [selectedDepartamento, setSelectedDepartamento] = useState<selectOption|null>(null);
+    const [departamentOptions, setDepartamentOptions] = useState<DepartmentGeoPortal[]|null>(null);
+    const [municipioOptions, setMunicipioOptions] = useState<MunicipalityGeoPortal[]|null>(null);
+    const [selectedDepartamento, setSelectedDepartamento] = useState<DepartmentGeoPortal|null>(null);
     const [planData, setPlanData] = useState<PDTInterface>({
         name: "",
         department: "",
         municipality: "",
+        id_municipality: "",
         start_date: new Date().getUTCFullYear().toString(),
         end_date: (new Date().getUTCFullYear() + 3).toString(),
         description: "",
     });
 
     useEffect(() => {
-        getDepartments()
+        getDepartmentsGeoportal()
         .then((res) => {
-            setDepartamentOptions([{id: -1, name: ''}, ...res]);
+            const departamentos = res.resultado.map((e: DepartmentGeoPortal) => {
+                return {
+                    CODIGO_DEPARTAMENTO: e.CODIGO_DEPARTAMENTO,
+                    NOMBRE_DEPARTAMENTO: e.NOMBRE_DEPARTAMENTO,
+                };
+            })
+            setDepartamentOptions([{
+                CODIGO_DEPARTAMENTO: '',
+                NOMBRE_DEPARTAMENTO: '',
+            }, ...departamentos]);
         });
     }, []);
     
     useEffect(() => {
-        if (!selectedDepartamento || selectedDepartamento.id < 0) return;
-        getDepartmentCities(selectedDepartamento.id)
+        if (!selectedDepartamento || selectedDepartamento.CODIGO_DEPARTAMENTO === '') return;
+        getMunicipalities(selectedDepartamento.CODIGO_DEPARTAMENTO)
         .then((res) => {
-            setMunicipioOptions([{id: -1, name: ''}, ...res]);
+            const municipios = res.resultado.map((e: MunicipalityGeoPortal) => {
+                return {
+                    CODIGO_AREA_METRO: e.CODIGO_AREA_METRO,
+                    CODIGO_DEPARTAMENTO: e.CODIGO_DEPARTAMENTO,
+                    CODIGO_DISTRITO: e.CODIGO_DISTRITO,
+                    CODIGO_DPTO_MPIO: e.CODIGO_DPTO_MPIO,
+                    CODIGO_MUNICIPIO: e.CODIGO_MUNICIPIO,
+                    CODIGO_TIPO_MUNICIPIO: e.CODIGO_TIPO_MUNICIPIO,
+                    NOMBRE_MUNICIPIO: e.NOMBRE_MUNICIPIO,
+                };
+            })
+            setMunicipioOptions([{
+                CODIGO_AREA_METRO: '',
+                CODIGO_DEPARTAMENTO: '',
+                CODIGO_DISTRITO: '',
+                CODIGO_DPTO_MPIO: '',
+                CODIGO_MUNICIPIO: '',
+                CODIGO_TIPO_MUNICIPIO: '',
+                NOMBRE_MUNICIPIO: '',
+            }, ...municipios]);
         });
     }, [selectedDepartamento]);
 
@@ -74,8 +99,9 @@ export const PDTForm = () => {
         setSelectedDepartamento(departamentOptions[parseInt(value)]);
         setPlanData({
             ...planData,
-            department: departamentOptions[parseInt(value)].name,
-            municipality: ''
+            department: departamentOptions[parseInt(value)].NOMBRE_DEPARTAMENTO,
+            municipality: '',
+            id_municipality: departamentOptions[parseInt(value)].CODIGO_DEPARTAMENTO+'000',
         });
     };
 
@@ -84,7 +110,8 @@ export const PDTForm = () => {
         if (!municipioOptions) return;
         setPlanData({
             ...planData,
-            municipality: municipioOptions[parseInt(value)].name,
+            municipality: municipioOptions[parseInt(value)].NOMBRE_MUNICIPIO,
+            id_municipality: municipioOptions[parseInt(value)].CODIGO_MUNICIPIO,
         });
     };
 
@@ -130,14 +157,16 @@ export const PDTForm = () => {
                         name="department"
                         onChange={handleDepartmentChange}
                         options={departamentOptions ? departamentOptions : []}
-                        optionLabelFn={(e, i) => <option key={e.id} value={i}>{e.name}</option>}
+                        optionLabelFn={(e, i) => 
+                            <option key={e.CODIGO_DEPARTAMENTO} value={i}>{e.NOMBRE_DEPARTAMENTO}</option>}
                 />
                 <Select label="Municipio:"
                         id="municipality"
                         name="municipality"
                         onChange={handleMunicipioChange}
                         options={municipioOptions ? municipioOptions : []}
-                        optionLabelFn={(e, i) => <option key={e.id} value={i}>{e.name}</option>}
+                        optionLabelFn={(e, i) => 
+                            <option key={e.CODIGO_MUNICIPIO} value={i}>{e.NOMBRE_MUNICIPIO}</option>}
                         disabled={!selectedDepartamento}
                 />
                 <Input  type={"text"}
