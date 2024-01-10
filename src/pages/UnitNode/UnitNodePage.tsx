@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useAppSelector, useAppDispatch } from "@/store";
@@ -8,8 +8,7 @@ import { thunkGetEvidence } from '@/store/evidence/thunks'
 import { resetEvidence, setPoints } from "@/store/evidence/evidenceSlice";
 import { resetUnit } from "@/store/unit/unitSlice";
 
-import { Token } from "../../interfaces";
-import { getToken, decode } from "@/utils";
+import { decode } from "@/utils";
 import { EvidenceDetail, BackBtn, SettingsBtn } from "@/components";
 import cclogo from '@/assets/images/CloudControlIcon.png';
 import { Spinner } from "@/assets/icons";
@@ -18,6 +17,7 @@ export const UnitNodePage = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
+    const { token_info } = useAppSelector(state => state.auth);
     const { namesTree } = useAppSelector(store => store.plan);
     const { unit, loadingUnit } = useAppSelector(store => store.unit);
     const { evidences } = useAppSelector(store => store.evidence);
@@ -35,16 +35,10 @@ export const UnitNodePage = () => {
     const [id, setId] = useState(0);
 
     useEffect(() => {
-        const gettoken = getToken();
-        try {
-            const {token} = gettoken ? gettoken : null
-            if (token !== null && token !== undefined) {
-                const decoded = decode(token) as Token;
-                setId(decoded.id_plan);
-                setRol(decoded.rol);
-            }
-        } catch (error) {
-            console.log(error);
+        if (token_info?.token !== undefined) {
+            const decoded = decode(token_info.token);
+            setRol(decoded.rol);
+            setId(decoded.id);
         }
     }, []);
 
@@ -269,7 +263,9 @@ export const UnitNodePage = () => {
                 <img src="/src/assets/images/Plan-indicativo.png" alt="" width={60} />
             </div>
             <BackBtn handle={handleBack} id={id_plan}/>
+            {rol === '' ? null :
             <SettingsBtn handle={handleSettings} id={id_plan}/>
+            }
             <ol className="tw-col-start-1 tw-col-span-full tw-flex tw-justify-center tw-flex-wrap">
             {namesTree.length > 0 && namesTree.map((name, index) => {
                 return (

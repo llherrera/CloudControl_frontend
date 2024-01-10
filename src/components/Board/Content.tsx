@@ -6,7 +6,7 @@ import { thunkGetNodes } from "@/store/plan/thunks";
 import { decrementLevelIndex, setParent } from "@/store/plan/planSlice";
 import { setMode } from "@/store/content/contentSlice";
 
-import { Token, ContentProps } from "@/interfaces";
+import { ContentProps } from "@/interfaces";
 import { 
     NodeForm, 
     NodesList, 
@@ -14,12 +14,13 @@ import {
     Graph,
     BackBtn, 
     SettingsBtn } from "@/components";
-import { getToken, decode } from "@/utils";
+import { decode } from "@/utils";
 
 export const Content = ( props : ContentProps ) => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
 
+    const { token_info } = useAppSelector(state => state.auth);
     const { plan,
             years,
             indexLevel,
@@ -35,16 +36,10 @@ export const Content = ( props : ContentProps ) => {
     const [id, setId] = useState(0);
 
     useEffect(() => {
-        const gettoken = getToken();
-        try {
-            const {token} = gettoken ? gettoken : null;
-            if (token !== null && token !== undefined) {
-                const decoded = decode(token) as Token;
-                setId(decoded.id_plan);
-                setRol(decoded.rol);
-            }
-        } catch (error) {
-            console.log(error);
+        if (token_info?.token !== undefined) {
+            const decoded = decode(token_info.token);
+            setRol(decoded.rol);
+            setId(decoded.id);
         }
     }, []);
 
@@ -88,7 +83,9 @@ export const Content = ( props : ContentProps ) => {
                             tw-text-center
                             md:tw-text-left">
                 Plan indicativo
+                {rol === '' ? null :
                 <SettingsBtn handle={handleSettings} id={props.id}/>
+                }
             </h1>
             <div className="tw-grid tw-grid-cols-1 md:tw-grid-cols-3 tw-mb-2">
 
@@ -118,6 +115,7 @@ export const Content = ( props : ContentProps ) => {
                     <p className="tw-ml-4 tw-mt-3 tw-font-montserrat tw-font-bold">
                         <BackBtn handle={handleBack} id={props.id}/>
                         {levels[indexLevel!].name}
+                        {rol === '' ? null :
                         <button className={`tw-ml-4 tw-p-2 
                                             tw-rounded
                                             ${mode? 'tw-bg-red-300 hover:tw-bg-red-500' :
@@ -125,6 +123,7 @@ export const Content = ( props : ContentProps ) => {
                                 onClick={handleMode}>
                             Editar
                         </button>
+                        }
                     </p>
                     <div className="tw-pb-1 tw-mb-2">
                         {nodes.length === 0 ?

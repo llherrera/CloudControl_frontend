@@ -14,10 +14,10 @@ import { selectOption } from '@/store/content/contentSlice';
 import { thunkGetLevelsById } from '@/store/plan/thunks';
 import { setPlanLocation, setZeroLevelIndex } from '@/store/plan/planSlice';
 
-import { getGoogleApiKey } from '@/utils';
+import { getEnvironment } from '@/utils';
 import { useJsApiLoader } from '@react-google-maps/api';
 
-const { API_KEY } = getGoogleApiKey();
+const { API_KEY } = getEnvironment();
 
 export const LobbyPage = () => {
     const dispatch = useAppDispatch();
@@ -33,10 +33,12 @@ export const LobbyPage = () => {
 
     let rol = "";
 
-    if (token_info?.token !== undefined) {
-        const decoded = decode(token_info.token);
-        rol = decoded.rol;
-    }
+    useEffect(() => {
+        if (token_info?.token !== undefined) {
+            const decoded = decode(token_info.token);
+            rol = decoded.rol;
+        }
+    }, []);
 
     useEffect(() => {
         dispatch(thunkGetLevelsById(id_plan.toString()));

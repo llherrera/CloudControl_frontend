@@ -37,6 +37,8 @@ export const Board = () => {
             let progresoFinan = 0;
             if (item.physical_programming !== 0) 
                 progreso = item.physical_execution / item.physical_programming;
+            else
+                progreso = -1;
             if (progreso > 1) 
                 progreso = 1;
             progreso = parseFloat(progreso.toFixed(2));
@@ -74,7 +76,7 @@ export const Board = () => {
                                 (e: Percentages) => e.year === Percentages.year
                             );
                             if (temp) {
-                                temp.progress += progresoPeso;
+                                temp.progress += progresoPeso > 0 ? progresoPeso : 0;
                                 temp.progress = parseFloat(temp.progress.toFixed(2));
                                 temp.financial_execution += financiado;
                             } else {

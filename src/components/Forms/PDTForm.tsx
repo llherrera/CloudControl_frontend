@@ -5,8 +5,7 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 
 import { Input, Select } from "../Inputs";
 import { PDTInterface, DepartmentGeoPortal, MunicipalityGeoPortal } from "../../interfaces";
-import { getDepartmentCities, getDepartments, 
-    getDepartmentsGeoportal, getMunicipalities } from "@/services/col_api";
+import { getDepartmentsGeoportal, getMunicipalities } from "@/services/col_api";
 
 import { useAppDispatch, useAppSelector } from '@/store';
 import { thunkAddPDT } from "@/store/plan/thunks";

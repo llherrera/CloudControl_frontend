@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
+import { notify } from '@/utils';
 
 import { useAppDispatch } from '../../store';
 import { thunkLogin } from '../../store/auth/thunks';
@@ -24,17 +25,6 @@ export const LoginForm = () => {
         });
     };
 
-    const notify = () => toast("Error, usuario o contraseña erronea", { 
-        position: "top-center",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-    });
-
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         await dispatch(thunkLogin(user))
@@ -52,7 +42,7 @@ export const LoginForm = () => {
             navigate('/')
         })
         .catch(() => {
-            notify();
+            notify("Error, usuario o contraseña erronea");
         }
         );
     };

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import * as Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 
@@ -9,11 +9,13 @@ import { setType } from '@/store/chart/chartSlice';
 import { GraphProps } from '@/interfaces';
 import {  } from '@/services/api';
 import { ModalTotalPDT, ModalSecretary, ModalProgram } from '../Modals';
+import { decode } from "@/utils";
 
 export const Graph = ( props: GraphProps ) => {
     const dispatch = useAppDispatch();
     const chartComponentRef = useRef<HighchartsReact.RefObject>(null);
 
+    const { token_info } = useAppSelector(state => state.auth);
     const { colorimeter, radioBtn, nodes } = useAppSelector(store => store.plan);
     const { type } = useAppSelector(store => store.chart);
     const [indexType, setIndexType] = useState(0);
@@ -36,6 +38,8 @@ export const Graph = ( props: GraphProps ) => {
         },
     ];
 
+    const [rol, setRol] = useState("");
+
     const categories = nodes.map((node) => node.name);
     const pieValues = props.dataValues.map((value, index) => {
         return {
@@ -43,6 +47,13 @@ export const Graph = ( props: GraphProps ) => {
             y: value
         }
     });
+
+    useEffect(() => {
+        if (token_info?.token !== undefined) {
+            const decoded = decode(token_info.token);
+            setRol(decoded.rol);
+        }
+    }, []);
 
     const options: Highcharts.Options = {
         title: {
@@ -160,11 +171,13 @@ export const Graph = ( props: GraphProps ) => {
                             checked={radioBtn === 'financiera'}/>
                     <label htmlFor="financiera">Ejecución financiera</label>
                 </div>
+                {rol === '' ? null :
                 <div className='tw-flex tw-justify-around'>
                     <ModalProgram />
                     <ModalSecretary />
                     <ModalTotalPDT />
                 </div>
+                }
             </div>
             <div className='tw-w-full md:tw-w-1/2 tw-shadow-2xl'>
                 <HighchartsReact

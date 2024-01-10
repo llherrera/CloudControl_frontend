@@ -82,7 +82,7 @@ export const thunkAddColors = createAsyncThunk<number[], AddColorsProps, { rejec
     async (props: AddColorsProps, { rejectWithValue }) => {
         try {
             const res = await addColor(props.id_plan, props.colors);
-            return res;
+            return res.result;
         } catch (err) {
             const result = parseErrorAxios(err);
             return rejectWithValue(result);
@@ -95,7 +95,7 @@ export const thunkUpdateColors = createAsyncThunk<number[], AddColorsProps, { re
     async (props: AddColorsProps, { rejectWithValue }) => {
         try {
             const res = await updateColor(props.id_plan, props.colors);
-            return res;
+            return res.result;
         } catch (err) {
             const result = parseErrorAxios(err);
             return rejectWithValue(result);

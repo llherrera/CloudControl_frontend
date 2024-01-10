@@ -15,7 +15,8 @@ import {
     LoginProps, 
     Coordinates,
     ExcelFinancial, 
-    ExcelPlan} from "../interfaces";
+    ExcelPlan,
+    ExcelPhysical} from "../interfaces";
 
 import { getToken } from "@/utils";
 
@@ -619,6 +620,16 @@ export const loadExcel = async (id_plan: number, data: ExcelPlan[], years: numbe
         data:            data,
         years:           years,
         id_municipality: id_municipality
+    });
+    return response.data;
+}
+
+export const updatePhysicalExcel = async (id_plan: number, id_city: number, data: ExcelPhysical[], years: number[]) => {
+    const response = await api.put('/nodo/fisico', {
+        id_plan: id_plan,
+        id_city: id_city,
+        data:    data,
+        years:   years,
     });
     return response.data;
 }

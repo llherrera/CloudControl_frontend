@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import Slider from '@mui/material/Slider';
 import Box from '@mui/material/Box';
+import { ToastContainer } from 'react-toastify';
+import { notify } from '@/utils';
 
 import { useAppDispatch, useAppSelector } from '@/store';
-import { thunkAddColors, thunkGetColors } from '@/store/plan/thunks';
+import { 
+    thunkAddColors, 
+    thunkGetColors,
+    thunkUpdateColors } from '@/store/plan/thunks';
 
 import { ColorFromProps } from '@/interfaces';
 
@@ -42,13 +47,24 @@ export const ColorForm = ( props : ColorFromProps ) => {
     const handleInput = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         event.preventDefault();
         const colors = value.map((item: number[]) => item[1]);
-        dispatch(thunkAddColors({id_plan: props.id, colors: colors}));
+        colorimeter.length === 0 ?
+            dispatch(thunkAddColors({id_plan: props.id, colors: colors}))
+            .unwrap()
+            .then(() => {
+                notify("Colorimetria guardados correctamente");
+            })
+        :  dispatch(thunkUpdateColors({id_plan: props.id, colors: colors}))
+            .unwrap()
+            .then(() => {
+                notify("Colorimetria actualizados correctamente");
+            });
     }
 
     return (
         <form className='tw-flex tw-flex-col md:tw-flex-row 
                         tw-flex-wrap 
                         tw-mb-2 tw-ml-4'>
+            <ToastContainer />
             {value.map((value: number[], index: number) => {
                 return (
                     <div className='tw-flex tw-mx-2'

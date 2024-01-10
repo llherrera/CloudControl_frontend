@@ -8,7 +8,6 @@ import { setUnit } from '@/store/unit/unitSlice';
 
 import { BackBtn } from '@/components';
 import { UnitInterface, YearInterface } from '@/interfaces';
-import { getCityId } from '@/services/col_api';
 import { Spinner } from "@/assets/icons";
 import cclogo from '@/assets/images/CloudControlIcon.png';
 
@@ -90,14 +89,14 @@ export const SettingsPage = () => {
             return alert('Debe ingresar una descripción');
         if (unit.indicator === '')
             return alert('Debe ingresar un indicador');
-        if (unit.goal === 0)
+        if (unit.goal < 0)
             return alert('Debe ingresar una meta');
         if (unit.responsible === '')
             return alert('Debe ingresar un responsable');
-        if (unit.years.length === 0)
+        if (unit.years.length <= 0)
             return alert('Debe ingresar una programación');
         
-        const id_city = await getCityId(plan.municipality);
+        const id_city = parseInt(plan.id_municipality);
         if (unit.code.length > 0) {
             dispatch(thunkUpdateUnit({
                 id_plan: id_plan.toString(),

@@ -11,9 +11,9 @@ import { Frame,
         UploadImage, 
         LocationsForm,
         FileInput,
-        FileFinancialInput } from '@/components';
-import { getToken, decode } from "@/utils";
-import { Token } from '@/interfaces';
+        FileFinancialInput,
+        FilePhysicalInput } from '@/components';
+import { decode } from "@/utils";
 
 export const SettingPage = () => {
     return (
@@ -27,6 +27,7 @@ const SettingPageWrapper = () => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
 
+    const { token_info } = useAppSelector(state => state.auth);
     const { plan, secretaries } = useAppSelector(store => store.plan);
     const { id_plan } = useAppSelector(store => store.content);
 
@@ -37,16 +38,10 @@ const SettingPageWrapper = () => {
     const [id_, setId] = useState(0);
 
     useEffect(() => {
-        const gettoken = getToken();
-        try {
-            const {token} = gettoken ? gettoken : null;
-            if (token !== null && token !== undefined) {
-                const decoded = decode(token) as Token;
-                setId(decoded.id_plan);
-                setRol(decoded.rol);
-            }
-        } catch (error) {
-            console.log(error);
+        if (token_info?.token !== undefined) {
+            const decoded = decode(token_info.token);
+            setRol(decoded.rol);
+            setId(decoded.id);
         }
     }, []);
 
@@ -75,6 +70,10 @@ const SettingPageWrapper = () => {
             <BackBtn handle={handleBack} id={id_plan}/><br />
             <FileInput/>
             <FileFinancialInput/>
+            {rol === "admin" ?
+                <FilePhysicalInput/>
+                : null
+            }
             <UploadImage/>
             <div className='tw-border-t-4 tw-mt-4'>
                 {((rol === "admin") || (rol === 'funcionario' && id_plan === plan!.id_plan!)) ?

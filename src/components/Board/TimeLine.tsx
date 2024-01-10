@@ -5,11 +5,13 @@ import { useAppSelector, useAppDispatch } from "@/store";
 import { selectYear } from '@/store/plan/planSlice'; 
 
 import { NodesWeight } from '@/interfaces';
+import { decode } from "@/utils";
 
 export const TimeLine = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
+    const { token_info } = useAppSelector(state => state.auth);
     const { years, 
             yearSelect, 
             plan, 
@@ -19,6 +21,17 @@ export const TimeLine = () => {
 
     const [yearProgress, setYearProgress] = useState<number[]>([]);
     const [yearsProgress, setYearsProgress] = useState(0);
+
+    const [rol, setRol] = useState("");
+    const [id, setId] = useState(0);
+
+    useEffect(() => {
+        if (token_info?.token !== undefined) {
+            const decoded = decode(token_info.token);
+            setRol(decoded.rol);
+            setId(decoded.id);
+        }
+    }, []);
 
     useEffect(() => {
         if (years.length !== 0)
@@ -49,8 +62,10 @@ export const TimeLine = () => {
             let temp = 0;
             nodoss.forEach((item: NodesWeight) => {
                 const { percents } = item;
-                if (percents) 
-                    temp += (percents[i].progress)*(item.weight/100);
+                if (percents) {
+                    percents.sort((a,b)=>a.year - b.year)
+                    temp += (percents[i].progress > 0 ? percents[i].progress : 0)*(item.weight/100);
+                }
             });
             temp = Math.round(temp*100)/100;
             progreso.push(temp);
@@ -68,9 +83,9 @@ export const TimeLine = () => {
 
     const handleBtnEvidence = ( event: React.MouseEvent<HTMLButtonElement> ) => {
         event.preventDefault();
+        if (rol === '') return;
         if (plan) {
-            const { id_plan } = plan;
-            navigate(`/PlanIndicativo/evidencias`, {state: {id: id_plan}});
+            navigate(`/PlanIndicativo/evidencias`);
         }
     };
 
