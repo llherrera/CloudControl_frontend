@@ -42,7 +42,7 @@ export const Board = () => {
             if (progreso > 1) 
                 progreso = 1;
             progreso = parseFloat(progreso.toFixed(2));
-            progresoFinan = item.financial_execution /1000;
+            progresoFinan = item.financial_execution /1000000;
             let peso = pesosNodo.find(
                 (peso: NodesWeight) => peso.id_node === item.id_node
             );
