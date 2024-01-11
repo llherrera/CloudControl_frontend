@@ -291,7 +291,7 @@ export const UnitNodePage = () => {
                                     tw-py-2 tw-px-4 tw-my-5
                                     tw-rounded"
                         onClick={handleEvidence}>
-                    Cargar <br /> evidencias
+                    Mostrar <br /> evidencias
                 </button>
             </div>
             {showEvidence ?

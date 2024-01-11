@@ -4,8 +4,13 @@ import IconButton from "@mui/material/IconButton";
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 
 import { Input, Select } from "../Inputs";
-import { PDTInterface, DepartmentGeoPortal, MunicipalityGeoPortal } from "../../interfaces";
-import { getDepartmentsGeoportal, getMunicipalities } from "@/services/col_api";
+import { 
+    PDTInterface, 
+    DepartmentGeoPortal, 
+    MunicipalityGeoPortal } from "../../interfaces";
+import { 
+    getDepartmentsGeoportal, 
+    getMunicipalities } from "@/services/col_api";
 
 import { useAppDispatch, useAppSelector } from '@/store';
 import { thunkAddPDT } from "@/store/plan/thunks";
@@ -18,9 +23,12 @@ export const PDTForm = () => {
 
     const fechaInicio = new Date().getFullYear();
 
-    const [departamentOptions, setDepartamentOptions] = useState<DepartmentGeoPortal[]|null>(null);
-    const [municipioOptions, setMunicipioOptions] = useState<MunicipalityGeoPortal[]|null>(null);
-    const [selectedDepartamento, setSelectedDepartamento] = useState<DepartmentGeoPortal|null>(null);
+    const [departamentOptions, setDepartamentOptions] = 
+        useState<DepartmentGeoPortal[]|null>(null);
+    const [municipioOptions, setMunicipioOptions] = 
+        useState<MunicipalityGeoPortal[]|null>(null);
+    const [selectedDepartamento, setSelectedDepartamento] = 
+        useState<DepartmentGeoPortal|null>(null);
     const [planData, setPlanData] = useState<PDTInterface>({
         name: "",
         department: "",
@@ -48,10 +56,12 @@ export const PDTForm = () => {
     }, []);
     
     useEffect(() => {
-        if (!selectedDepartamento || selectedDepartamento.CODIGO_DEPARTAMENTO === '') return;
+        if (!selectedDepartamento || 
+            selectedDepartamento.CODIGO_DEPARTAMENTO === '') return;
         getMunicipalities(selectedDepartamento.CODIGO_DEPARTAMENTO)
         .then((res) => {
-            const municipios = res.resultado.map((e: MunicipalityGeoPortal) => {
+            const municipios = res.resultado.map(
+                (e: MunicipalityGeoPortal) => {
                 return {
                     CODIGO_AREA_METRO: e.CODIGO_AREA_METRO,
                     CODIGO_DEPARTAMENTO: e.CODIGO_DEPARTAMENTO,
@@ -110,7 +120,7 @@ export const PDTForm = () => {
         setPlanData({
             ...planData,
             municipality: municipioOptions[parseInt(value)].NOMBRE_MUNICIPIO,
-            id_municipality: municipioOptions[parseInt(value)].CODIGO_MUNICIPIO,
+            id_municipality: municipioOptions[parseInt(value)].CODIGO_DPTO_MPIO,
         });
     };
 
@@ -120,7 +130,7 @@ export const PDTForm = () => {
         .then(() => {
             dispatch(setIdPlan(id_plan));
             dispatch(setLogo(''));
-            navigate(`/register`);
+            navigate(`/register`, {replace: true});
         }).catch((err) => {
             console.log(err);
         });
@@ -144,7 +154,10 @@ export const PDTForm = () => {
             <form   onSubmit={handleSubmit}
                     className=" tw-rounded tw-shadow-2xl
                                 tw-p-10">
-                <h1 className="tw-mb-4 tw-grow tw-text-center tw-text-xl">Registrar Plan de Desarrollo</h1>
+                <h1 className=" tw-mb-4 tw-grow 
+                                tw-text-center tw-text-xl tw-font-bold">
+                    Registrar Plan de Desarrollo
+                </h1>
                 <div>
                 <Input  type={"text"}
                         label="Nombre:"
@@ -157,7 +170,9 @@ export const PDTForm = () => {
                         onChange={handleDepartmentChange}
                         options={departamentOptions ? departamentOptions : []}
                         optionLabelFn={(e, i) => 
-                            <option key={e.CODIGO_DEPARTAMENTO} value={i}>{e.NOMBRE_DEPARTAMENTO}</option>}
+                            <option key={e.CODIGO_DEPARTAMENTO} 
+                                value={i}>{e.NOMBRE_DEPARTAMENTO}
+                            </option>}
                 />
                 <Select label="Municipio:"
                         id="municipality"
@@ -165,7 +180,9 @@ export const PDTForm = () => {
                         onChange={handleMunicipioChange}
                         options={municipioOptions ? municipioOptions : []}
                         optionLabelFn={(e, i) => 
-                            <option key={e.CODIGO_MUNICIPIO} value={i}>{e.NOMBRE_MUNICIPIO}</option>}
+                            <option key={e.CODIGO_MUNICIPIO} value={i}>
+                                {e.NOMBRE_MUNICIPIO}
+                            </option>}
                         disabled={!selectedDepartamento}
                 />
                 <Input  type={"text"}
@@ -179,7 +196,10 @@ export const PDTForm = () => {
                         name="start_date"
                         onChange={handleInputYearChange}
                         options={Array.from(Array(5).keys())}
-                        optionLabelFn={(e) => <option key={e} value={fechaInicio + e}>{fechaInicio + e}</option>}
+                        optionLabelFn={(e) => 
+                            <option key={e} value={fechaInicio + e}>
+                                {fechaInicio + e}
+                            </option>}
                 />
                 </div>
                 <div className="tw-flex tw-justify-center">
@@ -187,7 +207,8 @@ export const PDTForm = () => {
                             value="Registrar Plan"
                             title="Añadir plan"
                             className=" tw-bg-green-500 hover:tw-bg-green-300
-                                        tw-text-white tw-font-bold hover:tw-text-black
+                                        tw-text-white tw-font-bold 
+                                        hover:tw-text-black
                                         tw-rounded
                                         tw-p-2"
                     />

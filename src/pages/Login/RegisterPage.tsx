@@ -1,23 +1,13 @@
-import React, { useEffect } from 'react';
 import { Frame, RegisterForm } from '../../components';
 
-import { useAppSelector, useAppDispatch } from '@/store';
-import { setIdPlan } from '@/store/content/contentSlice';
+import { useAppSelector } from '@/store';
 
 export const RegisterPage = () => {
-    const dispatch = useAppDispatch();
-    const { plan } = useAppSelector(state => state.plan);
-    let id_ = 0;
-
-    useEffect(() => {
-        if (plan === undefined) return;
-        dispatch(setIdPlan(id_));
-        id_ = plan.id_plan!;
-    }, []);
+    const { id_plan } = useAppSelector(state => state.content);
 
     return (
         <Frame data={
-            <RegisterForm id={id_}/>
+            <RegisterForm id={id_plan}/>
         }/>
     );
 }

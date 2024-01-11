@@ -5,6 +5,8 @@ import { useAppDispatch, useAppSelector } from "@/store";
 import { thunkGetNodes } from "@/store/plan/thunks";
 import { decrementLevelIndex, setParent } from "@/store/plan/planSlice";
 import { setMode } from "@/store/content/contentSlice";
+import IconButton from "@mui/material/IconButton";
+import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 
 import { ContentProps } from "@/interfaces";
 import { 
@@ -39,7 +41,7 @@ export const Content = ( props : ContentProps ) => {
         if (token_info?.token !== undefined) {
             const decoded = decode(token_info.token);
             setRol(decoded.rol);
-            setId(decoded.id);
+            setId(decoded.id_plan);
         }
     }, []);
 
@@ -67,9 +69,11 @@ export const Content = ( props : ContentProps ) => {
         }
     };
 
-    const handleSettings = () => navigate(`/pdt/PlanIndicativo/configuracion`, {state: {id: props.id}});
+    const handleSettings = () => navigate(`/pdt/PlanIndicativo/configuracion`);
 
     const handleMode = () => dispatch(setMode(!mode));
+
+    const handleAddUser = () => navigate(`/register`);
 
     return (
         <div className="tw-h-full tw-border
@@ -85,6 +89,15 @@ export const Content = ( props : ContentProps ) => {
                 Plan indicativo
                 {rol === '' ? null :
                 <SettingsBtn handle={handleSettings} id={props.id}/>
+                }
+                {rol === 'admin' || (rol === 'funcionario' && id === props.id) ?
+                <IconButton color="success"
+                            aria-label="delete"
+                            onClick={() => handleAddUser()}
+                            title="Agregar funcionario al plan">
+                    <PersonAddAltIcon/>
+                </IconButton>
+                : null
                 }
             </h1>
             <div className="tw-grid tw-grid-cols-1 md:tw-grid-cols-3 tw-mb-2">

@@ -42,7 +42,7 @@ export const Board = () => {
             if (progreso > 1) 
                 progreso = 1;
             progreso = parseFloat(progreso.toFixed(2));
-            progresoFinan = item.financial_execution /1000000;
+            progresoFinan = item.financial_execution /1000;
             let peso = pesosNodo.find(
                 (peso: NodesWeight) => peso.id_node === item.id_node
             );
@@ -68,7 +68,8 @@ export const Board = () => {
                             (e: NodesWeight) => e.id_node === parent
                         );
                         if (padre) {
-                            let progresoPeso = Percentages.progress * (item.weight / 100);
+                            let progresoPeso = Percentages.progress > 0 ? 
+                                Percentages.progress * (item.weight / 100) : 0;
                             progresoPeso = parseFloat(progresoPeso.toFixed(2));
                             let financiado = Percentages.financial_execution;
                             padre.percents = padre.percents ? padre.percents : [];
@@ -82,7 +83,7 @@ export const Board = () => {
                             } else {
                                 padre.percents.push(
                                     {
-                                        progress : progresoPeso,
+                                        progress : progresoPeso > 1 ? 1 : progresoPeso,
                                         year: Percentages.year,
                                         physical_programming: 0,
                                         financial_execution: financiado
