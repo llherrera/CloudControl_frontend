@@ -37,7 +37,7 @@ export const evidenceSlice = createSlice({
             state.evidences = state.evidences?.slice(action.payload, 1);
         },
         resetEvidence: () => getInitialState(),
-        setEvidence: (state, action: PayloadAction<EvidenceInterface>) => {
+        setEvidence: (state, action: PayloadAction<EvidenceInterface | undefined>) => {
             state.evi_selected = action.payload;
             setGenericState('evidence', state);
         },
@@ -48,10 +48,6 @@ export const evidenceSlice = createSlice({
         setEvidences: (state, action: PayloadAction<EvidenceInterface[]>) => {
             state.evidences = action.payload;
             setGenericState('evidence', state);
-        },
-        resetPoints: (state) => {
-            state.list_points = [];
-            removeGenericState('evidence');
         },
     },
     extraReducers: builder => {
@@ -166,6 +162,5 @@ export const {  removeEvidence,
                 resetEvidence, 
                 setEvidence, 
                 setPoints,
-                setEvidences,
-                resetPoints } = evidenceSlice.actions;
-export const evidenceReducer = evidenceSlice.reducer;
+                setEvidences } = evidenceSlice.actions;
+export default evidenceSlice.reducer;

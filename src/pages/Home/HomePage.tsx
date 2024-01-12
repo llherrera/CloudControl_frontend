@@ -5,8 +5,10 @@ import { ButtonComponent, Header } from "../../components";
 import funcLogo from "@/assets/icons/Funcionario.svg";
 import citiLogo from "@/assets/icons/Ciudadanos.svg";
 
-import { thunkLogout } from "@/store/auth/thunks";
 import { useAppDispatch, useAppSelector } from '../../store';
+import { thunkLogout } from "@/store/auth/thunks";
+import { thunkGetLastPDT } from "@/store/plan/thunks";
+import { setIdPlan } from "@/store/content/contentSlice";
 import { removeGenericState } from "@/utils";
 
 export const HomePage = () => {
@@ -20,14 +22,21 @@ export const HomePage = () => {
     removeGenericState('evidence');
     removeGenericState('plan');
 
-    const handleBtnCiudadano = () => {
+    const handleBtnCiudadano = async () => {
         try {
             if (logged) {
-                dispatch(thunkLogout())
-                    .unwrap()
-                    .then(() => navigate('/lobby'));
-            }else {
-                navigate('/lobby');
+                await dispatch(thunkLogout())
+                .unwrap()
+                .then(() => navigate('/lobby'));
+            } else {
+                await dispatch(thunkGetLastPDT())
+                .unwrap()
+                .then((res) => {
+                    if (res === undefined) return alert("No hay un PDT activo");
+                    dispatch(setIdPlan(res.id_plan!));
+                    navigate('/lobby');
+                });
+                
             }
         } catch (error) {}
     };

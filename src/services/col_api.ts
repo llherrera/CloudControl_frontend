@@ -1,40 +1,36 @@
-import { getColombiaApi } from "@/utils";
 import axios from "axios";
-const {BASE_URL} = getColombiaApi();
 
-const col_api = axios.create({
-    baseURL: BASE_URL
-})
-
-export const getDepartments = async () => {
+export const getDepartmentsGeoportal = async () => {
     try {
-        const response = await col_api.get("/Department");
-        return response.data.map((e: any) => ({
-            id: e.id,
-            name: e.name,
-        }));
+        const response = await axios.get("/geoportal-deparments");
+        return response.data;
     } catch (error) {
         return error;
     }
 }
 
-export const getDepartmentCities = async (id: number) => {
-    if (id < 0) return null;
+export const getMunicipalities = async (id: string) => {
+    if (id === '') return null;
     try {
-        const response = await col_api.get(`/Department/${id}/cities`);
-        return response.data.map((e: any) => ({
-            id: e.id,
-            name: e.name,
-        }));
+        const response = await axios.get(`/geoportal-municipality`, {
+            params: {
+                codigo_departamento: id
+            }
+        });
+        return response.data;
     } catch (error) {
         return error;
     }
 }
 
-export const getCityId = async (name: string) => {
+export const getCityInfo = async (id: string) => {
     try {
-        const response = await col_api.get(`/City/name/${name}`);
-        return response.data[0].id;
+        const response = await axios.get(`/geoportal-ficha`, {
+            params: {
+                divipola_cod: id
+            }
+        });
+        return response.data;
     } catch (error) {
         return error;
     }

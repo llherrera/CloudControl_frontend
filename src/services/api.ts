@@ -5,16 +5,18 @@ import { getEnvironment } from '../utils/environment';
 import { 
     YearInterface, 
     UnitInterface, 
-    NodoInterface, 
-    NivelInterface, 
+    NodeInterface, 
+    LevelInterface, 
     RegisterInterface, 
     PDTInterface, 
     EvidenceInterface, 
     GetNodeProps, 
-    AddColorsProps, 
     Secretary, 
     LoginProps, 
-    Coordinates } from "../interfaces";
+    Coordinates,
+    ExcelFinancial, 
+    ExcelPlan,
+    ExcelPhysical} from "../interfaces";
 
 import { getToken } from "@/utils";
 
@@ -167,12 +169,13 @@ export const changePermissions = async (id: number, rol: string) => {
 export const addPDT = async (pdt: PDTInterface) => {
     try {
         const response = await api.post("/plan-territorial", {
-            PlanName:     pdt.name,
-            TownHall:     pdt.department,
-            Municipality: pdt.municipaly,
-            StartDate:    pdt.start_date.slice(0, 19).replace('T', ' '),
-            EndDate:      pdt.end_date.slice(0, 19).replace('T', ' '),
-            Description:  pdt.description,
+            PlanName:           pdt.name,
+            TownHall:           pdt.department,
+            Municipality:       pdt.municipality,
+            id_municipality:    pdt.id_municipality,
+            StartDate:          pdt.start_date.slice(0, 19).replace('T', ' '),
+            EndDate:            pdt.end_date.slice(0, 19).replace('T', ' '),
+            Description:        pdt.description,
         });
         return response.data;
     } catch (error) {
@@ -185,7 +188,7 @@ export const updatePDT = async (id: number, pdt: PDTInterface) => {
         const response = await api.put(`/plan-territorial/${id}`, {
             PlanName:     pdt.name,
             TownHall:     pdt.department,
-            Municipality: pdt.municipaly,
+            Municipality: pdt.municipality,
             StartDate:    pdt.start_date,
             EndDate:      pdt.end_date,
             Description:  pdt.description,
@@ -227,7 +230,7 @@ export const deletePDT = async (id: number) => {
     }
 }
 
-export const addLevel = async (levels: NivelInterface[], id : string) => {
+export const addLevel = async (levels: LevelInterface[], id : string) => {
     const response = await api.post(`/plan-territorial/${id}`, { levels: levels });
     return response.data;
 }
@@ -260,16 +263,21 @@ export const updateWeights = async (ids: string[], weights: number[]) => {
     }
 }
 
-export const addLevelNode = async (nodes: NodoInterface[], id_level: number) => {
-    try {
-        const response = await api.post("/plan-territorial/nivel", { 
-            nodes: nodes,
-            id_level: id_level
-        });
-        return response.data;
-    } catch (error) {
-        return error;
-    }
+export const addLevelNode = async (nodes: NodeInterface[], id_level: number) => {
+    const response = await api.post("/plan-territorial/nivel", { 
+        nodes: nodes,
+        id_level: id_level
+    });
+    return response.data;
+}
+
+export const addNodes =async (data: ExcelPlan[], id_plan: number, levelsName: string[]) => {
+    const response = await api.post("/plan-territorial/nivel", {
+        data:       data,
+        id_plan:    id_plan,
+        levelsName: levelsName
+    });
+    return response.data;
 }
 
 export const deleteLevel = async (id: number) => {
@@ -298,13 +306,27 @@ export const getLevelName = async (ids: string[]) => {
     }
 }
 
-export const addUnitNodeAndYears = async (id_plan: string, id_node: string, node_unidad: UnitInterface, years: YearInterface[], id_city: number) => {
+export const addUnitNodeAndYears = async (
+    id_plan: string, id_node: string, node_unit: UnitInterface, 
+    years: YearInterface[], id_municipality: number) => {
     const response = await api.post("/nodo", { 
-        id_plan: id_plan,
-        id_node: id_node,
-        node:    node_unidad,
-        years:   years,
-        id_city: id_city
+        id_plan:         id_plan,
+        id_node:         id_node,
+        node:            node_unit,
+        years:           years,
+        id_municipality: id_municipality
+    });
+    return response.data;
+}
+
+export const addUnits = async (
+    id_plan: number, data: ExcelPlan[], years: number[],
+    id_municipality: string) => {
+    const response = await api.post("/nodo", {
+        id_plan:         id_plan,
+        data:            data,
+        years:           years,
+        id_municipality: id_municipality
     });
     return response.data;
 }
@@ -321,6 +343,26 @@ export const getUnitNodeAndYears = async (id_plan: string, id_node: string) => {
     } catch (error) {
         return error;
     }
+}
+
+export const updateUnitNodeAndYears = async (id_plan: string, id_node: string, node_unit: UnitInterface, years: YearInterface[]) => {
+    const response = await api.put("/nodo", { 
+        id_plan: id_plan,
+        id_node: id_node,
+        node:    node_unit,
+        years:   years
+    });
+    return response.data;
+}
+
+export const updateFinancial = async (id_plan: number, id_municipality: number, data: ExcelFinancial[], years: number[]) => {
+    const response = await api.put("/nodo/financiero", { 
+        id_plan:         id_plan,
+        id_municipality: id_municipality,
+        data:            data,
+        years:           years
+    });
+    return response.data;
 }
 
 export const addEvicenceGoal = async (id_plan: number, code: string, evidence: EvidenceInterface, file: File, points: Coordinates[]) => {
@@ -439,16 +481,12 @@ export const getYearProgress = async (ids_nodes: string[], year: number) => {
 }
 
 export const getTotalProgress = async (id_plan: number) => {
-    try {
-        const response = await api.get(`/nodo/progreso-total`, {
-            params: {
-                id_plan: id_plan
-            }
-        });        
-        return response.data;
-    } catch (error) {
-        return error;
-    }
+    const response = await api.get(`/nodo/progreso-total`, {
+        params: {
+            id_plan: id_plan
+        }
+    });        
+    return response.data;
 }
 
 export const updateNode = async (id_plan: string, id_node: string, node: UnitInterface, years: YearInterface) => {
@@ -587,5 +625,30 @@ export const addLocations = async (id_plan: number, locations: any) => {
 
 export const getLocations = async (id_plan: number) => {
     const response = await api.get(`/plan-territorial/${id_plan}/localidades`);
+    return response.data;
+}
+
+export const loadFinancialExcel =async () => {
+    const response = await api.put('/plan-territorial/');
+    return response;
+}
+
+export const loadExcel = async (id_plan: number, data: ExcelPlan[], years: number[], id_municipality: string) => {
+    const response = await api.post('/plan-territorial/excel', {
+        id_plan:         id_plan,
+        data:            data,
+        years:           years,
+        id_municipality: id_municipality
+    });
+    return response.data;
+}
+
+export const updatePhysicalExcel = async (id_plan: number, id_municipality: number, data: ExcelPhysical[], years: number[]) => {
+    const response = await api.put('/nodo/fisico', {
+        id_plan:         id_plan,
+        id_municipality: id_municipality,
+        data:            data,
+        years:           years,
+    });
     return response.data;
 }

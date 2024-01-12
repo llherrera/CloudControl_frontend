@@ -4,47 +4,84 @@ import IconButton from "@mui/material/IconButton";
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 
 import { Input, Select } from "../Inputs";
-import { PDTInterface } from "../../interfaces";
+import { 
+    PDTInterface, 
+    DepartmentGeoPortal, 
+    MunicipalityGeoPortal } from "../../interfaces";
+import { 
+    getDepartmentsGeoportal, 
+    getMunicipalities } from "@/services/col_api";
 
-import { useAppDispatch } from '@/store';
+import { useAppDispatch, useAppSelector } from '@/store';
 import { thunkAddPDT } from "@/store/plan/thunks";
-import { getDepartmentCities, getDepartments } from "@/services/col_api";
+import { setIdPlan, setLogo } from "@/store/content/contentSlice";
 
-interface selectOption {
-    id: number
-    name: string
-}
 export const PDTForm = () => {
-    const dispatch = useAppDispatch()
+    const dispatch = useAppDispatch();
     const navigate = useNavigate();
+    const { id_plan } = useAppSelector(state => state.content);
 
-    const fechaInicio = new Date().getFullYear()
+    const fechaInicio = new Date().getFullYear();
 
-    const [departamentOptions, setDepartamentOptions] = useState<selectOption[]|null>(null);
-    const [municipioOptions, setMunicipioOptions] = useState<selectOption[]|null>(null);
-    const [selectedDepartamento, setSelectedDepartamento] = useState<selectOption|null>(null);
+    const [departamentOptions, setDepartamentOptions] = 
+        useState<DepartmentGeoPortal[]|null>(null);
+    const [municipioOptions, setMunicipioOptions] = 
+        useState<MunicipalityGeoPortal[]|null>(null);
+    const [selectedDepartamento, setSelectedDepartamento] = 
+        useState<DepartmentGeoPortal|null>(null);
     const [planData, setPlanData] = useState<PDTInterface>({
         name: "",
         department: "",
-        municipaly: "",
+        municipality: "",
+        id_municipality: "",
         start_date: new Date().getUTCFullYear().toString(),
         end_date: (new Date().getUTCFullYear() + 3).toString(),
         description: "",
     });
 
     useEffect(() => {
-        getDepartments()
-            .then((res) => {
-                setDepartamentOptions([{id: -1, name: ''}, ...res]);
-            });
+        getDepartmentsGeoportal()
+        .then((res) => {
+            const departamentos = res.resultado.map((e: DepartmentGeoPortal) => {
+                return {
+                    CODIGO_DEPARTAMENTO: e.CODIGO_DEPARTAMENTO,
+                    NOMBRE_DEPARTAMENTO: e.NOMBRE_DEPARTAMENTO,
+                };
+            })
+            setDepartamentOptions([{
+                CODIGO_DEPARTAMENTO: '',
+                NOMBRE_DEPARTAMENTO: '',
+            }, ...departamentos]);
+        });
     }, []);
     
     useEffect(() => {
-        if (!selectedDepartamento || selectedDepartamento.id < 0) return
-        getDepartmentCities(selectedDepartamento.id)
-            .then((res) => {
-                setMunicipioOptions([{id: -1, name: ''}, ...res]);
-            });
+        if (!selectedDepartamento || 
+            selectedDepartamento.CODIGO_DEPARTAMENTO === '') return;
+        getMunicipalities(selectedDepartamento.CODIGO_DEPARTAMENTO)
+        .then((res) => {
+            const municipios = res.resultado.map(
+                (e: MunicipalityGeoPortal) => {
+                return {
+                    CODIGO_AREA_METRO: e.CODIGO_AREA_METRO,
+                    CODIGO_DEPARTAMENTO: e.CODIGO_DEPARTAMENTO,
+                    CODIGO_DISTRITO: e.CODIGO_DISTRITO,
+                    CODIGO_DPTO_MPIO: e.CODIGO_DPTO_MPIO,
+                    CODIGO_MUNICIPIO: e.CODIGO_MUNICIPIO,
+                    CODIGO_TIPO_MUNICIPIO: e.CODIGO_TIPO_MUNICIPIO,
+                    NOMBRE_MUNICIPIO: e.NOMBRE_MUNICIPIO,
+                };
+            })
+            setMunicipioOptions([{
+                CODIGO_AREA_METRO: '',
+                CODIGO_DEPARTAMENTO: '',
+                CODIGO_DISTRITO: '',
+                CODIGO_DPTO_MPIO: '',
+                CODIGO_MUNICIPIO: '',
+                CODIGO_TIPO_MUNICIPIO: '',
+                NOMBRE_MUNICIPIO: '',
+            }, ...municipios]);
+        });
     }, [selectedDepartamento]);
 
     const handleInputYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -71,8 +108,9 @@ export const PDTForm = () => {
         setSelectedDepartamento(departamentOptions[parseInt(value)]);
         setPlanData({
             ...planData,
-            department: departamentOptions[parseInt(value)].name,
-            municipaly: ''
+            department: departamentOptions[parseInt(value)].NOMBRE_DEPARTAMENTO,
+            municipality: '',
+            id_municipality: departamentOptions[parseInt(value)].CODIGO_DEPARTAMENTO+'000',
         });
     };
 
@@ -81,20 +119,21 @@ export const PDTForm = () => {
         if (!municipioOptions) return;
         setPlanData({
             ...planData,
-            municipaly: municipioOptions[parseInt(value)].name,
+            municipality: municipioOptions[parseInt(value)].NOMBRE_MUNICIPIO,
+            id_municipality: municipioOptions[parseInt(value)].CODIGO_DPTO_MPIO,
         });
     };
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        await dispatch(thunkAddPDT(planData))
-            .unwrap()
-            .then((res) => {
-                navigate(`/pdt/PlanIndicativo`, { state: { id: res.id_plan } })
-            })
-            .catch((err) => {
-                console.log(err);
-            });
+        dispatch(thunkAddPDT(planData))
+        .then(() => {
+            dispatch(setIdPlan(id_plan));
+            dispatch(setLogo(''));
+            navigate(`/register`, {replace: true});
+        }).catch((err) => {
+            console.log(err);
+        });
     };
 
     const backIconButton = () => {
@@ -106,8 +145,8 @@ export const PDTForm = () => {
                         title="Regresar">
                 <ArrowBackIosIcon/>
             </IconButton>
-        )
-    }
+        );
+    };
 
     return (
         <div className="tw-flex tw-justify-center">
@@ -115,42 +154,52 @@ export const PDTForm = () => {
             <form   onSubmit={handleSubmit}
                     className=" tw-rounded tw-shadow-2xl
                                 tw-p-10">
-                <h1 className="tw-mb-4 tw-grow tw-text-center tw-text-xl">Registrar Plan de Desarrollo</h1>
+                <h1 className=" tw-mb-4 tw-grow 
+                                tw-text-center tw-text-xl tw-font-bold">
+                    Registrar Plan de Desarrollo
+                </h1>
                 <div>
                 <Input  type={"text"}
                         label="Nombre:"
-                        id={"Nombre"}
-                        name={"Nombre"}
-                        value={planData.name}
+                        id={"name"}
+                        name={"name"}
                         onChange={handleInputChange}/>
                 <Select label="Departamento:"
-                        id="Departamento"
-                        name="Departamento"
+                        id="department"
+                        name="department"
                         onChange={handleDepartmentChange}
                         options={departamentOptions ? departamentOptions : []}
-                        optionLabelFn={(e, i) => <option key={e.id} value={i}>{e.name}</option>}
+                        optionLabelFn={(e, i) => 
+                            <option key={e.CODIGO_DEPARTAMENTO} 
+                                value={i}>{e.NOMBRE_DEPARTAMENTO}
+                            </option>}
                 />
                 <Select label="Municipio:"
-                        id="Municipio"
-                        name="Municipio"
+                        id="municipality"
+                        name="municipality"
                         onChange={handleMunicipioChange}
                         options={municipioOptions ? municipioOptions : []}
-                        optionLabelFn={(e, i) => <option key={e.id} value={i}>{e.name}</option>}
+                        optionLabelFn={(e, i) => 
+                            <option key={e.CODIGO_MUNICIPIO} value={i}>
+                                {e.NOMBRE_MUNICIPIO}
+                            </option>}
                         disabled={!selectedDepartamento}
                 />
                 <Input  type={"text"}
                         label="Descripción:"
-                        id={"Descripcion"}
-                        name={"Descripcion"}
-                        value={planData.description}
+                        id={"description"}
+                        name={"description"}
                         onChange={handleInputChange}/>
 
                 <Select label="Fecha de inicio:"
-                        id="Fecha_inicio"
-                        name="Fecha_inicio"
+                        id="start_date"
+                        name="start_date"
                         onChange={handleInputYearChange}
                         options={Array.from(Array(5).keys())}
-                        optionLabelFn={(e) => <option key={e} value={fechaInicio + e}>{fechaInicio + e}</option>}
+                        optionLabelFn={(e) => 
+                            <option key={e} value={fechaInicio + e}>
+                                {fechaInicio + e}
+                            </option>}
                 />
                 </div>
                 <div className="tw-flex tw-justify-center">
@@ -158,12 +207,13 @@ export const PDTForm = () => {
                             value="Registrar Plan"
                             title="Añadir plan"
                             className=" tw-bg-green-500 hover:tw-bg-green-300
-                                        tw-text-white tw-font-bold hover:tw-text-black
+                                        tw-text-white tw-font-bold 
+                                        hover:tw-text-black
                                         tw-rounded
                                         tw-p-2"
                     />
                 </div>
             </form>
         </div>
-    )
+    );
 }

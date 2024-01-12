@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import * as Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 
@@ -9,12 +9,13 @@ import { setType } from '@/store/chart/chartSlice';
 import { GraphProps } from '@/interfaces';
 import {  } from '@/services/api';
 import { ModalTotalPDT, ModalSecretary, ModalProgram } from '../Modals';
-
+import { decode } from "@/utils";
 
 export const Graph = ( props: GraphProps ) => {
     const dispatch = useAppDispatch();
     const chartComponentRef = useRef<HighchartsReact.RefObject>(null);
 
+    const { token_info } = useAppSelector(state => state.auth);
     const { colorimeter, radioBtn, nodes } = useAppSelector(store => store.plan);
     const { type } = useAppSelector(store => store.chart);
     const [indexType, setIndexType] = useState(0);
@@ -37,13 +38,22 @@ export const Graph = ( props: GraphProps ) => {
         },
     ];
 
+    const [rol, setRol] = useState("");
+
     const categories = nodes.map((node) => node.name);
     const pieValues = props.dataValues.map((value, index) => {
         return {
             name: categories[index],
-            y: value,
+            y: value
         }
     });
+
+    useEffect(() => {
+        if (token_info?.token !== undefined) {
+            const decoded = decode(token_info.token);
+            setRol(decoded.rol);
+        }
+    }, []);
 
     const options: Highcharts.Options = {
         title: {
@@ -81,12 +91,22 @@ export const Graph = ( props: GraphProps ) => {
                 ],
             },
         ],
+        yAxis: {
+            title: {
+                text: radioBtn === 'fisica' ? 'Percentages de ejecución fisica' : 'Ejecución financiera',
+            },
+            labels: {
+                formatter: function () {
+                    return this.value + (radioBtn === 'fisica' ? '' : 'M');
+                },
+            },
+        },
         series: [
             {
-                name: 'Porcentaje año',
+                name: radioBtn === 'fisica' ? 'Percentages de ejecución fisica año' : 'Ejecución financiera año',
                 type: type === 'donut' ? 'pie' : type.valueOf() as any,
                 data: pieValues,
-                zones: [
+                zones: radioBtn === 'fisica' ? [
                     {
                         value: colorimeter[0]/100,
                         color: '#FE1700',
@@ -102,7 +122,7 @@ export const Graph = ( props: GraphProps ) => {
                     {
                         color: '#008DCC',
                     },
-                ],
+                ] : undefined,
                 size: type === 'donut' ? '100%' : undefined,
                 innerSize: type === 'donut' ? '70%' : undefined,
                 dataLabels: {
@@ -118,7 +138,7 @@ export const Graph = ( props: GraphProps ) => {
         const value = typeList[newIndex].value;
         dispatch(setType(value));
         setIndexType(newIndex);
-    }
+    };
 
     return (
         <div className="tw-flex tw-flex-col 
@@ -137,27 +157,27 @@ export const Graph = ( props: GraphProps ) => {
                         className='tw-border tw-self-start tw-p-2 tw-m-2'>
                     {typeList.map((type, index)=>(<option value={type.value} key={index}>{type.type}</option>))}
                 </select>
-                <div className='tw-flex tw-flex-col tw-ml-10 tw-mt-3'>
-                    <label>
-                        <input  type="radio" name='fisica' value='fisica'
-                                className='tw-mr-2'
-                                onChange={ ()=> dispatch(setRadioBtn('fisica'))}
-                                checked={radioBtn === 'fisica'}/>
-                        Ejecución fisica
-                    </label>
-                    <label htmlFor="">
-                        <input  type="radio" name='financiera' value='financiera'
-                                className='tw-mr-2'
-                                onChange={ ()=> dispatch(setRadioBtn('financiera'))}
-                                checked={radioBtn === 'financiera'}/>
-                            Ejecución financiera
-                    </label>
+                <div className='tw-ml-10 tw-mt-3'>
+                    <input  type="radio"
+                            id='fisica'
+                            className='tw-mr-2'
+                            onChange={ ()=> dispatch(setRadioBtn('fisica'))}
+                            checked={radioBtn === 'fisica'}/>
+                    <label htmlFor='fisica'>Ejecución fisica</label><br />
+                    <input  type="radio"
+                            id='financiera'
+                            className='tw-mr-2'
+                            onChange={ ()=> dispatch(setRadioBtn('financiera'))}
+                            checked={radioBtn === 'financiera'}/>
+                    <label htmlFor="financiera">Ejecución financiera</label>
                 </div>
+                {rol === '' ? null :
                 <div className='tw-flex tw-justify-around'>
                     <ModalProgram />
                     <ModalSecretary />
                     <ModalTotalPDT />
                 </div>
+                }
             </div>
             <div className='tw-w-full md:tw-w-1/2 tw-shadow-2xl'>
                 <HighchartsReact
@@ -167,5 +187,5 @@ export const Graph = ( props: GraphProps ) => {
                     containerProps={{ style: {width: '100%', height:'100%'} }}/>
             </div>
         </div>
-    )
+    );
 }

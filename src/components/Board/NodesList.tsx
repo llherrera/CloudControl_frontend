@@ -9,9 +9,9 @@ import {incrementLevelIndex,
         setFinancial } from '@/store/plan/planSlice';
 import { setNode } from "@/store/content/contentSlice";
 
-import {NodoInterface, 
-        PesosNodos, 
-        Porcentaje, 
+import {NodeInterface, 
+        NodesWeight, 
+        Percentages, 
         NodeListProps } from '@/interfaces';
 import { Spinner } from '@/assets/icons';
 
@@ -27,16 +27,16 @@ export const NodesList = ( props : NodeListProps ) => {
             loadingNodes } = useAppSelector(store => store.plan);
     const { mode } = useAppSelector(store => store.content);
     const [ pesos, setPesos ] = useState<number[]>(
-        nodes.map((item: NodoInterface) => item.weight)
+        nodes.map((item: NodeInterface) => item.weight)
     );
 
     useEffect(() => {
-        const ids = nodes.map((item: NodoInterface) => item.id_node);
+        const ids = nodes.map((item: NodeInterface) => item.id_node);
         getProgress(ids);
     }, [yearSelect, nodes]);
 
     const getProgress = (ids: string[]) => {
-        const pesosStr = localStorage.getItem('pesosNodo');
+        const pesosStr = localStorage.getItem('UnitNode');
         if (pesosStr == undefined) 
             return 0;
         let pesosNodo = [];
@@ -48,22 +48,24 @@ export const NodesList = ( props : NodeListProps ) => {
         let progreso = [] as number[];
         let programacion = [] as number[];
         let financiacion = [] as number[];
-        pesosNodo.forEach((item: PesosNodos) => {
-            if (ids.includes(item.id_node)) {
-                const { percents } = item;
-                if (percents) {
-                    percents.forEach((porcentaje: Porcentaje) => {
-                        if (porcentaje.year === yearSelect) {
-                            progreso.push(porcentaje.progress);
-                            programacion.push(porcentaje.physical_programming);
-                            financiacion.push(porcentaje.financial_execution);
-                        }
-                    });
-                }else {
-                    progreso.push(-1);
-                    programacion.push(-1);
-                    financiacion.push(-1);
-                }
+        let nodes_s: NodesWeight[] = pesosNodo.filter((itemFull: NodesWeight) => 
+            nodes.some(itemFilter => itemFilter.id_node === itemFull.id_node));
+
+        nodes_s.sort((a,b)=>a.id_node.length - b.id_node.length)
+        nodes_s.forEach((item: NodesWeight) => {
+            const { percents } = item;
+            if (percents) {
+                percents.forEach((percentages: Percentages) => {
+                    if (percentages.year === yearSelect) {
+                        progreso.push(percentages.progress);
+                        programacion.push(percentages.physical_programming);
+                        financiacion.push(percentages.financial_execution);
+                    }
+                });
+            }else {
+                progreso.push(-1);
+                programacion.push(-1);
+                financiacion.push(-1);
             }
         });
         dispatch(setProgressNodes(progreso));
@@ -90,24 +92,20 @@ export const NodesList = ( props : NodeListProps ) => {
 
     const hangleSubmitUpdateWeight = () => {
         const acmu = pesos.reduce((a, b) => a + b, 0);
-        if (acmu !== 100) {
-            alert('La suma de los pesos debe ser 100');
-            return;
-        }
+        if (acmu !== 100) 
+            return alert('La suma de los pesos debe ser 100');
         const ids = nodes.map((item) => item.id_node);
         dispatch(thunkUpdateWeight({ids: ids, weights: pesos}));
     };
 
     return (
         nodes.length === 0 ? null :
-        <ul className={`${indexLevel === levels.length-1 ? 
+        (loadingNodes ?
+        <Spinner />
+        :<ul className={`${indexLevel === levels.length-1 ? 
                         'tw-flex tw-flex-row tw-flex-wrap':
-                        'tw-flex-col tw-flex-wrap'} `}>
-            {loadingNodes ?
-            <div className='tw-flex tw-justify-center tw-items-center tw-h-80'>
-                <Spinner />
-            </div>:<div>
-            {nodes.map((item: NodoInterface, index: number) => {
+                        'tw-flex-col tw-flex-wrap'} `} >
+            {nodes.map((item: NodeInterface, index: number) => {
                 return(
                 <div className="tw-my-2 tw-flex tw-transition hover:tw-scale-110"
                     key={index}>
@@ -153,17 +151,17 @@ export const NodesList = ( props : NodeListProps ) => {
                         <p>{item.name}</p>
                     </button>
                     :null}
-                    {mode ? 
-                    <input  className=' tw-px-2 tw-mx-2 
+                    <input  className={`tw-px-2 tw-mx-2 
                                         tw-border tw-rounded
-                                        tw-w-12'
+                                        tw-w-12
+                                        ${mode ? '' : 'tw-hidden'}`}
                             type='number'
                             placeholder='peso'
                             value={ isNaN(pesos[index]) ? 0 : pesos[index]}
                             onChange={(e)=>handleUpdateWeight(index, e)}/> 
-                    : null}
                 </div>
-            )})}
+                );
+            })}
             {mode ?
             <div className='tw-flex tw-justify-center'>
                 <button className='tw-px-2 tw-mx-2 
@@ -173,9 +171,7 @@ export const NodesList = ( props : NodeListProps ) => {
                         onClick={hangleSubmitUpdateWeight}>
                     Guardar
                 </button>
-            </div>
-            : null}
-            </div>}
-        </ul>
+            </div>:null}
+        </ul>)
     );
 }

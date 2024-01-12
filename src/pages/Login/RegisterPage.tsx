@@ -1,15 +1,13 @@
-import { useLocation } from 'react-router-dom';
-import { RegisterForm } from '../../components';
-import { Frame } from '../../components';
+import { Frame, RegisterForm } from '../../components';
+
+import { useAppSelector } from '@/store';
 
 export const RegisterPage = () => {
-    const location = useLocation();
-    const id = location.state?.id;
-    const id_ = parseInt(id!);
+    const { id_plan } = useAppSelector(state => state.content);
 
     return (
         <Frame data={
-            <RegisterForm id={id_}/>
+            <RegisterForm id={id_plan}/>
         }/>
     );
 }

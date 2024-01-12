@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 
 import { useAppDispatch, useAppSelector } from "@/store";
-import { thunkUpdateYears } from "@/store/plan/thunks";
+import { thunkUpdateYears, thunkGetLevelsById } from "@/store/plan/thunks";
 import { incrementLevelIndex } from "@/store/plan/planSlice";
 
 import { LevelForm, Board, Frame } from "../../components";
@@ -12,6 +12,10 @@ export const PDTid = () => {
 
     const { levels, indexLevel, plan } = useAppSelector(store => store.plan);
     const { id_plan } = useAppSelector(store => store.content);
+
+    useEffect(() => {
+        dispatch(thunkGetLevelsById(id_plan.toString()));
+    }, []);
 
     useEffect(() => {
         if (plan){

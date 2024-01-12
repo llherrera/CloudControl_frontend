@@ -5,35 +5,43 @@ import { useAppDispatch, useAppSelector } from "@/store";
 import { thunkGetNodes } from "@/store/plan/thunks";
 import { decrementLevelIndex, setParent } from "@/store/plan/planSlice";
 import { setMode } from "@/store/content/contentSlice";
+import IconButton from "@mui/material/IconButton";
+import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 
-import { Token, ContentProps } from "@/interfaces";
-import { NodeForm, NodesList, TimeLine, Graph,
-         BackBtn, SettingsBtn } from "@/components";
-import { getToken, decode } from "@/utils";
+import { ContentProps } from "@/interfaces";
+import { 
+    NodeForm, 
+    NodesList, 
+    TimeLine, 
+    Graph,
+    BackBtn, 
+    SettingsBtn } from "@/components";
+import { decode } from "@/utils";
 
 export const Content = ( props : ContentProps ) => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
 
-    const { plan, years, indexLevel, levels, 
-        parent, progressNodes, financial, 
-        radioBtn, nodes } = useAppSelector(store => store.plan);
+    const { token_info } = useAppSelector(state => state.auth);
+    const { plan,
+            years,
+            indexLevel,
+            levels,
+            parent,
+            progressNodes,
+            financial,
+            radioBtn,
+            nodes } = useAppSelector(store => store.plan);
     const { mode } = useAppSelector(store => store.content);
 
     const [rol, setRol] = useState("");
     const [id, setId] = useState(0);
 
     useEffect(() => {
-        const gettoken = getToken();
-        try {
-            const {token} = gettoken ? gettoken : null;
-            if (token !== null && token !== undefined) {
-                const decoded = decode(token) as Token;
-                setId(decoded.id_plan);
-                setRol(decoded.rol);
-            }
-        } catch (error) {
-            console.log(error);
+        if (token_info?.token !== undefined) {
+            const decoded = decode(token_info.token);
+            setRol(decoded.rol);
+            setId(decoded.id_plan);
         }
     }, []);
 
@@ -61,13 +69,11 @@ export const Content = ( props : ContentProps ) => {
         }
     };
 
-    const handleSettings = () => {
-        navigate(`/pdt/PlanIndicativo/configuracion`, {state: {id: props.id}});
-    };
+    const handleSettings = () => navigate(`/pdt/PlanIndicativo/configuracion`);
 
-    const handleMode = () => {
-        dispatch(setMode(!mode))
-    }
+    const handleMode = () => dispatch(setMode(!mode));
+
+    const handleAddUser = () => navigate(`/register`);
 
     return (
         <div className="tw-h-full tw-border
@@ -81,7 +87,18 @@ export const Content = ( props : ContentProps ) => {
                             tw-text-center
                             md:tw-text-left">
                 Plan indicativo
+                {rol === '' ? null :
                 <SettingsBtn handle={handleSettings} id={props.id}/>
+                }
+                {rol === 'admin' || (rol === 'funcionario' && id === props.id) ?
+                <IconButton color="success"
+                            aria-label="delete"
+                            onClick={() => handleAddUser()}
+                            title="Agregar funcionario al plan">
+                    <PersonAddAltIcon/>
+                </IconButton>
+                : null
+                }
             </h1>
             <div className="tw-grid tw-grid-cols-1 md:tw-grid-cols-3 tw-mb-2">
 
@@ -111,6 +128,7 @@ export const Content = ( props : ContentProps ) => {
                     <p className="tw-ml-4 tw-mt-3 tw-font-montserrat tw-font-bold">
                         <BackBtn handle={handleBack} id={props.id}/>
                         {levels[indexLevel!].name}
+                        {rol === '' ? null :
                         <button className={`tw-ml-4 tw-p-2 
                                             tw-rounded
                                             ${mode? 'tw-bg-red-300 hover:tw-bg-red-500' :
@@ -118,6 +136,7 @@ export const Content = ( props : ContentProps ) => {
                                 onClick={handleMode}>
                             Editar
                         </button>
+                        }
                     </p>
                     <div className="tw-pb-1 tw-mb-2">
                         {nodes.length === 0 ?

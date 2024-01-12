@@ -1,8 +1,8 @@
 import { ErrorTypeInterface } from "./common";
 import { 
     PDTInterface, 
-    NivelInterface, 
-    NodoInterface, 
+    LevelInterface, 
+    NodeInterface, 
     LocationInterface } from "./formInterfaces";
 import { Coordinates } from "./ubication";
 import { Secretary } from "./secretary";
@@ -28,11 +28,11 @@ export interface InitialStatePlanInterface {
     plan?: PDTInterface;
     colorimeter: number[];
     color?: boolean;
-    nodes: NodoInterface[];
+    nodes: NodeInterface[];
     nodesReport: Node[];
     years: number[];
     yearSelect?: number;
-    levels: NivelInterface[];
+    levels: LevelInterface[];
     indexLevel: number | undefined;
     parent: string | null;
     progressNodes: number[];
@@ -63,7 +63,7 @@ export interface AddColorsProps {
     colors: number[];
 }
 
-export interface Nivel {
+export interface Level {
     id_plan: number;
     name: string;
     description: string;
@@ -84,6 +84,22 @@ export interface ExcelPlan {
     ProgramadoAño3: number | null;
     ProgramadoAño4: number | null;
     Responsable: string | null;
+}
+
+export interface ExcelFinancial {
+    IdNodo: string;
+    Año1: number | null;
+    Año2: number | null;
+    Año3: number | null;
+    Año4: number | null;
+}
+
+export interface ExcelPhysical {
+    IdNodo: string;
+    Año1: number | null;
+    Año2: number | null;
+    Año3: number | null;
+    Año4: number | null;
 }
 
 export interface UpdateWProps {

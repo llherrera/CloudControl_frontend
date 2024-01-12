@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import { notify } from '@/utils';
 
 import { useAppDispatch } from '../../store';
 import { thunkLogin } from '../../store/auth/thunks';
@@ -26,22 +28,22 @@ export const LoginForm = () => {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         await dispatch(thunkLogin(user))
-            .unwrap()
-            .then((res) => {
-                if (res === undefined) return alert("Usuario o contraseña incorrectos");
-                const info = decode(res.token);
-                info.rol === "admin" ? 
-                navigate('/pdt') :
-                (info.rol === "funcionario" || info.rol === 'planeacion' || info.rol === 'sectorialista') ?
-                (
-                    dispatch(setIdPlan(info.id_plan)),
-                    navigate('/pdt/PlanIndicativo', {state: {id: info.id_plan}})
-                ) :
-                navigate('/')
-            })
-            .catch((err) => {
-                console.log(err)
-            }
+        .unwrap()
+        .then((res) => {
+            if (res === undefined) return alert("Usuario o contraseña incorrectos");
+            const info = decode(res.token);
+            info.rol === "admin" ? 
+            navigate('/pdt') :
+            (info.rol === "funcionario" || info.rol === 'planeacion' || info.rol === 'sectorialista') ?
+            (
+                dispatch(setIdPlan(info.id_plan)),
+                navigate('/lobby')
+            ) :
+            navigate('/')
+        })
+        .catch(() => {
+            notify("Error, usuario o contraseña erronea");
+        }
         );
     };
 
@@ -75,6 +77,7 @@ export const LoginForm = () => {
             <input  type="button" 
                     value={'¿Olvidaste tu contraseña?'}
                     className='tw-pb-10 hover:tw-bg-black-50' />
+            <ToastContainer />
         </form>
     );
 }

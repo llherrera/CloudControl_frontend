@@ -18,7 +18,8 @@ export interface PDTInterface {
     id_plan?: number;
     name: string;
     department: string;
-    municipaly: string;
+    municipality: string;
+    id_municipality: string;
     description: string;
     start_date: string;
     end_date: string;
@@ -26,13 +27,13 @@ export interface PDTInterface {
     logo_link_city?: string;
 }
 
-export interface NivelInterface {
+export interface LevelInterface {
     id_level?: number;
     name: string;
     description: string;
 }
 
-export interface NodoInterface {
+export interface NodeInterface {
     id_node: string;
     name: string;
     description: string;

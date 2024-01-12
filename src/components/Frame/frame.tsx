@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IconButton } from '@mui/material';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -9,8 +9,11 @@ import { thunkLogout } from '@/store/auth/thunks';
 import { setLogo } from '@/store/content/contentSlice';
 
 import { NavBar } from '..';
-import { BancoProyectoIcon, PlanIndicativoIcon, 
-        POAIIcon, MapICon } from '../../assets/icons';
+import { 
+    BancoProyectoIcon, 
+    PlanIndicativoIcon, 
+    POAIIcon, 
+    MapICon } from '../../assets/icons';
 import { FrameProps } from '@/interfaces';
 
 export const Frame = (props: FrameProps) => {
@@ -18,7 +21,7 @@ export const Frame = (props: FrameProps) => {
     const dispatch = useAppDispatch();
 
     const { plan } = useAppSelector(state => state.plan);
-    const { index, id_plan, url_logo } = useAppSelector(store => store.content);
+    const { index, url_logo } = useAppSelector(store => store.content);
     
     const bgcolor='greenBtn';
     const logocolor='#008432';
@@ -27,7 +30,7 @@ export const Frame = (props: FrameProps) => {
     const buttons = [
         {
             inside: true,
-            onClick: () => navigate('/pdt/PlanIndicativo', {state: {id: id_plan}}), 
+            onClick: () => navigate('/pdt/PlanIndicativo'), 
             text: 'Plan indicativo', 
             bgColor: bgcolor,
             textColor: textcolor,
@@ -35,7 +38,7 @@ export const Frame = (props: FrameProps) => {
         },
         {
             inside: true, 
-            onClick: () => navigate('/PlanIndicativo/Banco-proyectos', {state: {id: id_plan}}), 
+            onClick: () => navigate('/PlanIndicativo/Banco-proyectos'), 
             text: 'Banco de proyectos', 
             bgColor: bgcolor,
             textColor: textcolor,
@@ -43,7 +46,7 @@ export const Frame = (props: FrameProps) => {
         },
         {
             inside: true, 
-            onClick: () => navigate('/PlanIndicativo/POAI', {state: {id: id_plan}}), 
+            onClick: () => navigate('/PlanIndicativo/POAI'), 
             text: 'POAI', 
             bgColor: bgcolor,
             textColor: textcolor,
@@ -51,7 +54,7 @@ export const Frame = (props: FrameProps) => {
         },
         {
             inside: true, 
-            onClick: () => navigate('/PlanIndicativo/Mapa', {state: {id: id_plan}}),
+            onClick: () => navigate('/PlanIndicativo/Mapa'),
             text: 'Mapa de intervención', 
             bgColor: bgcolor,
             textColor: textcolor,
@@ -65,15 +68,17 @@ export const Frame = (props: FrameProps) => {
             if (logo_link_plan) {
                 dispatch(setLogo(logo_link_plan));
             }
+        } else {
+            dispatch(setLogo(''));
         }
     }, []);
 
     const handleBtn = () => {
         dispatch(thunkLogout())
-            .unwrap()
-            .then(() => {
-                navigate('/')
-            })
+        .unwrap()
+        .then(() => {
+            navigate('/');
+        });
     };
 
     return (
@@ -92,5 +97,5 @@ export const Frame = (props: FrameProps) => {
                 </div>
             </div>
         </div>
-    )
+    );
 }

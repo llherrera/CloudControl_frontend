@@ -1,20 +1,20 @@
 import { useNavigate } from "react-router-dom";
 
 import { useAppDispatch } from "@/store";
-import { setEvidence, resetPoints } from "@/store/evidence/evidenceSlice";
+import { setEvidence, setPoints } from "@/store/evidence/evidenceSlice";
 
 import { EvidenceInterface } from "@/interfaces";
 
 interface Props {
     evidence: EvidenceInterface;
-}
+};
 
 export const MyEvidence = ({evidence}: Props) => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
 
     const handleUpdate = () => {
-        dispatch(resetPoints());
+        dispatch(setPoints([]));
         dispatch(setEvidence(evidence));
         navigate(`/PlanIndicativo/evidencia`);
     };

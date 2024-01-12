@@ -1,16 +1,16 @@
-export interface Porcentaje {
+export interface Percentages {
     progress: number;
     year: number;
     physical_programming: number;
     financial_execution: number;
 }
 
-export interface PesosNodos {
+export interface NodesWeight {
     name: string;
     id_node: string;
     weight: number;
     parent: string | null;
-    percents: Porcentaje[] | null;
+    percents: Percentages[] | null;
 }
 
 export interface YearDetail {

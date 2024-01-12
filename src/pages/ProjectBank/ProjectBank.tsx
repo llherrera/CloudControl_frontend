@@ -8,5 +8,5 @@ export const ProjectBank = () => {
                 <h1>ProjectBank</h1>
             </div>}
         />
-    )
+    );
 }

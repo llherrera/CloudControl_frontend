@@ -15,37 +15,32 @@ export const SecretaryForm = () => {
     const addSecretary = () => {
         const newData = [...data, { name: "", id_plan: plan?.id_plan!, email: "", phone: 0 }];
         setData(newData);
-    }
+    };
 
     const deleteSecretary = () => {
         const newData = data.slice(0, -1);
         setData(newData);
-    }
+    };
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>, index: number) => {
         const { name, value } = event.target;
         const newData = [...data];
         newData[index] = { ...newData[index], [name]: value };
         setData(newData);
-    }
+    };
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         data.forEach((secretary) => {
-            if (secretary.name === "" || secretary.email === "" || secretary.phone === 0) {
-                alert("Por favor llene todos los campos");
-                return;
-            }
-            if (!validateEmail(secretary.email)) {
-                alert("El correo no es válido");
-                return;
-            }
+            if (secretary.name === "" || secretary.email === "" || secretary.phone === 0)
+                return alert("Por favor llene todos los campos");
+            if (!validateEmail(secretary.email))
+                return alert("El correo no es válido");
         })
-        if (secretaries) {
+        if (secretaries)
             dispatch(thunkUpdateSecretaries({ id_plan: plan?.id_plan!, secretaries: data }));
-        } else {
+        else
             dispatch(thunkAddSecretaries({ id_plan: plan?.id_plan!, secretaries: data}));
-        }
     }
 
     return (

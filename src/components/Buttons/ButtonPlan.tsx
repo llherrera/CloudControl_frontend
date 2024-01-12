@@ -1,4 +1,4 @@
-import { BtnPlanProps } from '@/interfaces'
+import { BtnPlanProps } from '@/interfaces';
 
 export const ButtonPlan = (props: BtnPlanProps) => {
     return (
@@ -16,5 +16,5 @@ export const ButtonPlan = (props: BtnPlanProps) => {
                 {props.text}
             </p>
         </button>
-    )
+    );
 }

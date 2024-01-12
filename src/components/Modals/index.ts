@@ -1,3 +1,3 @@
-export * from './ModalTotalPDT'
-export * from './ModalSecretary'
-export * from './ModelProgram'
+export * from './ModalTotalPDT';
+export * from './ModalSecretary';
+export * from './ModelProgram';

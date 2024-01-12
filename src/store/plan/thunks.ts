@@ -1,20 +1,21 @@
 import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
 
-import { PDTInterface, 
-        ErrorBasicInterface, 
-        GetNodeProps, 
-        AddColorsProps, 
-        NivelInterface, 
-        Nivel, 
-        Secretary, 
-        PropsSecretary, 
-        PropsLocations, 
+import { PDTInterface,
+        ErrorBasicInterface,
+        GetNodeProps,
+        AddColorsProps,
+        LevelInterface,
+        Level,
+        Secretary,
+        PropsSecretary,
+        PropsLocations,
         LocationInterface,
         UpdateWProps } from '../../interfaces';
 import { parseErrorAxios } from '../../utils';
 
 import {getPDTid, 
-        addPDT, 
+        addPDT,
+        getLastPDT,
         getColors, 
         getLevelNodes, 
         addColor,
@@ -28,13 +29,24 @@ import {getPDTid,
         updateSecretaries,
         updateWeights } from '@/services/api';
 
-
-
 export const thunkGetPDTid = createAsyncThunk<PDTInterface, string, { rejectValue: ErrorBasicInterface }>(
     'pdt/getPDTid',
     async (props: string, { rejectWithValue }) => {
         try {
             const res = await getPDTid(props);
+            return res;
+        } catch (err) {
+            const result = parseErrorAxios(err);
+            return rejectWithValue(result);
+        }
+    }
+)
+
+export const thunkGetLastPDT = createAsyncThunk<PDTInterface, void, { rejectValue: ErrorBasicInterface }>(
+    'pdt/getLastPDT',
+    async (props: void, { rejectWithValue }) => {
+        try {
+            const res = await getLastPDT();
             return res;
         } catch (err) {
             const result = parseErrorAxios(err);
@@ -84,7 +96,7 @@ export const thunkAddColors = createAsyncThunk<number[], AddColorsProps, { rejec
     async (props: AddColorsProps, { rejectWithValue }) => {
         try {
             const res = await addColor(props.id_plan, props.colors);
-            return res;
+            return res.result;
         } catch (err) {
             const result = parseErrorAxios(err);
             return rejectWithValue(result);
@@ -97,7 +109,7 @@ export const thunkUpdateColors = createAsyncThunk<number[], AddColorsProps, { re
     async (props: AddColorsProps, { rejectWithValue }) => {
         try {
             const res = await updateColor(props.id_plan, props.colors);
-            return res;
+            return res.result;
         } catch (err) {
             const result = parseErrorAxios(err);
             return rejectWithValue(result);
@@ -137,14 +149,14 @@ export const thunkUpdateYears = createAction('plan/updateYears', (years:number[]
     }
 })
 
-export const thunkGetLevelsById = createAsyncThunk<NivelInterface[], string, { rejectValue: ErrorBasicInterface }>(
+export const thunkGetLevelsById = createAsyncThunk<LevelInterface[], string, { rejectValue: ErrorBasicInterface }>(
     'pdt/getLevelsId',
     async (props: string, {rejectWithValue}) => {
         try {
             const res = await getPDTLevelsById(props);
             const resArr = [...res];
-            const temp = [] as NivelInterface[];
-            resArr.forEach((item: Nivel) => {
+            const temp = [] as LevelInterface[];
+            resArr.forEach((item: Level) => {
                 temp.push({
                     id_level: item.id_level,
                     name: item.name,
@@ -213,7 +225,7 @@ export const thunkUpdateSecretaries = createAsyncThunk<Secretary[], PropsSecreta
 
 export const thunkAddLocations = createAsyncThunk<LocationInterface[], PropsLocations, { rejectValue: ErrorBasicInterface }>(
     'pdt/addLocations',
-    async (props: any, { rejectWithValue }) => {
+    async (props: PropsLocations, { rejectWithValue }) => {
         try {
             const { id_plan, locations } = props;
             const res = await addLocations(id_plan, locations);

@@ -1,5 +1,4 @@
-import React from 'react';
-import { useAppSelector, useAppDispatch } from '../../store'
+import { useAppSelector, useAppDispatch } from '../../store';
 import { selectOption } from '@/store/content/contentSlice';
 
 import { ButtonComponent } from '../Buttons';

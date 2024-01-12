@@ -77,32 +77,36 @@ export const EvidenceDetail = ( {evi, index}: EvidenceDetailProps ) => {
                                     tw-text-white hover:tw-text-black
                                     tw-rounded 
                                     tw-py-1 tw-px-2"
-                        onClick={()=>handleBtnApprove(1)}>Aprobar</button>
+                        onClick={()=>handleBtnApprove(1)}>
+                    Aprobar
+                </button>
                 <button className="tw-bg-redBtn hover:tw-bg-red-400 
                                     tw-text-white hover:tw-text-black
                                     tw-rounded 
                                     tw-py-1 tw-px-2 tw-mt-1"
-                        onClick={()=>handleBtnApprove(2)}>Rechazar</button>
-            <Modal  isOpen={modalIsOpen}
-                    onRequestClose={()=>setModalIsOpen(false)}>
-                <div className="tw-flex tw-flex-col tw-items-center tw-justify-center tw-p-4">
-                    <p className="tw-text-2xl tw-font-bold">Ingrese el motivo del rechazo</p>
-                    <textarea   className=" tw-border 
-                                            tw-rounded tw-shadow-lg
-                                            tw-mt-2
-                                            tw-w-full tw-h-32 tw-p-2"
-                                onChange={(e)=>onChangeReason(e)}
-                                value={reason} 
-                                required/>
-                    <button className="tw-bg-blue-600 hover:tw-bg-blue-400 
-                                    tw-text-white hover:tw-text-black
-                                    tw-rounded
-                                    tw-p-3 tw-mt-3"
-                            onClick={handleInputModal}>
-                        Enviar
-                    </button>
-                </div>
-            </Modal>
+                        onClick={()=>handleBtnApprove(2)}>
+                    Rechazar
+                </button>
+                <Modal  isOpen={modalIsOpen}
+                        onRequestClose={()=>setModalIsOpen(false)}>
+                    <div className="tw-flex tw-flex-col tw-items-center tw-justify-center tw-p-4">
+                        <p className="tw-text-2xl tw-font-bold">Ingrese el motivo del rechazo</p>
+                        <textarea   className=" tw-border 
+                                                tw-rounded tw-shadow-lg
+                                                tw-mt-2
+                                                tw-w-full tw-h-32 tw-p-2"
+                                    onChange={(e)=>onChangeReason(e)}
+                                    value={reason} 
+                                    required/>
+                        <button className="tw-bg-blue-600 hover:tw-bg-blue-400 
+                                        tw-text-white hover:tw-text-black
+                                        tw-rounded
+                                        tw-p-3 tw-mt-3"
+                                onClick={handleInputModal}>
+                            Enviar
+                        </button>
+                    </div>
+                </Modal>
             </th>
         </tr>
     );

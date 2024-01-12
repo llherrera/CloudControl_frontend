@@ -1,22 +1,20 @@
-import { useEffect } from 'react'
-import { Route, Routes } from 'react-router-dom'
+import { Route, Routes } from 'react-router-dom';
 
-import { useAppSelector } from '../store'
+import { useAppSelector } from '../store';
 
-import { PrivateRouter } from './adminRouter'
-import { PublicRouter } from './publicRouter'
-import { OfficerRouter } from './funcionarioRoutes'
-import { SecretaryRouter } from './secretaryRouter'
-import { SectorialistRouter } from './sectorialistRouter'
+import { PrivateRouter } from './adminRouter';
+import { PublicRouter } from './publicRouter';
+import { OfficerRouter } from './funcionarioRoutes';
+import { PlanningRouter } from './planningRouter';
+import { SectorialistRouter } from './sectorialistRouter';
 
-import { decode } from '@/utils'
-import { Token } from '@/interfaces'
+import { decode } from '@/utils';
 
 export const AppRouter = () => {
-    const { logged, token_info } = useAppSelector(store => store.auth)
+    const { logged, token_info } = useAppSelector(store => store.auth);
     let token;
     if (token_info) 
-        token = decode(token_info.token).rol
+        token = decode(token_info.token).rol;
 
     return logged ? (
         token === 'admin' ? (
@@ -29,7 +27,7 @@ export const AppRouter = () => {
             </Routes>
         ): token === 'planeacion' ? (
             <Routes>
-                
+                <Route path="*" element={<PlanningRouter />} />
             </Routes>
         ): token === 'sectorialista' ? (
             <Routes>

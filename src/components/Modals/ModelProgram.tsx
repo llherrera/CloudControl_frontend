@@ -8,26 +8,35 @@ import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 import IconButton from "@mui/material/IconButton";
 import { Spinner } from "@/assets/icons";
 
-import { PesosNodos, Porcentaje, ReportPDTInterface, 
-        YearDetail, NodoInterface, Node } from "@/interfaces";
+import { 
+    NodesWeight, 
+    Percentages, 
+    ReportPDTInterface, 
+    YearDetail, 
+    NodeInterface, 
+    Node } from "@/interfaces";
 import { getLevelName, getLevelNodes } from "@/services/api";
 import { exportFile } from "@/utils";
 
 export const ModalProgram = () => {
     const dispatch = useAppDispatch();
 
-    const { levels, nodesReport, years, loadingReport, colorimeter } = useAppSelector((state) => state.plan);
-    let levels_ = levels.slice(0, -1)
+    const { levels, 
+            nodesReport, 
+            years, 
+            loadingReport, 
+            colorimeter } = useAppSelector((state) => state.plan);
+    let levels_ = levels.slice(0, -1);
 
     const [modalProgramsIsOpen, setModalProgramsIsOpen] = useState(false);
     const [data, setData] = useState<ReportPDTInterface[]>([]);
-    const [programs, setPrograms] = useState<NodoInterface[][]>([])
-    const [index_, setIndex] = useState<number[]>(levels_.map(() => 0))
+    const [programs, setPrograms] = useState<NodeInterface[][]>([]);
+    const [index_, setIndex] = useState<number[]>(levels_.map(() => 0));
 
     useEffect(() => {
         const fetch = async () => {
             let parent: (string | null) = null;
-            let response = [] as NodoInterface[][];
+            let response = [] as NodeInterface[][];
             for (let i = 0; i < levels.length; i++) {
                 if (i === levels.length-1) {
                     const res = await getLevelNodes({id_level: levels[i].id_level!, parent: parent});
@@ -35,8 +44,8 @@ export const ModalProgram = () => {
                 } else {
                     const { id_level } = levels_[i];
                     if (id_level) {
-                        const res: NodoInterface[] = await getLevelNodes({id_level: id_level, parent: parent});
-                        const temp_ = [] as NodoInterface[];
+                        const res: NodeInterface[] = await getLevelNodes({id_level: id_level, parent: parent});
+                        const temp_ = [] as NodeInterface[];
                         res.forEach((item:Node) => {
                             temp_.push({
                                 id_node: item.id_node,
@@ -68,26 +77,26 @@ export const ModalProgram = () => {
     }, [programs]);
 
     const handleProgramBtn = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        e.preventDefault()
-        setModalProgramsIsOpen(true)
-        dispatch(setLoadingReport(true))
-        genReport()
-    }
+        e.preventDefault();
+        setModalProgramsIsOpen(true);
+        dispatch(setLoadingReport(true));
+        genReport();
+    };
 
     const genReport = async () => {
-        const pesosStr = localStorage.getItem('pesosNodo');
-        const detalleStr = localStorage.getItem('detalleAño');
+        const pesosStr = localStorage.getItem('UnitNode');
+        const detalleStr = localStorage.getItem('YearDeta');
         let pesos = pesosStr ? JSON.parse(pesosStr) : [];
         const nodesReport_ = nodesReport.map((item: Node) => item.id_node);
-        pesos = pesos.filter((item:PesosNodos)=> nodesReport_.includes(item.id_node) );
+        pesos = pesos.filter((item:NodesWeight)=> nodesReport_.includes(item.id_node) );
         const detalle = detalleStr ? JSON.parse(detalleStr) : [];
         const data: ReportPDTInterface[] = [];
 
-        await Promise.all(pesos.map(async (peso: PesosNodos) => {
+        await Promise.all(pesos.map(async (peso: NodesWeight) => {
             const { id_node, percents } = peso;
             const ids = id_node.split('.');
             if (ids.length !== levels.length + 1) return;
-            const percentages = percents?.map((porcentaje: Porcentaje) => porcentaje.progress*100);
+            const percentages = percents?.map((percentages: Percentages) => percentages.progress*100);
             let ids2 = ids.reduce((acumulator:string[], currentValue: string) => {
                 if (acumulator.length === 0) {
                     return [currentValue];
@@ -135,7 +144,7 @@ export const ModalProgram = () => {
         }
         setIndex(newIndex_);
     }
-    
+
     const ModalPDT = () => {
         return (
             <Modal  isOpen={modalProgramsIsOpen}

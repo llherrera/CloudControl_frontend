@@ -3,7 +3,6 @@ import { EvidenceInterface, LocationInterface, PDTInterface } from "./formInterf
 
 export interface ContentProps {
     id: number;
-    progress: boolean;
 }
 
 export interface NodeListProps {
@@ -76,7 +75,7 @@ export interface InputProps {
     label: string;
     id: string;
     name: string;
-    value: string;
+    value?: string;
     onChange: (e: React.ChangeEvent<HTMLInputElement>, index:(number | void)) => void;
     isRequired?: boolean;
 }

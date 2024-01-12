@@ -12,24 +12,25 @@ export const LocationsForm = () => {
 
     const [data, setData] = useState<LocationInterface[]>([
         blankLocation
-    ])
+    ]);
 
     const addLocation = () => {
         const newData = [...data, blankLocation];
         setData(newData);
-    }
+    };
 
     const deleteLocation = () => {
         const newData = data.slice(0, -1);
         setData(newData);
-    }
+    };
 
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>, index: number) => {
         const { name, value } = event.target;
         const newData = [...data];
         newData[index] = { ...newData[index], [name]: value };
         setData(newData);
-    }
+    };
+
     const handleTypeChange = (e: React.ChangeEvent<HTMLSelectElement>, index: number) => {
         const { value } = e.target;
         let nValue = value as locationTypes;
@@ -50,9 +51,9 @@ export const LocationsForm = () => {
                 return;
             }
         })
-        // TODO enviar los datos a endpoint (por crear)
         dispatch(thunkAddLocations({ id_plan: plan?.id_plan!, locations: data}));
-    }
+    };
+
     const handleLocation = (value: Coordinates, index: number) => {
         const newData = [...data];
         newData[index] = { ...newData[index], lat: value.lat, lng: value.lng };
@@ -108,5 +109,5 @@ export const LocationsForm = () => {
                     </div>
                 </form>
         </div>
-    )
+    );
 }

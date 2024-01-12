@@ -24,5 +24,5 @@ export const Header = ( {components}: HeaderProps) => {
                 }
             </ul>
         </main>
-    )
+    );
 }

@@ -8,7 +8,12 @@ import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 import IconButton from "@mui/material/IconButton";
 import { Spinner } from "@/assets/icons";
 
-import { ReportPDTInterface, PesosNodos, Porcentaje, YearDetail, ModalPDTProps } from "@/interfaces";
+import { 
+    ReportPDTInterface, 
+    NodesWeight, 
+    Percentages, 
+    YearDetail, 
+    ModalPDTProps } from "@/interfaces";
 import { getLevelName } from "@/services/api";
 import { exportFile } from "@/utils";
 
@@ -19,24 +24,24 @@ export const ModalTotalPDT = () => {
     const [data, setData] = useState<ReportPDTInterface[]>([]);
 
     const handleBtn = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        e.preventDefault()
-        setModalIsOpen(true)
-        dispatch(setLoadingReport(true))
-        genReport().then((data) => setData(data))
-    }
+        e.preventDefault();
+        setModalIsOpen(true);
+        dispatch(setLoadingReport(true));
+        genReport().then((data) => setData(data));
+    };
 
     const genReport = async () => {
-        const pesosStr = localStorage.getItem('pesosNodo')
-        const detalleStr = localStorage.getItem('detalleAño')
-        const pesos = pesosStr ? JSON.parse(pesosStr) : []
-        const detalle = detalleStr ? JSON.parse(detalleStr) : []
-        const data: ReportPDTInterface[] = []
+        const pesosStr = localStorage.getItem('UnitNode');
+        const detalleStr = localStorage.getItem('YearDeta');
+        const pesos = pesosStr ? JSON.parse(pesosStr) : [];
+        const detalle = detalleStr ? JSON.parse(detalleStr) : [];
+        const data: ReportPDTInterface[] = [];
 
-        await Promise.all(pesos.map(async (peso: PesosNodos) => {
-            const { id_node, percents } = peso
+        await Promise.all(pesos.map(async (peso: NodesWeight) => {
+            const { id_node, percents } = peso;
             const ids = id_node.split('.');
-            if (ids.length !== levels.length + 1) return
-            const percentages = percents?.map((porcentaje: Porcentaje) => porcentaje.progress*100)
+            if (ids.length !== levels.length + 1) return;
+            const percentages = percents?.map((Percentages: Percentages) => Percentages.progress*100);
             let ids2 = ids.reduce((acumulator:string[], currentValue: string) => {
                 if (acumulator.length === 0) {
                     return [currentValue];
@@ -47,13 +52,13 @@ export const ModalTotalPDT = () => {
                 }
             }, []);
             ids2 = ids2.slice(1);
-            let root = await getLevelName(ids2)
-            root = root.map((item: any) => item[0])
-            const nodeYears = detalle.filter((item: YearDetail) => item.id_node === id_node) as YearDetail[]
+            let root = await getLevelName(ids2);
+            root = root.map((item: any) => item[0]);
+            const nodeYears = detalle.filter((item: YearDetail) => item.id_node === id_node) as YearDetail[];
 
-            const executed = nodeYears.map((item: YearDetail) => item.physical_execution)
-            const programed = nodeYears.map((item: YearDetail) => item.physical_programming)
-            
+            const executed = nodeYears.map((item: YearDetail) => item.physical_execution);
+            const programed = nodeYears.map((item: YearDetail) => item.physical_programming);
+
             const item: ReportPDTInterface = {
                 responsible: nodeYears[0].responsible??'',
                 goalCode: id_node,
@@ -64,30 +69,37 @@ export const ModalTotalPDT = () => {
                 base: nodeYears[0].base_line,
                 executed: executed,
                 programed: programed
-            }
-            data.push(item)
-        }))
-        dispatch(setLoadingReport(false))
-        return data
-    }
+            };
+            data.push(item);
+        }));
+        dispatch(setLoadingReport(false));
+        return data;
+    };
 
     return (
         <div>
-            <ModalPDT modalIsOpen={modalIsOpen} callback={setModalIsOpen} data={data}/>
+            <ModalPDT 
+                modalIsOpen={modalIsOpen} 
+                callback={setModalIsOpen} 
+                data={data}/>
             <IconButton aria-label="delete" 
                         size="large" 
                         color='inherit' 
                         title='Generar reporte del Plan Indicativo Total'
-                        className="tw-transition hover:tw--translate-y-1 hover:tw-scale-[1.4]"
+                        className="tw-transition 
+                            hover:tw--translate-y-1 hover:tw-scale-[1.4]"
                         onClick={(e)=>handleBtn(e)}>
                 <LibraryBooksIcon />
             </IconButton>
         </div>
-    )
+    );
 }
 
 const ModalPDT = ( props: ModalPDTProps ) => {
-    const { years, levels, loadingReport, colorimeter } = useAppSelector((state) => state.plan);
+    const { years, 
+            levels, 
+            loadingReport, 
+            colorimeter } = useAppSelector((state) => state.plan);
 
     return (
         <Modal  isOpen={props.modalIsOpen}
@@ -182,5 +194,5 @@ const ModalPDT = ( props: ModalPDTProps ) => {
             </table>
             </div>}
         </Modal>
-    )
+    );
 }

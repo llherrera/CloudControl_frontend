@@ -13,7 +13,7 @@ export const BackBtn = ({handle, id}: BackBtnProps) => {
                     key={id}>
             <ArrowBackIosIcon/>
         </IconButton>
-    )
+    );
 }
 
 export const SettingsBtn = ({handle, id}: BackBtnProps) => {
@@ -26,5 +26,5 @@ export const SettingsBtn = ({handle, id}: BackBtnProps) => {
                     key={id}>
             <SettingsIcon/>
         </IconButton>
-    )
+    );
 }

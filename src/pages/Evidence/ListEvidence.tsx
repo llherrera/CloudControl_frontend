@@ -2,7 +2,10 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useAppSelector, useAppDispatch } from "@/store";
-import { thunkGetEvidences, thunkGetEvidenceCount, thunkGetUserEvidences } from "@/store/evidence/thunks";
+import { 
+    thunkGetEvidences, 
+    thunkGetEvidenceCount, 
+    thunkGetUserEvidences } from "@/store/evidence/thunks";
 import { resetEvidence } from "@/store/evidence/evidenceSlice";
 
 import { Frame, EvidenceDetail, BackBtn, MyEvidence } from "@/components";
@@ -36,23 +39,21 @@ const Evidence = () => {
     useEffect(() => {
         if (plan) {
             const { id_plan } = plan;
-            if (id_plan) dispatch(thunkGetEvidences({id: id_plan, page}));
+            if (id_plan) 
+                dispatch(thunkGetEvidences({id: id_plan, page}));
         }else{
             dispatch(thunkGetEvidences( {id: id_plan, page}));
         }
     }, [page, evi_count]);
 
     useEffect(() => {
-        if (opt === 0) {
+        if (opt === 0)
             dispatch(thunkGetEvidences( {id: id_plan, page}));
-        } else if (opt === 1) {
+        else if (opt === 1)
             dispatch(thunkGetUserEvidences(page));
-        }
     }, [opt]);
 
-    const handlePage = (page: number) => {
-        setPage(page);
-    };
+    const handlePage = (page: number) => setPage(page);
 
     const handleBack = () => {
         dispatch(resetEvidence());
@@ -121,9 +122,9 @@ const Evidence = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {evidences.length === 0 ? evidences.map((evi, index) => (
+                    {evidences.length > 0 ? evidences.map((evi, index) => (
                         <EvidenceDetail evi={evi} index={index} key={index}/>
-                    )) : <span>No hay evidencias</span>}
+                    )) : <p>No hay evidencias</p>}
                 </tbody>
             </table>
             :
@@ -145,9 +146,9 @@ const Evidence = () => {
                     </tr>
                 </thead>
                 <tbody>
-                    {evidences.length === 0 || evidences ? evidences.map((evi, index) => (
+                    {evidences.length > 0 ? evidences.map((evi, index) => (
                         <MyEvidence evidence={evi} key={index}/>
-                    )) : <span>No hay evidencias</span>}
+                    )) : <p>No hay evidencias</p>}
                 </tbody>
             </table>
             }
