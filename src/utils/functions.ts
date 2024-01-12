@@ -63,13 +63,13 @@ export const exportFile = (tabla: string, name: string) => {
   document.body.removeChild(a);
 }
 
-export const handleUser = (rol: string, id: number) => {
+export const handleUser = (rol: string) => {
   const navigate = useNavigate()
   if (rol === "admin") {
     navigate('/pdt')
     return
   }else if (rol === "funcionario") {
-    navigate(`/pdt/PlanIndicativo`, {state: {id}})
+    navigate(`/lobby`)
     return
   }
 }

@@ -2,9 +2,12 @@ import React, { useState } from "react";
 import * as XLSX from 'xlsx';
 import Modal from 'react-modal';
 import { Spinner } from "@/assets/icons";
+import ProgressBar from "@ramonak/react-progress-bar";
 
 import IconButton from "@mui/material/IconButton";
 import DownloadIcon from '@mui/icons-material/Download';
+import { ToastContainer } from 'react-toastify';
+import { notify } from '@/utils';
 
 import { useAppSelector, useAppDispatch } from "@/store";
 import { setLevels } from "@/store/plan/planSlice";
@@ -13,11 +16,15 @@ import {
     ExcelPlan,
     LevelInterface,
     ExcelFinancial,
-    ExcelPhysical } from "@/interfaces";
+    ExcelPhysical,
+    Secretary} from "@/interfaces";
 import { 
     updateFinancial,
-    loadExcel,
-    updatePhysicalExcel } from "@/services/api";
+    updatePhysicalExcel,
+    addLevel,
+    addSecretaries,
+    addNodes,
+    addUnits } from "@/services/api";
 
 const ModalSpinner = ({isOpen}:{isOpen: boolean}) => {
     return (
@@ -39,10 +46,55 @@ export const FileInput = () => {
 
     const [isOpen, setIsOpen] = useState(false);
     const [data, setData] = useState<File>();
+    const [textBar, setTextBar] = useState('');
+    const [progressBar, setProgressBar] = useState(0);
+
     const { id_plan } = useAppSelector((state) => state.content);
     const { years, plan } = useAppSelector((state) => state.plan);
 
+
     let levels_: LevelInterface[] = [];
+    let levelsName = [] as string[];
+
+    const addLevels = async (data: ExcelPlan[]) => {
+        const levels = data.filter((reg, index) => {
+            return data.findIndex((reg2) => reg2.Niveles === reg.Niveles) === index;
+        });
+        levelsName = levels.map((reg) => (reg.Niveles));
+        levels_ = levelsName.map((reg) => {
+            const level: LevelInterface = {
+                name: reg,
+                description: '',
+            }
+            return level;
+        });
+        return await addLevel(levels_, id_plan.toString());
+    };
+
+    const addSecretariess = async (data: ExcelPlan[]) => {
+        const secretaries = data.filter((reg, index) => {
+            return data.findIndex((reg2) => reg2.Responsable === reg.Responsable && reg2.Responsable !== 'NULL') === index;
+        });
+        const secretariesName = secretaries.map((reg) => (reg.Responsable));
+        let secretaries_ = secretariesName.map((reg) => {
+            const secretary: Secretary = {
+                id_plan: id_plan,
+                name: reg??'',
+                email: '',
+                phone: 0,
+            }
+            return secretary;
+        });
+        await addSecretaries(id_plan, secretaries_);
+    };
+
+    const addNodess = async (data: ExcelPlan[]) => {
+        await addNodes(data, id_plan, levelsName);
+    };
+
+    const addUnitss = async (data: ExcelPlan[], id_muni: string) => {
+        await addUnits(id_plan, data, years, id_muni);
+    };
 
     const readExcel = (file: File) => {
         if (plan === undefined) return;
@@ -66,17 +118,40 @@ export const FileInput = () => {
 
         promise.then( async (d) => {
             const data = d as ExcelPlan[];
+            
+            await addLevels(data)
+            .then((res) => {
+                levels_ = levels_.map((reg, index) => {
+                    reg.id_level = res.result[index];
+                    return reg;
+                });
+                setTextBar('Niveles añadidos')
+                setProgressBar(20);
+            })
+            .catch(() => notify('Ha ocurrido un error cargando los niveles'))
 
-            await loadExcel(id_plan, data, years, plan.id_municipality)
+            await addSecretariess(data)
             .then(() => {
-                setIsOpen(false);
-                alert('Plan cargado con éxito');
+                setTextBar('Secretarias añadidas')
+                setProgressBar(40);
+            })
+            .catch(() => notify('Ha ocurrido un error cargando los secretarios'))
+
+            await addNodess(data)
+            .then(() => {
+                setTextBar('Nodos añadidos')
+                setProgressBar(75);
+            })
+            .catch(() => notify('Ha ocurrido un error cargando los nodos'))
+
+            await addUnitss(data, plan.id_municipality)
+            .then(() => {
+                setTextBar('Metas añadidas')
+                setProgressBar(100);
+                notify('Plan cargado con éxito');
                 dispatch(setLevels(levels_));
             })
-            .catch(() => {
-                alert('Ha ocurrido un error cargando el plan');
-                setIsOpen(false);
-            });
+            .catch(() => notify('Ha ocurrido un error cargando las unidades'));
         });
     };
 
@@ -89,12 +164,14 @@ export const FileInput = () => {
 
     const handleSubmit = () => {
         if (data === undefined) return;
-        setIsOpen(true);
+        //setIsOpen(true);
         readExcel(data);
     };
 
     return (
         <div className='tw-border-b-4 tw-pb-4 tw-pl-4'>
+            <ToastContainer/>
+            <ProgressBar completed={progressBar} customLabel={textBar} />
             <a  className="tw-text-[#222222]
                             tw-font-bold tw-text-lg
                             tw-font-montserrat"
@@ -119,6 +196,7 @@ export const FileInput = () => {
                                 tw-bg-gray-500 
                                 tw-text-white
                                 tw-rounded'
+                    type="button"
                     onClick={handleSubmit}>
                 Cargar Plan
             </button>
@@ -231,7 +309,6 @@ export const FilePhysicalInput = () => {
         if (plan === undefined) return;
         if (data.length === 0) return;
         if (id_plan === 0) return;
-        //const id_city = await getCityId(plan.municipality);
         const id_city = parseInt(plan.id_municipality);
         return await updatePhysicalExcel(id_plan, id_city, data, years);
     };

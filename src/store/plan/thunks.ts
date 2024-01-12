@@ -14,7 +14,8 @@ import { PDTInterface,
 import { parseErrorAxios } from '../../utils';
 
 import {getPDTid, 
-        addPDT, 
+        addPDT,
+        getLastPDT,
         getColors, 
         getLevelNodes, 
         addColor,
@@ -33,6 +34,19 @@ export const thunkGetPDTid = createAsyncThunk<PDTInterface, string, { rejectValu
     async (props: string, { rejectWithValue }) => {
         try {
             const res = await getPDTid(props);
+            return res;
+        } catch (err) {
+            const result = parseErrorAxios(err);
+            return rejectWithValue(result);
+        }
+    }
+)
+
+export const thunkGetLastPDT = createAsyncThunk<PDTInterface, void, { rejectValue: ErrorBasicInterface }>(
+    'pdt/getLastPDT',
+    async (props: void, { rejectWithValue }) => {
+        try {
+            const res = await getLastPDT();
             return res;
         } catch (err) {
             const result = parseErrorAxios(err);

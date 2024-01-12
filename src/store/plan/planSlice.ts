@@ -8,9 +8,11 @@ import {InitialStatePlanInterface,
 import { setGenericState, getGenericState, removeGenericState } from "@/utils";
 
 import {thunkGetPDTid,
+        thunkGetLastPDT,
         thunkAddPDT,
         thunkGetColors,
         thunkAddColors,
+        thunkUpdateColors,
         thunkGetNodes,
         thunkUpdateYears,
         thunkGetLevelsById, 
@@ -18,6 +20,7 @@ import {thunkGetPDTid,
         thunkUpdateWeight,
         thunkGetSecretaries,
         thunkAddSecretaries,
+        thunkUpdateSecretaries,
         thunkAddLocations,
         thunkGetLocations } from "./thunks";
 
@@ -142,6 +145,27 @@ export const planSlice = createSlice({
         });
 
 
+        builder.addCase(thunkGetLastPDT.pending, state => {
+            if (!state.loadingPlan) state.loadingPlan = true;
+            state.errorLoadingPlan = undefined;
+        });
+        builder.addCase(thunkGetLastPDT.fulfilled, (state, action) => {
+            state.loadingPlan = false;
+            state.plan = action.payload;
+            state.progressNodes = [];
+            state.financial = [];
+            state.nodes = [];
+            state.nodesReport = [];
+            state.secretaries = [];
+            state.colorimeter = [];
+            setGenericState('plan', state);
+        });
+        builder.addCase(thunkGetLastPDT.rejected, (state, action) => {
+            state.loadingPlan = false;
+            state.errorLoadingPlan = action.payload;
+        });
+
+
         builder.addCase(thunkAddPDT.pending, state => {
             if (!state.loadingPlan) state.loadingPlan = true;
             state.errorLoadingPlan = undefined;
@@ -209,6 +233,23 @@ export const planSlice = createSlice({
             setGenericState('plan', state);
         });
         builder.addCase(thunkGetColors.rejected, (state, action) => {
+            state.loadingColors = false;
+            state.color = false;
+            state.errorLoadingColors = action.payload;
+        });
+
+
+        builder.addCase(thunkUpdateColors.pending, state => {
+            if (!state.loadingColors) state.loadingColors = true;
+            state.errorLoadingColors = undefined;
+        });
+        builder.addCase(thunkUpdateColors.fulfilled, (state, action) => {
+            state.loadingColors = false;
+            state.color = true;
+            state.colorimeter = action.payload;
+            setGenericState('plan', state);
+        });
+        builder.addCase(thunkUpdateColors.rejected, (state, action) => {
             state.loadingColors = false;
             state.color = false;
             state.errorLoadingColors = action.payload;
@@ -367,6 +408,39 @@ export const planSlice = createSlice({
         builder.addCase(thunkGetSecretaries.rejected, (state, action) => {
             state.loadingSecretaries = false;
             state.errorLoadingSecretaries = action.payload;
+        });
+
+
+        builder.addCase(thunkUpdateSecretaries.pending, state => {
+            if (!state.loadingSecretaries) state.loadingSecretaries = true;
+            state.errorLoadingSecretaries = undefined;
+        });
+        builder.addCase(thunkUpdateSecretaries.fulfilled, (state, action) => {
+            state.loadingSecretaries = false;
+            setGenericState('plan', state);
+            alert("Se han actualizado las secretarías correctamente.");
+        });
+        builder.addCase(thunkUpdateSecretaries.rejected, (state, action) => {
+            state.loadingSecretaries = false;
+            state.errorLoadingSecretaries = action.payload;
+            if (action.payload) {
+                switch (action.payload.status) {
+                    case 401:
+                        alert("No está permitido acceder aquí.");
+                        break;
+                    case 403:
+                        alert("No tienes permitido realizar esta acción.");
+                        break;    
+                    case 404:
+                        alert("Plan no existe.");
+                        break;
+                    case 500:
+                        alert("Ha habido un error, pruebe más tarde.");
+                        break;
+                    default:
+                        break;
+                }
+            }
         });
 
 

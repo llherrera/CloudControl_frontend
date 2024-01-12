@@ -78,8 +78,7 @@ export const LevelForm = ( props: LevelFormProps ) => {
         setData(newData);
     }
 
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
+    const handleSubmit = async () => {
         await addLevel(data, props.id)
         .then(()=>{
             dispatch(setLevels(data));
@@ -95,8 +94,7 @@ export const LevelForm = ( props: LevelFormProps ) => {
             {(rol === "admin") || (rol === 'funcionario' && id_ === parseInt(props.id)) ?
             (<div>
                 <FileInput/>
-                <form   onSubmit={ handleSubmit}
-                        className="tw-grid tw-grid-cols-12 tw-mt-5">
+                <form className="tw-grid tw-grid-cols-12 tw-mt-5 tw-pb-5">
                 <ul className=" tw-col-start-5 tw-col-span-4
                                 md:tw-col-start-4 md:tw-col-span-6 
                                 lg:tw-col-start-4 lg:tw-col-span-6 
@@ -135,15 +133,17 @@ export const LevelForm = ( props: LevelFormProps ) => {
                             onClick={ eliminarNivel }>-</button>
                 </div>
                 </ul>
-                <input  type="submit"
+                <button type="button"
                         value={"Guardar"}
-                        title="Guardar"
                         className=" tw-col-start-6 tw-col-span-2
-                        tw-bg-blue-500
-                        hover:tw-bg-blue-300 
-                        tw-text-white tw-font-bold }
-                        tw-rounded
-                        tw-mt-5 tw-mx-6 tw-py-2"/>
+                                    tw-bg-blue-500
+                                    hover:tw-bg-blue-300 
+                                    tw-text-white tw-font-bold }
+                                    tw-rounded
+                                    tw-mt-5 tw-mx-6 tw-py-2"
+                        onClick={handleSubmit}>
+                    Guardar
+                </button>
             </form>
             </div>)
             : <p className="tw-text-center tw-text-2xl">Plan en proceso</p>}

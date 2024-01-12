@@ -264,15 +264,20 @@ export const updateWeights = async (ids: string[], weights: number[]) => {
 }
 
 export const addLevelNode = async (nodes: NodeInterface[], id_level: number) => {
-    try {
-        const response = await api.post("/plan-territorial/nivel", { 
-            nodes: nodes,
-            id_level: id_level
-        });
-        return response.data;
-    } catch (error) {
-        return error;
-    }
+    const response = await api.post("/plan-territorial/nivel", { 
+        nodes: nodes,
+        id_level: id_level
+    });
+    return response.data;
+}
+
+export const addNodes =async (data: ExcelPlan[], id_plan: number, levelsName: string[]) => {
+    const response = await api.post("/plan-territorial/nivel", {
+        data:       data,
+        id_plan:    id_plan,
+        levelsName: levelsName
+    });
+    return response.data;
 }
 
 export const deleteLevel = async (id: number) => {
@@ -301,13 +306,27 @@ export const getLevelName = async (ids: string[]) => {
     }
 }
 
-export const addUnitNodeAndYears = async (id_plan: string, id_node: string, node_unit: UnitInterface, years: YearInterface[], id_city: number) => {
+export const addUnitNodeAndYears = async (
+    id_plan: string, id_node: string, node_unit: UnitInterface, 
+    years: YearInterface[], id_municipality: number) => {
     const response = await api.post("/nodo", { 
-        id_plan: id_plan,
-        id_node: id_node,
-        node:    node_unit,
-        years:   years,
-        id_city: id_city
+        id_plan:         id_plan,
+        id_node:         id_node,
+        node:            node_unit,
+        years:           years,
+        id_municipality: id_municipality
+    });
+    return response.data;
+}
+
+export const addUnits = async (
+    id_plan: number, data: ExcelPlan[], years: number[],
+    id_municipality: string) => {
+    const response = await api.post("/nodo", {
+        id_plan:         id_plan,
+        data:            data,
+        years:           years,
+        id_municipality: id_municipality
     });
     return response.data;
 }
@@ -336,12 +355,12 @@ export const updateUnitNodeAndYears = async (id_plan: string, id_node: string, n
     return response.data;
 }
 
-export const updateFinancial = async (id_plan: number, id_city: number, data: ExcelFinancial[], years: number[]) => {
+export const updateFinancial = async (id_plan: number, id_municipality: number, data: ExcelFinancial[], years: number[]) => {
     const response = await api.put("/nodo/financiero", { 
-        id_plan: id_plan,
-        id_city: id_city,
-        data:    data,
-        years:   years
+        id_plan:         id_plan,
+        id_municipality: id_municipality,
+        data:            data,
+        years:           years
     });
     return response.data;
 }
@@ -624,12 +643,12 @@ export const loadExcel = async (id_plan: number, data: ExcelPlan[], years: numbe
     return response.data;
 }
 
-export const updatePhysicalExcel = async (id_plan: number, id_city: number, data: ExcelPhysical[], years: number[]) => {
+export const updatePhysicalExcel = async (id_plan: number, id_municipality: number, data: ExcelPhysical[], years: number[]) => {
     const response = await api.put('/nodo/fisico', {
-        id_plan: id_plan,
-        id_city: id_city,
-        data:    data,
-        years:   years,
+        id_plan:         id_plan,
+        id_municipality: id_municipality,
+        data:            data,
+        years:           years,
     });
     return response.data;
 }
