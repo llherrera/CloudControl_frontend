@@ -10,7 +10,7 @@
     "dev": "vite",
     "serve": "npm run build && vite preview --port 3000",
     "host": "vite preview --host",
-    "test": "react-scripts test",
+    "test": "jest",
     "eject": "react-scripts eject",
     "typecheck": "tsc --noEmit"
   },
