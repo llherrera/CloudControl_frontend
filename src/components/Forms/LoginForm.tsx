@@ -3,11 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import { notify } from '@/utils';
 
-import { useAppDispatch } from '../../store';
-import { thunkLogin } from '../../store/auth/thunks';
+import { useAppDispatch } from '@/store';
+import { thunkLogin } from '@/store/auth/thunks';
 import { setIdPlan } from "@/store/content/contentSlice";
 
-import { decode } from '../../utils/decode';
+import { decode } from '@/utils/decode';
 
 export const LoginForm = () => {
     const dispatch = useAppDispatch();

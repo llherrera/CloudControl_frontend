@@ -36,7 +36,7 @@ export const InterventionMap = () => {
     );
 }
 
-const API_KEY = import.meta.env.VITE_API_KEY_MAPS as string;
+const API_KEY = process.env.VITE_API_KEY_MAPS as string;
 
 const containerStyle = {
     width: '500px',

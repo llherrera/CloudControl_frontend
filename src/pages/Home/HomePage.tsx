@@ -1,11 +1,11 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-import { ButtonComponent, Header } from "../../components";
+import { ButtonComponent, Header } from "@/components";
 import funcLogo from "@/assets/icons/Funcionario.svg";
 import citiLogo from "@/assets/icons/Ciudadanos.svg";
 
-import { useAppDispatch, useAppSelector } from '../../store';
+import { useAppDispatch, useAppSelector } from '@/store';
 import { thunkLogout } from "@/store/auth/thunks";
 import { thunkGetLastPDT } from "@/store/plan/thunks";
 import { setIdPlan } from "@/store/content/contentSlice";

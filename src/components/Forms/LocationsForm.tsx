@@ -1,7 +1,7 @@
 import { Coordinates, LocationInterface, locationTypes } from "@/interfaces";
 import { useAppSelector, useAppDispatch } from "@/store";
-import { useState, useEffect } from "react";
-import { LocationPopover } from "../Popover";
+import { useState } from "react";
+import { LocationPopover } from "@/components";
 import { thunkAddLocations } from "@/store/plan/thunks";
 
 export const LocationsForm = () => {

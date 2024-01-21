@@ -1,8 +1,8 @@
 import { useEffect } from 'react';
 
 import { Content } from './Content';
-import { NodesWeight, Percentages, YearDetail } from '../../interfaces';
-import { getTotalProgress } from '../../services/api';
+import { NodesWeight, Percentages, YearDetail } from '@/interfaces';
+import { getTotalProgress } from '@/services/api';
 
 import { useAppDispatch, useAppSelector } from '@/store';
 import { thunkGetPDTid, thunkGetColors } from '@/store/plan/thunks';

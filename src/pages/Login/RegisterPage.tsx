@@ -1,4 +1,4 @@
-import { Frame, RegisterForm } from '../../components';
+import { Frame, RegisterForm } from '@/components';
 
 import { useAppSelector } from '@/store';
 

@@ -5,9 +5,9 @@ import planLogo from '@/assets/icons/plan-indicativo.svg';
 import bankLogo from '@/assets/icons/Banco-proyectos.svg';
 import POAILogo from '@/assets/icons/Point.svg';
 
-import { Header, ButtonComponent } from '../../components';
+import { Header, ButtonComponent } from '@/components';
 import { MapICon } from '@/assets/icons';
-import { decode } from '../../utils/decode';
+import { decode } from '@/utils/decode';
 
 import { useAppDispatch, useAppSelector } from '@/store';
 import { selectOption } from '@/store/content/contentSlice';

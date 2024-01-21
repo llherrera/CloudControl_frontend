@@ -8,7 +8,7 @@ import { setType } from '@/store/chart/chartSlice';
 
 import { GraphProps } from '@/interfaces';
 import {  } from '@/services/api';
-import { ModalTotalPDT, ModalSecretary, ModalProgram } from '../Modals';
+import { ModalTotalPDT, ModalSecretary, ModalProgram } from '@/components/Modals';
 import { decode } from "@/utils";
 
 export const Graph = ( props: GraphProps ) => {

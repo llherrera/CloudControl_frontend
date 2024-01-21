@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 import { useAppSelector, useAppDispatch } from "@/store";
 import { thunkAddSecretaries, thunkUpdateSecretaries } from "@/store/plan/thunks";

@@ -3,8 +3,8 @@ import { useNavigate } from "react-router-dom";
 import IconButton from "@mui/material/IconButton";
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 
-import { Input } from "../Inputs";
-import { doRegister } from "../../services/api";
+import { Input } from "@/components";
+import { doRegister } from "@/services/api";
 import { RegisterInterface, RegisterFormProps } from "@/interfaces";
 import { validateEmail } from "@/utils";
 

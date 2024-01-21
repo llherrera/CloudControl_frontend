@@ -7,8 +7,8 @@ import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 import { useAppSelector, useAppDispatch } from "@/store";
 import { setIdPlan } from "@/store/content/contentSlice";
 
-import { getPDTs } from "../../services/api";
-import { PDTInterface, PDTPageProps } from "../../interfaces";
+import { getPDTs } from "@/services/api";
+import { PDTInterface, PDTPageProps } from "@/interfaces";
 import { decode } from "@/utils";
 import { BackBtn, Header } from "@/components";
 import { thunkGetPDTid } from "@/store/plan/thunks";

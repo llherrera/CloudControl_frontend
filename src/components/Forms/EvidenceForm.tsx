@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { useAppSelector, useAppDispatch } from "@/store";
 import { thunkUpdateEvidence, thunkAddEvidenceGoal, thunkGetUbiEvidence } from "@/store/evidence/thunks";
 
-import { EvidenceInterface } from "../../interfaces";
+import { EvidenceInterface } from "@/interfaces";
 import { UbicationsPopover } from "@/components";
 
 export const EvidenceForm = () => {

@@ -3,11 +3,11 @@ import { useNavigate } from "react-router-dom";
 import IconButton from "@mui/material/IconButton";
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 
-import { Input, Select } from "../Inputs";
+import { Input, Select } from "@/components";
 import { 
     PDTInterface, 
     DepartmentGeoPortal, 
-    MunicipalityGeoPortal } from "../../interfaces";
+    MunicipalityGeoPortal } from "@/interfaces";
 import { 
     getDepartmentsGeoportal, 
     getMunicipalities } from "@/services/col_api";

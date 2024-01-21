@@ -4,16 +4,16 @@ import { IconButton } from '@mui/material';
 import LogoutIcon from '@mui/icons-material/Logout';
 import cclogo from '@/assets/images/CloudControlIcon.png';
 
-import { useAppDispatch, useAppSelector } from '../../store';
+import { useAppDispatch, useAppSelector } from '@/store';
 import { thunkLogout } from '@/store/auth/thunks';
 import { setLogo } from '@/store/content/contentSlice';
 
-import { NavBar } from '..';
+import { NavBar } from '@/components';
 import { 
     BancoProyectoIcon, 
     PlanIndicativoIcon, 
     POAIIcon, 
-    MapICon } from '../../assets/icons';
+    MapICon } from '@/assets/icons';
 import { FrameProps } from '@/interfaces';
 
 export const Frame = (props: FrameProps) => {

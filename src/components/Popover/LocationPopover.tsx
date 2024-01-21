@@ -9,7 +9,7 @@ import { LocationIcon } from '@/assets/icons';
 import { Coordinates, PopoverProps } from '@/interfaces';
 import icono from "@/assets/icons/location.svg";
 
-const API_KEY = import.meta.env.VITE_API_KEY_MAPS as string;
+const API_KEY = process.env.VITE_API_KEY_MAPS as string;
 
 export const LocationPopover = (props: PopoverProps) => {
     const [poLocationIsOpen, setPoLocationIsOpen] = useState(false);

@@ -1,7 +1,7 @@
-import { useAppSelector, useAppDispatch } from '../../store';
+import { useAppSelector, useAppDispatch } from '@/store';
 import { selectOption } from '@/store/content/contentSlice';
 
-import { ButtonComponent } from '../Buttons';
+import { ButtonComponent } from '@/components/Buttons';
 import { NavBarProps } from '@/interfaces';
 
 export const NavBar = ( props: NavBarProps) => {

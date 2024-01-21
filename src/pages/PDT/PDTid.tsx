@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from "@/store";
 import { thunkUpdateYears, thunkGetLevelsById } from "@/store/plan/thunks";
 import { incrementLevelIndex } from "@/store/plan/planSlice";
 
-import { LevelForm, Board, Frame } from "../../components";
+import { LevelForm, Board, Frame } from "@/components";
 import { getYears } from "@/utils";
 
 export const PDTid = () => {

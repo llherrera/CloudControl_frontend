@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 
 import { useAppSelector } from '@/store';
 
-import { NodeInterface, NodeFormProps } from '../../interfaces';
-import { addLevelNode } from '../../services/api';
+import { NodeInterface, NodeFormProps } from '@/interfaces';
+import { addLevelNode } from '@/services/api';
 
 export const NodeForm = ( props : NodeFormProps ) => {
     const { parent } = useAppSelector(store => store.plan);
