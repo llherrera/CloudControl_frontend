@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 
-import { Header } from './HeaderComponent';
+import { Header } from '../../src/components/Header/HeaderComponent';
 
 describe('Header', () => {
   it('should render successfully', () => {

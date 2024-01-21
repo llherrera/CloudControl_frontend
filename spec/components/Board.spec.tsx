@@ -1,9 +1,9 @@
 import { render, screen } from '@testing-library/react';
 
-import { Content } from './Content';
-import { TimeLine } from './TimeLine';
-import { NodesList } from './NodesList';
-import { Graph } from './Graph';
+import { Content } from '@/components/Board/Content';
+import { TimeLine } from '../../src/components/Board/TimeLine';
+import { NodesList } from '../../src/components/Board/NodesList';
+import { Graph } from '../../src/components/Board/Graph';
 
 describe('Content', () => {
   it('should render successfully', () => {

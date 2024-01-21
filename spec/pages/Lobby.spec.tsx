@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 
-import { LobbyPage } from './LobbyPage';
+import { LobbyPage } from '../../src/pages/Lobby/LobbyPage';
 
 describe('LobbyPage', () => {
   it('should render successfully', () => {

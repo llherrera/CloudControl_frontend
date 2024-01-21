@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 
-import { POAI } from './POAI';
+import { POAI } from '../../src/pages/POAI/POAI';
 
 describe('POAI', () => {
   it('should render successfully', () => {

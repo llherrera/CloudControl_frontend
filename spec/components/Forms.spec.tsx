@@ -9,7 +9,7 @@ import {
     NodeForm,
     PDTForm,
     RegisterForm,
-    SecretaryForm } from './index';
+    SecretaryForm } from '../../src/components/Forms/index';
 
 describe('ColorForm', () => {
     it('should render successfully', () => {

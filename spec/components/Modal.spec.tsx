@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/react';
 
-import { ModalTotalPDT } from './ModalTotalPDT';
-import { ModalProgram } from './ModalProgram';
-import { ModalSecretary } from './ModalSecretary';
+import { ModalTotalPDT } from '../../src/components/Modals/ModalTotalPDT';
+import { ModalProgram } from '../../src/components/Modals/ModalProgram';
+import { ModalSecretary } from '../../src/components/Modals/ModalSecretary';
 
 describe('ModalTotalPDT', () => {
   it('should render successfully', () => {

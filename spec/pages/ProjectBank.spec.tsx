@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 
-import { ProjectBank } from './ProjectBank';
+import { ProjectBank } from '../../src/pages/ProjectBank/ProjectBank';
 
 describe('ProjectBank', () => {
   it('should render successfully', () => {

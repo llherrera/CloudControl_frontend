@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 
-import { SettingPage } from './SettingPage';
+import { SettingPage } from '../../src/pages/Setting/SettingPage';
 
 describe('SettingPage', () => {
   it('should render successfully', () => {

@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 
-import { AddPDTPage } from './AddPDT';
+import { AddPDTPage } from '@/pages/AddPDT/AddPDT';
 
 describe('AddPDTPage', () => {
   it('should render successfully', () => {
