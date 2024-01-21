@@ -199,15 +199,6 @@ export const updatePDT = async (id: number, pdt: PDTInterface) => {
     }
 }
 
-export const getLogoPlan = async (id: number) => {
-    const response = await api.get(`/plan-territorial/logo`, {
-        params: {
-            id_plan: id
-        }
-    });
-    return response.data;
-}
-
 export const uploadLogoPlan = async ( id: number, logos: File ) => {
     const response = await api.post("/plan-territorial/logo", 
     {
