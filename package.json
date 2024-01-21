@@ -1,6 +1,6 @@
 {
   "name": "react-app-with-typescript",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "author": {
     "name": "Leonardo Herrera",
     "email": "leonardo.herrera.co@cloudappi.net"
@@ -10,27 +10,10 @@
     "dev": "vite",
     "serve": "npm run build && vite preview --port 3000",
     "host": "vite preview --host",
-    "test": "jest",
+    "test": "jest --watchAll",
+    "test:ci": "jest",
     "eject": "react-scripts eject",
     "typecheck": "tsc --noEmit"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
   },
   "lint-staged": {
     "*.{css,md,json}": [
@@ -71,6 +54,7 @@
     "react-tiny-popover": "^8.0.4",
     "react-toastify": "^9.1.3",
     "redux-persist": "^6.0.0",
+    "vite-plugin-environment": "^1.1.3",
     "vite-plugin-svgr": "^4.1.0",
     "vite-tsconfig-paths": "^4.2.1",
     "web-vitals": "^2.1.4",
@@ -116,7 +100,6 @@
     "eslint-plugin-simple-import-sort": "^7.0.0",
     "eslint-plugin-testing-library": "^5.5.1",
     "husky": "^8.0.1",
-    "identity-obj-proxy": "^3.0.0",
     "jest": "^28.1.1",
     "jest-environment-jsdom": "^28.1.1",
     "js-cookie": "^3.0.5",

@@ -4,10 +4,11 @@ import { fileURLToPath } from 'url'
 import { defineConfig } from 'vite'
 import autoprefixer from 'autoprefixer'
 import tailwindcss from 'tailwindcss'
+import EnvironmentPlugin from "vite-plugin-environment"
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [legacy(), react()],
+  plugins: [legacy(), react(), EnvironmentPlugin('all')],
   css: {
     postcss: {
       plugins: [autoprefixer({}), tailwindcss()]
