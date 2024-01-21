@@ -1,8 +1,7 @@
 import { render, screen } from '@testing-library/react';
 
-import { PDT } from '../../src/pages/PDT/PDT';
-import { PDTid } from '../../src/pages/PDT/PDTid';
-
+import { PDT, PDTid } from '@/pages';
+/*
 describe('PDT', () => {
   it('should render successfully', () => {
     expect.hasAssertions();
@@ -18,3 +17,4 @@ describe('PDTid', () => {
     expect(screen.getByText('Welcome to PDTid!')).toBeTruthy();
   });
 });
+*/

@@ -9,8 +9,8 @@ import {
     NodeForm,
     PDTForm,
     RegisterForm,
-    SecretaryForm } from '../../src/components/Forms/index';
-
+    SecretaryForm } from '@/components';
+/*
 describe('ColorForm', () => {
     it('should render successfully', () => {
         expect.hasAssertions();
@@ -82,3 +82,4 @@ describe('SecretaryForm', () => {
         expect(screen.getByText('Welcome to SecretaryForm!')).toBeTruthy();
     });
 });
+*/

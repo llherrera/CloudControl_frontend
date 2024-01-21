@@ -28,7 +28,7 @@ export const LobbyPage = () => {
     const { plan } = useAppSelector(store => store.plan);
     const { isLoaded, loadError} = useJsApiLoader({
         id: 'google-map-script',
-        googleMapsApiKey: API_KEY
+        googleMapsApiKey: API_KEY??''
     });
 
     let rol = "";

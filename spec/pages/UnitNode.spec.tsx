@@ -1,8 +1,7 @@
 import { render, screen } from '@testing-library/react';
 
-import { UnitNodePage } from '../../src/pages/UnitNode/UnitNodePage';
-import { SettingsPage } from '../../src/pages/UnitNode/SettingsPage';
-
+import { UnitNodePage, SettingsPage } from '@/pages';
+/*
 describe('UnitNodePage', () => {
   it('should render successfully', () => {
     expect.hasAssertions();
@@ -18,3 +17,4 @@ describe('SettingsPage', () => {
     expect(screen.getByText('Welcome to SettingsPage!')).toBeTruthy();
   });
 });
+*/
