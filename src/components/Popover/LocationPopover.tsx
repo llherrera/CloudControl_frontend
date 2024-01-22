@@ -59,7 +59,7 @@ let contentStyle: React.CSSProperties = {
 const mapContainer = (props: PopoverProps) => {
     const [map, setMap] = useState<google.maps.Map | null>(null);
     const [marker, setMarker] = useState<google.maps.Marker | null>(null);
-    
+
     const { planLocation } = useAppSelector(state => state.plan);
 
     let options: google.maps.MapOptions = {
@@ -149,8 +149,8 @@ const mapContainerUbi = () => {
     const { list_points } = useAppSelector(state => state.evidence);
 
     const [map, setMap] = useState<google.maps.Map|null>(null);
+    const [markers_, setMarkers_] = useState<JSX.Element[]>([]);
     const { planLocation } = useAppSelector(state => state.plan);
-    let centerLocation = planLocation;
 
     let options: google.maps.MapOptions = {
         disableDefaultUI: true,
@@ -166,19 +166,28 @@ const mapContainerUbi = () => {
         center: planLocation
     };
 
+    let markers = list_points.map((point, index) => (
+        <Marker 
+            key={index} 
+            position={{lat:point.lat, lng:point.lng}}
+            icon={{
+                url: icono,
+                scaledSize: new window.google.maps.Size(30, 30),
+            }}
+            onClick={()=>handleDeleteMarker(index)} />
+    ));
+
     const { isLoaded } = useJsApiLoader({
         id: 'google-map-script',
         googleMapsApiKey: API_KEY
     });
 
     const onLoad = useCallback(function callback(map: google.maps.Map) {
-        const bounds = new window.google.maps.LatLngBounds();
-        map.fitBounds(bounds);
         setMap(map);
-    }, []);
+        setMarkers_(markers);
+    }, [list_points]);
 
-    const onUnmount = useCallback(function callback(map: google.maps.Map) {
-        setMap(null);
+    const onUnmount = useCallback(function callback() {
     }, []);
 
     const handleMapClick = (event: google.maps.MapMouseEvent) => {
@@ -187,7 +196,16 @@ const mapContainerUbi = () => {
         if (lat && lng) {
             const exist = list_points.find((point) => point.lat === lat && point.lng === lng);
             if (exist) return;
-            dispatch(setPoints([...list_points, {lat, lng} as Coordinates]));
+            setMarkers_([...markers_, <Marker
+                key={list_points.length}
+                position={{ lat, lng }}
+                icon={{
+                    url: icono,
+                    scaledSize: new window.google.maps.Size(30, 30),
+                }}
+                onClick={()=>handleDeleteMarker(list_points.length)} />]);
+            const newList = [...list_points, { lat, lng }];
+            dispatch(setPoints(newList));
         }
     };
 
@@ -196,23 +214,13 @@ const mapContainerUbi = () => {
         dispatch(setPoints(newList));
     };
 
-    const markers = list_points.map((point, index) => (
-        <Marker key={index} 
-                position={{lat:point.lat, lng:point.lng}}
-                icon={{
-                    url: icono,
-                    scaledSize: new window.google.maps.Size(30, 30),
-                }}
-                onClick={()=>handleDeleteMarker(index)} />
-    ));
-
     return (
         <div>
             {isLoaded ? 
                 <GoogleMap
                     mapContainerStyle={contentStyle}
-                    center={centerLocation}
-                    zoom={15}
+                    center={planLocation}
+                    zoom={10}
                     options={options}
                     onLoad={onLoad}
                     onUnmount={onUnmount}

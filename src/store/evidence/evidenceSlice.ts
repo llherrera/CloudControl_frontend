@@ -2,8 +2,7 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 import {EvidenceInterface, 
         InitialStateEvidenceInterface, 
-        Coordinates, 
-        UbicationDB} from "@/interfaces";
+        Coordinates} from "@/interfaces";
 import {setGenericState, 
         getGenericState, 
         removeGenericState } from "@/utils";

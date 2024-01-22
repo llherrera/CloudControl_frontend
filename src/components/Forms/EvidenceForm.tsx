@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
 
 import { useAppSelector, useAppDispatch } from "@/store";
-import { thunkUpdateEvidence, thunkAddEvidenceGoal, thunkGetUbiEvidence } from "@/store/evidence/thunks";
+import { 
+    thunkUpdateEvidence, 
+    thunkAddEvidenceGoal, 
+    thunkGetUbiEvidence } from "@/store/evidence/thunks";
 
 import { EvidenceInterface } from "@/interfaces";
 import { UbicationsPopover } from "@/components";
@@ -48,7 +51,9 @@ export const EvidenceForm = () => {
             dispatch(thunkGetUbiEvidence(evi_selected.id_evidence));
     }, [evi_selected]);
 
-    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | 
+                                        HTMLSelectElement | 
+                                        HTMLTextAreaElement>) => {
         const { name, value } = event.target;
         setData({ ...data, [name]: value });
     };
@@ -58,11 +63,6 @@ export const EvidenceForm = () => {
         if (file) {
             if (file[0].type !== 'application/pdf') {
                 alert('El archivo debe ser pdf');
-                e.target.value = '';
-                return;
-            }
-            if (file[0].size > 1024 * 1024 * 5) {
-                alert('El archivo es demasiado grande');
                 e.target.value = '';
                 return;
             }
