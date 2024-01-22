@@ -71,7 +71,7 @@ export const UnitNodePage = () => {
         for (let i = 0; i < unit!.years.length; i++) {
             acumProgramed += unit!.years[i].physical_programming;
             acumPhisical += unit!.years[i].physical_execution;
-            acumFinalcial += unit!.years[i].financial_execution;
+            acumFinalcial += parseInt(unit!.years[i].financial_execution.toString());
         }
         setAcum( acumPhisical/acumProgramed );
         setAcumFinan( acumFinalcial );
