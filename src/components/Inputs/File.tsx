@@ -176,7 +176,7 @@ export const FileInput = () => {
                             tw-font-bold tw-text-lg
                             tw-font-montserrat"
                 href="/src/docs/Plantilla_Plan_CC.xlsx"
-                download='Plantilla_Excel.xlsx'>
+                download='Plantilla_Plan_Indicativo_Excel.xlsx'>
                 Descargar plantilla de Excel
                 <IconButton className='tw-p-1 tw-ml-3'
                             size='large'>
@@ -361,8 +361,8 @@ export const FilePhysicalInput = () => {
              <a  className="tw-text-[#222222]
                             tw-font-bold tw-text-lg
                             tw-font-montserrat"
-                href="/src/docs/Plantilla_Ejecuciones_Financieras.xlsx"
-                download='Plantilla_Ejecuciones_Financieras.xlsx'>
+                href="/src/docs/Plantilla_Ejecuciones_Fisicas.xlsx"
+                download='Plantilla_Ejecuciones_Fisicas.xlsx'>
                 Descargar plantilla de Excel
                 <IconButton className='tw-p-1 tw-ml-3'
                             size='large'>
