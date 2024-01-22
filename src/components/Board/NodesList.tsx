@@ -14,10 +14,13 @@ import {NodeInterface,
         Percentages, 
         NodeListProps } from '@/interfaces';
 import { Spinner } from '@/assets/icons';
+import { decode } from "@/utils";
 
 export const NodesList = ( props : NodeListProps ) => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
+
+    const { token_info } = useAppSelector(state => state.auth);
     const { nodes, 
             yearSelect, 
             levels, 
@@ -30,12 +33,22 @@ export const NodesList = ( props : NodeListProps ) => {
         nodes.map((item: NodeInterface) => item.weight)
     );
 
+    const [rol, setRol] = useState("");
+    const [id, setId] = useState(0);
+
     useEffect(() => {
-        const ids = nodes.map((item: NodeInterface) => item.id_node);
-        getProgress(ids);
+        if (token_info?.token !== undefined) {
+            const decoded = decode(token_info.token);
+            setRol(decoded.rol);
+            setId(decoded.id_plan);
+        }
+    }, []);
+
+    useEffect(() => {
+        getProgress();
     }, [yearSelect, nodes]);
 
-    const getProgress = (ids: string[]) => {
+    const getProgress = () => {
         const pesosStr = localStorage.getItem('UnitNode');
         if (pesosStr == undefined) 
             return 0;
@@ -68,8 +81,10 @@ export const NodesList = ( props : NodeListProps ) => {
                 financiacion.push(-1);
             }
         });
+        const weights = nodes_s.map((item: NodesWeight) => item.weight);
         dispatch(setProgressNodes(progreso));
         dispatch(setFinancial(financiacion));
+        setPesos(weights);
     };
 
     const handleButton = ( index: number ) => {
@@ -151,18 +166,20 @@ export const NodesList = ( props : NodeListProps ) => {
                         <p>{item.name}</p>
                     </button>
                     :null}
-                    <input  className={`tw-px-2 tw-mx-2 
+                    {rol === 'admin' || (rol === 'funcionario' && id === props.id) ?
+                        <input  className={`tw-px-2 tw-mx-2 
                                         tw-border tw-rounded
                                         tw-w-12
                                         ${mode ? '' : 'tw-hidden'}`}
-                            type='number'
-                            placeholder='peso'
-                            value={ isNaN(pesos[index]) ? 0 : pesos[index]}
-                            onChange={(e)=>handleUpdateWeight(index, e)}/> 
+                                        type='number'
+                                        placeholder='peso'
+                                        value={ isNaN(pesos[index]) ? 0 : pesos[index]}
+                                        onChange={(e)=>handleUpdateWeight(index, e)}/> 
+                    :null}
                 </div>
                 );
             })}
-            {mode ?
+            {mode && (rol === 'admin' || (rol === 'funcionario' && id === props.id))?
             <div className='tw-flex tw-justify-center'>
                 <button className='tw-px-2 tw-mx-2 
                                     tw-bg-greenBtn tw-text-white

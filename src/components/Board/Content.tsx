@@ -32,7 +32,7 @@ export const Content = ( props : ContentProps ) => {
             financial,
             radioBtn,
             nodes } = useAppSelector(store => store.plan);
-    const { mode } = useAppSelector(store => store.content);
+    const { mode, id_plan } = useAppSelector(store => store.content);
 
     const [rol, setRol] = useState("");
     const [id, setId] = useState(0);
@@ -87,9 +87,9 @@ export const Content = ( props : ContentProps ) => {
                             tw-text-center
                             md:tw-text-left">
                 Plan indicativo
-                {rol === '' ? null :
+                {rol === 'admin' || (rol === 'funcionario' && id === props.id) ? 
                 <SettingsBtn handle={handleSettings} id={props.id}/>
-                }
+                : null}
                 {rol === 'admin' || (rol === 'funcionario' && id === props.id) ?
                 <IconButton color="success"
                             aria-label="delete"
@@ -128,7 +128,7 @@ export const Content = ( props : ContentProps ) => {
                     <p className="tw-ml-4 tw-mt-3 tw-font-montserrat tw-font-bold">
                         <BackBtn handle={handleBack} id={props.id}/>
                         {levels[indexLevel!].name}
-                        {rol === '' ? null :
+                        {rol === 'admin' || (rol === 'funcionario' && id === props.id) ?
                         <button className={`tw-ml-4 tw-p-2 
                                             tw-rounded
                                             ${mode? 'tw-bg-red-300 hover:tw-bg-red-500' :
@@ -136,7 +136,7 @@ export const Content = ( props : ContentProps ) => {
                                 onClick={handleMode}>
                             Editar
                         </button>
-                        }
+                        : null}
                     </p>
                     <div className="tw-pb-1 tw-mb-2">
                         {nodes.length === 0 ?
