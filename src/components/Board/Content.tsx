@@ -129,7 +129,8 @@ export const Content = ( props : ContentProps ) => {
                                 </div>
                             ))}
                         </ul>
-                        : <button>Definir colorimetria</button>
+                        : <button onClick={()=>handleSettings()}
+                            >Definir colorimetria</button>
                     }
                 </div>
             </h1>

@@ -1,4 +1,4 @@
-import { createAction, createAsyncThunk } from "@reduxjs/toolkit";
+import { createAsyncThunk } from "@reduxjs/toolkit";
 
 import {
     EvidenceInterface, 
@@ -77,7 +77,7 @@ export const thunkAddEvidenceGoal = createAsyncThunk<EvidenceInterface, AddEvide
     async (props: AddEvidenceProps, { rejectWithValue }) => {
         try {
             const res = await addEvicenceGoal(props.id_plan, props.code, props.data, props.file, props.list_points);
-            return res;
+            return res[0];
         } catch (err) {
             const result = parseErrorAxios(err);
             return rejectWithValue(result);

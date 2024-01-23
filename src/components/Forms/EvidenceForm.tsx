@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import Modal from 'react-modal';
+import { Spinner } from "@/assets/icons";
 
 import { useAppSelector, useAppDispatch } from "@/store";
 import { 
@@ -8,6 +10,21 @@ import {
 
 import { EvidenceInterface } from "@/interfaces";
 import { UbicationsPopover } from "@/components";
+
+const ModalSpinner = ({isOpen}:{isOpen: boolean}) => {
+    return (
+        <Modal  isOpen={isOpen}
+                className='tw-flex tw-flex-col tw-items-center tw-justify-center'
+                overlayClassName='tw-fixed tw-inset-0 tw-bg-black tw-opacity-50'>
+            <Spinner/>
+            <label className='tw-text-[#222222] 
+                            tw-font-bold tw-text-lg 
+                            tw-font-montserrat'>
+                Cargando Evidencia...
+            </label>
+        </Modal>
+    );
+};
 
 export const EvidenceForm = () => {
     const dispatch = useAppDispatch();
@@ -128,6 +145,7 @@ export const EvidenceForm = () => {
     };
 
     return (
+        {loading} ? <ModalSpinner isOpen={loading}/> :
         <form
             id="formEvidencia"
             encType="multipart/form-data"
@@ -381,7 +399,6 @@ export const EvidenceForm = () => {
                                     tw-font-bold"
                         onClick={handleSubmitEvidence}>
                     Añadir evidencia
-                    {loading && <span className="tw-ml-3 tw-spinner tw-spinner-white"></span>}
                 </button>
             </div>
         </form>
