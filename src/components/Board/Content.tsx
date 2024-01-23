@@ -31,8 +31,9 @@ export const Content = ( props : ContentProps ) => {
             progressNodes,
             financial,
             radioBtn,
-            nodes } = useAppSelector(store => store.plan);
-    const { mode, id_plan } = useAppSelector(store => store.content);
+            nodes,
+            colorimeter } = useAppSelector(store => store.plan);
+    const { mode } = useAppSelector(store => store.content);
 
     const [rol, setRol] = useState("");
     const [id, setId] = useState(0);
@@ -79,26 +80,58 @@ export const Content = ( props : ContentProps ) => {
         <div className="tw-h-full tw-border
                         tw-bg-[url('/src/assets/images/bg-plan-indicativo.png')]
                         tw-opacity-80">
-            <h1 className=" tw-ml-6 tw-mt-6 
+            <h1 className=" tw-mx-6 tw-mt-6 
                             tw-text-[#222222] 
                             tw-font-bold
                             tw-text-lg
                             tw-font-montserrat
                             tw-text-center
-                            md:tw-text-left">
-                Plan indicativo
-                {rol === 'admin' || (rol === 'funcionario' && id === props.id) ? 
-                <SettingsBtn handle={handleSettings} id={props.id}/>
-                : null}
-                {rol === 'admin' || (rol === 'funcionario' && id === props.id) ?
-                <IconButton color="success"
-                            aria-label="delete"
-                            onClick={() => handleAddUser()}
-                            title="Agregar funcionario al plan">
-                    <PersonAddAltIcon/>
-                </IconButton>
-                : null
-                }
+                            md:tw-text-left
+                            tw-flex tw-justify-between">
+                <div>
+                    Plan indicativo
+                    {rol === 'admin' || (rol === 'funcionario' && id === props.id) ? 
+                        <SettingsBtn handle={handleSettings} id={props.id}/>
+                        : null
+                    }
+                    {rol === 'admin' || (rol === 'funcionario' && id === props.id) ?
+                        <IconButton color="success"
+                                    aria-label="delete"
+                                    onClick={() => handleAddUser()}
+                                    title="Agregar funcionario al plan">
+                            <PersonAddAltIcon/>
+                        </IconButton>
+                        : null
+                    }
+                </div>
+                <div>
+                    {colorimeter.length > 0 ?
+                        <ul className="tw-flex tw-gap-2">
+                            <div className={`tw-rounded-full
+                                            tw-w-8 tw-h-8
+                                            tw-bg-gray-400
+                                            hover:tw-bg-gray-200}`}
+                                title="No tiene programado ejecuciones">
+                                <p className="tw-invisible">a</p>
+                            </div>
+                            {colorimeter.map((color, index) => (
+                                <div className={`tw-rounded-full
+                                                tw-w-8 tw-h-8
+                                                ${index === 0 ? 'tw-bg-redColory hover:tw-bg-red-200' :
+                                                index === 1 ? 'tw-bg-yellowColory hover:tw-bg-yellow-200' :
+                                                index === 2 ? 'tw-bg-greenColory hover:tw-bg-green-200' :
+                                                index === 3 ? 'tw-bg-blueColory hover:tw-bg-blue-200' :null}
+                                                `}
+                                    title={`Ejecutado ${
+                                        isNaN(colorimeter[index-1]) ? 0 : colorimeter[index-1] + 1
+                                        }% - ${colorimeter[index]}%`}>
+                                    <p className="tw-invisible">a</p>
+                                </div>
+                            ))}
+                        </ul>
+                        : <button>Definir colorimetria</button>
+                    }
+                </div>
             </h1>
             <div className="tw-grid tw-grid-cols-1 md:tw-grid-cols-3 tw-mb-2">
 
