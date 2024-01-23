@@ -20,6 +20,7 @@ export const PrivateRouter = () => {
             <Route path="/PlanIndicativo/Mapa" element={<pages.InterventionMap/>} />
             <Route path='/PlanIndicativo/POAI' element={<pages.POAI/>}/>
             <Route path='/PlanIndicativo/Banco-proyectos' element={<pages.ProjectBank/>}/>
+            <Route path='*' element={<pages.NotFoundPage/>}/>
         </Routes>
   )
 }
