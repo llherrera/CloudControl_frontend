@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 import { useAppDispatch } from "@/store";
 import { setLevels } from "@/store/plan/planSlice";
+import { thunkAddLevel } from "@/store/plan/thunks";
 
 import { Input, FileInput } from "@/components";
 import { addLevel } from "@/services/api";
@@ -79,10 +80,9 @@ export const LevelForm = ( props: LevelFormProps ) => {
     }
 
     const handleSubmit = async () => {
-        await addLevel(data, props.id)
-        .then(()=>{
-            dispatch(setLevels(data));
-        }).catch((error)=>{
+        dispatch(thunkAddLevel({id: props.id, levels: data}))
+        .unwrap()
+        .catch((error)=>{
             console.log(error);
         });
     }
@@ -106,13 +106,13 @@ export const LevelForm = ( props: LevelFormProps ) => {
                         key={index}>
                         <Input  type={"text"}
                                 label="Nombre del Nivel:"
-                                id={"LevelName"}
-                                name={"LevelName"}
+                                id={"name"}
+                                name={"name"}
                                 onChange={ (event) => handleInputFormChange(event, index) }/>
                         <Input  type={"text"}
                                 label="Descripción:"
-                                id={"Description"}
-                                name={"Description"}
+                                id={"description"}
+                                name={"description"}
                                 onChange={ (event) => handleInputFormChange(event, index) }/>
                     </li>
                 )}

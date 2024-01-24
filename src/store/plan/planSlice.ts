@@ -22,7 +22,9 @@ import {thunkGetPDTid,
         thunkAddSecretaries,
         thunkUpdateSecretaries,
         thunkAddLocations,
-        thunkGetLocations } from "./thunks";
+        thunkGetLocations,
+        thunkAddLevel,
+        thunkAddNodes } from "./thunks";
 
 const getInitialState = (): InitialStatePlanInterface => {
     const planState = getGenericState('plan');
@@ -279,6 +281,47 @@ export const planSlice = createSlice({
         builder.addCase(thunkGetNodes.rejected, (state, action) => {
             state.loadingNodes = false;
             state.errorLoadingNodes = action.payload;
+        });
+
+
+        builder.addCase(thunkAddNodes.pending, state => {
+            if (!state.loadingNodes) state.loadingNodes = true;
+            state.errorLoadingNodes = undefined;
+        });
+        builder.addCase(thunkAddNodes.fulfilled, (state, action) => {
+            state.loadingNodes = false;
+            const temp = [] as NodeInterface[]
+            action.payload.forEach((item:Node) => {
+                temp.push({
+                    id_node: item.id_node,
+                    name: item.name,
+                    description: item.description,
+                    parent: item.parent,
+                    id_level: item.id_level,
+                    weight: item.weight,
+                })
+            });
+            state.nodes = temp;
+            setGenericState('plan', state);
+        });
+        builder.addCase(thunkAddNodes.rejected, (state, action) => {
+            state.loadingNodes = false;
+            state.errorLoadingNodes = action.payload;
+        });
+
+
+        builder.addCase(thunkAddLevel.pending, state => {
+            if (!state.loadingLevels) state.loadingLevels = true;
+            state.errorLoadingLevels = undefined;
+        });
+        builder.addCase(thunkAddLevel.fulfilled, (state, action) => {
+            state.loadingLevels = false;
+            state.levels = action.payload;
+            setGenericState('plan', state);
+        });
+        builder.addCase(thunkAddLevel.rejected, (state, action) => {
+            state.loadingLevels = false;
+            state.errorLoadingLevels = action.payload;
         });
 
 

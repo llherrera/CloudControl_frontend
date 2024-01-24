@@ -1,6 +1,6 @@
 import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
 
-import { PDTInterface,
+import {PDTInterface,
         ErrorBasicInterface,
         GetNodeProps,
         AddColorsProps,
@@ -10,7 +10,10 @@ import { PDTInterface,
         PropsSecretary,
         PropsLocations,
         LocationInterface,
-        UpdateWProps } from '../../interfaces';
+        UpdateWProps,
+        AddLevelProps,
+        AddNodeProps, 
+        NodeInterface} from '../../interfaces';
 import { parseErrorAxios } from '../../utils';
 
 import {getPDTid, 
@@ -27,7 +30,9 @@ import {getPDTid,
         addLocations, 
         getLocations,
         updateSecretaries,
-        updateWeights } from '@/services/api';
+        updateWeights,
+        addLevel,
+        addLevelNode } from '@/services/api';
 
 export const thunkGetPDTid = createAsyncThunk<PDTInterface, string, { rejectValue: ErrorBasicInterface }>(
     'pdt/getPDTid',
@@ -123,6 +128,41 @@ export const thunkGetNodes = createAsyncThunk<[], GetNodeProps, { rejectValue: E
         try {
             const res = await getLevelNodes(props);
             return res;
+        } catch (err) {
+            const result = parseErrorAxios(err);
+            return rejectWithValue(result);
+        }
+    }
+)
+
+export const thunkAddNodes = createAsyncThunk<NodeInterface[], AddNodeProps, { rejectValue: ErrorBasicInterface }>(
+    'pdt/addNodes',
+    async (props: AddNodeProps, { rejectWithValue }) => {
+        try {
+            const res = await addLevelNode(props.nodes, props.id_plan);
+            let temp = props.nodes;
+            return temp;
+        } catch (err) {
+            const result = parseErrorAxios(err);
+            return rejectWithValue(result);
+        }
+    }
+);
+
+export const thunkAddLevel = createAsyncThunk<LevelInterface[], AddLevelProps, { rejectValue: ErrorBasicInterface }>(
+    'pdt/addLevel',
+    async (props: AddLevelProps, { rejectWithValue }) => {
+        try {
+            const res = await addLevel(props.levels, props.id);
+            let temp = [] as LevelInterface[];
+            res.result.forEach((id: number, index: number) => {
+                temp.push({
+                    id_level: id,
+                    name: props.levels[index].name,
+                    description: props.levels[index].description,
+                })
+            });
+            return temp;
         } catch (err) {
             const result = parseErrorAxios(err);
             return rejectWithValue(result);

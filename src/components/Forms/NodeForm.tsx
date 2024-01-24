@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 
-import { useAppSelector } from '@/store';
+import { useAppSelector, useAppDispatch } from '@/store';
+import { thunkAddNodes } from '@/store/plan/thunks';
 
 import { NodeInterface, NodeFormProps } from '@/interfaces';
 import { addLevelNode } from '@/services/api';
 
 export const NodeForm = ( props : NodeFormProps ) => {
+    const dispatch = useAppDispatch();
     const { parent } = useAppSelector(store => store.plan);
 
     let id_nodo_gen : number = 1;
@@ -87,11 +89,11 @@ export const NodeForm = ( props : NodeFormProps ) => {
             alert('La suma de los pesos debe ser 100');
             return;
         }
-        try {
-            await addLevelNode(data, props.id);
-        } catch (error) {
+        dispatch(thunkAddNodes({nodes: data, id_plan: props.id}))
+        .unwrap()
+        .catch((error) => {
             console.log(error);
-        }
+        });
     };
 
     return (
@@ -104,23 +106,23 @@ export const NodeForm = ( props : NodeFormProps ) => {
                     <li className="tw-ml-3">
                         <input  type={"text"}
                                 placeholder={`Nombre del nodo`}
-                                id={"NodeName"}
-                                name={"NodeName"}
+                                id={"name"}
+                                name={"name"}
                                 value={e.name}
                                 className='tw-rounded tw-my-1 tw-w-5/6 tw-border '
                                 onChange={ (event) => handleInputFormChange(event, index) }/><br/>
                         <input  type={"text"}
                                 placeholder="Descripción del Nodo"
-                                id={"Description"}
-                                name={"Description"}
+                                id={"description"}
+                                name={"description"}
                                 value={e.description}
                                 className='rounded my-1 tw-w-5/6 tw-border'
                                 onChange={ (event) => handleInputFormChange(event, index) }/><br/>
                     </li>
                     <input  type="number"
                             placeholder='Peso'
-                            id='Weight'
-                            name='Weight'
+                            id='weight'
+                            name='weight'
                             value={e.weight}
                             className=' tw-w-1/6 tw-absolute tw-border tw-right-4 tw-h-7 tw-rounded'
                             onChange={ (event) => handleInputFormChange(event, index) } />

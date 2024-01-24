@@ -33,7 +33,7 @@ export interface InitialStatePlanInterface {
     years: number[];
     yearSelect?: number;
     levels: LevelInterface[];
-    indexLevel: number | undefined;
+    indexLevel: number;
     parent: string | null;
     progressNodes: number[];
     financial: number[];
@@ -105,4 +105,14 @@ export interface ExcelPhysical {
 export interface UpdateWProps {
     ids: string[];
     weights: number[];
+}
+
+export interface AddLevelProps {
+    id: string;
+    levels: LevelInterface[];
+}
+
+export interface AddNodeProps {
+    id_plan: number;
+    nodes: NodeInterface[];
 }

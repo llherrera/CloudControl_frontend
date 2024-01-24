@@ -47,7 +47,7 @@ export const Content = ( props : ContentProps ) => {
     }, []);
 
     useEffect(() => {
-        dispatch(thunkGetNodes({id_level: levels[indexLevel!].id_level!, parent: parent}))
+        dispatch(thunkGetNodes({id_level: levels[indexLevel].id_level!, parent: parent}))
         .unwrap()
         .catch((err) => {console.log(err)});
     }, [years, indexLevel]);
@@ -124,7 +124,8 @@ export const Content = ( props : ContentProps ) => {
                                                 `}
                                     title={`Ejecutado ${
                                         isNaN(colorimeter[index-1]) ? 0 : colorimeter[index-1] + 1
-                                        }% - ${colorimeter[index]}%`}>
+                                        }% - ${colorimeter[index]}%`}
+                                    key={index}>
                                     <p className="tw-invisible">a</p>
                                 </div>
                             ))}
