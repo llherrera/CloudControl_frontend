@@ -371,7 +371,7 @@ export const addEvicenceGoal = async (id_plan: number, code: string, evidence: E
     });
     return response.data;
 }
-
+// hay como 3 peticiones a put(nodo/evidencia) y solo 2 controladores, mira a ver que es. 497. 559
 export const updateEvicenceGoal = async (evidence: EvidenceInterface, file: File, points: Coordinates[]) => {
     const response = await api.put("/nodo/evidencia", 
     {

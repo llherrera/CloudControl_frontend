@@ -30,32 +30,32 @@ export const Frame = (props: FrameProps) => {
     const buttons = [
         {
             inside: true,
-            onClick: () => navigate('/pdt/PlanIndicativo'), 
-            text: 'Plan indicativo', 
+            onClick: () => navigate('/pdt/PlanIndicativo', {replace: true}),
+            text: 'Plan indicativo',
             bgColor: bgcolor,
             textColor: textcolor,
             icon: <PlanIndicativoIcon color={ index === 0 ? logocolor : textcolor}/>
         },
         {
-            inside: true, 
-            onClick: () => navigate('/PlanIndicativo/Banco-proyectos'), 
-            text: 'Banco de proyectos', 
+            inside: true,
+            onClick: () => navigate('/PlanIndicativo/Banco-proyectos', {replace: true}),
+            text: 'Banco de proyectos',
             bgColor: bgcolor,
             textColor: textcolor,
             icon: <BancoProyectoIcon color={ index === 1 ? logocolor : textcolor}/>
         },
         {
-            inside: true, 
-            onClick: () => navigate('/PlanIndicativo/POAI'), 
-            text: 'POAI', 
+            inside: true,
+            onClick: () => navigate('/PlanIndicativo/POAI', {replace: true}),
+            text: 'POAI',
             bgColor: bgcolor,
             textColor: textcolor,
             icon: <POAIIcon color={ index === 2 ? logocolor : textcolor}/>
         },
         {
-            inside: true, 
-            onClick: () => navigate('/PlanIndicativo/Mapa'),
-            text: 'Mapa de intervención', 
+            inside: true,
+            onClick: () => navigate('/PlanIndicativo/Mapa', {replace: true}),
+            text: 'Mapa de intervención',
             bgColor: bgcolor,
             textColor: textcolor,
             icon: <MapICon color={ index === 3 ? logocolor : textcolor}/>

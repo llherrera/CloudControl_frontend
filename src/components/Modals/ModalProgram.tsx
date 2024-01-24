@@ -45,6 +45,7 @@ export const ModalProgram = () => {
                     const { id_level } = levels_[i];
                     if (id_level) {
                         const res: NodeInterface[] = await getLevelNodes({id_level: id_level, parent: parent});
+                        if (res.length === 0) break;
                         const temp_ = [] as NodeInterface[];
                         res.forEach((item:Node) => {
                             temp_.push({

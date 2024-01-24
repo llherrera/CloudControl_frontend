@@ -64,7 +64,9 @@ export const NodesList = ( props : NodeListProps ) => {
         let nodes_s: NodesWeight[] = pesosNodo.filter((itemFull: NodesWeight) => 
             nodes.some(itemFilter => itemFilter.id_node === itemFull.id_node));
 
+        nodes_s.sort((a,b) => a.id_node < b.id_node ? -1 : 1)
         nodes_s.sort((a,b)=>a.id_node.length - b.id_node.length)
+
         nodes_s.forEach((item: NodesWeight) => {
             const { percents } = item;
             if (percents) {

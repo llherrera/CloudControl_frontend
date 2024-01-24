@@ -9,6 +9,7 @@ import {
 import { resetEvidence } from "@/store/evidence/evidenceSlice";
 
 import { Frame, EvidenceDetail, BackBtn, MyEvidence } from "@/components";
+import { decode } from "@/utils";
 
 export const ListEvidence = () => {
     return (
@@ -20,14 +21,26 @@ const Evidence = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
+    const { token_info } = useAppSelector(state => state.auth);
     const { plan } = useAppSelector(store => store.plan);
     const { evidences, evi_count } = useAppSelector(store => store.evidence);
     const { id_plan } = useAppSelector(store => store.content);
     
     const [page, setPage] = useState(1);
-    const [opt, setOpt] = useState(0);
+    const [opt, setOpt] = useState(1);
 
-    useEffect(() => {        
+    const [rol, setRol] = useState("");
+    const [id, setId] = useState(0);
+
+    useEffect(() => {
+        if (token_info?.token !== undefined) {
+            const decoded = decode(token_info.token);
+            setRol(decoded.rol);
+            setId(decoded.id_plan);
+        }
+    }, []);
+
+    useEffect(() => {
         if (plan) {
             const { id_plan } = plan;
             if (id_plan) dispatch(thunkGetEvidenceCount(id_plan));
@@ -65,20 +78,31 @@ const Evidence = () => {
         setOpt(opt);
     };
 
+    const handleBtnOpt = () => {
+        (rol === 'admin' || 
+        ((rol === 'funcionario' || rol === 'planeacion') && id === id_plan) ? 
+            handleOpt(1)
+            : null
+        )
+    }
+
     return (
         <div className="tw-flex tw-flex-col tw-items-center tw-mx-3">
             <p className="tw-ml-4 tw-mt-3 tw-font-montserrat tw-font-bold">
                 <BackBtn handle={handleBack} id={id_plan}/>
-                <button className={`tw-mr-2 tw-mb-2 tw-p-2 tw-rounded
-                                    ${opt === 0 ? 'tw-bg-green-300 hover:tw-bg-green-200 tw-border-2 tw-border-black'
-                                    : 'tw-bg-gray-300 hover:tw-bg-gray-200'}`}
-                        onClick={()=>handleOpt(0)}>
-                    Evidencias por aprobar
-                </button>
+                {rol === 'admin' || ((rol === 'funcionario' || rol === 'planeacion') && id === id_plan) ? 
+                    <button className={`tw-mr-2 tw-mb-2 tw-p-2 tw-rounded
+                        ${opt === 0 ? 'tw-bg-green-300 hover:tw-bg-green-200 tw-border-2 tw-border-black'
+                        : 'tw-bg-gray-300 hover:tw-bg-gray-200'}`}
+                            onClick={()=>handleOpt(0)}>
+                        Evidencias por aprobar
+                    </button>
+                    : null
+                }
                 <button className={`tw-mr-2 tw-mb-2 tw-p-2 tw-rounded
                                     ${opt === 1 ? 'tw-bg-green-300 hover:tw-bg-green-200 tw-border-2 tw-border-black'
                                     : 'tw-bg-gray-300 hover:tw-bg-gray-200'}`}
-                        onClick={()=>handleOpt(1)}>
+                        onClick={handleBtnOpt}>
                     Mis evidencias
                 </button>
             </p>
@@ -124,7 +148,7 @@ const Evidence = () => {
                 <tbody>
                     {evidences.length > 0 ? evidences.map((evi, index) => (
                         <EvidenceDetail evi={evi} index={index} key={index}/>
-                    )) : <p>No hay evidencias</p>}
+                    )) : <tr><th><p>No hay evidencias</p></th></tr>}
                 </tbody>
             </table>
             :
@@ -148,7 +172,7 @@ const Evidence = () => {
                 <tbody>
                     {evidences.length > 0 ? evidences.map((evi, index) => (
                         <MyEvidence evidence={evi} key={index}/>
-                    )) : <p>No hay evidencias</p>}
+                    )) : <tr><th><p>No hay evidencias</p></th></tr>}
                 </tbody>
             </table>
             }

@@ -19,7 +19,6 @@ import {
     BackBtn, 
     Frame } from '@/components';
 import {
-    Coordinates, 
     NodeInterface, 
     Node, 
     EvidenceInterface } from '@/interfaces';
@@ -39,22 +38,9 @@ export const InterventionMap = () => {
 const API_KEY = process.env.VITE_API_KEY_MAPS as string;
 
 const containerStyle = {
-    width: '500px',
-    height: '500px',
+    width: '90%',
+    height: '600px',
     borderRadius: '15px'
-};
-
-const mapOptions = {
-    disableDefaultUI: true,
-    zoom: 0,
-    restriction: {
-        latLngBounds: {
-            north: 13.011493,
-            east: -66.9,
-            south: -4.334669,
-            west: -79.314914
-        }
-    },
 };
 
 const Section = () => {
@@ -71,7 +57,6 @@ const Section = () => {
     });
 
     const [map, setMap] = useState<google.maps.Map|null>(null);
-    const [ubication, setUbication] = useState<Coordinates>({lat: 10.96854, lng: -74.78132});
 
     const [programs, setPrograms] = useState<NodeInterface[][]>([]);
     const [index_, setIndex] = useState<number[]>([0, 0]);
@@ -79,23 +64,21 @@ const Section = () => {
 
     const [showTooltip, setShowTooltip] = useState<boolean>(false);
 
-    useEffect(() => {
-        navigator.geolocation.getCurrentPosition((position) => {
-            setUbication({lat: position.coords.latitude, lng: position.coords.longitude});
-        }, (error) => {
-            console.log(error);
-        }, {
-            enableHighAccuracy: true,
-            timeout: 5000,
-            maximumAge: 0
-        });
-    }, []);
+    const mapOptions: google.maps.MapOptions = {
+        disableDefaultUI: true,
+        zoom: 14,
+        restriction: {
+            latLngBounds: {
+                north: 13.011493,
+                east: -66.9,
+                south: -4.334669,
+                west: -79.314914
+            }
+        },
+        center: planLocation
+    };
 
-    useEffect(() => {
-        if (!map || !planLocation) return;
-        map.setCenter(planLocation);
-    }, []);
-
+    //ubicaciones
     useEffect(() => {
         const fetch = async () => {
             await getUbiEvidences(id_plan)
@@ -108,6 +91,7 @@ const Section = () => {
         fetch();
     }, []);
 
+    //filtros
     useEffect(() => {
         const fetch = async () => {
             if (levels.length === 0) return;
@@ -151,7 +135,7 @@ const Section = () => {
     useEffect(() => {
         const fetch = async () => {
             if (programs.length === 0) return;
-            await getCodeEvidences(programs[1][index_[1]].id_node, id_plan)
+            await getCodeEvidences(programs[index_[0]][index_[1]].id_node, id_plan)
             .then((res) => {
                 setCodes(res);
             });
@@ -215,7 +199,8 @@ const Section = () => {
 
     return (
         <div className={`tw-bg-[url('/src/assets/images/bg-plan-indicativo.png')]
-                        tw-pb-3`} >
+                         tw-h-full tw-border
+                         tw-opacity-80`} >
             <div className='tw-flex tw-my-4'>
                 <BackBtn handle={handleBack} id={id_plan} />
                 <h1 className='tw-grow tw-text-center'>Mapa de intervenciones</h1>
@@ -223,13 +208,13 @@ const Section = () => {
             <ToastContainer />
 
             <div className='tw-flex tw-justify-center tw-mb-3'>
-                {programs.map((program, index) => (
-                    <div className='tw-flex tw-flex-col' key={index}>
+                {programs.map((program, i) => (
+                    <div className='tw-flex tw-flex-col' key={i}>
                         <label className='tw-text-center'>
-                            {levels[index].name}
+                            {levels[i].name}
                         </label>
-                        <select value={program[index_[index]].name}
-                                onChange={(e)=>handleChangePrograms(index, e)}
+                        <select value={program[index_[i]].name}
+                                onChange={(e)=>handleChangePrograms(i, e)}
                                 className='tw-border tw-border-gray-300 tw-rounded tw-mr-3 '>
                             {program.map((node, index) => (<option value={node.name} key={index}>{node.name}</option>))}
                         </select>
@@ -239,8 +224,8 @@ const Section = () => {
             {isLoaded ? (<div className='tw-flex tw-justify-center'>
                 <GoogleMap
                     mapContainerStyle={containerStyle}
-                    center={{lat: ubication.lat, lng: ubication.lng}}
-                    zoom={10}
+                    center={planLocation}
+                    zoom={14}
                     options={mapOptions}
                     onLoad={onLoad}
                     onUnmount={onUnmount}>
@@ -253,7 +238,8 @@ const Section = () => {
                                 icon={{
                                     url: icono,
                                     scaledSize: new window.google.maps.Size(30, 30),
-                                }}>
+                                }}
+                                key={index}>
                                 {showTooltip && (
                                     <InfoWindow onCloseClick={()=>setShowTooltip(false)}>
                                         <div>
