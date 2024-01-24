@@ -145,7 +145,7 @@ export const EvidenceForm = () => {
     };
 
     return (
-        {loading} ? <ModalSpinner isOpen={loading}/> :
+        loading ? <ModalSpinner isOpen={loading}/> :
         <form
             id="formEvidencia"
             encType="multipart/form-data"

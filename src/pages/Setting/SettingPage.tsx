@@ -71,42 +71,37 @@ const SettingPageWrapper = () => {
         <div className='tw-text-center'>No hay un plan seleccionado</div> :
         <div>
             <BackBtn handle={handleBack} id={id_plan}/><br />
-            <FileInput/>
-            <FileFinancialInput/>
+            <div>
+                {rol === "admin" || ((rol === 'funcionario' || rol === 'planeacion') && id_ === id_plan ) ? 
+                    <div>
+                        <FileInput/>
+                        <FileFinancialInput/>
+                    </div>
+                    : null
+                }
+            </div>
             {rol === "admin" ?
                 <FilePhysicalInput/>
                 : null
             }
-            <UploadImage/>
-            <div className='tw-border-t-4 tw-mt-4'>
-                {((rol === "admin") || (rol === 'funcionario' && id_plan === plan!.id_plan!)) ?
-                    <div className='tw-flex tw-justify-center'>
-                        <button className=" tw-mt-2 tw-ml-2 tw-p-2
-                                            tw-bg-blueColory hover:tw-bg-blue-400
-                                            tw-text-white hover:tw-text-black tw-font-bold
-                                            tw-rounded"
-                                            onClick={handleColor}>
-                            <p className="tw-break-words tw-font-montserrat">
-                                Definir colorimetria
-                            </p>
-                        </button>
-                    </div>
-                    :null
-                }
-                <div>
-                    {showColorForm ? 
-                    <div></div> 
-                    : <div className='tw-flex tw-justify-center tw-pt-2'>
+            {rol === "admin" || (rol === 'funcionario' && id_ === id_plan ) ?
+                <UploadImage/>
+                : null
+            }
+            <div className='tw-border-t-4 tw-mt-4 tw-flex tw-justify-center'>
+                {rol === "admin" || (rol === 'funcionario' && id_ === id_plan ) ?
+                    <div className='tw-mt-4'>
                         <ColorForm id={plan!.id_plan!}/>
-                        </div>}
-                </div>
+                    </div>
+                    : null
+                }
             </div>
             
-            {((rol === "admin") || (rol === 'funcionario' && id_plan === plan!.id_plan!)) ?
+            {((rol === "admin") || ((rol === 'funcionario' || rol === 'planeacion') && id_plan === plan!.id_plan!)) ?
             <SecretaryForm/>
             : null}
 
-            {((rol === "admin") || (rol === 'funcionario' && id_plan === plan!.id_plan!)) ?
+            {((rol === "admin") || ((rol === 'funcionario' || rol === 'planeacion') && id_plan === plan!.id_plan!)) ?
             <LocationsForm/>
             : null}
         </div>

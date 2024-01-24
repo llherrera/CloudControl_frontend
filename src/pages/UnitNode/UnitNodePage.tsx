@@ -38,7 +38,7 @@ export const UnitNodePage = () => {
         if (token_info?.token !== undefined) {
             const decoded = decode(token_info.token);
             setRol(decoded.rol);
-            setId(decoded.id);
+            setId(decoded.id_plan);
         }
     }, []);
 
@@ -140,7 +140,7 @@ export const UnitNodePage = () => {
                             tw-bg-white 
                             tw-px-2 tw-mt-3 tw-mx-2 md:tw-mx-10">
                 <div className="tw-flex tw-justify-center tw-mt-2">
-                {(rol === "admin") || (rol === 'funcionario' && id === id_plan) ?
+                {(rol === "admin") || ((rol === 'funcionario' || rol === 'planeacion' || rol === 'sectorialista') && id === id_plan) ?
                 <button onClick={handleSubmitButton}
                         className="tw-bg-slate-400 hover:tw-bg-slate-200 
                                     tw-rounded tw-p-2
@@ -263,8 +263,9 @@ export const UnitNodePage = () => {
                 <img src="/src/assets/images/Plan-indicativo.png" alt="" width={60} />
             </div>
             <BackBtn handle={handleBack} id={id_plan}/>
-            {rol === '' ? null :
-            <SettingsBtn handle={handleSettings} id={id_plan}/>
+            {rol === 'admin' || (rol === 'funcionario' && id === id_plan) ?
+                <SettingsBtn handle={handleSettings} id={id_plan}/>
+                : null
             }
             <ol className="tw-col-start-1 tw-col-span-full tw-flex tw-justify-center tw-flex-wrap">
             {namesTree.length > 0 && namesTree.map((name, index) => {

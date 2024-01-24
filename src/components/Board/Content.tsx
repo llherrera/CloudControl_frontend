@@ -90,7 +90,7 @@ export const Content = ( props : ContentProps ) => {
                             tw-flex tw-justify-between">
                 <div>
                     Plan indicativo
-                    {rol === 'admin' || (rol === 'funcionario' && id === props.id) ? 
+                    {rol === 'admin' || ((rol === 'funcionario' || rol === 'planeacion') && id === props.id) ? 
                         <SettingsBtn handle={handleSettings} id={props.id}/>
                         : null
                     }
@@ -104,7 +104,7 @@ export const Content = ( props : ContentProps ) => {
                         : null
                     }
                 </div>
-                <div>
+                <div className="tw-mb-2">
                     {colorimeter.length > 0 ?
                         <ul className="tw-flex tw-gap-2">
                             <div className={`tw-rounded-full

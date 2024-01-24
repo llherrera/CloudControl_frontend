@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useAppSelector, useAppDispatch } from "@/store";
-import { resetEvidence } from "@/store/evidence/evidenceSlice";
+import { resetEvidence, setEvidence } from "@/store/evidence/evidenceSlice";
 
 import { BackBtn, EvidenceForm } from "@/components";
 
@@ -17,6 +17,7 @@ export const EvidencePage = () => {
     const [cargar, setCargar] = useState(false);
 
     const handleBack = () => {
+        dispatch(setEvidence(undefined));
         dispatch(resetEvidence());
         navigate(-1)
     };

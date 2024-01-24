@@ -102,7 +102,6 @@ export const evidenceSlice = createSlice({
         });
         builder.addCase(thunkAddEvidenceGoal.fulfilled, (state, action) => {
             state.loadingEvidence = false;
-            state.evi_selected = action.payload;
             setGenericState('evidence', state);
         });
         builder.addCase(thunkAddEvidenceGoal.rejected, (state, action) => {
