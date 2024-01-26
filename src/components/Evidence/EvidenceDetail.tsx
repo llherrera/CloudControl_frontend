@@ -43,7 +43,7 @@ export const EvidenceDetail = ( {evi, index}: EvidenceDetailProps ) => {
     return (
         <tr>
             <th  className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
-                {new Date(evi.date).getDate()}/{new Date(evi.date).getMonth()}/{new Date(evi.date).getFullYear()}
+                {new Date(evi.date).getDate()}/{new Date(evi.date).getMonth()+1}/{new Date(evi.date).getFullYear()}
             </th>
             <th  className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
                 {evi.activitiesDesc}
@@ -67,7 +67,7 @@ export const EvidenceDetail = ( {evi, index}: EvidenceDetailProps ) => {
                 {evi.benefited_population_number}
             </th>
             <th  className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
-                {new Date(evi.date_file).getDate()}/{new Date(evi.date_file).getMonth()}/{new Date(evi.date_file).getFullYear()}
+                {new Date(evi.date_file).getDate()}/{new Date(evi.date_file).getMonth()+1}/{new Date(evi.date_file).getFullYear()}
             </th>
             <th  className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
                 <a href={evi.file_link}>Visitar</a>

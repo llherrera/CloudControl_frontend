@@ -46,7 +46,7 @@ export const LobbyPage = () => {
     }, [])
 
     useEffect(() => {
-        if (!plan || !isLoaded || loadError) return;
+        if (plan === undefined || !isLoaded || loadError) return;
         const geocoder = new google.maps.Geocoder();
         geocoder.geocode({address: `Colombia, ${plan?.department}, ${plan?.municipality}`}).then((res) => {
             let location = res.results[0].geometry.location;
@@ -55,7 +55,7 @@ export const LobbyPage = () => {
                 lng: location.lng()
             }));
         });
-    });
+    }, [isLoaded]);
 
     const buttons: React.ReactNode[] = [
         <ButtonComponent

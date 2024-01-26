@@ -40,6 +40,10 @@ export const contentSlice = createSlice({
         setLogo(state, action: PayloadAction<string>) {
             state.url_logo = action.payload;
         },
+        resetContent: (state) => {
+            removeGenericState('content');
+            return getInitialState();
+        },
     }
 });
 
@@ -48,7 +52,8 @@ export const {
     setIdPlan, 
     setMode,
     setNode,
-    setLogo } = contentSlice.actions;
+    setLogo,
+    resetContent } = contentSlice.actions;
 export const selectContent = (state: RootState) => state.content.index;
 
 export default contentSlice.reducer;

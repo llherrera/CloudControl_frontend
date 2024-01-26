@@ -110,7 +110,7 @@ export const Content = ( props : ContentProps ) => {
                             <div className={`tw-rounded-full
                                             tw-w-8 tw-h-8
                                             tw-bg-gray-400
-                                            hover:tw-bg-gray-200}`}
+                                            hover:tw-bg-gray-200`}
                                 title="No tiene programado ejecuciones">
                                 <p className="tw-invisible">a</p>
                             </div>
@@ -130,8 +130,10 @@ export const Content = ( props : ContentProps ) => {
                                 </div>
                             ))}
                         </ul>
-                        : <button onClick={()=>handleSettings()}
-                            >Definir colorimetria</button>
+                        : (rol === 'admin' || (rol === 'funcionario' && id === props.id) ? 
+                                <button onClick={()=>handleSettings()}>Definir colorimetria</button>
+                                : <p>No se ha definido una colorimetria aun</p>
+                            )
                     }
                 </div>
             </h1>

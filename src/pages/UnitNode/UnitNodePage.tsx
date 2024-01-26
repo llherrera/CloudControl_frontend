@@ -9,7 +9,7 @@ import { resetEvidence, setPoints } from "@/store/evidence/evidenceSlice";
 import { resetUnit } from "@/store/unit/unitSlice";
 
 import { decode } from "@/utils";
-import { EvidenceDetail, BackBtn, SettingsBtn } from "@/components";
+import { EvidenceDetail, ShowEvidence, BackBtn, SettingsBtn } from "@/components";
 import cclogo from '@/assets/images/CloudControlIcon.png';
 import { Spinner } from "@/assets/icons";
 
@@ -89,6 +89,8 @@ export const UnitNodePage = () => {
         .then((res) => {
             if (res.length === 0)
                 alert('No hay evidencias para esta unidad');
+            else
+                setShowEvidence(true);
         })
     };
 
@@ -302,44 +304,48 @@ export const UnitNodePage = () => {
             <table>
                 <thead>
                     <tr>
-                        <th className="tw-bg-black tw-border">
+                        <th className={`tw-bg-black tw-border 
+                                        `}>
                             <label className="tw-text-white">Fecha de seguimiento</label>
                         </th>
-                        <th className="tw-bg-black tw-border">
+                        <th className={`tw-bg-black tw-border 
+                                        tw-hidden lg:tw-table-cell`}>
                             <label className="tw-text-white">Descripción</label>
                         </th>
-                        <th className="tw-bg-black tw-border">
+                        <th className={`tw-bg-black tw-border 
+                                        tw-hidden lg:tw-table-cell`}>
                             <label className="tw-text-white">Comuna o Corregimiento</label>
                         </th>
-                        <th className="tw-bg-black tw-border">
+                        <th className={`tw-bg-black tw-border 
+                                        tw-hidden md:tw-table-cell`}>
                             <label className="tw-text-white">Barrio o Vereda</label>
                         </th>
-                        <th className="tw-bg-black tw-border">
+                        <th className={`tw-bg-black tw-border 
+                                        tw-hidden md:tw-table-cell`}>
                             <label className="tw-text-white">Unidad</label>
                         </th>
-                        <th className="tw-bg-black tw-border">
+                        <th className={`tw-bg-black tw-border 
+                                        tw-hidden md:tw-table-cell`}>
                             <label className="tw-text-white">Cantidad</label>
                         </th>
-                        <th className="tw-bg-black tw-border">
+                        <th className={`tw-bg-black tw-border `}>
                             <label className="tw-text-white">Grupo poblacional</label>
                         </th>
-                        <th className="tw-bg-black tw-border">
+                        <th className={`tw-bg-black tw-border`}>
                             <label className="tw-text-white">Población beneficiada</label>
                         </th>
-                        <th className="tw-bg-black tw-border">
+                        <th className={`tw-bg-black tw-border 
+                                        tw-hidden md:tw-table-cell`}>
                             <label className="tw-text-white">Fecha archivo</label>
                         </th>
-                        <th className="tw-bg-black tw-border">
+                        <th className={`tw-bg-black tw-border`}>
                             <label className="tw-text-white">Enlace</label>
-                        </th>
-                        <th className="tw-bg-black tw-border">
-                            <label className="tw-text-white">Acción</label>
                         </th>
                     </tr>
                 </thead>
                 <tbody>
                     {evidences.map((evi, index) => (
-                        <EvidenceDetail evi={evi} index={index}/>
+                        <ShowEvidence evi={evi} index={index}/>
                     ))}
                 </tbody>
             </table>

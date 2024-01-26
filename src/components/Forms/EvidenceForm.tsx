@@ -32,6 +32,7 @@ export const EvidenceForm = () => {
     const { plan } = useAppSelector((state) => state.plan);
     const { unit } = useAppSelector((state) => state.unit);
     const { list_points, evi_selected } = useAppSelector((state) => state.evidence);
+    const { id_plan } = useAppSelector((state) => state.content);
 
     const [loading, setLoading] = useState(false);
     const [data, setData] = useState<EvidenceInterface>(evi_selected??
@@ -111,7 +112,7 @@ export const EvidenceForm = () => {
 
         if (evi_selected === undefined) {
             dispatch(thunkAddEvidenceGoal({
-                id_plan: plan?.id_plan!,
+                id_plan: id_plan,
                 code: unit.code,
                 data: data,
                 file: documento![0],
