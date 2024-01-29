@@ -8,7 +8,8 @@ import {
     AddEvidenceProps,
     UpdateEvidenceProps,
     Coordinates,
-    UbicationDB} from "@/interfaces";
+    UbicationDB,
+    GetUserEviProps } from "@/interfaces";
 import { parseErrorAxios } from "@/utils";
 
 import { 
@@ -59,11 +60,11 @@ export const thunkGetEvidenceCount = createAsyncThunk<number, number, { rejectVa
     }
 );
 
-export const thunkGetUserEvidences = createAsyncThunk<EvidenceInterface[], number, { rejectValue: ErrorBasicInterface}>(
+export const thunkGetUserEvidences = createAsyncThunk<EvidenceInterface[], GetUserEviProps, { rejectValue: ErrorBasicInterface}>(
     "evidence/getUserEvidences", 
-    async (page: number, { rejectWithValue }) => {
+    async (props: GetUserEviProps, { rejectWithValue }) => {
         try {
-            const res = await getUserEvidences(page);
+            const res = await getUserEvidences(props.page, props.id_plan);
             return res;
         } catch (err) {
             const result = parseErrorAxios(err);
@@ -89,7 +90,7 @@ export const thunkUpdateEvidence = createAsyncThunk<EvidenceInterface, UpdateEvi
     "evidence/updateEvidence",
     async (props: UpdateEvidenceProps, { rejectWithValue}) => {
         try {
-            const res = await updateEvicenceGoal(props.data, props.file, props.list_points);
+            const res = await updateEvicenceGoal(props.id_evidence, props.data, props.file, props.list_points);
             return res;
         } catch (err) {
             const result = parseErrorAxios(err);

@@ -30,7 +30,13 @@ export interface AddEvidenceProps {
 }
 
 export interface UpdateEvidenceProps {
+    id_evidence: number;
     data: EvidenceInterface;
     file: File;
     list_points: Coordinates[];
+}
+
+export interface GetUserEviProps {
+    page: number;
+    id_plan: number;
 }

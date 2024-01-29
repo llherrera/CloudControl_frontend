@@ -4,7 +4,6 @@ import { useAppSelector, useAppDispatch } from '@/store';
 import { thunkAddNodes } from '@/store/plan/thunks';
 
 import { NodeInterface, NodeFormProps } from '@/interfaces';
-import { addLevelNode } from '@/services/api';
 
 export const NodeForm = ( props : NodeFormProps ) => {
     const dispatch = useAppDispatch();

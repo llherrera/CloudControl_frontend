@@ -371,10 +371,11 @@ export const addEvicenceGoal = async (id_plan: number, code: string, evidence: E
     });
     return response.data;
 }
-// hay como 3 peticiones a put(nodo/evidencia) y solo 2 controladores, mira a ver que es. 497. 559
-export const updateEvicenceGoal = async (evidence: EvidenceInterface, file: File, points: Coordinates[]) => {
+
+export const updateEvicenceGoal = async (id_evidence: number, evidence: EvidenceInterface, file: File, points: Coordinates[]) => {
     const response = await api.put("/nodo/evidencia", 
     {
+        id_evidence: id_evidence,
         evidence: evidence,
         file: file,
         points: points
@@ -494,18 +495,6 @@ export const updateNode = async (id_plan: string, id_node: string, node: UnitInt
     }
 }
 
-export const updateEvidence = async (code: string, evidence: EvidenceInterface) => {
-    try {
-        const response = await api.put("/nodo/evidencia", { 
-            code:      code,
-            evidence:  evidence
-        });
-        return response.data;
-    } catch (error) {
-        return error;
-    }
-}
-
 export const deleteEvidence = async (id_evidence: number) => {
     try {
         const response = await api.delete("/nodo/evidencia", {
@@ -572,10 +561,11 @@ export const approveEvidence = async (id_evidence: number, approve: number, code
     }
 }
 
-export const getUserEvidences = async (page: number) => {
+export const getUserEvidences = async (page: number, id_plan: number) => {
     const response = await api.get(`/nodo/evidencia-usuario`, {
         params: {
-            page: page
+            page: page,
+            id_plan: id_plan
         }
     });
     return response.data;

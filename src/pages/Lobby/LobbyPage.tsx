@@ -7,7 +7,6 @@ import POAILogo from '@/assets/icons/Point.svg';
 
 import { Header, ButtonComponent } from '@/components';
 import { MapICon } from '@/assets/icons';
-import { decode } from '@/utils/decode';
 
 import { useAppDispatch, useAppSelector } from '@/store';
 import { selectOption } from '@/store/content/contentSlice';
@@ -23,7 +22,6 @@ export const LobbyPage = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
-    const { token_info } = useAppSelector(state => state.auth);
     const { id_plan } = useAppSelector(state => state.content);
     const { plan } = useAppSelector(store => store.plan);
     const { isLoaded, loadError} = useJsApiLoader({
@@ -31,31 +29,26 @@ export const LobbyPage = () => {
         googleMapsApiKey: API_KEY??''
     });
 
-    let rol = "";
-
-    useEffect(() => {
-        if (token_info?.token !== undefined) {
-            const decoded = decode(token_info.token);
-            rol = decoded.rol;
-        }
-    }, []);
-
     useEffect(() => {
         dispatch(thunkGetLevelsById(id_plan.toString()));
         dispatch(setZeroLevelIndex());
     }, [])
 
     useEffect(() => {
-        if (plan === undefined || !isLoaded || loadError) return;
-        const geocoder = new google.maps.Geocoder();
-        geocoder.geocode({address: `Colombia, ${plan?.department}, ${plan?.municipality}`}).then((res) => {
-            let location = res.results[0].geometry.location;
-            dispatch(setPlanLocation({
-                lat: location.lat(),
-                lng: location.lng()
-            }));
-        });
-    }, [isLoaded]);
+        const fetchLocation = async () => {
+            if (plan === undefined || !isLoaded || loadError) return;
+            const geocoder = new google.maps.Geocoder();
+            await geocoder.geocode({address: `Colombia, ${plan?.department}, ${plan?.municipality}`})
+            .then((res) => {
+                let location = res.results[0].geometry.location;
+                dispatch(setPlanLocation({
+                    lat: location.lat(),
+                    lng: location.lng()
+                }));
+            });
+        }
+        fetchLocation();
+    }, [isLoaded, plan]);
 
     const buttons: React.ReactNode[] = [
         <ButtonComponent

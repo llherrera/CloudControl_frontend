@@ -8,23 +8,39 @@ import citiLogo from "@/assets/icons/Ciudadanos.svg";
 import { useAppDispatch, useAppSelector } from '@/store';
 import { thunkLogout } from "@/store/auth/thunks";
 import { thunkGetLastPDT } from "@/store/plan/thunks";
-import { setIdPlan, resetContent } from "@/store/content/contentSlice";
+import { setIdPlan, resetContent, setReload } from "@/store/content/contentSlice";
+import { resetPlan } from "@/store/plan/planSlice";
+import { resetEvidence } from "@/store/evidence/evidenceSlice";
+import { resetUnit } from "@/store/unit/unitSlice";
 import { removeGenericState } from "@/utils";
 
 export const HomePage = () => {
     const dispatch = useAppDispatch();
     const { logged } = useAppSelector(store => store.auth);
+    const { reload } = useAppSelector(store => store.content);
     const navigate = useNavigate();
 
-    removeGenericState('unit');
-    removeGenericState('content');
-    removeGenericState('chart');
-    removeGenericState('evidence');
-    removeGenericState('plan');
+    useEffect(() => {
+        if (reload) {
+            window.location.reload();
+            dispatch(setReload(false));
+        }
+    }, []);
+
+    useEffect(() => {
+        removeGenericState('unit');
+        removeGenericState('content');
+        removeGenericState('chart');
+        removeGenericState('evidence');
+        removeGenericState('plan');
+    }, []);
 
     useEffect(() => {
         dispatch(resetContent());
-    }, [dispatch]);
+        dispatch(resetPlan());
+        dispatch(resetEvidence());
+        dispatch(resetUnit());
+    }, []);
 
     const handleBtnCiudadano = async () => {
         try {

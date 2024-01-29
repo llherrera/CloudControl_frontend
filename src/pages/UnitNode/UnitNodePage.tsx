@@ -9,7 +9,7 @@ import { resetEvidence, setPoints } from "@/store/evidence/evidenceSlice";
 import { resetUnit } from "@/store/unit/unitSlice";
 
 import { decode } from "@/utils";
-import { EvidenceDetail, ShowEvidence, BackBtn, SettingsBtn } from "@/components";
+import { ShowEvidence, BackBtn, SettingsBtn } from "@/components";
 import cclogo from '@/assets/images/CloudControlIcon.png';
 import { Spinner } from "@/assets/icons";
 

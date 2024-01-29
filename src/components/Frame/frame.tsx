@@ -6,7 +6,7 @@ import cclogo from '@/assets/images/CloudControlIcon.png';
 
 import { useAppDispatch, useAppSelector } from '@/store';
 import { thunkLogout } from '@/store/auth/thunks';
-import { setLogo } from '@/store/content/contentSlice';
+import { setLogo, setReload } from '@/store/content/contentSlice';
 
 import { NavBar } from '@/components';
 import { 
@@ -77,6 +77,7 @@ export const Frame = (props: FrameProps) => {
         dispatch(thunkLogout())
         .unwrap()
         .then(() => {
+            dispatch(setReload(true));
             navigate('/');
         });
     };
@@ -86,7 +87,8 @@ export const Frame = (props: FrameProps) => {
             <header className={`tw-flex tw-justify-between tw-bg-header tw-drop-shadow-xl`}>
                 <img src={cclogo} alt="" width={100} height={100}/>
                 {url_logo && <img src={url_logo} alt="" width={200} /> }
-                <IconButton onClick={handleBtn}>
+                <IconButton onClick={handleBtn}
+                type='button'>
                     <LogoutIcon sx={{color: 'green'}}/>
                 </IconButton>
             </header>

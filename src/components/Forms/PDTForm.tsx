@@ -19,7 +19,7 @@ import { setIdPlan, setLogo } from "@/store/content/contentSlice";
 export const PDTForm = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
-    const { id_plan } = useAppSelector(state => state.content);
+    const { plan } = useAppSelector((state) => state.plan);
 
     const fechaInicio = new Date().getFullYear();
 
@@ -84,6 +84,15 @@ export const PDTForm = () => {
         });
     }, [selectedDepartamento]);
 
+    useEffect(() => {
+        if (plan === undefined) return;
+        const { id_plan } = plan;
+        if (id_plan === undefined) return;
+        dispatch(setIdPlan(id_plan));
+        dispatch(setLogo(''));
+        navigate(`/register`, {replace: true});
+    }, [plan]);
+
     const handleInputYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const { value } = e.target;
         setPlanData({
@@ -127,11 +136,7 @@ export const PDTForm = () => {
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         dispatch(thunkAddPDT(planData))
-        .then(() => {
-            dispatch(setIdPlan(id_plan));
-            dispatch(setLogo(''));
-            navigate(`/register`, {replace: true});
-        }).catch((err) => {
+        .catch((err) => {
             console.log(err);
         });
     };

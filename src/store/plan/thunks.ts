@@ -65,13 +65,7 @@ export const thunkAddPDT = createAsyncThunk<PDTInterface, PDTInterface, { reject
     async (props: PDTInterface, { rejectWithValue }) => {
         try {
             const res = await addPDT(props);
-            const { id_plan } = res;
-            if (id_plan) {
-                return res;
-            } else {
-                const result = parseErrorAxios(res);
-                return rejectWithValue(result);
-            }
+            return res
         } catch (err) {
             const result = parseErrorAxios(err);
             return rejectWithValue(result);
@@ -183,12 +177,6 @@ export const thunkUpdateWeight = createAsyncThunk<[], UpdateWProps, { rejectValu
     }
 )
 
-export const thunkUpdateYears = createAction('plan/updateYears', (years:number[]) => {
-    return {
-        payload: years
-    }
-})
-
 export const thunkGetLevelsById = createAsyncThunk<LevelInterface[], string, { rejectValue: ErrorBasicInterface }>(
     'pdt/getLevelsId',
     async (props: string, {rejectWithValue}) => {
@@ -289,3 +277,11 @@ export const thunkGetLocations = createAsyncThunk<LocationInterface[], number, {
         }
     }
 )
+
+export const thunkUpdateYears = createAction('plan/updateYears', (years:number[]) => {
+    return {
+        payload: years
+    }
+})
+
+export const removePDT = createAction('plan/removePDT')

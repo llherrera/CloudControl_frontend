@@ -24,7 +24,8 @@ import {thunkGetPDTid,
         thunkAddLocations,
         thunkGetLocations,
         thunkAddLevel,
-        thunkAddNodes } from "./thunks";
+        thunkAddNodes,
+        removePDT } from "./thunks";
 
 const getInitialState = (): InitialStatePlanInterface => {
     const planState = getGenericState('plan');
@@ -121,8 +122,8 @@ export const planSlice = createSlice({
             setGenericState('plan', state);
         },
         resetPlan: (state) => {
-            state = getInitialState();
-            setGenericState('plan', state);
+            removeGenericState("plan");
+            return getInitialState();
         }
     },
     extraReducers: builder => {
@@ -368,7 +369,6 @@ export const planSlice = createSlice({
         builder.addCase(thunkAddSecretaries.fulfilled, (state, action) => {
             state.loadingSecretaries = false;
             setGenericState('plan', state);
-            alert("Se han agregado las secretarías correctamente.");
         });
         builder.addCase(thunkAddSecretaries.rejected, (state, action) => {
             state.loadingSecretaries = false;
@@ -398,7 +398,6 @@ export const planSlice = createSlice({
         builder.addCase(thunkAddLocations.fulfilled, (state, action) => {
             state.loadingLocations = false;
             setGenericState('plan', state);
-            alert("Se han agregado las localidades correctamente.");
         });
         builder.addCase(thunkAddLocations.rejected, (state, action) => {
             state.loadingLocations = false;
@@ -461,7 +460,6 @@ export const planSlice = createSlice({
         builder.addCase(thunkUpdateSecretaries.fulfilled, (state, action) => {
             state.loadingSecretaries = false;
             setGenericState('plan', state);
-            alert("Se han actualizado las secretarías correctamente.");
         });
         builder.addCase(thunkUpdateSecretaries.rejected, (state, action) => {
             state.loadingSecretaries = false;
@@ -497,6 +495,12 @@ export const planSlice = createSlice({
         builder.addCase(thunkUpdateWeight.rejected, (state, action) => {
             state.loadingNodes = false;
             state.errorLoadingNodes = action.payload;
+        });
+
+
+        builder.addCase(removePDT, state => {
+            removeGenericState('plan');
+            state.plan = undefined;
         });
     }
 });

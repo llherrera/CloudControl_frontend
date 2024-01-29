@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import Modal from 'react-modal';
 import { Spinner } from "@/assets/icons";
+import { ToastContainer } from 'react-toastify';
+import { notify } from '@/utils';
 
 import { useAppSelector, useAppDispatch } from "@/store";
 import { 
@@ -29,7 +31,6 @@ const ModalSpinner = ({isOpen}:{isOpen: boolean}) => {
 export const EvidenceForm = () => {
     const dispatch = useAppDispatch();
 
-    const { plan } = useAppSelector((state) => state.plan);
     const { unit } = useAppSelector((state) => state.unit);
     const { list_points, evi_selected } = useAppSelector((state) => state.evidence);
     const { id_plan } = useAppSelector((state) => state.content);
@@ -58,7 +59,7 @@ export const EvidenceForm = () => {
         locations: [],
         state: 0,
     });
-    const [documento, setDocumento] = useState<FileList | null>();
+    const [documento, setDocumento] = useState<FileList | null>(null);
 
     useEffect(()=> {
         //To DO: obtener localidades para hacer el select
@@ -121,14 +122,15 @@ export const EvidenceForm = () => {
             .unwrap()
             .then(() => {
                 setLoading(false);
-                alert('Evidencia añadida con exito');
+                notify('Evidencia añadida con exito');
             })
             .catch(()=> {
                 setLoading(false);
-                alert('Error al añadir evidencia');
+                notify('Error al añadir evidencia');
             });
         } else { 
             dispatch(thunkUpdateEvidence({
+                id_evidence: evi_selected.id_evidence,
                 data: data,
                 file: documento![0],
                 list_points: list_points
@@ -136,11 +138,11 @@ export const EvidenceForm = () => {
             .unwrap()
             .then(()=> {
                 setLoading(false);
-                alert('Evidencia actualizada con exito');
+                notify('Evidencia actualizada con exito');
             })
             .catch(()=> {
                 setLoading(false);
-                alert('Error al actualizar evidencia');
+                notify('Error al actualizar evidencia');
             });
         }
     };
@@ -154,6 +156,7 @@ export const EvidenceForm = () => {
                         tw-mt-3 tw-p-3
                         tw-border-4 tw-border-double
                         tw-border-gray-500 tw-bg-slate-200">
+            <ToastContainer/>
             <label className="tw-text-center md:tw-text-left">Fecha: {new Date().toLocaleDateString()} </label>
                     
             <div className="tw-mt-2">
@@ -168,6 +171,7 @@ export const EvidenceForm = () => {
                 name="activitiesDesc" 
                 id="activitiesDesc" 
                 required
+                value={data.activitiesDesc}
                 className=" tw-p-2 tw-rounded
                             tw-border-2 tw-border-gray-400
                             tw-bg-white tw-resize-none"
@@ -182,6 +186,7 @@ export const EvidenceForm = () => {
                     <select
                         name="unit"
                         id="unit"
+                        value={data.unit}
                         className=" tw-p-2 tw-rounded
                                     tw-border-2 tw-border-gray-400
                                     tw-bg-white"
@@ -202,7 +207,8 @@ export const EvidenceForm = () => {
                     <input
                         type="number" 
                         name="amount" 
-                        id="amount" 
+                        id="amount"
+                        value={data.amount}
                         className=" tw-p-2 tw-rounded
                                     tw-border-2 tw-border-gray-400
                                     tw-bg-white"
@@ -220,12 +226,13 @@ export const EvidenceForm = () => {
                     <select 
                         name="commune"
                         id="commune"
+                        value={data.commune}
                         className=" tw-p-2 tw-rounded
                                     tw-border-2 tw-border-gray-400
                                     tw-bg-white"
                         onChange={(e)=> handleInputChange(e)}
                         required>
-                        <option value="Tubara">Todas</option>
+                        <option value="Todas">Todas</option>
                     </select>
                 </div>
                 <div className="tw-flex tw-flex-col tw-ml-3">
@@ -233,13 +240,13 @@ export const EvidenceForm = () => {
                     <select 
                         name="neighborhood"
                         id="neighborhood"
+                        value={data.neighborhood}
                         className=" tw-p-2 tw-rounded
                                     tw-border-2 tw-border-gray-400
                                     tw-bg-white"
                         onChange={(e)=> handleInputChange(e)}
                         required>
-                        <option value="Soledad">Todas</option>
-                        <option value="Galapa">Galapa</option>
+                        <option value="Todas">Todas</option>
                     </select>
                 </div>
                 <div className="tw-flex tw-ml-5">
@@ -254,7 +261,8 @@ export const EvidenceForm = () => {
                     <label>Poblacion beneficiada</label>
                     <select 
                         name="benefited_population" 
-                        id="benefited_population" 
+                        id="benefited_population"
+                        value={data.benefited_population}
                         className=" tw-p-2 tw-rounded
                                     tw-border-2 tw-border-gray-400
                                     tw-bg-white"
@@ -283,9 +291,10 @@ export const EvidenceForm = () => {
                 <div className="tw-flex tw-flex-col tw-ml-3">
                     <label>Numero de poblacion beneficiada</label>
                     <input  
-                        type="number" 
-                        name="benefited_population_number" 
+                        type="number"
+                        name="benefited_population_number"
                         id="benefited_population_number"
+                        value={data.benefited_population_number}
                         placeholder="Numero de beneficiados"
                         className=" tw-p-2 tw-rounded
                                     tw-border-2 tw-border-gray-400
@@ -296,9 +305,10 @@ export const EvidenceForm = () => {
                 <div className="tw-flex tw-flex-col tw-ml-3">
                     <label>Recursos ejecutados</label>
                     <input  
-                        type="number" 
-                        name="executed_resources" 
+                        type="number"
+                        name="executed_resources"
                         id="executed_resources"
+                        value={data.executed_resources}
                         placeholder="Recursos ejecutados"
                         className=" tw-p-2 tw-rounded
                                     tw-border-2 tw-border-gray-400
@@ -309,8 +319,9 @@ export const EvidenceForm = () => {
                 <div className="tw-flex tw-flex-col tw-ml-3">
                     <label>Fuente de recursos</label>
                     <select 
-                        name="resources_font" 
-                        id="resources_font" 
+                        name="resources_font"
+                        id="resources_font"
+                        value={data.resources_font}
                         className=" tw-p-2 tw-rounded
                                     tw-border-2 tw-border-gray-400
                                     tw-bg-white"
@@ -357,6 +368,7 @@ export const EvidenceForm = () => {
                         type="text"
                         name="name_file"
                         id="name_file"
+                        value={data.name_file}
                         placeholder="Nombre del documento"
                         className=" tw-p-2 tw-rounded
                                     tw-border-2 tw-border-gray-400
@@ -370,6 +382,7 @@ export const EvidenceForm = () => {
                         type="text"
                         name="place"
                         id="place"
+                        value={data.place}
                         placeholder="Lugar de las actividades"
                         className=" tw-p-2 tw-rounded
                                     tw-border-2 tw-border-gray-400
@@ -383,6 +396,7 @@ export const EvidenceForm = () => {
                         type="date"
                         name="date_file"
                         id="date_file"
+                        value={new Date(data.date_file).toISOString()}
                         className=" tw-p-2 tw-rounded
                                     tw-border-2 tw-border-gray-400
                                     tw-bg-white"
@@ -399,7 +413,10 @@ export const EvidenceForm = () => {
                                     tw-text-white hover:tw-text-black
                                     tw-font-bold"
                         onClick={handleSubmitEvidence}>
-                    Añadir evidencia
+                    {evi_selected === undefined ?
+                        "Añadir evidencia" : 
+                        "Actualizar evidencia"
+                    }
                 </button>
             </div>
         </form>

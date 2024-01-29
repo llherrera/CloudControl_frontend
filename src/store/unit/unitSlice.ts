@@ -58,9 +58,8 @@ export const unitSlice = createSlice({
             setGenericState('unit', state);
         },
         resetUnit: (state) => {
-            state = getInitialState();
             removeGenericState('unit');
-            return state;
+            return getInitialState();
         }
     },
     extraReducers: builder => {

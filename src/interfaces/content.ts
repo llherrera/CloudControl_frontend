@@ -14,6 +14,7 @@ export interface InitialStateContentInterface {
     mode: boolean;
     node?: NodeInterface;
     url_logo: string;
+    reload: boolean;
 }
 
 export interface GetUnitProps {

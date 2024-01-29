@@ -35,7 +35,10 @@ export const evidenceSlice = createSlice({
         removeEvidence: (state, action: PayloadAction<number>) => {
             state.evidences = state.evidences?.slice(action.payload, 1);
         },
-        resetEvidence: () => getInitialState(),
+        resetEvidence: () => {
+            removeGenericState("evidence");
+            return getInitialState();
+        },
         setEvidence: (state, action: PayloadAction<EvidenceInterface | undefined>) => {
             state.evi_selected = action.payload;
             setGenericState('evidence', state);

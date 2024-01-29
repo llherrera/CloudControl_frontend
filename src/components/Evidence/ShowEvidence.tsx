@@ -1,32 +1,6 @@
-import React, { useState } from "react";
-import Modal from 'react-modal';
-
-import { useAppDispatch } from "@/store";
-import { removeEvidence } from "@/store/evidence/evidenceSlice";
-
-import { approveEvidence } from "@/services/api";
 import { EvidenceDetailProps } from '@/interfaces';
 
-export const ShowEvidence = ( {evi, index}: EvidenceDetailProps ) => {
-    const dispatch = useAppDispatch();
-
-    const [modalIsOpen, setModalIsOpen] = useState(false);
-    const [reason, setReason] = useState("");
-
-
-    const handleBtnApprove = async (approve: number) => {
-        if (approve === 2) {
-            setModalIsOpen(true);
-        } else {
-            try {
-                await approveEvidence(evi.id_evidence, approve, evi.code, evi.amount, evi.date_file);
-                dispatch(removeEvidence(index));
-            } catch (error) {
-                console.log(error);
-            }
-        }
-    };
-
+export const ShowEvidence = ( {evi}: EvidenceDetailProps ) => {
     return (
         <tr>
             <th  className={`tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black`}>

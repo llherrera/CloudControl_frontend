@@ -16,6 +16,7 @@ const getInitialState = (): InitialStateContentInterface => {
         mode: false,
         node: undefined,
         url_logo: '',
+        reload: false,
     };
 };
 
@@ -44,6 +45,9 @@ export const contentSlice = createSlice({
             removeGenericState('content');
             return getInitialState();
         },
+        setReload: (state, action: PayloadAction<boolean>) => {
+            state.reload = action.payload;
+        },
     }
 });
 
@@ -53,7 +57,8 @@ export const {
     setMode,
     setNode,
     setLogo,
-    resetContent } = contentSlice.actions;
+    resetContent,
+    setReload } = contentSlice.actions;
 export const selectContent = (state: RootState) => state.content.index;
 
 export default contentSlice.reducer;

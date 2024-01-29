@@ -41,29 +41,18 @@ const Evidence = () => {
     }, []);
 
     useEffect(() => {
-        if (plan) {
-            const { id_plan } = plan;
-            if (id_plan) dispatch(thunkGetEvidenceCount(id_plan));
-        } else {
-            dispatch(thunkGetEvidenceCount(id_plan));
-        }
+        dispatch(thunkGetEvidenceCount(id_plan));
     }, [evidences]);
 
     useEffect(() => {
-        if (plan) {
-            const { id_plan } = plan;
-            if (id_plan) 
-                dispatch(thunkGetEvidences({id: id_plan, page}));
-        }else{
-            dispatch(thunkGetEvidences( {id: id_plan, page}));
-        }
+        dispatch(thunkGetEvidences( {id: id_plan, page}));
     }, [page, evi_count]);
 
     useEffect(() => {
         if (opt === 0)
             dispatch(thunkGetEvidences( {id: id_plan, page}));
         else if (opt === 1)
-            dispatch(thunkGetUserEvidences(page));
+            dispatch(thunkGetUserEvidences({page, id_plan}));
     }, [opt]);
 
     const handlePage = (page: number) => setPage(page);

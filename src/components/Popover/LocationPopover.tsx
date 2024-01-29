@@ -1,12 +1,12 @@
 import { useState, useCallback, useEffect } from 'react';
-import { useJsApiLoader, GoogleMap } from '@react-google-maps/api';
+import { useJsApiLoader, GoogleMap} from '@react-google-maps/api';
 import { Popover } from 'react-tiny-popover';
 
 import { useAppDispatch, useAppSelector } from '@/store';
 import { setPoints } from '@/store/evidence/evidenceSlice';
 
 import { LocationIcon } from '@/assets/icons';
-import { Coordinates, PopoverProps } from '@/interfaces';
+import { PopoverProps } from '@/interfaces';
 import { getEnvironment } from '@/utils/environment';
 
 const { API_KEY } = getEnvironment();
@@ -40,8 +40,7 @@ export const UbicationsPopover = () => {
         <Popover
             isOpen={poLocationIsOpen}
             positions={['right']}
-            content={mapContainerUbi()}
-            onClickOutside={toggleOpen}>
+            content={mapContainerUbi()}>
             <button type="button" onClick={toggleOpen}>
                 <LocationIcon color={red}/>
             </button>
@@ -146,40 +145,12 @@ const mapContainer = (props: PopoverProps) => {
 
 const mapContainerUbi = () => {
     const dispatch = useAppDispatch();
-    const { list_points } = useAppSelector(state => state.evidence);
 
     const [map, setMap] = useState<google.maps.Map|null>(null);
-    const [markers_, setMarkers_] = useState<google.maps.Marker[]|null>(null);
-    const { planLocation } = useAppSelector(state => state.plan);
+    const [markers_, setMarkers_] = useState<google.maps.Marker[]>([]);
 
-    useEffect(() => {
-        if (list_points.length > 0) {
-            let markers: google.maps.Marker[] = [];
-            list_points.forEach((point) => {
-                let markerPosition: google.maps.LatLngLiteral = {
-                    lat: point.lat,
-                    lng: point.lng
-                };
-                let markerOptions = {
-                    clickable: false,
-                    draggable: false,
-                    position: markerPosition,
-                    map
-                };
-                let marker = new google.maps.Marker(markerOptions);
-                let infowindow = new google.maps.InfoWindow({
-                    content: 'Latitud: ' + point.lat + '<br>Longitud: ' + point.lng
-                });
-                marker.addListener('click', () => {
-                    infowindow.open(map, marker);
-                });
-                markers.push(marker);
-            });
-            setMarkers_(markers);
-        } else {
-            setMarkers_(null);
-        }
-    }, [list_points]);
+    const { planLocation } = useAppSelector(state => state.plan);
+    const { list_points } = useAppSelector(state => state.evidence);
 
     let options: google.maps.MapOptions = {
         disableDefaultUI: true,
@@ -195,44 +166,72 @@ const mapContainerUbi = () => {
         center: planLocation
     };
 
+    const infoWindow = new google.maps.InfoWindow();
+
     const { isLoaded } = useJsApiLoader({
         id: 'google-map-script',
         googleMapsApiKey: API_KEY!
     });
 
-    const onLoad = useCallback(function callback(map: google.maps.Map) {
+    useEffect(() => {
         if (list_points.length > 0) {
-            let markers: google.maps.Marker[] = [];
-            list_points.forEach((point) => {
-                let markerPosition: google.maps.LatLngLiteral = {
-                    lat: point.lat,
-                    lng: point.lng
-                };
-                let markerOptions = {
-                    clickable: false,
+            let markers_: google.maps.Marker[] = [];
+            list_points.forEach((point, index) => {
+                const marker = new google.maps.Marker({
+                    clickable: true,
                     draggable: false,
-                    position: markerPosition,
-                    map
-                };
-                let marker = new google.maps.Marker(markerOptions);
-                let infowindow = new google.maps.InfoWindow({
-                    content: 'Latitud: ' + point.lat + '<br>Longitud: ' + point.lng
+                    position: point,
+                    map,
+                    title: `Ubicación ${index+1}`,
+                    label: `${index+1}`,
+                    optimized: false
                 });
                 marker.addListener('click', () => {
-                    infowindow.open(map, marker);
+                    handleDeleteMarker(index);
+                    marker.setMap(null);
                 });
-                markers.push(marker);
+                markers_.push(marker);
             });
-            setMarkers_(markers);
+            setMarkers_(markers_);
         } else {
-            setMarkers_(null);
+            setMarkers_([]);
+        }
+    }, [list_points]);
+
+    const handleDeleteMarker = (index: number) => {
+        const newList = list_points.filter((point, i) => i !== index);
+        dispatch(setPoints(newList));
+    };
+
+    const onLoad = useCallback(function callback(map: google.maps.Map) {
+        if (list_points.length > 0) {
+            let markers_: google.maps.Marker[] = [];
+            list_points.forEach((point, index) => {
+                const marker = new google.maps.Marker({
+                    clickable: true,
+                    draggable: false,
+                    position: point,
+                    map,
+                    title: `Ubicación ${index+1}`,
+                    label: `${index+1}`,
+                    optimized: false
+                });
+                marker.addListener('click', () => {
+                    handleDeleteMarker(index);
+                    marker.setMap(null);
+                });
+                markers_.push(marker);
+            });
+            setMarkers_(markers_);
+        } else {
+            setMarkers_([]);
         }
         setMap(map);
     }, [list_points]);
 
     const onUnmount = useCallback(function callback() {
         setMap(null);
-        setMarkers_(null);
+        setMarkers_([]);
     }, []);
 
     const handleMapClick = (e: google.maps.MapMouseEvent) => {
@@ -241,45 +240,9 @@ const mapContainerUbi = () => {
             lat: e.latLng?.lat()!,
             lng: e.latLng?.lng()!
         };
-        let position: Coordinates = {
-            lat: e.latLng?.lat()!,
-            lng: e.latLng?.lng()!
-        };
-        if (compareList(list_points, position)) {
-            handleDeleteMarker(encontrarIndiceEnLista(list_points, position));
-        } else {
-            let newList = [...list_points, markerPosition];
-            dispatch(setPoints(newList));
-        }
-    };
-
-    const handleDeleteMarker = (index: number) => {
-        const newList = list_points.filter((point, i) => i !== index);
+        let newList = [...list_points, markerPosition];
         dispatch(setPoints(newList));
     };
-
-    const compareList = (a: Coordinates[], b: Coordinates) => {
-        let result = false;
-        a.forEach((point) => {
-            if (compare(point, b)) {
-                result = true;
-            }
-        });
-        return result;
-    };
-
-    const compare = (a: Coordinates, b: Coordinates) => {
-        return a.lat === b.lat && a.lng === b.lng;
-    };
-
-    function encontrarIndiceEnLista(a: Coordinates[], b: Coordinates) {
-        for (let i = 0; i < a.length; i++) {
-            if (a[i].lat === b.lat && a[i].lng === b.lng) {
-                return i;
-            }
-        }
-        return -1;
-    }
 
     return (
         <div>
@@ -293,7 +256,7 @@ const mapContainerUbi = () => {
                     onUnmount={onUnmount}
                     onClick={handleMapClick}>
                 </GoogleMap>
-            :<p>Cargando...</p>}
+            : <p>Cargando...</p>}
         </div>
     );
 }

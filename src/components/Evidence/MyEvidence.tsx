@@ -41,9 +41,8 @@ export const MyEvidence = ({evidence}: Props) => {
             <th className="tw-bg-blue-200 tw-rounded
                             tw-my-1 tw-px-3
                             tw-border tw-border-black">
-                <button
-                    onClick={handleUpdate}>
-                    Ver
+                <button onClick={handleUpdate}>
+                    Editar
                 </button>
             </th>
         </tr>

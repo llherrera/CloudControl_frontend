@@ -4,11 +4,9 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import { useNavigate } from "react-router-dom";
 
 import { useAppDispatch } from "@/store";
-import { setLevels } from "@/store/plan/planSlice";
 import { thunkAddLevel } from "@/store/plan/thunks";
 
 import { Input, FileInput } from "@/components";
-import { addLevel } from "@/services/api";
 import { LevelInterface, Token, LevelFormProps } from "@/interfaces";
 import { getToken, decode } from "@/utils";
 

@@ -59,6 +59,9 @@ export const Graph = ( props: GraphProps ) => {
         title: {
             text: `Gráfico de ${typeList[indexType].type}`
         },
+        accessibility: {
+            enabled: false,
+        },
         plotOptions: {
             pie: {
                 dataLabels: {
