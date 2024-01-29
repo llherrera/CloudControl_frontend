@@ -61,11 +61,6 @@ const SettingPageWrapper = () => {
 
     const handleBack = () => navigate(-1);
 
-    const handleColor = ( event: React.MouseEvent<HTMLButtonElement> ) => {
-        event.preventDefault();
-        setShowColorForm(!showColorForm);
-    };
-
     return (
         (plan === null || plan === undefined) ? 
         <div className='tw-text-center'>No hay un plan seleccionado</div> :

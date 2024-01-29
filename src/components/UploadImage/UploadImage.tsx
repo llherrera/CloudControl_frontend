@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { ToastContainer } from 'react-toastify';
+import { notify } from '@/utils';
 
 import { useAppSelector } from '@/store';
 
@@ -18,11 +20,11 @@ export const UploadImage = () => {
         const file = e.target.files;
         if (file) {
             if (file.length > 1) {
-                alert('Solo se puede subir un archivo');
+                notify('Solo se puede subir un archivo');
                 return;
             }
             if (types.includes(file[0].type) === false) {
-                alert('El archivo tiene que ser PNG o JPG');
+                notify('El archivo tiene que ser PNG o JPG');
                 return;
             }
             reader.onloadend = () => {
@@ -37,16 +39,16 @@ export const UploadImage = () => {
 
     const handleSaveLogo = async () => {
         if (logoPlan === null || logoPlan.length === 0) {
-            alert('No hay archivo');
+            notify('No hay archivo');
             return;
         }
         await uploadLogoPlan( id_plan, logoPlan![0])
         .then(() => {
-            alert('Logo subido');
+            notify('Logo subido');
         })
         .catch((err) => {
             console.log(err);
-            alert('error al subir logo');
+            notify('error al subir logo');
         });
     };
 
@@ -54,6 +56,7 @@ export const UploadImage = () => {
         <form   id='logoForm'
                 encType='multipart/form-data'
                 className=' tw-mt-2 tw-ml-2'>
+            <ToastContainer/>
             <div className='tw-flex tw-justify-center tw-gap-4'>
                 {logoPlan === null ? 
                 <label className='tw-text-center'>

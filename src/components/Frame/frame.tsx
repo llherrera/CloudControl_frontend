@@ -65,13 +65,14 @@ export const Frame = (props: FrameProps) => {
     useEffect(() => {
         if (plan !== undefined) {
             const { logo_link_plan } = plan;
-            if (logo_link_plan) {
+            if (logo_link_plan)
                 dispatch(setLogo(logo_link_plan));
-            }
+            else
+                dispatch(setLogo(''));
         } else {
             dispatch(setLogo(''));
         }
-    }, []);
+    }, [plan]);
 
     const handleBtn = () => {
         dispatch(thunkLogout())
@@ -86,7 +87,7 @@ export const Frame = (props: FrameProps) => {
         <div className='tw-min-h-screen tw-flex tw-flex-col'>
             <header className={`tw-flex tw-justify-between tw-bg-header tw-drop-shadow-xl`}>
                 <img src={cclogo} alt="" width={100} height={100}/>
-                {url_logo && <img src={url_logo} alt="" width={200} /> }
+                {url_logo && <img src={url_logo} alt="" width={100} /> }
                 <IconButton onClick={handleBtn}
                 type='button'>
                     <LogoutIcon sx={{color: 'green'}}/>
