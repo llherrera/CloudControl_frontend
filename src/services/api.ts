@@ -390,17 +390,13 @@ export const updateEvicenceGoal = async (id_evidence: number, evidence: Evidence
 export const getUbiEvidences = async (id_plan?: number, id_evidence?: number) => {
     if (id_plan == undefined && id_evidence == undefined)
         return alert("Error: falta el parametro id_plan o id_evidence");
-    try {
-        const response = await api.get(`/nodo/evidencia-ubicacion`, {
-            params: {
-                id_plan,
-                id_evidence
-            }
-        });
-        return response.data;
-    } catch (error) {
-        return error;   
-    }
+    const response = await api.get(`/nodo/evidencia-ubicacion`, {
+        params: {
+            id_plan,
+            id_evidence
+        }
+    });
+    return response.data;
 }
 
 export const getCodeEvidences = async (id_node: string, id_plan: number) => {

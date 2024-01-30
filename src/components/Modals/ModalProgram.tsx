@@ -161,7 +161,6 @@ export const ModalProgram = () => {
                                 key={index}>
                             {program.map((node, index) => (<option value={node.name} key={index}>{node.name}</option>))}
                         </select>
-                    
                     ))}
                     <button className='tw-bg-gray-300 hover:tw-bg-gray-200 
                                         tw-rounded tw-border tw-border-black 
@@ -205,7 +204,7 @@ export const ModalProgram = () => {
                                     (item['percentExecuted'][index]) < colorimeter[2] ? 'tw-bg-greenColory' :
                                     'tw-bg-blueColory hover:tw-ring-blue-200'}
                                     `} key={index}>
-                                        {item['percentExecuted'][index]}
+                                        {item['percentExecuted'][index] < 0 ? 0 : item['percentExecuted'][index]}
                                     </td>
                                 ))}
                                 {levels.map((level, index) => (<td className='tw-border tw-p-2' key={index}>{item['planSpecific'][index]}</td>))}

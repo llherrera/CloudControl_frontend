@@ -219,7 +219,7 @@ const ModalPDT = ( props: ModalsecretaryProps ) => {
                                 (item['percentExecuted'][0]) < colorimeter[2] ? 'tw-bg-greenColory' :
                                 'tw-bg-blueColory hover:tw-ring-blue-200'}
                                 `} >
-                                {item['percentExecuted'][0]}
+                                {item['percentExecuted'][0] < 0 ? 0 : item['percentExecuted'][0]}
                             </td>
                             {levels.map((level, index) => (
                                 <td className='tw-border tw-p-2' 

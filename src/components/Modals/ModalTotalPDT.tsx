@@ -168,7 +168,7 @@ const ModalPDT = ( props: ModalPDTProps ) => {
                                     (item['percentExecuted'][index]) < colorimeter[2] ? 'tw-bg-greenColory' :
                                     'tw-bg-blueColory hover:tw-ring-blue-200'}
                                     `} key={index}>
-                                    {item['percentExecuted'][index]}
+                                    {item['percentExecuted'][index] < 0 ? 0 : item['percentExecuted'][index]}
                                 </td>
                             ))}
                             {levels.map((level, index) => (

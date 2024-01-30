@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { useAppSelector, useAppDispatch } from '@/store';
-import { thunkGetSecretaries, thunkGetLevelName } from '@/store/plan/thunks';
+import { thunkGetSecretaries } from '@/store/plan/thunks';
 import { thunkGetUnit, thunkAddUnit, thunkUpdateUnit } from '@/store/unit/thunks';
 import { setUnit } from '@/store/unit/unitSlice';
 
@@ -23,28 +23,12 @@ export const SettingsPage = () => {
     const { 
         plan, 
         years, 
-        namesTree, 
+        rootTree, 
         secretaries } = useAppSelector(store => store.plan);
 
     useEffect(() => {
         if (node === undefined) return;
         dispatch(thunkGetUnit({id_plan: id_plan.toString(), id_node: node.id_node}));
-    }, []);
-
-    useEffect(() => {
-        if (node === undefined) return;
-        const ids = node.id_node!.split('.');
-        let ids2 = ids.reduce((acumulator:string[], currentValue: string) => {
-            if (acumulator.length === 0) {
-                return [currentValue];
-            } else {
-                const ultimoElemento = acumulator[acumulator.length - 1];
-                const concatenado = `${ultimoElemento}.${currentValue}`;
-                return [...acumulator, concatenado];
-            }
-        }, []);
-        ids2 = ids2.slice(1);
-        dispatch(thunkGetLevelName(ids2))
     }, []);
 
     useEffect(() => {
@@ -130,8 +114,8 @@ export const SettingsPage = () => {
                 <img src="/src/assets/images/Plan-indicativo.png" alt="" width={60} />
             </div>
             <BackBtn handle={() => navigate(-1)} id={plan?.id_plan!} />
-            <ol className="tw-flex tw-justify-center tw-flex-wrap">
-            {namesTree.length > 0 && namesTree.map((name, index) => {
+            <ol className="tw-col-start-1 tw-col-span-full tw-flex tw-justify-center tw-flex-wrap">
+            {rootTree.map((name, index) => {
                 return (
                     <li className="tw-flex tw-mx-3" key={index}>
                         <p className="tw-text-green-600 tw-text-xl tw-font-bold">{name[1]}:</p> 

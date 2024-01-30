@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useAppSelector, useAppDispatch } from "@/store";
-import { thunkGetLevelName } from "@/store/plan/thunks";
 import { thunkGetUnit } from "@/store/unit/thunks";
 import { thunkGetEvidence } from '@/store/evidence/thunks'
 import { resetEvidence, setPoints } from "@/store/evidence/evidenceSlice";
@@ -12,13 +11,14 @@ import { decode } from "@/utils";
 import { ShowEvidence, BackBtn, SettingsBtn } from "@/components";
 import cclogo from '@/assets/images/CloudControlIcon.png';
 import { Spinner } from "@/assets/icons";
+import { AddRootTree } from "@/store/plan/planSlice";
 
 export const UnitNodePage = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
     const { token_info } = useAppSelector(state => state.auth);
-    const { namesTree } = useAppSelector(store => store.plan);
+    const { rootTree } = useAppSelector(store => store.plan);
     const { unit, loadingUnit } = useAppSelector(store => store.unit);
     const { evidences } = useAppSelector(store => store.evidence);
     const { 
@@ -40,22 +40,6 @@ export const UnitNodePage = () => {
             setRol(decoded.rol);
             setId(decoded.id_plan);
         }
-    }, []);
-
-    useEffect(() => {
-        if (node === undefined) return;
-        const ids = node.id_node.split('.');
-        let ids2 = ids.reduce((acumulator:string[], currentValue: string) => {
-            if (acumulator.length === 0) {
-                return [currentValue];
-            } else {
-                const ultimoElemento = acumulator[acumulator.length - 1];
-                const concatenado = `${ultimoElemento}.${currentValue}`;
-                return [...acumulator, concatenado];
-            }
-        }, []);
-        ids2 = ids2.slice(1);
-        dispatch(thunkGetLevelName(ids2));
     }, []);
 
     useEffect(() => {
@@ -95,6 +79,9 @@ export const UnitNodePage = () => {
     };
 
     const handleBack = () => {
+        let newRoot = rootTree;
+        newRoot = newRoot.slice(0, -1);
+        dispatch(AddRootTree(newRoot));
         dispatch(resetEvidence());
         dispatch(resetUnit());
         navigate(-1);
@@ -270,7 +257,7 @@ export const UnitNodePage = () => {
                 : null
             }
             <ol className="tw-col-start-1 tw-col-span-full tw-flex tw-justify-center tw-flex-wrap">
-            {namesTree.length > 0 && namesTree.map((name, index) => {
+            {rootTree.map((name, index) => {
                 return (
                     <li className="tw-flex tw-mx-3" key={index}>
                         <p className="tw-text-green-600 tw-text-xl tw-font-bold">{name[1]}:</p> 

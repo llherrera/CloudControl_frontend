@@ -92,11 +92,11 @@ export const NodesList = ( props : NodeListProps ) => {
     };
 
     const handleButton = ( index: number ) => {
+        let name = [nodes[index].name, levels[indexLevel].name];
+        let newRoot = [...rootTree];
+        newRoot.push(name);
+        dispatch(AddRootTree(newRoot));
         if ( indexLevel !== levels.length-1 ) {
-            let name = [nodes[index].name, levels[indexLevel].name];
-            let newRoot = [...rootTree];
-            newRoot.push(name);
-            dispatch(AddRootTree(newRoot));
             dispatch(setParent(nodes[index].id_node));
             dispatch(incrementLevelIndex(indexLevel!+1));
             dispatch(thunkGetNodes({id_level: nodes[index].id_level+1, parent:nodes[index].id_node}));

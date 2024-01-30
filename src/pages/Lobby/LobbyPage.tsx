@@ -11,7 +11,7 @@ import { MapICon } from '@/assets/icons';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { selectOption } from '@/store/content/contentSlice';
 import { thunkGetLevelsById } from '@/store/plan/thunks';
-import { setPlanLocation, setZeroLevelIndex } from '@/store/plan/planSlice';
+import { setPlanLocation, setZeroLevelIndex, AddRootTree } from '@/store/plan/planSlice';
 
 import { getEnvironment } from '@/utils';
 import { useJsApiLoader } from '@react-google-maps/api';
@@ -56,6 +56,7 @@ export const LobbyPage = () => {
             text='Plan indicativo'
             src={planLogo}
             onClick={() => {
+                dispatch(AddRootTree([[]]));
                 dispatch(selectOption(0))
                 navigate(`/pdt/PlanIndicativo`)
             }}
