@@ -40,7 +40,6 @@ export const Content = ( props : ContentProps ) => {
     const [id, setId] = useState(0);
 
     useEffect(() => {
-        dispatch(AddRootTree([[]]));
         if (token_info?.token !== undefined) {
             const decoded = decode(token_info.token);
             setRol(decoded.rol);
@@ -83,7 +82,7 @@ export const Content = ( props : ContentProps ) => {
 
     return (
         <div className="tw-h-full tw-border
-                        tw-bg-[url('/src/assets/images/bg-plan-indicativo.png')]
+                        tw-bg-[url('/src/assets/images/bg-pi-1.png')]
                         tw-opacity-80">
             <h1 className=" tw-mx-6 tw-mt-6 
                             tw-text-[#222222] 
@@ -152,7 +151,7 @@ export const Content = ( props : ContentProps ) => {
                     <p className="tw-font-montserrat tw-ml-4 tw-font-bold">
                         Plan de desarrollo. ¡Así vamos!
                     </p>
-                    <div className=" tw-ml-4 tw-mb-3">
+                    <div className="tw-ml-4 tw-mb-3">
                     {rootTree.length <= 0 ? null :
                         <ul className=" tw-flex tw-flex-wrap tw-gap-3
                                         tw-font-montserrat

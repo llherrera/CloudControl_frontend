@@ -86,7 +86,7 @@ export const LevelForm = ( props: LevelFormProps ) => {
     }
 
     return (
-        <div className="tw-bg-[url('/src/assets/images/bg-plan-indicativo.png')]">
+        <div className="tw-bg-[url('/src/assets/images/bg-pi-1.png')]">
             {backIconButton()}
             <p className="tw-text-center tw-font-bold tw-text-2xl">Definir niveles del plan</p>
             {(rol === "admin") || (rol === 'funcionario' && id_ === parseInt(props.id)) ?

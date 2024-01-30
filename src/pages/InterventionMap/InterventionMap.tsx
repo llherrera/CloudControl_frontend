@@ -198,7 +198,7 @@ const Section = () => {
     });
 
     return (
-        <div className={`tw-bg-[url('/src/assets/images/bg-plan-indicativo.png')]
+        <div className={`tw-bg-[url('/src/assets/images/bg-pi-1.png')]
                          tw-h-full tw-border
                          tw-opacity-80`} >
             <div className='tw-flex tw-my-4'>
