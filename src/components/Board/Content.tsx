@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import { useAppDispatch, useAppSelector } from "@/store";
 import { thunkGetNodes } from "@/store/plan/thunks";
-import { decrementLevelIndex, setParent } from "@/store/plan/planSlice";
+import { decrementLevelIndex, setParent, AddRootTree } from "@/store/plan/planSlice";
 import { setMode } from "@/store/content/contentSlice";
 import IconButton from "@mui/material/IconButton";
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
@@ -32,13 +32,15 @@ export const Content = ( props : ContentProps ) => {
             financial,
             radioBtn,
             nodes,
-            colorimeter } = useAppSelector(store => store.plan);
+            colorimeter,
+            rootTree } = useAppSelector(store => store.plan);
     const { mode } = useAppSelector(store => store.content);
 
     const [rol, setRol] = useState("");
     const [id, setId] = useState(0);
 
     useEffect(() => {
+        dispatch(AddRootTree([[]]));
         if (token_info?.token !== undefined) {
             const decoded = decode(token_info.token);
             setRol(decoded.rol);
@@ -58,6 +60,9 @@ export const Content = ( props : ContentProps ) => {
             return;
         }
         try{
+            let newRoot = rootTree;
+            newRoot = newRoot.slice(0, -1);
+            dispatch(AddRootTree(newRoot));
             let temp = parent!.split('.');
             let temp_ = temp.slice(0, temp.length-1);
             temp.length === 2 ? 
@@ -138,17 +143,28 @@ export const Content = ( props : ContentProps ) => {
                 </div>
             </h1>
             <div className="tw-grid tw-grid-cols-1 md:tw-grid-cols-3 tw-mb-2">
-
                 <div className="tw-mx-6 tw-py-3
                                 md:tw-ml-12
                                 lg:tw-ml-6
                                 tw-rounded tw-shadow-lg tw-border
                                 tw-bg-white
-                                md:tw-col-span-2
-                                xl:">
-                    <p className="tw-font-montserrat tw-ml-4 tw-mb-3">
+                                md:tw-col-span-2">
+                    <p className="tw-font-montserrat tw-ml-4 tw-font-bold">
                         Plan de desarrollo. ¡Así vamos!
                     </p>
+                    <div className=" tw-ml-4 tw-mb-3">
+                    {rootTree.length <= 0 ? null :
+                        <ul className=" tw-flex tw-flex-wrap tw-gap-3
+                                        tw-font-montserrat
+                                        tw-underline tw-underline-offset-2">
+                            {rootTree.map((item, index) => (
+                                <li key={index}>
+                                    {item[0]}
+                                </li>
+                            ))}
+                        </ul>
+                    }
+                    </div>
                     <TimeLine/>
                 </div>
 

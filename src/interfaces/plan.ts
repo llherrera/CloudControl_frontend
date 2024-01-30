@@ -38,6 +38,7 @@ export interface InitialStatePlanInterface {
     progressNodes: number[];
     financial: number[];
     namesTree: [string[]];
+    rootTree: string[][];
     radioBtn: string;
     secretaries: Secretary[];
     locations: LocationInterface[];

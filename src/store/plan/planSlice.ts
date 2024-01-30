@@ -61,6 +61,7 @@ const getInitialState = (): InitialStatePlanInterface => {
         progressNodes: [],
         financial: [],
         namesTree: [['Dimension', 'Nivel']],
+        rootTree: [[]],
         radioBtn: 'fisica',
         secretaries: [],
         locations: [],
@@ -121,7 +122,11 @@ export const planSlice = createSlice({
             state.levels = action.payload;
             setGenericState('plan', state);
         },
-        resetPlan: (state) => {
+        AddRootTree: (state, action: PayloadAction<string[][]>) => {
+            state.rootTree = action.payload;
+            setGenericState('plan', state);
+        },
+        resetPlan: () => {
             removeGenericState("plan");
             return getInitialState();
         }
@@ -519,5 +524,6 @@ export const {
     setNodesReport, 
     setPlanLocation,
     setLevels,
+    AddRootTree,
     resetPlan } = planSlice.actions;
 export default planSlice.reducer;

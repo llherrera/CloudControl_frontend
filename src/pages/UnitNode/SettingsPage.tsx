@@ -126,7 +126,7 @@ export const SettingsPage = () => {
                             tw-border-b-2 tw-border-gray-400
                             tw-z-40'>
                 <img src={cclogo} alt="" width={100} height={100}/>
-                {url_logo && <img src={url_logo} alt="" width={200} /> }
+                {url_logo && <img src={url_logo} alt="" width={100} /> }
                 <img src="/src/assets/images/Plan-indicativo.png" alt="" width={60} />
             </div>
             <BackBtn handle={() => navigate(-1)} id={plan?.id_plan!} />

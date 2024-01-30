@@ -6,7 +6,8 @@ import {thunkGetNodes, thunkUpdateWeight } from '@/store/plan/thunks';
 import {incrementLevelIndex, 
         setParent, 
         setProgressNodes, 
-        setFinancial } from '@/store/plan/planSlice';
+        setFinancial,
+        AddRootTree } from '@/store/plan/planSlice';
 import { setNode } from "@/store/content/contentSlice";
 
 import {NodeInterface, 
@@ -27,7 +28,8 @@ export const NodesList = ( props : NodeListProps ) => {
             indexLevel, 
             progressNodes, 
             colorimeter,
-            loadingNodes } = useAppSelector(store => store.plan);
+            loadingNodes,
+            rootTree } = useAppSelector(store => store.plan);
     const { mode } = useAppSelector(store => store.content);
     const [ pesos, setPesos ] = useState<number[]>(
         nodes.map((item: NodeInterface) => item.weight)
@@ -91,6 +93,10 @@ export const NodesList = ( props : NodeListProps ) => {
 
     const handleButton = ( index: number ) => {
         if ( indexLevel !== levels.length-1 ) {
+            let name = [nodes[index].name, levels[indexLevel].name];
+            let newRoot = [...rootTree];
+            newRoot.push(name);
+            dispatch(AddRootTree(newRoot));
             dispatch(setParent(nodes[index].id_node));
             dispatch(incrementLevelIndex(indexLevel!+1));
             dispatch(thunkGetNodes({id_level: nodes[index].id_level+1, parent:nodes[index].id_node}));
