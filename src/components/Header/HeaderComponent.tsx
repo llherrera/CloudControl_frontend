@@ -1,4 +1,4 @@
-import cclogo from "@/assets/images/CloudControlIcon.png";
+import cclogo from "@/assets/images/logo-cc.png";
 import { HeaderProps } from "@/interfaces";
 
 export const Header = ( {components}: HeaderProps) => {

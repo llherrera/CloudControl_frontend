@@ -83,6 +83,7 @@ export const Content = ( props : ContentProps ) => {
     return (
         <div className="tw-h-full tw-border
                         tw-bg-[url('/src/assets/images/bg-pi-1.png')]
+                        tw-bg-cover
                         tw-opacity-80">
             <h1 className=" tw-mx-6 tw-mt-6 
                             tw-text-[#222222] 

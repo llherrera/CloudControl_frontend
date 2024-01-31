@@ -2,22 +2,17 @@ import  React,
     {   useState, 
         useCallback, 
         useEffect } from 'react';
-import {useNavigate } from 'react-router-dom';
-import {
-    GoogleMap, 
-    useJsApiLoader, 
-    InfoWindow, 
-    Marker } from '@react-google-maps/api';
-import { ToastContainer, toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
+import { GoogleMap, useJsApiLoader } from '@react-google-maps/api';
+import { ToastContainer } from 'react-toastify';
+import { notify } from '@/utils';
 import "react-toastify/dist/ReactToastify.css";
 import icono from "@/assets/icons/location.svg";
 
 import { useAppDispatch, useAppSelector } from '@/store';
 import { setEvidences } from '@/store/evidence/evidenceSlice';
 
-import {
-    BackBtn, 
-    Frame } from '@/components';
+import { BackBtn, Frame } from '@/components';
 import {
     NodeInterface, 
     Node, 
@@ -26,6 +21,7 @@ import {
     getLevelNodes, 
     getUbiEvidences, 
     getCodeEvidences } from '@/services/api';
+import { getEnvironment } from '@/utils';
 
 export const InterventionMap = () => {
     return (
@@ -35,7 +31,7 @@ export const InterventionMap = () => {
     );
 }
 
-const API_KEY = process.env.VITE_API_KEY_MAPS as string;
+const { API_KEY } = getEnvironment();
 
 const containerStyle = {
     width: '90%',
@@ -53,17 +49,17 @@ const Section = () => {
 
     const { isLoaded } = useJsApiLoader({
         id: 'google-map-script',
-        googleMapsApiKey: API_KEY
+        googleMapsApiKey: API_KEY??''
     });
 
     const [map, setMap] = useState<google.maps.Map|null>(null);
+    const [markers, setMarkers] = useState<google.maps.Marker[]>([]);
 
     const [programs, setPrograms] = useState<NodeInterface[][]>([]);
     const [index_, setIndex] = useState<number[]>([0, 0]);
     const [codes, setCodes] = useState<string[]>([]);
 
-    const [showTooltip, setShowTooltip] = useState<boolean>(false);
-
+    const infoWindow = new google.maps.InfoWindow();
     const mapOptions: google.maps.MapOptions = {
         disableDefaultUI: true,
         zoom: 14,
@@ -85,7 +81,7 @@ const Section = () => {
             .then((res)=> {
                 localStorage.setItem('evidences', JSON.stringify(res));
                 if (res.length === 0)
-                    notify();
+                    notify("No hay evidencias para mostrar");
             });
         }
         fetch();
@@ -132,10 +128,16 @@ const Section = () => {
         fetch();
     }, [index_]);
 
+    //obtiene los codigos de las metas del programa seleccionado
+    /**
+     * la idea es cruzar los codigos de las metas con las evidencias
+     * y asi obtener las evidencias de la meta
+     */
     useEffect(() => {
         const fetch = async () => {
             if (programs.length === 0) return;
-            await getCodeEvidences(programs[index_[0]][index_[1]].id_node, id_plan)
+            if (programs.length === 1) return notify("No hay evidencias para mostrar");
+            await getCodeEvidences(programs[1][index_[1]].id_node, id_plan)
             .then((res) => {
                 setCodes(res);
             });
@@ -144,17 +146,55 @@ const Section = () => {
     }, [programs]);
 
     useEffect(() => {
-        if (codes.length === 0) return;
-        const evidencesLocal = localStorage.getItem('evidences');
-        const evidens = JSON.parse(evidencesLocal as string) as EvidenceInterface[];
-        let temp = [] as EvidenceInterface[];
-        evidens.forEach((item: EvidenceInterface) => {
-            if (codes.includes(item.code)) {
-                temp.push(item);
-            }
-        });
-        dispatch(setEvidences(temp));
+        if (codes.length === 0) {
+            dispatch(setEvidences([]));
+        } else {
+            const evidencesLocal = localStorage.getItem('evidences');
+            const evidens = JSON.parse(evidencesLocal as string) as EvidenceInterface[];
+            let temp = [] as EvidenceInterface[];
+            evidens.forEach((item: EvidenceInterface) => {
+                if (codes.includes(item.code)) {
+                    temp.push(item);
+                }
+            });
+            dispatch(setEvidences(temp));
+        }
     }, [codes]);
+
+    useEffect(() => {
+        markers.forEach((marker) => {
+            marker.setMap(null);
+        });
+        if (evidences.length === 0) {
+            setMarkers([]);
+        } else {
+            let markers_: google.maps.Marker[] = [];
+            evidences.forEach((item) => {
+                item.locations.forEach((location) => {
+                    const { lat, lng } = location;
+                    const marker = new google.maps.Marker({
+                        clickable: true,
+                        draggable: false,
+                        position: {lat, lng},
+                        map,
+                        title: item.code,
+                        icon: {
+                            url: icono,
+                            scaledSize: new window.google.maps.Size(30, 30),
+                        },
+                        optimized: false
+                    });
+                    marker.addListener('click', () => {
+                        infoWindow.close();
+                        infoWindow.setContent(item.code + ' - ' + item.activitiesDesc);
+                        infoWindow.open(map, marker);
+                    });
+                    markers_.push(marker);
+                });
+            });
+            setMarkers(markers_);
+        }
+    }, [evidences]);
 
     const onLoad = useCallback(function callback(map: google.maps.Map) {
         setMap(map);
@@ -162,43 +202,38 @@ const Section = () => {
 
     const onUnmount = useCallback(function callback() {
         setMap(null);
+        setMarkers([]);
     }, []);
 
     const handleBack = () => navigate(-1);
 
     const handleChangePrograms = (index: number, event: React.ChangeEvent<HTMLSelectElement>) => {
         const newIndex = event.target.selectedIndex;
-        let newIndex_ = [...index_];
-        if (newIndex === 0) {
-            newIndex_[index] = newIndex;
-        } else if (newIndex === programs[index].length) {
-            const evidencesLocal = localStorage.getItem('evidence');
-            const evidens = JSON.parse(evidencesLocal as string);
-            dispatch(setEvidences(evidens));
+        console.log(index, newIndex, programs[0].length);
+
+        if (index === 0 && programs[0].length - 1 === newIndex) {
+
         } else {
-            newIndex_[index] = newIndex;
-            for (let i = index+1; i < newIndex_.length; i++) {
-                newIndex_[i] = 0;
+            let newIndex_ = [...index_];
+            if (newIndex === 0) {
+                newIndex_[index] = newIndex;
+            } else if (newIndex === programs[index].length) {
+                const evidencesLocal = localStorage.getItem('evidence');
+                const evidens = JSON.parse(evidencesLocal as string);
+                dispatch(setEvidences(evidens));
+            } else {
+                newIndex_[index] = newIndex;
+                for (let i = index+1; i < newIndex_.length; i++) {
+                    newIndex_[i] = 0;
+                }
             }
+            setIndex(newIndex_);
         }
-        setIndex(newIndex_);
     };
-
-    const handleShowTooltip = () => setShowTooltip(true);
-
-    const notify = () => toast("No hay evidencias para mostrar", { 
-        position: "top-center",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-    });
 
     return (
         <div className={`tw-bg-[url('/src/assets/images/bg-pi-1.png')]
+                         tw-bg-cover
                          tw-h-full tw-border
                          tw-opacity-80`} >
             <div className='tw-flex tw-my-4'>
@@ -229,27 +264,6 @@ const Section = () => {
                     options={mapOptions}
                     onLoad={onLoad}
                     onUnmount={onUnmount}>
-                    {evidences.length > 0 ? evidences.map((item) => (
-                        item.locations.map((location, index) => {
-                            const { lat, lng } = location;
-                            return <Marker 
-                                position={{lat, lng}}
-                                onClick={handleShowTooltip}
-                                icon={{
-                                    url: icono,
-                                    scaledSize: new window.google.maps.Size(30, 30),
-                                }}
-                                key={index}>
-                                {showTooltip && (
-                                    <InfoWindow onCloseClick={()=>setShowTooltip(false)}>
-                                        <div>
-                                            <p>{item.code}</p>
-                                        </div>
-                                    </InfoWindow>
-                                )}
-                            </Marker>
-                        })
-                    )):null}
                 </GoogleMap>
             </div>
             ) : <p>Cargando...</p>}

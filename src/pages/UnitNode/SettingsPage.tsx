@@ -9,7 +9,9 @@ import { setUnit } from '@/store/unit/unitSlice';
 import { BackBtn } from '@/components';
 import { UnitInterface, YearInterface } from '@/interfaces';
 import { Spinner } from "@/assets/icons";
-import cclogo from '@/assets/images/CloudControlIcon.png';
+import cclogo from '@/assets/images/logo-cc.png';
+import { ToastContainer } from 'react-toastify';
+import { notify } from '@/utils';
 
 export const SettingsPage = () => {
     const dispatch = useAppDispatch();
@@ -70,15 +72,15 @@ export const SettingsPage = () => {
     const handleSubmit = async () => {
         if (plan === undefined) return;
         if (unit.description === '')
-            return alert('Debe ingresar una descripción');
+            notify('Debe ingresar una descripción');
         if (unit.indicator === '')
-            return alert('Debe ingresar un indicador');
+            notify('Debe ingresar un indicador');
         if (unit.goal < 0)
-            return alert('Debe ingresar una meta');
+            notify('Debe ingresar una meta');
         if (unit.responsible === '')
-            return alert('Debe ingresar un responsable');
+            notify('Debe ingresar un responsable');
         if (unit.years.length <= 0)
-            return alert('Debe ingresar una programación');
+            return notify('Debe ingresar una programación');
         
         const id_city = parseInt(plan.id_municipality);
         if (unit.code.length > 0) {
@@ -105,6 +107,7 @@ export const SettingsPage = () => {
                         tw-bg-gray-200
                         tw-border-8 tw-border-gray-400 
                         tw-rounded-md">
+            <ToastContainer />
             <div className='tw-flex tw-justify-between
                             tw-shadow-2xl
                             tw-border-b-2 tw-border-gray-400
@@ -114,7 +117,7 @@ export const SettingsPage = () => {
                 <img src="/src/assets/images/Plan-indicativo.png" alt="" width={60} />
             </div>
             <BackBtn handle={() => navigate(-1)} id={plan?.id_plan!} />
-            <ol className="tw-col-start-1 tw-col-span-full tw-flex tw-justify-center tw-flex-wrap">
+            <ol className="tw-flex tw-justify-center tw-flex-wrap">
             {rootTree.map((name, index) => {
                 return (
                     <li className="tw-flex tw-mx-3" key={index}>

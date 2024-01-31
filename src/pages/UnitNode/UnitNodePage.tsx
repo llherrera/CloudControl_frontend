@@ -9,7 +9,7 @@ import { resetUnit } from "@/store/unit/unitSlice";
 
 import { decode } from "@/utils";
 import { ShowEvidence, BackBtn, SettingsBtn } from "@/components";
-import cclogo from '@/assets/images/CloudControlIcon.png';
+import cclogo from '@/assets/images/logo-cc.png';
 import { Spinner } from "@/assets/icons";
 import { AddRootTree } from "@/store/plan/planSlice";
 
@@ -238,11 +238,9 @@ export const UnitNodePage = () => {
         loadingUnit ? <Spinner/>:
         <div className="tw-container tw-mx-auto tw-my-3
                         tw-bg-gray-200
-                        tw-grid tw-grid-cols-12
                         tw-border-8 
                         tw-border-gray-400 tw-rounded-md ">
-            <div className='tw-cols-start-1 tw-col-span-full
-                            tw-flex tw-justify-between
+            <div className='tw-flex tw-justify-between
                             tw-mb-4
                             tw-shadow-2xl
                             tw-border-b-2 tw-border-gray-400
@@ -256,7 +254,7 @@ export const UnitNodePage = () => {
                 <SettingsBtn handle={handleSettings} id={id_plan}/>
                 : null
             }
-            <ol className="tw-col-start-1 tw-col-span-full tw-flex tw-justify-center tw-flex-wrap">
+            <ol className="tw-flex tw-justify-center tw-flex-wrap">
             {rootTree.map((name, index) => {
                 return (
                     <li className="tw-flex tw-mx-3" key={index}>
@@ -266,14 +264,14 @@ export const UnitNodePage = () => {
                 );
             })}
             </ol>
-            <div className="tw-col-start-1 tw-col-span-full tw-flex tw-justify-center">
+            <div className="tw-flex tw-justify-center">
                 {unidadForm()}
             </div>
-            <div className="tw-col-start-1 tw-col-span-full tw-flex tw-justify-center">
+            <div className="tw-flex tw-justify-center">
                 {yearsForm()}
             </div>
 
-            <div className="tw-col-start-1 tw-col-span-full tw-flex tw-justify-center">
+            <div className="tw-flex tw-justify-center">
                 <button type="button"
                         className=" tw-bg-blue-500 
                                     hover:tw-bg-blue-300 hover:tw-text-black
@@ -286,13 +284,12 @@ export const UnitNodePage = () => {
             </div>
             {showEvidence ?
             (evidences.length > 0 ?
-            <div className="tw-col-start-2 tw-col-end-12 tw-mb-4">
+            <div className="tw-mb-4">
             <p className="tw-text-2xl tw-font-bold tw-flex tw-justify-center">Evidencias</p>
             <table>
                 <thead>
                     <tr>
-                        <th className={`tw-bg-black tw-border 
-                                        `}>
+                        <th className={`tw-bg-black tw-border`}>
                             <label className="tw-text-white">Fecha de seguimiento</label>
                         </th>
                         <th className={`tw-bg-black tw-border 
@@ -332,7 +329,7 @@ export const UnitNodePage = () => {
                 </thead>
                 <tbody>
                     {evidences.map((evi, index) => (
-                        <ShowEvidence evi={evi} index={index}/>
+                        <ShowEvidence evi={evi} index={index} key={index}/>
                     ))}
                 </tbody>
             </table>
