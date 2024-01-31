@@ -396,7 +396,7 @@ export const EvidenceForm = () => {
                         type="date"
                         name="date_file"
                         id="date_file"
-                        value={new Date(data.date_file).toISOString()}
+                        value={data.date_file === '' ? undefined : new Date(data.date_file).toISOString()}
                         className=" tw-p-2 tw-rounded
                                     tw-border-2 tw-border-gray-400
                                     tw-bg-white"

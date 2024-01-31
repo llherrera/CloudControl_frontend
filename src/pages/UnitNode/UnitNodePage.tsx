@@ -24,7 +24,8 @@ export const UnitNodePage = () => {
     const { 
         id_plan, 
         node, 
-        url_logo } = useAppSelector(store => store.content);
+        url_logo,
+        url_logo_plan } = useAppSelector(store => store.content);
 
     const [acum, setAcum] = useState(0);
     const [acumFinan, setAcumFinan] = useState(0);
@@ -246,7 +247,10 @@ export const UnitNodePage = () => {
                             tw-border-b-2 tw-border-gray-400
                             tw-z-40'>
                 <img src={cclogo} alt="" width={100} height={100}/>
-                {url_logo && <img src={url_logo} alt="" width={100} /> }
+                <div className='tw-flex tw-gap-3'>
+                    {url_logo && <img src={url_logo} title='Municipio' width={100} /> }
+                    {url_logo_plan && <img src={url_logo_plan} title='Plan' width={100} /> }
+                </div>
                 <img src="/src/assets/images/Plan-indicativo.png" alt="" width={60} />
             </div>
             <BackBtn handle={handleBack} id={id_plan}/>

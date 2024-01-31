@@ -92,12 +92,13 @@ export const Frame = (props: FrameProps) => {
     return (
         <div className='tw-min-h-screen tw-flex tw-flex-col'>
             <header className={`tw-flex tw-justify-between tw-bg-header tw-drop-shadow-xl`}>
-                <img src={cclogo} alt="" width={100} height={100}/>
+                <img src={cclogo} title='CloudControl' width={100} height={100}/>
                 <div className='tw-flex tw-gap-3'>
-                    {url_logo && <img src={url_logo} alt="" width={100} /> }
-                    {url_logo_plan && <img src={url_logo_plan} alt="" width={100} /> }
+                    {url_logo && <img src={url_logo} title='Municipio' width={100} /> }
+                    {url_logo_plan && <img src={url_logo_plan} title='Plan' width={100} /> }
                 </div>
                 <IconButton onClick={handleBtn}
+                            title='Cerrar sesión'
                             type='button'>
                     <LogoutIcon sx={{color: 'green'}}/>
                 </IconButton>
