@@ -10,7 +10,8 @@ import {Frame,
         BackBtn, 
         ColorForm, 
         SecretaryForm, 
-        UploadImage, 
+        UploadLogoCity,
+        UploadLogoPlan, 
         LocationsForm,
         FileInput,
         FileFinancialInput,
@@ -30,11 +31,8 @@ const SettingPageWrapper = () => {
     const dispatch = useAppDispatch();
 
     const { token_info } = useAppSelector(state => state.auth);
-    const { plan, secretaries } = useAppSelector(store => store.plan);
+    const { plan } = useAppSelector(store => store.plan);
     const { id_plan } = useAppSelector(store => store.content);
-
-    const [showColorForm, setShowColorForm] = useState(false);
-    const [hasSecretaries, setHasSecretaries] = useState(false);
 
     const [rol, setRol] = useState("");
     const [id_, setId] = useState(0);
@@ -53,11 +51,6 @@ const SettingPageWrapper = () => {
             dispatch(thunkGetLocations(id_plan));
         }
     }, []);
-
-    useEffect(() => {
-        if (secretaries.length > 0)
-            setHasSecretaries(true);
-    }, [secretaries]);
 
     const handleBack = () => navigate(-1);
 
@@ -80,7 +73,10 @@ const SettingPageWrapper = () => {
                 : null
             }
             {rol === "admin" || (rol === 'funcionario' && id_ === id_plan ) ?
-                <UploadImage/>
+                <div className='tw-flex tw-justify-center tw-gap-6'>
+                    <UploadLogoCity/>
+                    <UploadLogoPlan/>
+                </div>
                 : null
             }
             <div className='tw-border-t-4 tw-mt-4 tw-flex tw-justify-center'>

@@ -6,7 +6,7 @@ import cclogo from '@/assets/images/logo-cc.png';
 
 import { useAppDispatch, useAppSelector } from '@/store';
 import { thunkLogout } from '@/store/auth/thunks';
-import { setLogo, setReload } from '@/store/content/contentSlice';
+import { setLogo, setLogoPlan, setReload } from '@/store/content/contentSlice';
 
 import { NavBar } from '@/components';
 import { 
@@ -21,7 +21,7 @@ export const Frame = (props: FrameProps) => {
     const dispatch = useAppDispatch();
 
     const { plan } = useAppSelector(state => state.plan);
-    const { index, url_logo } = useAppSelector(store => store.content);
+    const { index, url_logo, url_logo_plan } = useAppSelector(store => store.content);
     
     const bgcolor='greenBtn';
     const logocolor='#008432';
@@ -64,13 +64,19 @@ export const Frame = (props: FrameProps) => {
 
     useEffect(() => {
         if (plan !== undefined) {
-            const { logo_link_plan } = plan;
+            const { logo_link_plan, logo_link_city } = plan;
             if (logo_link_plan)
-                dispatch(setLogo(logo_link_plan));
+                dispatch(setLogoPlan(logo_link_plan));
+            else
+                dispatch(setLogoPlan(''));
+
+            if (logo_link_city)
+                dispatch(setLogo(logo_link_city));
             else
                 dispatch(setLogo(''));
         } else {
             dispatch(setLogo(''));
+            dispatch(setLogoPlan(''));
         }
     }, [plan]);
 
@@ -87,9 +93,12 @@ export const Frame = (props: FrameProps) => {
         <div className='tw-min-h-screen tw-flex tw-flex-col'>
             <header className={`tw-flex tw-justify-between tw-bg-header tw-drop-shadow-xl`}>
                 <img src={cclogo} alt="" width={100} height={100}/>
-                {url_logo && <img src={url_logo} alt="" width={100} /> }
+                <div className='tw-flex tw-gap-3'>
+                    {url_logo && <img src={url_logo} alt="" width={100} /> }
+                    {url_logo_plan && <img src={url_logo_plan} alt="" width={100} /> }
+                </div>
                 <IconButton onClick={handleBtn}
-                type='button'>
+                            type='button'>
                     <LogoutIcon sx={{color: 'green'}}/>
                 </IconButton>
             </header>

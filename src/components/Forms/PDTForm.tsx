@@ -14,7 +14,7 @@ import {
 
 import { useAppDispatch, useAppSelector } from '@/store';
 import { thunkAddPDT } from "@/store/plan/thunks";
-import { setIdPlan, setLogo } from "@/store/content/contentSlice";
+import { setIdPlan, setLogo, setLogoPlan } from "@/store/content/contentSlice";
 
 export const PDTForm = () => {
     const dispatch = useAppDispatch();
@@ -90,6 +90,7 @@ export const PDTForm = () => {
         if (id_plan === undefined) return;
         dispatch(setIdPlan(id_plan));
         dispatch(setLogo(''));
+        dispatch(setLogoPlan(''));
         navigate(`/register`, {replace: true});
     }, [plan]);
 
@@ -168,7 +169,8 @@ export const PDTForm = () => {
                         label="Nombre:"
                         id={"name"}
                         name={"name"}
-                        onChange={handleInputChange}/>
+                        onChange={handleInputChange}
+                />
                 <Select label="Departamento:"
                         id="department"
                         name="department"
@@ -194,7 +196,8 @@ export const PDTForm = () => {
                         label="Descripción:"
                         id={"description"}
                         name={"description"}
-                        onChange={handleInputChange}/>
+                        onChange={handleInputChange}
+                />
 
                 <Select label="Fecha de inicio:"
                         id="start_date"

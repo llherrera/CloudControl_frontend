@@ -14,6 +14,7 @@ export interface InitialStateContentInterface {
     mode: boolean;
     node?: NodeInterface;
     url_logo: string;
+    url_logo_plan: string;
     reload: boolean;
 }
 

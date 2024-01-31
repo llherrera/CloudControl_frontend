@@ -200,11 +200,26 @@ export const updatePDT = async (id: number, pdt: PDTInterface) => {
     }
 }
 
-export const uploadLogoPlan = async ( id: number, logos: File ) => {
+export const uploadLogoCity = async ( id: number, logo: File ) => {
     const response = await api.put("/plan-territorial/logo", 
     {
+        city:    true,
         id_plan: id,
-        photos: logos,
+        photos:  logo,
+    },{
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
+    });
+    return response.data;
+}
+
+export const uploadLogoPlan = async ( id: number, logo: File ) => {
+    const response = await api.put("/plan-territorial/logo", 
+    {
+        city:    false,
+        id_plan: id,
+        photos:  logo,
     },{
         headers: {
             'Content-Type': 'multipart/form-data'
