@@ -6,6 +6,9 @@ import { thunkAddSecretaries, thunkUpdateSecretaries } from "@/store/plan/thunks
 import { Secretary } from "@/interfaces";
 import { validateEmail } from "@/utils";
 
+import { ToastContainer } from 'react-toastify';
+import { notify } from '@/utils';
+
 export const SecretaryForm = () => {
     const dispatch = useAppDispatch();
     const { plan, secretaries } = useAppSelector((state) => state.plan);
@@ -29,24 +32,23 @@ export const SecretaryForm = () => {
         setData(newData);
     };
 
-    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
+    const handleSubmit = async () => {
         data.forEach((secretary) => {
             if (secretary.name === "" || secretary.email === "" || secretary.phone === 0)
-                return alert("Por favor llene todos los campos");
+                return notify("Por favor llene todos los campos");
             if (!validateEmail(secretary.email))
-                return alert("El correo no es válido");
+                return notify("El correo no es válido");
         })
         if (secretaries)
-            dispatch(thunkUpdateSecretaries({ id_plan: plan?.id_plan!, secretaries: data }));
+            dispatch(thunkUpdateSecretaries({ id_plan: plan?.id_plan!, secretaries: data })).then(() => notify("Secretarias actualizadas"));
         else
-            dispatch(thunkAddSecretaries({ id_plan: plan?.id_plan!, secretaries: data}));
+            dispatch(thunkAddSecretaries({ id_plan: plan?.id_plan!, secretaries: data})).then(() => notify("Secretarias añadidas"));
     }
 
     return (
         <div className="tw-flex tw-justify-center tw-border-t-4 tw-mt-4 tw-pt-2">
-            <form   
-                onSubmit={ handleSubmit }
+            <ToastContainer />
+            <form
                 className=" tw-shadow-2xl
                             tw-p-2">
                 <label htmlFor="">Añadir secretarias</label>
@@ -84,7 +86,8 @@ export const SecretaryForm = () => {
                     <button className="tw-bg-green-500 hover:tw-bg-green-300
                                         tw-text-white tw-font-bold
                                         tw-p-2 tw-rounded"
-                            type="submit">
+                            type="button"
+                            onClick={handleSubmit}>
                         Guardar
                     </button>
                 </div>

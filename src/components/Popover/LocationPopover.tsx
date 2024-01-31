@@ -8,6 +8,7 @@ import { setPoints } from '@/store/evidence/evidenceSlice';
 import { LocationIcon } from '@/assets/icons';
 import { PopoverProps } from '@/interfaces';
 import { getEnvironment } from '@/utils/environment';
+import icono from "@/assets/icons/location.svg";
 
 const { API_KEY } = getEnvironment();
 
@@ -166,8 +167,6 @@ const mapContainerUbi = () => {
         center: planLocation
     };
 
-    const infoWindow = new google.maps.InfoWindow();
-
     const { isLoaded } = useJsApiLoader({
         id: 'google-map-script',
         googleMapsApiKey: API_KEY!
@@ -214,6 +213,10 @@ const mapContainerUbi = () => {
                     map,
                     title: `Ubicación ${index+1}`,
                     label: `${index+1}`,
+                    icon: {
+                        url: icono,
+                        scaledSize: new window.google.maps.Size(30, 30),
+                    },
                     optimized: false
                 });
                 marker.addListener('click', () => {

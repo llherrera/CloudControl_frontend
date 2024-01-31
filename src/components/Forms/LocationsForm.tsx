@@ -2,17 +2,17 @@ import { Coordinates, LocationInterface, locationTypes } from "@/interfaces";
 import { useAppSelector, useAppDispatch } from "@/store";
 import { useState } from "react";
 import { LocationPopover } from "@/components";
-import { thunkAddLocations } from "@/store/plan/thunks";
+import { thunkAddLocations, thunkUpdateLocations } from "@/store/plan/thunks";
+import { ToastContainer } from 'react-toastify';
+import { notify } from '@/utils';
 
 export const LocationsForm = () => {
     const dispatch = useAppDispatch();
-    const { plan } = useAppSelector((state) => state.plan);
+    const { plan, locations } = useAppSelector((state) => state.plan);
     const blankLocation = { id_plan: plan?.id_plan!, type: locationTypes.neighborhood, name: '' };
     const locationTypeOptions = Object.values(locationTypes);
 
-    const [data, setData] = useState<LocationInterface[]>([
-        blankLocation
-    ]);
+    const [data, setData] = useState<LocationInterface[]>(locations);
 
     const addLocation = () => {
         const newData = [...data, blankLocation];
@@ -39,19 +39,19 @@ export const LocationsForm = () => {
         setData(newData);
     };
 
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
+    const handleSubmit = () => {
         data.forEach((location) => {
             if (location.name === "") {
-                alert("Por favor llene todos los campos");
-                return;
+                return notify("Por favor llene todos los campos");
             }
             if (!location.lat && !location.lng) {
-                alert(`Por favor seleccionar ubicación de localidad: ${location.name}`);
-                return;
+                return notify(`Por favor seleccionar ubicación de localidad: ${location.name}`);
             }
         })
-        dispatch(thunkAddLocations({ id_plan: plan?.id_plan!, locations: data}));
+        if (locations)
+            dispatch(thunkUpdateLocations({ id_plan: plan?.id_plan!, locations: data })).then(() => notify("Localidades actualizadas"));
+        else
+            dispatch(thunkAddLocations({ id_plan: plan?.id_plan!, locations: data})).then(() => notify("Localidades Añadidas"));
     };
 
     const handleLocation = (value: Coordinates, index: number) => {
@@ -62,8 +62,8 @@ export const LocationsForm = () => {
 
     return(
         <div className="tw-flex tw-justify-center tw-border-t-4 tw-mt-4 tw-pt-2 tw-pb-4">
-            <form   
-                onSubmit={ handleSubmit }
+            <ToastContainer />
+            <form
                 className="tw-shadow-2xl tw-p-2">
                     <label htmlFor="">Añadir localidades/barrios</label>
                     {data.map((location, index) => (
@@ -103,7 +103,8 @@ export const LocationsForm = () => {
                         <button className="tw-bg-green-500 hover:tw-bg-green-300
                                             tw-text-white tw-font-bold
                                             tw-p-2 tw-rounded"
-                                type="submit">
+                                type="button"
+                                onClick={handleSubmit}>
                             Guardar
                         </button>
                     </div>

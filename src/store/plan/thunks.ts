@@ -32,7 +32,8 @@ import {getPDTid,
         updateSecretaries,
         updateWeights,
         addLevel,
-        addLevelNode } from '@/services/api';
+        addLevelNode,
+        updateLocations } from '@/services/api';
 
 export const thunkGetPDTid = createAsyncThunk<PDTInterface, string, { rejectValue: ErrorBasicInterface }>(
     'pdt/getPDTid',
@@ -270,6 +271,19 @@ export const thunkGetLocations = createAsyncThunk<LocationInterface[], number, {
     async (props: number, { rejectWithValue }) => {
         try {
             const res = await getLocations(props);
+            return res;
+        } catch (err) {
+            const result = parseErrorAxios(err);
+            return rejectWithValue(result);
+        }
+    }
+)
+
+export const thunkUpdateLocations = createAsyncThunk<LocationInterface[], PropsLocations, { rejectValue: ErrorBasicInterface }>(
+    'pdt/updateLocations',
+    async (props: PropsLocations, { rejectWithValue }) => {
+        try {
+            const res = await updateLocations(props.id_plan, props.locations);
             return res;
         } catch (err) {
             const result = parseErrorAxios(err);
