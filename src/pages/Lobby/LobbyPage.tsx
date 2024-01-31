@@ -56,7 +56,7 @@ export const LobbyPage = () => {
             text='Plan indicativo'
             src={planLogo}
             onClick={() => {
-                dispatch(AddRootTree([[]]));
+                dispatch(AddRootTree([]));
                 dispatch(selectOption(0))
                 navigate(`/pdt/PlanIndicativo`)
             }}

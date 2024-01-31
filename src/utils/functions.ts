@@ -51,9 +51,13 @@ export const validateEmail = (email: string) => {
 export const exportFile = (tabla: string, name: string) => {
   const table = document.getElementById(tabla);
   const wb = XLSX.utils.table_to_book(table!);
+  wb.Props = {
+    Title: name,
+    Subject: "Exportación",
+  }
   XLSX.writeFile(wb, `${name}.xlsx`);
   const blob = new Blob([table!.innerHTML], {
-      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"
+    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"
   });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');

@@ -115,7 +115,7 @@ export const TimeLine = () => {
                                     tw-w-12 tw-h-12
                                     tw-font-bold`}
                         onClick={ (event) => handleYears(event, year)}
-                        title={`Dar click para ver los Percentagess de ejecucion del año ${year}`}>
+                        title={`Dar click para ver los porcentajes de ejecucion del año ${year}`}>
                     { parseInt ( ((yearProgress[index] === undefined || yearProgress[index] < 0 ?
                          0 : yearProgress[index])*100).toString())}%
                 </button>

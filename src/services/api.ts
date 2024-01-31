@@ -16,7 +16,8 @@ import {
     Coordinates,
     ExcelFinancial, 
     ExcelPlan,
-    ExcelPhysical} from "../interfaces";
+    ExcelPhysical,
+    LocationInterface} from "../interfaces";
 
 import { getToken } from "@/utils";
 
@@ -200,7 +201,7 @@ export const updatePDT = async (id: number, pdt: PDTInterface) => {
 }
 
 export const uploadLogoPlan = async ( id: number, logos: File ) => {
-    const response = await api.post("/plan-territorial/logo", 
+    const response = await api.put("/plan-territorial/logo", 
     {
         id_plan: id,
         photos: logos,
@@ -592,7 +593,7 @@ export const getSecretaries = async (id_plan: number) => {
     return response.data;
 }
 
-export const addLocations = async (id_plan: number, locations: any) => {
+export const addLocations = async (id_plan: number, locations: LocationInterface[]) => {
     const response = await api.post(`/plan-territorial/localidades`, {
         id_plan,
         locations
@@ -602,6 +603,14 @@ export const addLocations = async (id_plan: number, locations: any) => {
 
 export const getLocations = async (id_plan: number) => {
     const response = await api.get(`/plan-territorial/${id_plan}/localidades`);
+    return response.data;
+}
+
+export const updateLocations = async (id_plan: number, locations: LocationInterface[]) => {
+    const response = await api.put(`/plan-territorial/localidades`, {
+        id_plan,
+        locations
+    });
     return response.data;
 }
 

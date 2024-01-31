@@ -25,7 +25,8 @@ import {thunkGetPDTid,
         thunkGetLocations,
         thunkAddLevel,
         thunkAddNodes,
-        removePDT } from "./thunks";
+        removePDT,
+        thunkUpdateLocations } from "./thunks";
 
 const getInitialState = (): InitialStatePlanInterface => {
     const planState = getGenericState('plan');
@@ -61,7 +62,7 @@ const getInitialState = (): InitialStatePlanInterface => {
         progressNodes: [],
         financial: [],
         namesTree: [['Dimension', 'Nivel']],
-        rootTree: [[]],
+        rootTree: [],
         radioBtn: 'fisica',
         secretaries: [],
         locations: [],
@@ -383,6 +384,9 @@ export const planSlice = createSlice({
                     case 401:
                         alert("No está permitido acceder aquí.");
                         break;
+                    case 403:
+                        alert("No tienes permitido realizar esta acción.");
+                        break;
                     case 404:
                         alert("Usuario o contraseña incorrecto.");
                         break;
@@ -414,7 +418,7 @@ export const planSlice = createSlice({
                         break;
                     case 403:
                         alert("No tienes permitido realizar esta acción.");
-                        break;    
+                        break;
                     case 404:
                         alert("Plan no existe.");
                         break;
@@ -440,6 +444,38 @@ export const planSlice = createSlice({
         builder.addCase(thunkGetLocations.rejected, (state, action) => {
             state.loadingLocations = false;
             state.errorLoadingLocations = action.payload;
+        });
+
+
+        builder.addCase(thunkUpdateLocations.pending, state => {
+            if (!state.loadingLocations) state.loadingLocations = true;
+            state.errorLoadingLocations = undefined;
+        });
+        builder.addCase(thunkUpdateLocations.fulfilled, (state, action) => {
+            state.loadingLocations = false;
+            setGenericState('plan', state);
+        });
+        builder.addCase(thunkUpdateLocations.rejected, (state, action) => {
+            state.loadingLocations = false;
+            state.errorLoadingLocations = action.payload;
+            if (action.payload) {
+                switch (action.payload.status) {
+                    case 401:
+                        alert("No está permitido acceder aquí.");
+                        break;
+                    case 403:
+                        alert("No tienes permitido realizar esta acción.");
+                        break;    
+                    case 404:
+                        alert("Plan no existe.");
+                        break;
+                    case 500:
+                        alert("Ha habido un error, pruebe más tarde.");
+                        break;
+                    default:
+                        break;
+                }
+            }
         });
 
 
