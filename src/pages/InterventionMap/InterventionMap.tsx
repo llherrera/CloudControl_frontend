@@ -14,14 +14,13 @@ import { setEvidences } from '@/store/evidence/evidenceSlice';
 
 import { BackBtn, Frame } from '@/components';
 import {
-    NodeInterface, 
-    Node, 
+    NodeInterface,
     EvidenceInterface } from '@/interfaces';
 import { 
     getLevelNodes, 
     getUbiEvidences, 
     getCodeEvidences } from '@/services/api';
-import { getEnvironment } from '@/utils';
+import { getEnvironment } from '@/utils/environment';
 
 export const InterventionMap = () => {
     return (
@@ -39,6 +38,43 @@ const containerStyle = {
     borderRadius: '15px'
 };
 
+const mapStyle = [
+    {
+        "featureType": "administrative",
+        "elementType": "geometry",
+        "stylers": [
+            {
+                "visibility": "off"
+            }
+        ]
+    },
+    {
+        "featureType": "poi",
+        "stylers": [
+            {
+            "visibility": "off"
+            }
+        ]
+    },
+    {
+        "featureType": "road",
+        "elementType": "labels.icon",
+        "stylers": [
+            {
+            "visibility": "off"
+            }
+        ]
+    },
+    {
+        "featureType": "transit",
+        "stylers": [
+            {
+                "visibility": "off"
+            }
+        ]
+    }
+]
+
 const Section = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
@@ -47,11 +83,6 @@ const Section = () => {
     const { evidences } = useAppSelector(store => store.evidence);
     const { id_plan } = useAppSelector(store => store.content);
 
-    const { isLoaded } = useJsApiLoader({
-        id: 'google-map-script',
-        googleMapsApiKey: API_KEY??''
-    });
-
     const [map, setMap] = useState<google.maps.Map|null>(null);
     const [markers, setMarkers] = useState<google.maps.Marker[]>([]);
 
@@ -59,8 +90,14 @@ const Section = () => {
     const [index_, setIndex] = useState<number[]>([0, 0]);
     const [codes, setCodes] = useState<string[]>([]);
 
+    //const { isLoaded } = useJsApiLoader({
+    //    id: 'google-map-script',
+    //    googleMapsApiKey: API_KEY!
+    //});
+
     const infoWindow = new google.maps.InfoWindow();
     const mapOptions: google.maps.MapOptions = {
+        styles: mapStyle,
         disableDefaultUI: true,
         zoom: 14,
         restriction: {
@@ -93,26 +130,25 @@ const Section = () => {
             if (levels.length === 0) return;
             let parent: (string | null) = null;
             let response = [] as NodeInterface[][];
-            for (let i = 0; i < 2; i++) {
+            const { id_level } = levels[0];
+            if (id_level) {
+                const res: NodeInterface[] = await getLevelNodes({id_level: id_level, parent: parent});
+                if (res.length > 0) {
+                    const temp = [...programs];
+                    temp[0] = res;
+                    parent = res[index_[0]].id_node;
+                    response.push(res);
+                }
+            }
+            for (let i = 1; i < 2; i++) {
                 const { id_level } = levels[i];
                 if (id_level) {
                     const res: NodeInterface[] = await getLevelNodes({id_level: id_level, parent: parent});
-                    let temp_ = [] as NodeInterface[];
-                    res.forEach((item:Node) => {
-                        temp_.push({
-                            id_node: item.id_node,
-                            name: item.name,
-                            description: item.description,
-                            parent: item.parent,
-                            id_level: item.id_level,
-                            weight: 0,
-                        });
-                    });
                     if (res.length === 0) break;
                     const temp = [...programs];
-                    temp[i] = temp_;
+                    temp[i] = res;
                     parent = res[index_[i]].id_node;
-                    response.push(temp_);
+                    response.push(res);
                 }
             }
             response[0].push({
@@ -136,7 +172,10 @@ const Section = () => {
     useEffect(() => {
         const fetch = async () => {
             if (programs.length === 0) return;
-            if (programs.length === 1) return notify("No hay evidencias para mostrar");
+            if (programs.length === 1) {
+                dispatch(setEvidences([]));
+                return notify("No hay evidencias para mostrar");
+            } 
             await getCodeEvidences(programs[1][index_[1]].id_node, id_plan)
             .then((res) => {
                 setCodes(res);
@@ -209,23 +248,18 @@ const Section = () => {
 
     const handleChangePrograms = (index: number, event: React.ChangeEvent<HTMLSelectElement>) => {
         const newIndex = event.target.selectedIndex;
-        console.log(index, newIndex, programs[0].length);
-
-        if (index === 0 && programs[0].length - 1 === newIndex) {
-
+        let newIndex_ = [...index_];
+        if (newIndex === 0) {
+            newIndex_[index] = newIndex;
+            setIndex(newIndex_);
+        } else if (index === 0 && newIndex === programs[index].length -1) {
+            const evidencesLocal = localStorage.getItem('evidences');
+            const evidens = JSON.parse(evidencesLocal as string);
+            dispatch(setEvidences(evidens));
         } else {
-            let newIndex_ = [...index_];
-            if (newIndex === 0) {
-                newIndex_[index] = newIndex;
-            } else if (newIndex === programs[index].length) {
-                const evidencesLocal = localStorage.getItem('evidence');
-                const evidens = JSON.parse(evidencesLocal as string);
-                dispatch(setEvidences(evidens));
-            } else {
-                newIndex_[index] = newIndex;
-                for (let i = index+1; i < newIndex_.length; i++) {
-                    newIndex_[i] = 0;
-                }
+            newIndex_[index] = newIndex;
+            for (let i = index+1; i < newIndex_.length; i++) {
+                newIndex_[i] = 0;
             }
             setIndex(newIndex_);
         }
@@ -238,15 +272,24 @@ const Section = () => {
                          tw-opacity-80`} >
             <div className='tw-flex tw-my-4'>
                 <BackBtn handle={handleBack} id={id_plan} />
-                <h1 className='tw-grow tw-text-center'>Mapa de intervenciones</h1>
+                <h1 className='tw-grow tw-text-center'>
+                    <p className='  tw-inline-block tw-bg-white
+                                    tw-p-2 tw-rounded
+                                    tw-font-bold tw-text-xl'>
+                        Mapa de intervenciones
+                    </p>
+                </h1>
             </div>
             <ToastContainer />
 
             <div className='tw-flex tw-justify-center tw-mb-3'>
                 {programs.map((program, i) => (
                     <div className='tw-flex tw-flex-col' key={i}>
-                        <label className='tw-text-center'>
-                            {levels[i].name}
+                        <label className='tw-text-center tw-mb-3'>
+                            <p className='  tw-inline-block tw-bg-white
+                                            tw-p-1 tw-rounded tw-font-bold'>
+                                {levels[i].name}
+                            </p>
                         </label>
                         <select value={program[index_[i]].name}
                                 onChange={(e)=>handleChangePrograms(i, e)}
@@ -256,7 +299,7 @@ const Section = () => {
                     </div>
                 ))}
             </div>
-            {isLoaded ? (<div className='tw-flex tw-justify-center'>
+            <div className='tw-flex tw-justify-center'>
                 <GoogleMap
                     mapContainerStyle={containerStyle}
                     center={planLocation}
@@ -266,7 +309,6 @@ const Section = () => {
                     onUnmount={onUnmount}>
                 </GoogleMap>
             </div>
-            ) : <p>Cargando...</p>}
         </div>
     );
 }
