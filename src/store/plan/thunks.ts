@@ -134,7 +134,7 @@ export const thunkAddNodes = createAsyncThunk<NodeInterface[], AddNodeProps, { r
     'pdt/addNodes',
     async (props: AddNodeProps, { rejectWithValue }) => {
         try {
-            const res = await addLevelNode(props.nodes, props.id_plan);
+            await addLevelNode(props.nodes, props.id_plan);
             let temp = props.nodes;
             return temp;
         } catch (err) {

@@ -1,14 +1,9 @@
 import { createAction, createAsyncThunk } from '@reduxjs/toolkit'
 
-import { AuthInterface, ErrorBasicInterface } from '../../interfaces'
-import { parseErrorAxios, setToken } from '../../utils'
+import { AuthInterface, ErrorBasicInterface, LoginProps } from '../../interfaces'
+import { parseErrorAxios } from '../../utils'
 
 import { doLogin, doRefreshToken, doLogout } from '@/services/api'
-
-interface LoginProps {
-  username: string
-  password: string
-}
 
 export const thunkLogin = createAsyncThunk<AuthInterface, LoginProps, { rejectValue: ErrorBasicInterface }>(
   'auth/login',

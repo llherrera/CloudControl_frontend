@@ -1,5 +1,4 @@
 import type { AxiosError } from 'axios'
-import * as XLSX from 'xlsx'
 import ExcelJS from 'exceljs'
 import { useNavigate } from 'react-router-dom'
 
@@ -49,38 +48,16 @@ export const getYears = (fecha_inicio: string= '') => {
 }
 
 export const validateEmail = (email: string) => {
-  const regexp = new RegExp(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
+  const regexp: RegExp = /\w+([.]\w+)*@\w+([.]\w+)*[.][a-zA-Z]{2,5}/
   return regexp.test(email)
-}
-
-export const exportFile = (tabla: string, name: string) => {
-  const table = document.getElementById(tabla)
-  const wb = XLSX.utils.table_to_book(table!)
-  wb.Props = {
-    Title: name,
-    Subject: "Exportación",
-  }
-  XLSX.writeFile(wb, `${name}.xlsx`)
-  
-  //const blob = new Blob([table!.innerHTML], {
-  //  type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"
-  //})
-  //const url = URL.createObjectURL(blob)
-  //const a = document.createElement('a')
-  //a.href = url
-  //a.download = `${name}.xlsx`
-  //a.click()
-  //document.body.removeChild(a)
 }
 
 export const handleUser = (rol: string) => {
   const navigate = useNavigate()
   if (rol === "admin") {
-    navigate('/pdt')
-    return
+    return navigate('/pdt')
   }else if (rol === "funcionario") {
-    navigate(`/lobby`)
-    return
+    return navigate(`/lobby`)
   }
 }
 
@@ -140,14 +117,13 @@ export const generateExcel = (
     })
 
     const ejecCell = row.getCell('ejecucion')
+    const ternary3= d.percentExecuted[0] < color[2] ? 'FF119432' : 'FF008DCC'
+    const ternary2= d.percentExecuted[0] < color[1] ? 'FFFCC623' : ternary3
+    const ternaty = d.percentExecuted[0] < color[0] ? 'FFFE1700' : ternary2
     ejecCell.fill = {
       type: 'pattern',
       pattern: 'solid',
-      fgColor: { argb: `${d.percentExecuted[0] < 0 ? 'FF9CA3AF' :
-                          d.percentExecuted[0] < color[0] ? 'FFFE1700' : 
-                          d.percentExecuted[0] < color[1] ? 'FFFCC623' :
-                          d.percentExecuted[0] < color[2] ? 'FF119432' : 'FF008DCC'}`
-      },
+      fgColor: { argb: `${d.percentExecuted[0] < 0 ? 'FF9CA3AF' : ternaty}` },
     }
   })
 
@@ -225,13 +201,15 @@ export const generateExcelYears = (
 
     years.forEach((y, i) => {
       const ejecCell = row.getCell(`ejecucion_${y}`)
+
+      const ternary3= d.percentExecuted[i] < color[2] ? 'FF119432' : 'FF008DCC'
+      const ternary2= d.percentExecuted[i] < color[1] ? 'FFFCC623' : ternary3
+      const ternaty = d.percentExecuted[i] < color[0] ? 'FFFE1700' : ternary2
+
       ejecCell.fill = {
         type: 'pattern',
         pattern: 'solid',
-        fgColor: { argb: `${d.percentExecuted[i] < 0 ? 'FF9CA3AF' :
-                            d.percentExecuted[i] < color[0] ? 'FFFE1700' : 
-                            d.percentExecuted[i] < color[1] ? 'FFFCC623' :
-                            d.percentExecuted[i] < color[2] ? 'FF119432' : 'FF008DCC'}`
+        fgColor: { argb: `${d.percentExecuted[i] < 0 ? 'FF9CA3AF' : ternaty}`
         },
       }
     })

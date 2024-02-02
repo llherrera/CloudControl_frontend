@@ -1,7 +1,7 @@
 import { InitialStateChartInterface } from "@/interfaces/chart";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { RootState } from "../store";
-import { setGenericState, getGenericState, removeGenericState } from "@/utils";
+import { setGenericState, getGenericState } from "@/utils";
 
 const getInitialState = (): InitialStateChartInterface => {
     const chartState = getGenericState("chart");

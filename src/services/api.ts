@@ -19,23 +19,12 @@ import {
     ExcelPhysical,
     LocationInterface} from "../interfaces";
 
-import { getToken } from "@/utils";
+import { getToken, refreshToken } from "@/utils";
 
 const { BASE_URL } = getEnvironment();
 const api = axios.create({
     baseURL: BASE_URL,
 })
-
-let isRefreshingToken = false;
-let failedQueue: { resolve: (value?: unknown) => void; reject: (reason?: unknown) => void }[] = [];
-
-const processFailedQueue = (error?: unknown) => {
-    failedQueue.forEach(promise => {
-        if (error) promise.reject(error)
-        else promise.resolve()
-    })
-    failedQueue = []
-}
 
 api.interceptors.request.use(
     async request => {
@@ -50,14 +39,14 @@ api.interceptors.request.use(
                 }
                 const decoder: {exp: number} = jwtDecode(token);
                 const isExpired = new Date(decoder.exp * 1000) < new Date();
-                //if (!isExpired) return request
-                //    const newToken = await refreshToken();
-                //if (newToken)
-                //// @ts-expect-error request.headers
-                //    request.headers = {
-                //        ...request.headers,
-                //        Authorization: `Bearer ${newToken}`
-                //    }
+                if (!isExpired) return request
+                const newToken = await refreshToken();
+                if (newToken)
+                // @ts-expect-error request.headers
+                    request.headers = {
+                        ...request.headers,
+                        Authorization: `Bearer ${newToken.token}`
+                    }
                 return request;
             }
             return request;
