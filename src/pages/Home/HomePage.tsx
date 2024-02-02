@@ -62,16 +62,18 @@ export const HomePage = () => {
     };
 
     const buttons: React.ReactNode[] = [
-        <ButtonComponent 
-            inside={false} 
-            text='Funcionario' 
-            src={funcLogo} 
+        <ButtonComponent
+            key={0}
+            inside={false}
+            text='Funcionario'
+            src={funcLogo}
             onClick={() => navigate('/login')}
             bgColor="tw-bg-greenBtn"/>,
-        <ButtonComponent 
-            inside={false} 
-            text='Ciudadano' 
-            src={citiLogo} 
+        <ButtonComponent
+            key={1}
+            inside={false}
+            text='Ciudadano'
+            src={citiLogo}
             onClick={handleBtnCiudadano}
             bgColor="tw-bg-greenBtn"/>
     ];

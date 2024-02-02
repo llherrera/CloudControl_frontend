@@ -35,7 +35,7 @@ export const SettingsPage = () => {
     }, []);
 
     useEffect(() => {
-        dispatch(thunkGetSecretaries(id_plan!));
+        dispatch(thunkGetSecretaries(id_plan));
     }, []);
 
     const handleChangeUnit = (event: React.ChangeEvent<
@@ -115,16 +115,16 @@ export const SettingsPage = () => {
                             tw-z-40'>
                 <img src={cclogo} alt="" width={100} height={100}/>
                 <div className='tw-flex tw-gap-3'>
-                    {url_logo && <img src={url_logo} title='Municipio' width={100} /> }
-                    {url_logo_plan && <img src={url_logo_plan} title='Plan' width={100} /> }
+                    {url_logo && <img src={url_logo} alt='' title='Municipio' width={100} /> }
+                    {url_logo_plan && <img src={url_logo_plan} alt='' title='Plan' width={100} /> }
                 </div>
                 <img src="/src/assets/images/Plan-indicativo.png" alt="" width={60} />
             </div>
             <BackBtn handle={() => navigate(-1)} id={plan?.id_plan!} />
             <ol className="tw-flex tw-justify-center tw-flex-wrap">
-            {rootTree.map((name, index) => {
+            {rootTree.map((name) => {
                 return (
-                    <li className="tw-flex tw-mx-3" key={index}>
+                    <li className="tw-flex tw-mx-3" key={name.length}>
                         <p className="tw-text-green-600 tw-text-xl tw-font-bold">{name[1]}:</p> 
                         <p className="tw-ml-1 tw-text-xl tw-font-bold">{name[0]}</p>
                     </li>
@@ -177,8 +177,8 @@ export const SettingsPage = () => {
                             className=' tw-m-3 tw-p-2
                                         tw-rounded tw-border-2
                                         tw-border-gray-400'>
-                        {secretaries.map((secretary, index) => (
-                            <option key={index} value={secretary.name}>
+                        {secretaries.map((secretary) => (
+                            <option key={secretary.phone} value={secretary.name}>
                                 {secretary.name}
                             </option>
                         ))}
@@ -192,7 +192,7 @@ export const SettingsPage = () => {
                                     tw-p-2 
                                     tw-bg-white'>
                     {unit.years.map((year, index) => (
-                        <div key={index}>
+                        <div key={year.year}>
                             <label  htmlFor="">{years[index]}</label>
                             <input  className="tw-m-2 tw-p-2 tw-rounded tw-border-2 tw-border-gray-400"
                                     onChange={ (e) => handleChangeYear(e, index) } 
@@ -212,7 +212,7 @@ export const SettingsPage = () => {
                                     tw-p-2 
                                     tw-bg-white'>
                     {unit.years.map((year, index) => (
-                        <div key={index}>
+                        <div key={year.year}>
                             <label  htmlFor="">{years[index]}</label>
                             <input  className="tw-m-2 tw-p-2 tw-rounded tw-border-2 tw-border-gray-400"
                                     onChange={ (e) => handleChangeYear(e, index) } 

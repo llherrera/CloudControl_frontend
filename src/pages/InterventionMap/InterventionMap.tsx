@@ -87,7 +87,7 @@ const Section = () => {
     const [markers, setMarkers] = useState<google.maps.Marker[]>([]);
 
     const [programs, setPrograms] = useState<NodeInterface[][]>([]);
-    const [index_, setIndex] = useState<number[]>([0, 0]);
+    const [index_, setIndex_] = useState<number[]>([0, 0]);
     const [codes, setCodes] = useState<string[]>([]);
 
     //const { isLoaded } = useJsApiLoader({
@@ -134,8 +134,6 @@ const Section = () => {
             if (id_level) {
                 const res: NodeInterface[] = await getLevelNodes({id_level: id_level, parent: parent});
                 if (res.length > 0) {
-                    const temp = [...programs];
-                    temp[0] = res;
                     parent = res[index_[0]].id_node;
                     response.push(res);
                 }
@@ -145,8 +143,6 @@ const Section = () => {
                 if (id_level) {
                     const res: NodeInterface[] = await getLevelNodes({id_level: id_level, parent: parent});
                     if (res.length === 0) break;
-                    const temp = [...programs];
-                    temp[i] = res;
                     parent = res[index_[i]].id_node;
                     response.push(res);
                 }
@@ -251,7 +247,7 @@ const Section = () => {
         let newIndex_ = [...index_];
         if (newIndex === 0) {
             newIndex_[index] = newIndex;
-            setIndex(newIndex_);
+            setIndex_(newIndex_);
         } else if (index === 0 && newIndex === programs[index].length -1) {
             const evidencesLocal = localStorage.getItem('evidences');
             const evidens = JSON.parse(evidencesLocal as string);
@@ -261,7 +257,7 @@ const Section = () => {
             for (let i = index+1; i < newIndex_.length; i++) {
                 newIndex_[i] = 0;
             }
-            setIndex(newIndex_);
+            setIndex_(newIndex_);
         }
     };
 
@@ -284,7 +280,7 @@ const Section = () => {
 
             <div className='tw-flex tw-justify-center tw-mb-3'>
                 {programs.map((program, i) => (
-                    <div className='tw-flex tw-flex-col' key={i}>
+                    <div className='tw-flex tw-flex-col' key={program.length}>
                         <label className='tw-text-center tw-mb-3'>
                             <p className='  tw-inline-block tw-bg-white
                                             tw-p-1 tw-rounded tw-font-bold'>
@@ -294,7 +290,9 @@ const Section = () => {
                         <select value={program[index_[i]].name}
                                 onChange={(e)=>handleChangePrograms(i, e)}
                                 className='tw-border tw-border-gray-300 tw-rounded tw-mr-3 '>
-                            {program.map((node, index) => (<option value={node.name} key={index}>{node.name}</option>))}
+                            {program.map((node) => (
+                                <option value={node.name} key={node.name.length}>{node.name}</option>
+                            ))}
                         </select>
                     </div>
                 ))}

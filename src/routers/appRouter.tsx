@@ -16,31 +16,12 @@ export const AppRouter = () => {
     if (token_info) 
         token = decode(token_info.token).rol;
 
-    return logged ? (
-        token === 'admin' ? (
-            <Routes>
-                <Route path="*" element={<PrivateRouter />} />
-            </Routes>
-        ): token === 'funcionario' ? (
-            <Routes>
-                <Route path="*" element={<OfficerRouter />} />
-            </Routes>
-        ): token === 'planeacion' ? (
-            <Routes>
-                <Route path="*" element={<PlanningRouter />} />
-            </Routes>
-        ): token === 'sectorialista' ? (
-            <Routes>
-                <Route path="*" element={<SectorialistRouter />} />
-            </Routes>
-        ):(
-            <Routes>
-                <Route path="*" element={<PublicRouter />} />
-            </Routes>
-        )
-    ):(
-        <Routes>
-            <Route path="*" element={<PublicRouter />} />
-        </Routes>
-    )
+    const sectoTer = token === 'sectorialista' ? 
+        <Routes><Route path="*" element={<SectorialistRouter />} /></Routes>:
+        <Routes><Route path="*" element={<PublicRouter />} /></Routes>
+    const planeTer = token === 'planeacion' ? <Routes><Route path="*" element={<PlanningRouter />} /></Routes>: sectoTer
+    const functTer = token === 'funcionario' ? <Routes><Route path="*" element={<OfficerRouter />} /></Routes>: planeTer
+    const adminTer = token === 'admin' ? <Routes><Route path="*" element={<PrivateRouter />} /></Routes>: functTer
+
+    return logged ? adminTer : <Routes><Route path="*" element={<PublicRouter />} /></Routes>
 }

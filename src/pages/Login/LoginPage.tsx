@@ -5,7 +5,7 @@ import { Header } from "@/components/Header";
 export const LoginPage = () => {
     
     const componentes: React.ReactNode[] = [
-        <LoginForm/>
+        <LoginForm key={0}/>
     ];
 
     return (

@@ -53,10 +53,10 @@ export const UnitNodePage = () => {
         let acumProgramed = 0;
         let acumPhisical = 0;
         let acumFinalcial = 0;
-        for (let i = 0; i < unit!.years.length; i++) {
-            acumProgramed += unit!.years[i].physical_programming;
-            acumPhisical += unit!.years[i].physical_execution;
-            acumFinalcial += parseInt(unit!.years[i].financial_execution.toString());
+        for (const element of unit.years) {
+            acumProgramed += element.physical_programming;
+            acumPhisical += element.physical_execution;
+            acumFinalcial += parseInt(element.financial_execution.toString());
         }
         setAcum( acumPhisical/acumProgramed );
         setAcumFinan( acumFinalcial );
@@ -69,7 +69,7 @@ export const UnitNodePage = () => {
 
     const handleEvidence = () => {
         const id_ = parseInt(id_plan.toString());
-        dispatch(thunkGetEvidence({id_plan: id_, code: unit!.code}))
+        dispatch(thunkGetEvidence({id_plan: id_, code: unit.code}))
         .unwrap()
         .then((res) => {
             if (res.length === 0)
@@ -143,7 +143,7 @@ export const UnitNodePage = () => {
                 <div className="tw-flex tw-flex-wrap tw-justify-center">
                 {unit.years.map((item, index) => {
                     return(
-                        <div key={index}
+                        <div key={item.year}
                             className="tw-my-2">
                             <p className="  tw-mx-2 
                                             tw-border-x tw-border-t tw-border-black 
@@ -235,6 +235,58 @@ export const UnitNodePage = () => {
         );
     };
 
+    const ternary = evidences.length > 0 ?
+    <div className="tw-mb-4">
+        <p className="tw-text-2xl tw-font-bold tw-flex tw-justify-center">Evidencias</p>
+        <table>
+            <thead>
+                <tr>
+                    <th className={`tw-bg-black tw-border`}>
+                        <p className="tw-text-white">Fecha de seguimiento</p>
+                    </th>
+                    <th className={`tw-bg-black tw-border 
+                                    tw-hidden lg:tw-table-cell`}>
+                        <p className="tw-text-white">Descripción</p>
+                    </th>
+                    <th className={`tw-bg-black tw-border 
+                                    tw-hidden lg:tw-table-cell`}>
+                        <p className="tw-text-white">Comuna o Corregimiento</p>
+                    </th>
+                    <th className={`tw-bg-black tw-border 
+                                    tw-hidden md:tw-table-cell`}>
+                        <p className="tw-text-white">Barrio o Vereda</p>
+                    </th>
+                    <th className={`tw-bg-black tw-border 
+                                    tw-hidden md:tw-table-cell`}>
+                        <p className="tw-text-white">Unidad</p>
+                    </th>
+                    <th className={`tw-bg-black tw-border 
+                                    tw-hidden md:tw-table-cell`}>
+                        <p className="tw-text-white">Cantidad</p>
+                    </th>
+                    <th className={`tw-bg-black tw-border `}>
+                        <p className="tw-text-white">Grupo poblacional</p>
+                    </th>
+                    <th className={`tw-bg-black tw-border`}>
+                        <p className="tw-text-white">Población beneficiada</p>
+                    </th>
+                    <th className={`tw-bg-black tw-border 
+                                    tw-hidden md:tw-table-cell`}>
+                        <p className="tw-text-white">Fecha archivo</p>
+                    </th>
+                    <th className={`tw-bg-black tw-border`}>
+                        <p className="tw-text-white">Enlace</p>
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {evidences.map((evi, index) => (
+                    <ShowEvidence evi={evi} index={index} key={evi.id_evidence}/>
+                ))}
+            </tbody>
+        </table>
+    </div> : <p className="tw-text-2xl tw-font-bold tw-flex tw-justify-center">No hay evidencias cargadas</p>
+
     return (
         loadingUnit ? <Spinner/>:
         <div className="tw-container tw-mx-auto tw-my-3
@@ -248,8 +300,8 @@ export const UnitNodePage = () => {
                             tw-z-40'>
                 <img src={cclogo} alt="" width={100} height={100}/>
                 <div className='tw-flex tw-gap-3'>
-                    {url_logo && <img src={url_logo} title='Municipio' width={100} /> }
-                    {url_logo_plan && <img src={url_logo_plan} title='Plan' width={100} /> }
+                    {url_logo && <img src={url_logo} alt="" title='Municipio' width={100} /> }
+                    {url_logo_plan && <img src={url_logo_plan} alt="" title='Plan' width={100} /> }
                 </div>
                 <img src="/src/assets/images/Plan-indicativo.png" alt="" width={60} />
             </div>
@@ -259,9 +311,9 @@ export const UnitNodePage = () => {
                 : null
             }
             <ol className="tw-flex tw-justify-center tw-flex-wrap">
-            {rootTree.map((name, index) => {
+            {rootTree.map((name) => {
                 return (
-                    <li className="tw-flex tw-mx-3" key={index}>
+                    <li className="tw-flex tw-mx-3" key={name.length}>
                         <p className="tw-text-green-600 tw-text-xl tw-font-bold">{name[1]}:</p> 
                         <p className="tw-ml-1 tw-text-xl tw-font-bold">{name[0]}</p>
                     </li>
@@ -286,62 +338,7 @@ export const UnitNodePage = () => {
                     Mostrar <br /> evidencias
                 </button>
             </div>
-            {showEvidence ?
-            (evidences.length > 0 ?
-            <div className="tw-mb-4">
-            <p className="tw-text-2xl tw-font-bold tw-flex tw-justify-center">Evidencias</p>
-            <table>
-                <thead>
-                    <tr>
-                        <th className={`tw-bg-black tw-border`}>
-                            <label className="tw-text-white">Fecha de seguimiento</label>
-                        </th>
-                        <th className={`tw-bg-black tw-border 
-                                        tw-hidden lg:tw-table-cell`}>
-                            <label className="tw-text-white">Descripción</label>
-                        </th>
-                        <th className={`tw-bg-black tw-border 
-                                        tw-hidden lg:tw-table-cell`}>
-                            <label className="tw-text-white">Comuna o Corregimiento</label>
-                        </th>
-                        <th className={`tw-bg-black tw-border 
-                                        tw-hidden md:tw-table-cell`}>
-                            <label className="tw-text-white">Barrio o Vereda</label>
-                        </th>
-                        <th className={`tw-bg-black tw-border 
-                                        tw-hidden md:tw-table-cell`}>
-                            <label className="tw-text-white">Unidad</label>
-                        </th>
-                        <th className={`tw-bg-black tw-border 
-                                        tw-hidden md:tw-table-cell`}>
-                            <label className="tw-text-white">Cantidad</label>
-                        </th>
-                        <th className={`tw-bg-black tw-border `}>
-                            <label className="tw-text-white">Grupo poblacional</label>
-                        </th>
-                        <th className={`tw-bg-black tw-border`}>
-                            <label className="tw-text-white">Población beneficiada</label>
-                        </th>
-                        <th className={`tw-bg-black tw-border 
-                                        tw-hidden md:tw-table-cell`}>
-                            <label className="tw-text-white">Fecha archivo</label>
-                        </th>
-                        <th className={`tw-bg-black tw-border`}>
-                            <label className="tw-text-white">Enlace</label>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {evidences.map((evi, index) => (
-                        <ShowEvidence evi={evi} index={index} key={index}/>
-                    ))}
-                </tbody>
-            </table>
-            </div> : 
-            <p className="tw-text-2xl tw-font-bold tw-flex tw-justify-center">
-                No hay evidencias cargadas
-            </p>)
-            : null}
+            {showEvidence ? ternary : null}
         </div>
     );
 }

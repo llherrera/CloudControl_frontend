@@ -37,7 +37,7 @@ export const PDT = () => {
     return (
         <Header
             components={[
-                <ListPDT data={data} rol={rol}/>
+                <ListPDT data={data} rol={rol} key={data.length}/>
             ]}
         />
     );
@@ -60,7 +60,7 @@ const ListPDT = ( props: PDTPageProps ) => {
     return (
         <div className="tw-flex tw-relative tw-justify-center tw-mt-10">
             <div className="tw-absolute tw-left-1">
-                <BackBtn handle={()=>navigate(-1)} id={props.data!.length}/>
+                <BackBtn handle={()=>navigate(-1)} id={props.data.length}/>
             </div>
             {props.rol === "admin" ? 
             <ul className="tw-shadow-2xl tw-p-4 tw-border-2 tw-rounded">
@@ -76,9 +76,9 @@ const ListPDT = ( props: PDTPageProps ) => {
                 {
                     props.data.length === 0 ? <p>No hay planes de momento</p> : null
                 }
-                { props.data!.map(( e:PDTInterface, index: number )=>
+                { props.data.map(( e:PDTInterface )=>
                 <li className="tw-flex"
-                    key={index}>
+                    key={e.id_plan}>
                     <button className=" tw-flex tw-justify-between tw-w-full 
                                         tw-mb-4 tw-p-2 tw-rounded 
                                         tw-bg-gray-200 hover:tw-bg-gray-300

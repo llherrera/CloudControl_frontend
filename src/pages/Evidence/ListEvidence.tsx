@@ -22,10 +22,9 @@ const Evidence = () => {
     const navigate = useNavigate();
 
     const { token_info } = useAppSelector(state => state.auth);
-    const { plan } = useAppSelector(store => store.plan);
     const { evidences, evi_count } = useAppSelector(store => store.evidence);
     const { id_plan } = useAppSelector(store => store.content);
-    
+
     const [page, setPage] = useState(1);
     const [opt, setOpt] = useState(1);
 
@@ -69,9 +68,8 @@ const Evidence = () => {
 
     const handleBtnOpt = () => {
         (rol === 'admin' || 
-        ((rol === 'funcionario' || rol === 'planeacion') && id === id_plan) ? 
-            handleOpt(1)
-            : null
+            ((rol === 'funcionario' || rol === 'planeacion') && id === id_plan) ? 
+            handleOpt(1) : alert("No tienes permisos")
         )
     }
 
@@ -100,43 +98,43 @@ const Evidence = () => {
                 <thead>
                     <tr>
                         <th className="tw-bg-black tw-border">
-                            <label className="tw-text-white">Fecha de seguimiento</label>
+                            <p className="tw-text-white">Fecha de seguimiento</p>
                         </th>
                         <th className="tw-bg-black tw-border">
-                            <label className="tw-text-white">Descripción</label>
+                            <p className="tw-text-white">Descripción</p>
                         </th>
                         <th className="tw-bg-black tw-border">
-                            <label className="tw-text-white">Comuna o Corregimiento</label>
+                            <p className="tw-text-white">Comuna o Corregimiento</p>
                         </th>
                         <th className="tw-bg-black tw-border">
-                            <label className="tw-text-white">Barrio o Vereda</label>
+                            <p className="tw-text-white">Barrio o Vereda</p>
                         </th>
                         <th className="tw-bg-black tw-border">
-                            <label className="tw-text-white">Unidad</label>
+                            <p className="tw-text-white">Unidad</p>
                         </th>
                         <th className="tw-bg-black tw-border">
-                            <label className="tw-text-white">Cantidad</label>
+                            <p className="tw-text-white">Cantidad</p>
                         </th>
                         <th className="tw-bg-black tw-border">
-                            <label className="tw-text-white">Grupo poblacional</label>
+                            <p className="tw-text-white">Grupo poblacional</p>
                         </th>
                         <th className="tw-bg-black tw-border">
-                            <label className="tw-text-white">Población beneficiada</label>
+                            <p className="tw-text-white">Población beneficiada</p>
                         </th>
                         <th className="tw-bg-black tw-border">
-                            <label className="tw-text-white">Fecha archivo</label>
+                            <p className="tw-text-white">Fecha archivo</p>
                         </th>
                         <th className="tw-bg-black tw-border">
-                            <label className="tw-text-white">Enlace</label>
+                            <p className="tw-text-white">Enlace</p>
                         </th>
                         <th className="tw-bg-black tw-border">
-                            <label className="tw-text-white">Acción</label>
+                            <p className="tw-text-white">Acción</p>
                         </th>
                     </tr>
                 </thead>
                 <tbody>
                     {evidences.length > 0 ? evidences.map((evi, index) => (
-                        <EvidenceDetail evi={evi} index={index} key={index}/>
+                        <EvidenceDetail evi={evi} index={index} key={evi.id_evidence}/>
                     )) : <tr><th><p>No hay evidencias</p></th></tr>}
                 </tbody>
             </table>
@@ -145,22 +143,22 @@ const Evidence = () => {
                 <thead>
                     <tr>
                         <th className="tw-bg-black tw-border tw-px-3">
-                            <label className="tw-text-white">Id</label>
+                            <p className="tw-text-white">Id</p>
                         </th>
                         <th className="tw-bg-black tw-border tw-px-3">
-                            <label className="tw-text-white">Código</label>
+                            <p className="tw-text-white">Código</p>
                         </th>
                         <th className="tw-bg-black tw-border tw-px-3">
-                            <label className="tw-text-white">Estado</label>
+                            <p className="tw-text-white">Estado</p>
                         </th>
                         <th className="tw-bg-black tw-border tw-px-3">
-                            <label className="tw-text-white">Editar</label>
+                            <p className="tw-text-white">Editar</p>
                         </th>
                     </tr>
                 </thead>
                 <tbody>
-                    {evidences.length > 0 ? evidences.map((evi, index) => (
-                        <MyEvidence evidence={evi} key={index}/>
+                    {evidences.length > 0 ? evidences.map((evi) => (
+                        <MyEvidence evidence={evi} key={evi.id_evidence}/>
                     )) : <tr><th><p>No hay evidencias</p></th></tr>}
                 </tbody>
             </table>

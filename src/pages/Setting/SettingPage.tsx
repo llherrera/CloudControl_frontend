@@ -1,10 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import {useAppSelector, 
-        useAppDispatch } from '@/store';
-import {thunkGetLocations, 
-        thunkGetSecretaries } from '@/store/plan/thunks';
+import {useAppSelector, useAppDispatch } from '@/store';
+import {thunkGetLocations, thunkGetSecretaries } from '@/store/plan/thunks';
 
 import {Frame, 
         BackBtn, 
@@ -35,13 +33,11 @@ const SettingPageWrapper = () => {
     const { id_plan } = useAppSelector(store => store.content);
 
     const [rol, setRol] = useState("");
-    const [id_, setId] = useState(0);
 
     useEffect(() => {
         if (token_info?.token !== undefined) {
             const decoded = decode(token_info.token);
             setRol(decoded.rol);
-            setId(decoded.id);
         }
     }, []);
 
@@ -60,7 +56,7 @@ const SettingPageWrapper = () => {
         <div>
             <BackBtn handle={handleBack} id={id_plan}/><br />
             <div>
-                {rol === "admin" || ((rol === 'funcionario' || rol === 'planeacion') && id_ === id_plan ) ? 
+                {rol === "admin" || ((rol === 'funcionario' || rol === 'planeacion') && id_plan === plan.id_plan! ) ? 
                     <div>
                         <FileInput/>
                         <FileFinancialInput/>
@@ -72,7 +68,7 @@ const SettingPageWrapper = () => {
                 <FilePhysicalInput/>
                 : null
             }
-            {rol === "admin" || (rol === 'funcionario' && id_ === id_plan ) ?
+            {rol === "admin" || (rol === 'funcionario' && id_plan === plan.id_plan! ) ?
                 <div className='tw-flex tw-justify-center tw-gap-6'>
                     <UploadLogoCity/>
                     <UploadLogoPlan/>
@@ -80,19 +76,19 @@ const SettingPageWrapper = () => {
                 : null
             }
             <div className='tw-border-t-4 tw-mt-4 tw-flex tw-justify-center'>
-                {rol === "admin" || (rol === 'funcionario' && id_ === id_plan ) ?
+                {rol === "admin" || (rol === 'funcionario' && id_plan === plan.id_plan! ) ?
                     <div className='tw-mt-4'>
-                        <ColorForm id={plan!.id_plan!}/>
+                        <ColorForm id={id_plan}/>
                     </div>
                     : null
                 }
             </div>
             
-            {((rol === "admin") || ((rol === 'funcionario' || rol === 'planeacion') && id_plan === plan!.id_plan!)) ?
+            {((rol === "admin") || ((rol === 'funcionario' || rol === 'planeacion') && id_plan === plan.id_plan!)) ?
             <SecretaryForm/>
             : null}
 
-            {((rol === "admin") || ((rol === 'funcionario' || rol === 'planeacion') && id_plan === plan!.id_plan!)) ?
+            {((rol === "admin") || ((rol === 'funcionario' || rol === 'planeacion') && id_plan === plan.id_plan!)) ?
             <LocationsForm/>
             : null}
         </div>

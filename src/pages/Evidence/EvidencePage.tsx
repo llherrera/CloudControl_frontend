@@ -24,11 +24,19 @@ export const EvidencePage = () => {
 
     const handleSubmitButton = () => setCargar(!cargar);
 
+    const ternary = (index: number) => {
+        return index === 1 ? 'Meta' : null
+    }
+
+    const ternary2 = (index: number) => {
+        return index === 1 ? unit.goal : null
+    }
+
     const memorias = () => {
-        if (unit === undefined) 
+        if (unit === undefined)
             return <div className="tw-text-center">
                 No hay una meta seleccionada
-                </div>;
+            </div>;
         return(
             <div className="tw-mx-3 tw-mt-2">
                 <header className=" tw-flex tw-border-4 tw-border-double
@@ -46,33 +54,33 @@ export const EvidencePage = () => {
                     <thead>
                         <tr>
                             <th className="tw-border-4 tw-border-double tw-border-gray-500">
-                                <label className="tw-font-bold">Código de la meta</label>
+                                <p className="tw-font-bold">Código de la meta</p>
                             </th>
                             <th className="tw-border-4 tw-border-double tw-border-gray-500 ">
-                                <label className="tw-font-bold">{ unit.code }</label>
+                                <p className="tw-font-bold">{ unit.code }</p>
                             </th>
                             <th className="tw-hidden md:tw-table-cell tw-border-4 tw-border-double tw-border-gray-500">
-                                <label className="tw-font-bold">Descripción de la meta</label>
+                                <p className="tw-font-bold">Descripción de la meta</p>
                             </th>
                             <th className="tw-hidden md:tw-table-cell tw-border-4 tw-border-double tw-border-gray-500 ">
-                                <label className="tw-font-bold">{ unit.description }</label>
+                                <p className="tw-font-bold">{ unit.description }</p>
                             </th>
                         </tr>
                     </thead>
                     <tbody>
                         {namesTree.map((name, index) => (
-                            <tr key={index}>
+                            <tr key={name.length}>
                                 <td className="tw-border-4 tw-border-double tw-border-gray-500">
-                                    <label className="tw-font-bold">{ name[1] }</label>
+                                    <p className="tw-font-bold">{ name[1] }</p>
                                 </td>
                                 <td className="tw-border-4 tw-border-double tw-border-gray-500">
-                                    <label className="tw-font-bold">{ name[0] }</label>
+                                    <p className="tw-font-bold">{ name[0] }</p>
                                 </td>
                                 <td className="tw-hidden md:tw-table-cell tw-border-4 tw-border-double tw-border-gray-500">
-                                    <label className="tw-font-bold">{ index === 0 ? 'Linea base': index === 1 ? 'Meta' : null }</label>
+                                    <p className="tw-font-bold">{ index === 0 ? 'Linea base' : ternary(index) }</p>
                                 </td>
                                 <td className="tw-hidden md:tw-table-cell tw-border-4 tw-border-double tw-border-gray-500">
-                                    <label className="tw-font-bold">{ index === 0 ? unit.base: index === 1 ? unit.goal : null }</label>
+                                    <p className="tw-font-bold">{ index === 0 ? unit.base : ternary2(index) }</p>
                                 </td>
                             </tr>
                         ))}

@@ -24,10 +24,10 @@ export const LobbyPage = () => {
 
     const { id_plan } = useAppSelector(state => state.content);
     const { plan } = useAppSelector(store => store.plan);
-    const { isLoaded, loadError} = useJsApiLoader({
-        id: 'google-map-script',
-        googleMapsApiKey: API_KEY??''
-    });
+    //const { isLoaded, loadError} = useJsApiLoader({
+    //    id: 'google-map-script',
+    //    googleMapsApiKey: API_KEY??''
+    //});
 
     useEffect(() => {
         dispatch(thunkGetLevelsById(id_plan.toString()));
@@ -36,7 +36,8 @@ export const LobbyPage = () => {
 
     useEffect(() => {
         const fetchLocation = async () => {
-            if (plan === undefined || !isLoaded || loadError) return;
+            //if (plan === undefined || !isLoaded || loadError) return;
+            if (plan === undefined) return;
             const geocoder = new google.maps.Geocoder();
             await geocoder.geocode({address: `Colombia, ${plan?.department}, ${plan?.municipality}`})
             .then((res) => {
@@ -48,10 +49,12 @@ export const LobbyPage = () => {
             });
         }
         fetchLocation();
-    }, [isLoaded, plan]);
+    }, [plan]);
+//    }, [isLoaded, plan]);
 
     const buttons: React.ReactNode[] = [
         <ButtonComponent
+            key={0}
             inside={false}
             text='Plan indicativo'
             src={planLogo}
@@ -62,6 +65,7 @@ export const LobbyPage = () => {
             }}
             bgColor="tw-bg-greenBtn" />,
         <ButtonComponent
+            key={1}
             inside={false}
             text='Banco de proyectos'
             src={bankLogo}
@@ -71,6 +75,7 @@ export const LobbyPage = () => {
             }}
             bgColor="tw-bg-greenBtn" />,
         <ButtonComponent
+            key={2}
             inside={false}
             text='POAI'
             src={POAILogo}
@@ -80,6 +85,7 @@ export const LobbyPage = () => {
             }}
             bgColor="tw-bg-greenBtn" />,
         <ButtonComponent
+            key={3}
             inside={false}
             text='Mapa de intervención'
             onClick={() => {
