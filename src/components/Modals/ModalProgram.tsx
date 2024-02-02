@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import Modal from 'react-modal';
 
 import { useAppSelector, useAppDispatch } from "@/store";
@@ -16,11 +16,12 @@ import {
     NodeInterface, 
     Node } from "@/interfaces";
 import { getLevelName, getLevelNodes } from "@/services/api";
-import { exportFile } from "@/utils";
+import { generateExcelYears } from "@/utils";
 
 export const ModalProgram = () => {
     const dispatch = useAppDispatch();
-
+    const tableRef = useRef(null);
+    
     const { levels, 
             nodesReport, 
             years, 
@@ -28,7 +29,7 @@ export const ModalProgram = () => {
             colorimeter } = useAppSelector((state) => state.plan);
     let levels_ = levels.slice(0, -1);
 
-    const [modalProgramsIsOpen, setModalProgramsIsOpen] = useState(false);
+    const [modalIsOpen, setModalIsOpen] = useState(false);
     const [data, setData] = useState<ReportPDTInterface[]>([]);
     const [programs, setPrograms] = useState<NodeInterface[][]>([]);
     const [index_, setIndex] = useState<number[]>(levels_.map(() => 0));
@@ -71,7 +72,7 @@ export const ModalProgram = () => {
 
     useEffect(() => {
         const fetch = async () => {
-            if (modalProgramsIsOpen)
+            if (modalIsOpen)
                 await genReport();
         }
         fetch();
@@ -79,7 +80,7 @@ export const ModalProgram = () => {
 
     const handleProgramBtn = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault();
-        setModalProgramsIsOpen(true);
+        setModalIsOpen(true);
         dispatch(setLoadingReport(true));
         genReport();
     };
@@ -130,7 +131,7 @@ export const ModalProgram = () => {
         }))
         dispatch(setLoadingReport(false));
         setData(data);
-    }
+    };
 
     const handleChangePrograms = (index: number, event: React.ChangeEvent<HTMLSelectElement>) => {
         const newIndex = event.target.selectedIndex;
@@ -144,12 +145,12 @@ export const ModalProgram = () => {
             }
         }
         setIndex(newIndex_);
-    }
+    };
 
     const ModalPDT = () => {
         return (
-            <Modal  isOpen={modalProgramsIsOpen}
-                    onRequestClose={()=>setModalProgramsIsOpen(false)}
+            <Modal  isOpen={modalIsOpen}
+                    onRequestClose={()=>setModalIsOpen(true)}
                     contentLabel='Modal de programas'>
                 {loadingReport ? <Spinner/> : <div>
                 <div className='tw-flex tw-relative'>
@@ -165,29 +166,52 @@ export const ModalProgram = () => {
                     <button className='tw-bg-gray-300 hover:tw-bg-gray-200 
                                         tw-rounded tw-border tw-border-black 
                                         tw-px-2 tw-py-1 tw-ml-3'
-                            onClick={()=>exportFile('TablaProgramas','InformeProgramas')}>
+                            onClick={()=>generateExcelYears(data, 'InformeProgramas', levels, years, colorimeter)}>
                         Exportar
                     </button>
-                    <button className='tw-bg-red-300 hover:tw-bg-red-200 
-                                            tw-rounded 
-                                            tw-px-3 tw-py-1 tw-mt-3
-                                            tw-right-0 tw-absolute'
-                            onClick={() => setModalProgramsIsOpen(false)}>
+                    <button type="button" 
+                            className='tw-bg-red-300 hover:tw-bg-red-200 
+                                        tw-rounded 
+                                        tw-px-3 tw-py-1 tw-mt-3
+                                        tw-right-0 tw-absolute'
+                            onClick={() => setModalIsOpen(false)}>
                         X
                     </button>
                 </div>
-                <table className="tw-mt-3" id="TablaProgramas">
+                <table  className="tw-mt-3" 
+                        id="TablaProgramas"
+                        ref={tableRef}>
                     <thead>
                         <tr>
                             <th className='tw-border tw-bg-gray-400 tw-p-2'>Responsable</th>
                             <th className='tw-border tw-bg-gray-400 tw-p-2'>Codigo de la meta producto</th>
                             <th className='tw-border tw-bg-gray-400 tw-p-2'>Descripción Meta producto</th>
-                            {years.map((year, index) => (<th className='tw-border tw-bg-gray-400 tw-p-2' key={index}>% ejecución{year}</th>))}
-                            {levels.map((level, index) => (<th className='tw-border tw-bg-gray-400 tw-p-2' key={index}>{level.name}</th>))}
+                            {years.map((year, index) => (
+                                <th className='tw-border tw-bg-gray-400 tw-p-2' 
+                                    key={index}>
+                                    % ejecución{year}
+                                </th>
+                            ))}
+                            {levels.map((level, index) => (
+                                <th className='tw-border tw-bg-gray-400 tw-p-2' 
+                                    key={index}>
+                                    {level.name}
+                                </th>
+                            ))}
                             <th className='tw-border tw-bg-gray-400 tw-p-2'>Indicador</th>
                             <th className='tw-border tw-bg-gray-400 tw-p-2'>Línea base</th>
-                            {years.map((year, index) => (<th className='tw-border tw-bg-gray-400 tw-p-2' key={index}>Programado {year}</th>))}
-                            {years.map((year, index) => (<th className='tw-border tw-bg-gray-400 tw-p-2' key={index}>Ejecutado {year}</th>))}
+                            {years.map((year, index) => (
+                                <th className='tw-border tw-bg-gray-400 tw-p-2' 
+                                    key={index}>
+                                    Programado {year}
+                                </th>
+                            ))}
+                            {years.map((year, index) => (
+                                <th className='tw-border tw-bg-gray-400 tw-p-2' 
+                                    key={index}>
+                                    Ejecutado {year}
+                                </th>
+                            ))}
                         </tr>
                     </thead>
                     <tbody>
@@ -207,11 +231,26 @@ export const ModalProgram = () => {
                                         {item['percentExecuted'][index] < 0 ? 0 : item['percentExecuted'][index]}
                                     </td>
                                 ))}
-                                {levels.map((level, index) => (<td className='tw-border tw-p-2' key={index}>{item['planSpecific'][index]}</td>))}
+                                {levels.map((level, index) => (
+                                    <td className='tw-border tw-p-2' 
+                                        key={index}>
+                                        {item['planSpecific'][index]}
+                                    </td>
+                                ))}
                                 <td className='tw-border tw-p-2'>{item.indicator}</td>
                                 <td className='tw-border tw-p-2'>{item.base}</td>
-                                {years.map((year, index) => (<td className='tw-border tw-p-2' key={index}>{item['programed'][index]}</td>))}
-                                {years.map((year, index) => (<td className='tw-border tw-p-2' key={index}>{item['executed'][index]}</td>))}
+                                {years.map((year, index) => (
+                                    <td className='tw-border tw-p-2' 
+                                        key={index}>
+                                        {item['programed'][index]}
+                                    </td>
+                                ))}
+                                {years.map((year, index) => (
+                                    <td className='tw-border tw-p-2' 
+                                        key={index}>
+                                        {item['executed'][index]}
+                                    </td>
+                                ))}
                             </tr>
                         ))}
                     </tbody>
@@ -226,7 +265,8 @@ export const ModalProgram = () => {
             <ModalPDT/>
             <IconButton aria-label="delete" 
                         size="large" 
-                        color='primary' 
+                        color='primary'
+                        type="button"
                         title='Generar reporte por Programas'
                         className="tw-transition hover:tw--translate-y-1 hover:tw-scale-[1.4]"
                         onClick={(e)=>handleProgramBtn(e)}>

@@ -1,9 +1,14 @@
 import type { AxiosError } from 'axios'
-import * as XLSX from 'xlsx';
-import { useNavigate } from 'react-router-dom';
+import * as XLSX from 'xlsx'
+import ExcelJS from 'exceljs'
+import { useNavigate } from 'react-router-dom'
 
 import { doRefreshToken } from '@/services/api'
-import { AuthInterface, ErrorBasicInterface } from '../interfaces'
+import { 
+  AuthInterface, 
+  ErrorBasicInterface, 
+  LevelInterface,
+  ReportPDTInterface } from '../interfaces'
 import { setToken } from './storage'
 
 export const debounce = <F extends (...args: Parameters<F>) => ReturnType<F>>(func: F, waitFor = 800) => {
@@ -49,22 +54,23 @@ export const validateEmail = (email: string) => {
 }
 
 export const exportFile = (tabla: string, name: string) => {
-  const table = document.getElementById(tabla);
-  const wb = XLSX.utils.table_to_book(table!);
+  const table = document.getElementById(tabla)
+  const wb = XLSX.utils.table_to_book(table!)
   wb.Props = {
     Title: name,
     Subject: "Exportación",
   }
-  XLSX.writeFile(wb, `${name}.xlsx`);
-  const blob = new Blob([table!.innerHTML], {
-    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"
-  });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `${name}.xlsx`;
-  a.click();
-  document.body.removeChild(a);
+  XLSX.writeFile(wb, `${name}.xlsx`)
+  
+  //const blob = new Blob([table!.innerHTML], {
+  //  type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=utf-8"
+  //})
+  //const url = URL.createObjectURL(blob)
+  //const a = document.createElement('a')
+  //a.href = url
+  //a.download = `${name}.xlsx`
+  //a.click()
+  //document.body.removeChild(a)
 }
 
 export const handleUser = (rol: string) => {
@@ -79,6 +85,165 @@ export const handleUser = (rol: string) => {
 }
 
 export const getLetter = (year: number) => {
-  const num = parseInt(((year - 2016)/4).toString());
-  return String.fromCharCode(num + 'A'.charCodeAt(0));
+  const num = parseInt(((year - 2016)/4).toString())
+  return String.fromCharCode(num + 'A'.charCodeAt(0))
+}
+
+export const generateExcel = (
+  data: ReportPDTInterface[], 
+  name: string, 
+  levels: LevelInterface[], 
+  year: number, 
+  color: number[]) => {
+  const workbook = new ExcelJS.Workbook()
+  const worksheet = workbook.addWorksheet('Reporte')
+
+  worksheet.columns = [
+    {header: 'Responsable', key: 'responsable', width: 20},
+    {header: 'Codigo de la meta producto', key: 'codigo_meta', width: 20},
+    {header: 'Descripción Meta producto', key: 'descripcion_meta', width: 20},
+    {header:`% ejecución ${year}`, key: 'ejecucion', width: 20},
+    ...levels.map((l, i) => ({header: l.name, key: `nivel_${i}`, with: 20})),
+    {header: 'Indicador', key: 'indicador', width: 20},
+    {header: 'Linea base', key: 'linea_base', width: 20},
+    {header: `Programado ${year}`, key: 'programado', width: 20},
+    {header: `Ejecutado ${year}`, key: 'ejec', width: 20},
+  ]
+
+  worksheet.getRow(1).fill = {
+    type: 'pattern',
+    pattern: 'solid',
+    fgColor: { argb: 'FFD9D9D9' },
+  }
+
+  worksheet.getRow(1).border = {
+    top: {style:'thin'},
+    left: {style:'thin'},
+    bottom: {style:'thin'},
+    right: {style:'thin'}
+  }
+
+  data.forEach((d: ReportPDTInterface) => {
+    let levels_ = d.planSpecific.map((d_, i) => ({[`nivel_${i}`]: d_}))
+    const aaaa = levels_.reduce((acc, curr) => ({...acc, ...curr}), {})
+
+    const row = worksheet.addRow({
+      responsable: d.responsible,
+      codigo_meta: d.goalCode,
+      descripcion_meta: d.goalDescription,
+      ejecucion: d.percentExecuted[0] < 0 ? 0 : d.percentExecuted[0],
+      ...aaaa,
+      indicador: d.indicator,
+      linea_base: d.base,
+      programado: d.programed[0],
+      ejec: d.executed[0]
+    })
+
+    const ejecCell = row.getCell('ejecucion')
+    ejecCell.fill = {
+      type: 'pattern',
+      pattern: 'solid',
+      fgColor: { argb: `${d.percentExecuted[0] < 0 ? 'FF9CA3AF' :
+                          d.percentExecuted[0] < color[0] ? 'FFFE1700' : 
+                          d.percentExecuted[0] < color[1] ? 'FFFCC623' :
+                          d.percentExecuted[0] < color[2] ? 'FF119432' : 'FF008DCC'}`
+      },
+    }
+  })
+
+  workbook.xlsx.writeBuffer().then((buffer) => {
+    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `${name}.xlsx`
+    a.click()
+  })
+
+}
+
+export const generateExcelYears = (
+  data: ReportPDTInterface[], 
+  name: string, 
+  levels: LevelInterface[], 
+  years: number[], 
+  color: number[]) => {
+  const workbook = new ExcelJS.Workbook()
+  const worksheet = workbook.addWorksheet('Reporte')
+
+  worksheet.columns = [
+    {header: 'Responsable', key: 'responsable', width: 20},
+    {header: 'Codigo de la meta producto', key: 'codigo_meta', width: 20},
+    {header: 'Descripción Meta producto', key: 'descripcion_meta', width: 20},
+    ...years.map(y => ({header:`% ejecución ${y}`, key: `ejecucion_${y}`, width: 20})),
+    ...levels.map((l, i) => ({header: l.name, key: `nivel_${i}`, with: 20})),
+    {header: 'Indicador', key: 'indicador', width: 20},
+    {header: 'Linea base', key: 'linea_base', width: 20},
+    ...years.map(y => ({header: `Programado ${y}`, key: `programado_${y}`, width: 20})),
+    ...years.map(y => ({header: `Ejecutado ${y}`, key: `ejecutado_${y}`, width: 20})),
+  ]
+
+  worksheet.getRow(1).fill = {
+    type: 'pattern',
+    pattern: 'solid',
+    fgColor: { argb: 'FFD9D9D9' },
+  }
+
+  worksheet.getRow(1).border = {
+    top: {style:'thin'},
+    left: {style:'thin'},
+    bottom: {style:'thin'},
+    right: {style:'thin'}
+  }
+
+  data.forEach((d: ReportPDTInterface) => {
+    let tempEjecPor = years.map((y, i) => ({
+      [`ejecucion_${y}`]: d.percentExecuted[i] < 0 ? 0 : d.percentExecuted[i]
+    }))
+    const ejecPor_ = tempEjecPor.reduce((acc, curr) => ({...acc, ...curr}), {})
+
+    let tempLevels = d.planSpecific.map((d_, i) => ({[`nivel_${i}`]: d_}))
+    const levels_ = tempLevels.reduce((acc, curr) => ({...acc, ...curr}), {})
+
+    let tempPro = years.map((y, i) => ({[`programado_${y}`]: d.programed[i]}))
+    const pro_ = tempPro.reduce((acc, curr) => ({...acc, ...curr}), {})
+
+    let tempEjec = years.map((y, i) => ({[`ejecutado_${y}`]: d.executed[i]}))
+    const ejec_ = tempEjec.reduce((acc, curr) => ({...acc, ...curr}), {})
+
+    const row = worksheet.addRow({
+      responsable: d.responsible,
+      codigo_meta: d.goalCode,
+      descripcion_meta: d.goalDescription,
+      ...ejecPor_,
+      ...levels_,
+      indicador: d.indicator,
+      linea_base: d.base,
+      ...pro_,
+      ...ejec_
+    })
+
+    years.forEach((y, i) => {
+      const ejecCell = row.getCell(`ejecucion_${y}`)
+      ejecCell.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: `${d.percentExecuted[i] < 0 ? 'FF9CA3AF' :
+                            d.percentExecuted[i] < color[0] ? 'FFFE1700' : 
+                            d.percentExecuted[i] < color[1] ? 'FFFCC623' :
+                            d.percentExecuted[i] < color[2] ? 'FF119432' : 'FF008DCC'}`
+        },
+      }
+    })
+  })
+
+  workbook.xlsx.writeBuffer().then((buffer) => {
+    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `${name}.xlsx`
+    a.click()
+  })
+
 }

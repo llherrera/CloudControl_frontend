@@ -15,7 +15,7 @@ import {
     YearDetail, 
     ModalPDTProps } from "@/interfaces";
 import { getLevelName } from "@/services/api";
-import { exportFile } from "@/utils";
+import { generateExcelYears } from "@/utils";
 
 export const ModalTotalPDT = () => {
     const dispatch = useAppDispatch();
@@ -110,7 +110,7 @@ const ModalPDT = ( props: ModalPDTProps ) => {
             <button className='tw-bg-gray-300 hover:tw-bg-gray-200 
                                 tw-rounded tw-border tw-border-black 
                                 tw-px-2 tw-py-1 tw-ml-3'
-                    onClick={()=>exportFile('TablaTotal','InformeTotal')}>
+                    onClick={()=>generateExcelYears(props.data, 'InformeTotal', levels, years, colorimeter)}>
                 Exportar
             </button>
             <button className='tw-bg-red-300 hover:tw-bg-red-200 

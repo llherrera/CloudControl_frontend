@@ -9,7 +9,7 @@ import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 import IconButton from "@mui/material/IconButton";
 import { Spinner } from "@/assets/icons";
 
-import { exportFile } from "@/utils";
+import { generateExcel } from "@/utils";
 import { 
     ReportPDTInterface, 
     YearDetail, 
@@ -17,13 +17,12 @@ import {
     NodesWeight } from "@/interfaces";
 
 export const ModalSecretary = () => {
-    const [modalSecretaryIsOpen, setModalSecretaryIsOpen] = useState(false);
-
+    const [modalIsOpen, setModalIsOpen] = useState(false);
     return (
         <div>
             <ModalPDT 
-                modalIsOpen={modalSecretaryIsOpen} 
-                callback={setModalSecretaryIsOpen}/>
+                modalIsOpen={modalIsOpen} 
+                callback={setModalIsOpen}/>
             <IconButton aria-label="delete" 
                         size="large" 
                         color='secondary' 
@@ -31,7 +30,7 @@ export const ModalSecretary = () => {
                         className=" tw-transition 
                                     hover:tw--translate-y-1 
                                     hover:tw-scale-[1.4]"
-                        onClick={()=>setModalSecretaryIsOpen(true)}>
+                        onClick={()=>setModalIsOpen(true)}>
                 <LibraryBooksIcon />
             </IconButton>
         </div>
@@ -166,11 +165,11 @@ const ModalPDT = ( props: ModalsecretaryProps ) => {
                                     hover:tw-text-white
                                     tw-rounded tw-border tw-border-black 
                                     tw-px-2 tw-py-1 md:tw-ml-3 tw-mr-3'
-                        onClick={()=>exportFile('TablaSecretarias','InformeSecretarias')}>
+                        onClick={()=>generateExcel(data,'InformeSecretarias', levels, years[indexYear], colorimeter)}>
                     Exportar
                 </button>
-                <button className='tw-bg-red-300 hover:tw-bg-red-200 
-                                    tw-rounded 
+                <button className='tw-bg-red-300 hover:tw-bg-red-200
+                                    tw-rounded
                                     tw-px-3 tw-py-1 tw-mt-3
                                     tw-right-0 tw-absolute'
                         onClick={() => props.callback(false)}>
@@ -183,10 +182,7 @@ const ModalPDT = ( props: ModalsecretaryProps ) => {
                         <th className='tw-border tw-bg-gray-400 tw-p-2'>Responsable</th>
                         <th className='tw-border tw-bg-gray-400 tw-p-2'>Codigo de la meta producto</th>
                         <th className='tw-border tw-bg-gray-400 tw-p-2'>Descripción Meta producto</th>
-                        <th className=' tw-border tw-bg-gray-400 
-                                        tw-p-2'> 
-                            % ejecución {years[indexYear]}
-                        </th>
+                        <th className=' tw-border tw-bg-gray-400 tw-p-2'>% ejecución {years[indexYear]}</th>
                         {levels.map((level, index) => (
                             <th className=' tw-border tw-bg-gray-400
                                             tw-p-2' 
