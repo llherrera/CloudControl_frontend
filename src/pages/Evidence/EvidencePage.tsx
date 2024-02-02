@@ -31,9 +31,8 @@ export const EvidencePage = () => {
                 </div>;
         return(
             <div className="tw-mx-3 tw-mt-2">
-                <header className=" tw-border-4 tw-border-double
-                                    tw-border-gray-500 
-                                    tw-flex tw-bg-slate-200">
+                <header className=" tw-flex tw-border-4 tw-border-double
+                                    tw-border-gray-500 tw-bg-slate-200">
                     <BackBtn handle={handleBack} id={id_plan}/>
                     <h1 className=" tw-text-3xl tw-text-center 
                                     tw-font-bold tw-text-blue-700
@@ -158,17 +157,14 @@ export const EvidencePage = () => {
                 </div>;
         return(
             <div className="tw-mx-3 tw-mt-2">
-                <header className=" tw-flex tw-flex-col
-                                    tw-border-4 tw-border-double
+                <header className=" tw-flex tw-border-4 tw-border-double
                                     tw-border-gray-500 tw-bg-slate-200">
-                    <h1 className=" tw-text-3xl tw-font-bold tw-text-center tw-text-blue-700">
+                    <BackBtn handle={handleSubmitButton} id={id_plan}/>
+                    <h1 className=" tw-text-3xl tw-text-center
+                                    tw-font-bold tw-text-blue-700
+                                    tw-grow">
                         Evidencias de la meta
                     </h1>
-                    <button className="inline-block" 
-                            onClick={()=>handleSubmitButton()}
-                            type="button">
-                        return
-                    </button>
                 </header>
                 <EvidenceForm />
             </div>

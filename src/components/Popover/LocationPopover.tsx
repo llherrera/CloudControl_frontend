@@ -56,6 +56,43 @@ let contentStyle: React.CSSProperties = {
     borderRadius: '15px'
 };
 
+const mapStyle = [
+    {
+        "featureType": "administrative",
+        "elementType": "geometry",
+        "stylers": [
+            {
+                "visibility": "off"
+            }
+        ]
+    },
+    {
+        "featureType": "poi",
+        "stylers": [
+            {
+            "visibility": "off"
+            }
+        ]
+    },
+    {
+        "featureType": "road",
+        "elementType": "labels.icon",
+        "stylers": [
+            {
+            "visibility": "off"
+            }
+        ]
+    },
+    {
+        "featureType": "transit",
+        "stylers": [
+            {
+                "visibility": "off"
+            }
+        ]
+    }
+];
+
 const mapContainer = (props: PopoverProps) => {
     const [map, setMap] = useState<google.maps.Map | null>(null);
     const [marker, setMarker] = useState<google.maps.Marker | null>(null);
@@ -63,6 +100,7 @@ const mapContainer = (props: PopoverProps) => {
     const { planLocation } = useAppSelector(state => state.plan);
 
     let options: google.maps.MapOptions = {
+        styles: mapStyle,
         disableDefaultUI: true,
         zoom: 12,
         restriction: {
@@ -78,10 +116,10 @@ const mapContainer = (props: PopoverProps) => {
 
     let item = props.item;
     
-    const { isLoaded } = useJsApiLoader({
-        id: 'google-map-script',
-        googleMapsApiKey: API_KEY!
-    });
+    //const { isLoaded } = useJsApiLoader({
+    //    id: 'google-map-script',
+    //    googleMapsApiKey: API_KEY!
+    //});
 
     const onLoad = useCallback(function callback(map: google.maps.Map) {
         if (item.lat && item.lng) {
@@ -128,17 +166,15 @@ const mapContainer = (props: PopoverProps) => {
 
     return (
         <div>
-            {isLoaded ? (
-                <GoogleMap
-                    mapContainerStyle={contentStyle}
-                    center={planLocation}
-                    zoom={4}
-                    onLoad={onLoad}
-                    onUnmount={onUnmount}
-                    options={options}
-                    onClick={handleMapClick}>
-                </GoogleMap>
-            ) : <p>Cargando...</p>}
+            <GoogleMap
+                mapContainerStyle={contentStyle}
+                center={planLocation}
+                zoom={4}
+                onLoad={onLoad}
+                onUnmount={onUnmount}
+                options={options}
+                onClick={handleMapClick}>
+            </GoogleMap>
         </div>
     );
 
@@ -154,6 +190,7 @@ const mapContainerUbi = () => {
     const { list_points } = useAppSelector(state => state.evidence);
 
     let options: google.maps.MapOptions = {
+        styles: mapStyle,
         disableDefaultUI: true,
         zoom: 12,
         restriction: {
@@ -167,10 +204,10 @@ const mapContainerUbi = () => {
         center: planLocation
     };
 
-    const { isLoaded } = useJsApiLoader({
-        id: 'google-map-script',
-        googleMapsApiKey: API_KEY!
-    });
+    //const { isLoaded } = useJsApiLoader({
+    //    id: 'google-map-script',
+    //    googleMapsApiKey: API_KEY!
+    //});
 
     useEffect(() => {
         if (list_points.length > 0) {
@@ -249,17 +286,15 @@ const mapContainerUbi = () => {
 
     return (
         <div>
-            {isLoaded ? 
-                <GoogleMap
-                    mapContainerStyle={contentStyle}
-                    center={planLocation}
-                    zoom={10}
-                    options={options}
-                    onLoad={onLoad}
-                    onUnmount={onUnmount}
-                    onClick={handleMapClick}>
-                </GoogleMap>
-            : <p>Cargando...</p>}
+            <GoogleMap
+                mapContainerStyle={contentStyle}
+                center={planLocation}
+                zoom={10}
+                options={options}
+                onLoad={onLoad}
+                onUnmount={onUnmount}
+                onClick={handleMapClick}>
+            </GoogleMap>
         </div>
     );
 }

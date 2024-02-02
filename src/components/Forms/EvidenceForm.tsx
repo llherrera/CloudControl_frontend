@@ -9,6 +9,7 @@ import {
     thunkUpdateEvidence, 
     thunkAddEvidenceGoal, 
     thunkGetUbiEvidence } from "@/store/evidence/thunks";
+import { thunkGetLocations } from "@/store/plan/thunks"
 
 import { EvidenceInterface } from "@/interfaces";
 import { UbicationsPopover } from "@/components";
@@ -34,6 +35,7 @@ export const EvidenceForm = () => {
     const { unit } = useAppSelector((state) => state.unit);
     const { list_points, evi_selected } = useAppSelector((state) => state.evidence);
     const { id_plan } = useAppSelector((state) => state.content);
+    const { locations } = useAppSelector((state) => state.plan)
 
     const [loading, setLoading] = useState(false);
     const [data, setData] = useState<EvidenceInterface>(evi_selected??
@@ -62,7 +64,7 @@ export const EvidenceForm = () => {
     const [documento, setDocumento] = useState<FileList | null>(null);
 
     useEffect(()=> {
-        //To DO: obtener localidades para hacer el select
+        dispatch(thunkGetLocations(id_plan))
     }, []);
 
     useEffect(()=> {
@@ -232,6 +234,11 @@ export const EvidenceForm = () => {
                                     tw-bg-white"
                         onChange={(e)=> handleInputChange(e)}
                         required>
+                        {locations.map((loc, index) => (
+                            <option value={loc.name} key={index}>
+                                {loc.name}
+                            </option>
+                        ))}
                         <option value="Todas">Todas</option>
                     </select>
                 </div>

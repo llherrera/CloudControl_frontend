@@ -54,7 +54,7 @@ export const SecretaryForm = () => {
                 <label htmlFor="">Añadir secretarias</label>
                 {data.map((secretary, index) => (
                     <div key={index}>
-                        <label htmlFor="" className="tw-">{index + 1}</label>
+                        <label>{index + 1}</label>
                         <input  className="tw-m-2 tw-p-2 tw-rounded tw-border-2 tw-border-gray-400"
                                 onChange={ (e) => handleInputChange(e, index) } value={ secretary.name}
                                 type="text" name="name" required placeholder="Nombre" />
