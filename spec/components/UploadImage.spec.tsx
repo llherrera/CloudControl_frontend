@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 
-import { UploadImage } from '@/components';
+import { UploadLogoCity, UploadLogoPlan } from '@/components';
 /*
 describe('UploadImage', () => {
   it('should render successfully', () => {

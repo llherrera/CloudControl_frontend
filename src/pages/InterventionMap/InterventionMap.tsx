@@ -73,7 +73,7 @@ const mapStyle = [
             }
         ]
     }
-]
+];
 
 const Section = () => {
     const dispatch = useAppDispatch();
@@ -299,7 +299,7 @@ const Section = () => {
                     </div>
                 ))}
             </div>
-            <div className='tw-flex tw-justify-center'>
+            <div className='tw-flex tw-justify-center tw-pb-3'>
                 <GoogleMap
                     mapContainerStyle={containerStyle}
                     center={planLocation}

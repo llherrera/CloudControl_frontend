@@ -11,7 +11,7 @@ export const Header = ( {components}: HeaderProps) => {
             <div className="tw-border-r md:tw-border-black
                             tw-pr-4 tw-m-6
                             tw-justify-self-end">
-                <img src={cclogo}/>
+                <img src={cclogo} width={350}/>
                 <p className="tw-font-montserrat tw-font-bold">
                     Selecciona un usuario en la derecha para comenzar</p>
             </div>
