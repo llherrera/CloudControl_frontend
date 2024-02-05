@@ -158,7 +158,7 @@ export const Graph = ( props: GraphProps ) => {
                         onChange={onChangeType} 
                         value={typeList[indexType].value}
                         className='tw-border tw-self-start tw-p-2 tw-m-2'>
-                    {typeList.map((type, index)=>(<option value={type.value} key={index}>{type.type}</option>))}
+                    {typeList.map((type)=><option value={type.value} key={type.value.length}>{type.type}</option>)}
                 </select>
                 <div className='tw-ml-10 tw-mt-3'>
                     <input  type="radio"

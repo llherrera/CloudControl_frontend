@@ -43,7 +43,7 @@ export const UploadLogoCity = () => {
             return;
         }
         setLoad(true);
-        await uploadLogoCity( id_plan, logoPlan![0])
+        await uploadLogoCity(id_plan, logoPlan[0])
         .then(() => {
             notify('Logo subido');
             setLoad(false);
@@ -64,11 +64,11 @@ export const UploadLogoCity = () => {
                 {load ? 
                     <div>
                         <Spinner/>
-                        <label className='tw-text-[#222222] 
+                        <p className='tw-text-[#222222] 
                                         tw-font-bold tw-text-lg 
                                         tw-font-montserrat'>
                             Cargando Evidencia...
-                        </label>
+                        </p>
                     </div> : 
                     <div>
                     {logoPlan === null ?
@@ -118,12 +118,10 @@ export const UploadLogoPlan = () => {
         const file = e.target.files;
         if (file) {
             if (file.length > 1) {
-                notify('Solo se puede subir un archivo');
-                return;
+                return notify('Solo se puede subir un archivo');
             }
             if (types.includes(file[0].type) === false) {
-                notify('El archivo tiene que ser PNG o JPG');
-                return;
+                return notify('El archivo tiene que ser PNG o JPG');
             }
             reader.onloadend = () => {
                 if (logoPlan === null) {
@@ -141,7 +139,7 @@ export const UploadLogoPlan = () => {
             return;
         }
         setLoad(true);
-        await uploadLogoPlan( id_plan, logoPlan![0])
+        await uploadLogoPlan( id_plan, logoPlan[0])
         .then(() => {
             notify('Logo subido');
             setLoad(false);
@@ -162,11 +160,11 @@ export const UploadLogoPlan = () => {
                 {load ? 
                     <div>
                         <Spinner/>
-                        <label className='tw-text-[#222222] 
+                        <p className='tw-text-[#222222] 
                                         tw-font-bold tw-text-lg 
                                         tw-font-montserrat'>
                             Cargando Evidencia...
-                        </label>
+                        </p>
                     </div> :
                     <div>
                     {logoPlan === null ?

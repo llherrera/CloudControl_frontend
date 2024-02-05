@@ -40,20 +40,19 @@ export const ModalSecretary = () => {
 const ModalPDT = ( props: ModalsecretaryProps ) => {
     const dispatch = useAppDispatch();
 
-    const { years, 
-            levels, 
-            plan, 
-            secretaries, 
-            loadingReport, 
+    const { years,
+            levels,
+            secretaries,
+            loadingReport,
             colorimeter } = useAppSelector((state) => state.plan);
+    const { id_plan } = useAppSelector((state) => state.content);
 
     const [data, setData] = useState<ReportPDTInterface[]>([]);
     const [secretary, setSecretary] = useState<string>('');
     const [indexYear, setIndexYear] = useState<number>(0);
 
     useEffect(() => {
-        if (plan !== undefined && plan.id_plan !== undefined)
-            dispatch(thunkGetSecretaries(plan?.id_plan!));
+        dispatch(thunkGetSecretaries(id_plan));
     }, []);
 
     useEffect(() => {
@@ -99,7 +98,7 @@ const ModalPDT = ( props: ModalsecretaryProps ) => {
 
         nodes.forEach( async (item: YearDetail) => {
             let percent = (item.physical_execution/item.physical_programming)*100;
-            percent = percent ? percent : 0;
+            percent = percent || 0;
             percent = Math.round(percent*100)/100;
             const root = findRoot(item.id_node);
             const item_: ReportPDTInterface = {
@@ -130,6 +129,35 @@ const ModalPDT = ( props: ModalsecretaryProps ) => {
         setIndexYear(index);
     };
 
+    const colorClass = (item: ReportPDTInterface) => (
+        item['percentExecuted'][0] < 0 ? 'tw-bg-gray-400' :
+        item['percentExecuted'][0] < colorimeter[0] ? 'tw-bg-redColory'   :
+        item['percentExecuted'][0] < colorimeter[1] ? 'tw-bg-yellowColory':
+        item['percentExecuted'][0] < colorimeter[2] ? 'tw-bg-greenColory' :
+        'tw-bg-blueColory hover:tw-ring-blue-200'
+    );
+
+    const tableBody = (item: ReportPDTInterface) => (
+        <tr key={item.responsible.length}>
+            <td className='tw-border tw-p-2'>{item.responsible}</td>
+            <td className='tw-border tw-p-2'>{item.goalCode}</td>
+            <td className='tw-border tw-p-2'>{item.goalDescription}</td>
+            <td className={`tw-border tw-p-2 tw-text-center ${colorClass(item)}`} >
+                {item['percentExecuted'][0] < 0 ? 0 : item['percentExecuted'][0]}
+            </td>
+            {levels.map((level, index) => (
+                <td className='tw-border tw-p-2' 
+                    key={level.name.length}>
+                    {item['planSpecific'][index]}
+                </td>
+            ))}
+            <td className='tw-border tw-p-2'>{item.indicator}</td>
+            <td className='tw-border tw-p-2 tw-text-center'>{item.base}</td>
+            <td className='tw-border tw-p-2 tw-text-center'>{item['programed'][0]}</td>
+            <td className='tw-border tw-p-2 tw-text-center'>{item['executed'][0]}</td>
+        </tr>
+    );
+
     return (
         <Modal  isOpen={props.modalIsOpen}
                 onRequestClose={()=>props.callback(false)}
@@ -147,7 +175,7 @@ const ModalPDT = ( props: ModalsecretaryProps ) => {
                                             tw-rounded tw-border
                                             tw-p-1 tw-mx-1`}
                                 onClick={(event) => handleBtn(event, index)}
-                                key={index}>
+                                key={year}>
                             {year}
                         </button>
                     ))}
@@ -158,7 +186,7 @@ const ModalPDT = ( props: ModalsecretaryProps ) => {
                             value={secretary} 
                             onChange={(e)=>handleChangeSecretary(e)}
                             className="tw-border-2 tw-p-1 tw-mb-2 tw-rounded">
-                        {secretaries.map((sec, index) => (<option value={sec.name} key={index}>{sec.name}</option>))}
+                        {secretaries.map((sec) => (<option value={sec.name} key={sec.name.length}>{sec.name}</option>))}
                     </select>
                 </div>
                 <button className=' tw-bg-gray-300 hover:tw-bg-gray-500
@@ -183,10 +211,10 @@ const ModalPDT = ( props: ModalsecretaryProps ) => {
                         <th className='tw-border tw-bg-gray-400 tw-p-2'>Codigo de la meta producto</th>
                         <th className='tw-border tw-bg-gray-400 tw-p-2'>Descripción Meta producto</th>
                         <th className=' tw-border tw-bg-gray-400 tw-p-2'>% ejecución {years[indexYear]}</th>
-                        {levels.map((level, index) => (
+                        {levels.map((level) => (
                             <th className=' tw-border tw-bg-gray-400
                                             tw-p-2' 
-                                key={index}>
+                                key={level.name.length}>
                                 {level.name}
                             </th>
                         ))}
@@ -203,32 +231,7 @@ const ModalPDT = ( props: ModalsecretaryProps ) => {
                     </tr>
                 </thead>
                 <tbody>
-                    {data.map((item, index) => (
-                        <tr key={index}>
-                            <td className='tw-border tw-p-2'>{item.responsible}</td>
-                            <td className='tw-border tw-p-2'>{item.goalCode}</td>
-                            <td className='tw-border tw-p-2'>{item.goalDescription}</td>
-                            <td className={`tw-border tw-p-2 tw-text-center
-                                ${item['percentExecuted'][0] < 0 ? 'tw-bg-gray-400' :
-                                (item['percentExecuted'][0]) < colorimeter[0] ? 'tw-bg-redColory'   :
-                                (item['percentExecuted'][0]) < colorimeter[1] ? 'tw-bg-yellowColory':
-                                (item['percentExecuted'][0]) < colorimeter[2] ? 'tw-bg-greenColory' :
-                                'tw-bg-blueColory hover:tw-ring-blue-200'}
-                                `} >
-                                {item['percentExecuted'][0] < 0 ? 0 : item['percentExecuted'][0]}
-                            </td>
-                            {levels.map((level, index) => (
-                                <td className='tw-border tw-p-2' 
-                                    key={index}>
-                                    {item['planSpecific'][index]}
-                                </td>
-                            ))}
-                            <td className='tw-border tw-p-2'>{item.indicator}</td>
-                            <td className='tw-border tw-p-2 tw-text-center'>{item.base}</td>
-                            <td className='tw-border tw-p-2 tw-text-center'>{item['programed'][0]}</td>
-                            <td className='tw-border tw-p-2 tw-text-center'>{item['executed'][0]}</td>
-                        </tr>
-                    ))}
+                    {data.map((item) => tableBody(item))}
                 </tbody>
             </table>
             </div>}

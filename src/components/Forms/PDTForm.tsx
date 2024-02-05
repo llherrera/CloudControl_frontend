@@ -154,6 +154,24 @@ export const PDTForm = () => {
         );
     };
 
+    const optionDept = (e:any, i:any) => (
+        <option key={e.CODIGO_DEPARTAMENTO} 
+            value={i}>{e.NOMBRE_DEPARTAMENTO}
+        </option>
+    );
+
+    const optionMuni = (e:any ,i: any) => (
+        <option key={e.CODIGO_MUNICIPIO} value={i}>
+            {e.NOMBRE_MUNICIPIO}
+        </option>
+    );
+
+    const optioDate = (e: any) => (
+        <option key={e} value={fechaInicio + e}>
+            {fechaInicio + e}
+        </option>
+    );
+
     return (
         <div className="tw-flex tw-justify-center">
             {backIconButton()}
@@ -175,21 +193,15 @@ export const PDTForm = () => {
                         id="department"
                         name="department"
                         onChange={handleDepartmentChange}
-                        options={departamentOptions ? departamentOptions : []}
-                        optionLabelFn={(e, i) => 
-                            <option key={e.CODIGO_DEPARTAMENTO} 
-                                value={i}>{e.NOMBRE_DEPARTAMENTO}
-                            </option>}
+                        options={departamentOptions ?? []}
+                        optionLabelFn={(e, i) => optionDept(e,i)}
                 />
                 <Select label="Municipio:"
                         id="municipality"
                         name="municipality"
                         onChange={handleMunicipioChange}
-                        options={municipioOptions ? municipioOptions : []}
-                        optionLabelFn={(e, i) => 
-                            <option key={e.CODIGO_MUNICIPIO} value={i}>
-                                {e.NOMBRE_MUNICIPIO}
-                            </option>}
+                        options={municipioOptions ?? []}
+                        optionLabelFn={(e, i) => optionMuni(e,i)}
                         disabled={!selectedDepartamento}
                 />
                 <Input  type={"text"}
@@ -204,10 +216,7 @@ export const PDTForm = () => {
                         name="start_date"
                         onChange={handleInputYearChange}
                         options={Array.from(Array(5).keys())}
-                        optionLabelFn={(e) => 
-                            <option key={e} value={fechaInicio + e}>
-                                {fechaInicio + e}
-                            </option>}
+                        optionLabelFn={(e) => optioDate(e)}
                 />
                 </div>
                 <div className="tw-flex tw-justify-center">

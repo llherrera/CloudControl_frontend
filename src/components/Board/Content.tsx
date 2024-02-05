@@ -68,7 +68,7 @@ export const Content = ( props : ContentProps ) => {
                 dispatch(setParent(null))
             : dispatch(setParent(temp_.join('.')));
 
-            dispatch(decrementLevelIndex(indexLevel!-1));
+            dispatch(decrementLevelIndex(indexLevel-1));
         } catch (e) {
             console.log(e);
         }
@@ -79,6 +79,19 @@ export const Content = ( props : ContentProps ) => {
     const handleMode = () => dispatch(setMode(!mode));
 
     const handleAddUser = () => navigate(`/register`);
+
+    const colorimeterCircles = (index: number) => (
+        index === 0 ? 'tw-bg-redColory hover:tw-bg-red-200' :
+        index === 1 ? 'tw-bg-yellowColory hover:tw-bg-yellow-200' :
+        index === 2 ? 'tw-bg-greenColory hover:tw-bg-green-200' :
+        index === 3 ? 'tw-bg-blueColory hover:tw-bg-blue-200' :null
+    );
+
+    const handleRol = () => (
+        rol === 'admin' || (rol === 'funcionario' && id === props.id) ? 
+        <button onClick={()=>handleSettings()}>Definir colorimetria</button>
+        : <p>No se ha definido una colorimetria aun</p>
+    );
 
     return (
         <div className="tw-h-full tw-border
@@ -122,23 +135,16 @@ export const Content = ( props : ContentProps ) => {
                             {colorimeter.map((color, index) => (
                                 <div className={`tw-rounded-full
                                                 tw-w-8 tw-h-8
-                                                ${index === 0 ? 'tw-bg-redColory hover:tw-bg-red-200' :
-                                                index === 1 ? 'tw-bg-yellowColory hover:tw-bg-yellow-200' :
-                                                index === 2 ? 'tw-bg-greenColory hover:tw-bg-green-200' :
-                                                index === 3 ? 'tw-bg-blueColory hover:tw-bg-blue-200' :null}
-                                                `}
+                                                ${colorimeterCircles(index)}`}
                                     title={`Ejecutado ${
                                         isNaN(colorimeter[index-1]) ? 0 : colorimeter[index-1] + 1
                                         }% - ${colorimeter[index]}%`}
-                                    key={index}>
+                                    key={color}>
                                     <p className="tw-invisible">a</p>
                                 </div>
                             ))}
                         </ul>
-                        : (rol === 'admin' || (rol === 'funcionario' && id === props.id) ? 
-                                <button onClick={()=>handleSettings()}>Definir colorimetria</button>
-                                : <p>No se ha definido una colorimetria aun</p>
-                            )
+                        : handleRol()
                     }
                 </div>
             </h1>
@@ -157,8 +163,8 @@ export const Content = ( props : ContentProps ) => {
                         <ul className=" tw-flex tw-flex-wrap tw-gap-3
                                         tw-font-montserrat
                                         tw-underline tw-underline-offset-2">
-                            {rootTree.map((item, index) => (
-                                <li key={index}>
+                            {rootTree.map((item) => (
+                                <li key={item.length}>
                                     {item[0]}
                                 </li>
                             ))}
@@ -180,7 +186,7 @@ export const Content = ( props : ContentProps ) => {
                                 xl:tw-row-span-2">
                     <p className="tw-ml-4 tw-mt-3 tw-font-montserrat tw-font-bold">
                         <BackBtn handle={handleBack} id={props.id}/>
-                        {levels[indexLevel!].name}
+                        {levels[indexLevel].name}
                         {rol === 'admin' || (rol === 'funcionario' && id === props.id) ?
                         <button className={`tw-ml-4 tw-p-2 
                                             tw-rounded
@@ -195,8 +201,8 @@ export const Content = ( props : ContentProps ) => {
                         {nodes.length === 0 ?
                         <div>
                             {(rol === "admin") || (rol === 'funcionario' && id === props.id) ?
-                            <NodeForm   index={indexLevel!}
-                                        id={levels[indexLevel!].id_level!}/>
+                            <NodeForm   index={indexLevel}
+                                        id={levels[indexLevel].id_level!}/>
                             : <div>
                                 <p className="tw-mx-4 tw-text-center">De momemnto no hay contenido en este Plan</p>
                             </div>

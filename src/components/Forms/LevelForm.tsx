@@ -7,7 +7,7 @@ import { useAppDispatch } from "@/store";
 import { thunkAddLevel } from "@/store/plan/thunks";
 
 import { Input, FileInput } from "@/components";
-import { LevelInterface, Token, LevelFormProps } from "@/interfaces";
+import { LevelInterface, LevelFormProps } from "@/interfaces";
 import { getToken, decode } from "@/utils";
 
 export const LevelForm = ( props: LevelFormProps ) => {
@@ -25,7 +25,7 @@ export const LevelForm = ( props: LevelFormProps ) => {
     });
 
     const [rol, setRol] = useState("");
-    const [id_, setId] = useState(0);
+    const [id_, setId_] = useState(0);
 
     useEffect(() => {
         const abortController = new AbortController();
@@ -34,8 +34,8 @@ export const LevelForm = ( props: LevelFormProps ) => {
             if (token_info === null || token_info === undefined) return;
             const {token} = token_info;
             if (token !== null || token !== undefined) {
-                const decoded = decode(token) as Token;
-                setId(decoded.id_plan);
+                const decoded = decode(token);
+                setId_(decoded.id_plan);
                 setRol(decoded.rol);
             }
         } catch (error) {
@@ -86,7 +86,7 @@ export const LevelForm = ( props: LevelFormProps ) => {
     }
 
     return (
-        <div className="tw-bg-[url('/src/assets/images/bg-pi-1.png')]">
+        <div className="tw-bg-[url('/src/assets/images/bg-pi-1.png')] tw-bg-cover">
             {backIconButton()}
             <p className="tw-text-center tw-font-bold tw-text-2xl">Definir niveles del plan</p>
             {(rol === "admin") || (rol === 'funcionario' && id_ === parseInt(props.id)) ?
@@ -97,11 +97,11 @@ export const LevelForm = ( props: LevelFormProps ) => {
                                 md:tw-col-start-4 md:tw-col-span-6 
                                 lg:tw-col-start-4 lg:tw-col-span-6 
                                 tw-gap-3">
-                {data.map(( e:LevelInterface, index: number )=> 
+                {data.map((e:LevelInterface, index: number) => 
                     <li className=" tw-mb-3 tw-p-2 
                                     tw-bg-white 
                                     tw-shadow-lg tw-border tw-rounded"
-                        key={index}>
+                        key={e.name.length}>
                         <Input  type={"text"}
                                 label="Nombre del Nivel:"
                                 id={"name"}

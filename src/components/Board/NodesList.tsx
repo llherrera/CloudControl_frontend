@@ -56,7 +56,7 @@ export const NodesList = ( props : NodeListProps ) => {
             return 0;
         let pesosNodo = [];
         try {
-            pesosNodo = JSON.parse(pesosStr as string);            
+            pesosNodo = JSON.parse(pesosStr);            
         } catch (error) {
             pesosNodo = [];
         }
@@ -98,7 +98,7 @@ export const NodesList = ( props : NodeListProps ) => {
         dispatch(AddRootTree(newRoot));
         if ( indexLevel !== levels.length-1 ) {
             dispatch(setParent(nodes[index].id_node));
-            dispatch(incrementLevelIndex(indexLevel!+1));
+            dispatch(incrementLevelIndex(indexLevel+1));
             dispatch(thunkGetNodes({id_level: nodes[index].id_level+1, parent:nodes[index].id_node}));
         } else {
             dispatch(setNode(nodes[index]));
@@ -121,9 +121,31 @@ export const NodesList = ( props : NodeListProps ) => {
         dispatch(thunkUpdateWeight({ids: ids, weights: pesos}));
     };
 
-    return (
-        nodes.length === 0 ? null :
-        (loadingNodes ?
+    const colorClass = (index: number) => (
+        parseInt( ((progressNodes[index]??0)*100).toString()) < 0 ? 
+        'tw-border-gray-400 hover:tw-border-gray-200' :
+        parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[0] ? 
+        'tw-border-redColory hover:tw-border-red-200' :
+        parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[1] ?
+        'tw-border-yellowColory hover:tw-border-yellow-200':
+        parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[2] ? 
+        'tw-border-greenColory hover:tw-border-green-200':
+        'tw-border-blueColory hover:tw-border-blue-200'
+    );
+
+    const colorClass_ = (index: number) => (
+        parseInt( ((progressNodes[index]??0)*100).toString()) < 0 ? 
+        'tw-bg-gray-400 hover:tw-bg-gray-200' :
+        parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[0] ? 
+        'tw-bg-redColory hover:tw-bg-red-200'      :
+        parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[1] ? 
+        'tw-bg-yellowColory hover:tw-bg-yellow-200':
+        parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[2] ? 
+        'tw-bg-greenColory hover:tw-bg-green-200'  : 
+        'tw-bg-blueColory hover:tw-ring-blue-200'
+    );
+
+    const handleShowList = () => loadingNodes ?
         <Spinner />
         :<ul className={`${indexLevel === levels.length-1 ? 
                         'tw-flex tw-flex-row tw-flex-wrap':
@@ -131,20 +153,11 @@ export const NodesList = ( props : NodeListProps ) => {
             {nodes.map((item: NodeInterface, index: number) => {
                 return(
                 <div className="tw-my-2 tw-flex tw-transition hover:tw-scale-110"
-                    key={index}>
+                    key={item.id_level}>
                     <button className={`tw-rounded
                                         tw-flex tw-justify-center tw-items-center
                                         tw-border-4
-                                        ${
-                                        parseInt( ((progressNodes[index]??0)*100).toString()) < 0 ? 
-                                        'tw-border-gray-400 hover:tw-border-gray-200' :
-                                        parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[0] ? 
-                                        'tw-border-redColory hover:tw-border-red-200' :
-                                        parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[1] ?
-                                        'tw-border-yellowColory hover:tw-border-yellow-200':
-                                        parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[2] ? 
-                                        'tw-border-greenColory hover:tw-border-green-200':
-                                        'tw-border-blueColory hover:tw-border-blue-200'}
+                                        ${colorClass(index)}
                                         tw-ml-3
                                         tw-w-12 tw-h-12
                                         tw-font-bold`}
@@ -154,16 +167,7 @@ export const NodesList = ( props : NodeListProps ) => {
                             progressNodes[index] < 0 ? 0 : progressNodes[index])*100).toString())}%
                     </button>
                     {indexLevel !== levels.length-1 ?
-                    <button className={`${
-                                        parseInt( ((progressNodes[index]??0)*100).toString()) < 0 ? 
-                                        'tw-bg-gray-400 hover:tw-bg-gray-200' :
-                                        parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[0] ? 
-                                        'tw-bg-redColory hover:tw-bg-red-200'      :
-                                        parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[1] ? 
-                                        'tw-bg-yellowColory hover:tw-bg-yellow-200':
-                                        parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[2] ? 
-                                        'tw-bg-greenColory hover:tw-bg-green-200'  : 
-                                        'tw-bg-blueColory hover:tw-ring-blue-200'}
+                    <button className={`${colorClass_(index)}
                                         tw-h-8 tw-my-2
                                         tw-w-2/3
                                         tw-rounded-r-lg
@@ -197,6 +201,10 @@ export const NodesList = ( props : NodeListProps ) => {
                     Guardar
                 </button>
             </div>:null}
-        </ul>)
-    );
+        </ul>
+    ;
+
+    return <div>
+        {nodes.length === 0 ? null : handleShowList()}
+    </div>
 }

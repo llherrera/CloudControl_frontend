@@ -23,13 +23,11 @@ export const TimeLine = () => {
     const [yearsProgress, setYearsProgress] = useState(0);
 
     const [rol, setRol] = useState("");
-    const [id, setId] = useState(0);
 
     useEffect(() => {
         if (token_info?.token !== undefined) {
             const decoded = decode(token_info.token);
             setRol(decoded.rol);
-            setId(decoded.id);
         }
     }, []);
 
@@ -47,7 +45,7 @@ export const TimeLine = () => {
         if (pesosStr == undefined) 
             pesosStr = '[]';
         
-        let pesosNodo = JSON.parse(pesosStr as string);
+        let pesosNodo = JSON.parse(pesosStr);
         let progreso = [] as number[];
         const nodoss = pesosNodo.filter(
             (item: NodesWeight) => item.parent === parent
@@ -89,24 +87,55 @@ export const TimeLine = () => {
         }
     };
 
+    const colorClass = (index: number) => (
+        parseInt( ((yearProgress[index]??0)*100).toString()) < 0 ?
+        'tw-border-gray-400 hover:tw-ring-4 hover:tw-ring-gray-200' :
+        parseInt( ((yearProgress[index]??0)*100).toString()) < colorimeter[0] ? 
+        'tw-border-redColory hover:tw-ring-4 hover:tw-ring-red-200'      : 
+        parseInt( ((yearProgress[index]??0)*100).toString()) < colorimeter[1] ? 
+        'tw-border-yellowColory hover:tw-ring-4 hover:tw-ring-yellow-200':
+        parseInt( ((yearProgress[index]??0)*100).toString()) < colorimeter[2] ? 
+        'tw-border-greenColory hover:tw-ring-4 hover:tw-ring-green-200'  :
+        'tw-border-blueColory hover:tw-ring-4 hover:tw-ring-blue-200'
+    );
+
+    const colorYearCla = (index: number) => (
+        (yearProgress[index]??0)*100 < 0 ? 'tw-bg-gray-400' :
+        (yearProgress[index]??0)*100 < colorimeter[0] ? 'tw-bg-redColory' : 
+        (yearProgress[index]??0)*100 < colorimeter[1] ? 'tw-bg-yellowColory':
+        (yearProgress[index]??0)*100 < colorimeter[2] ? 'tw-bg-greenColory' :
+        'tw-bg-blueColory'
+    );
+
+    const colorTextCla = (index: number) => (
+        (yearProgress[index]??0)*100 < 0 ? 'tw-text-gray-400' :
+        (yearProgress[index]??0)*100 < colorimeter[0] ? 'tw-text-redColory' : 
+        (yearProgress[index]??0)*100 < colorimeter[1] ? 'tw-text-yellowColory' :
+        (yearProgress[index]??0)*100 < colorimeter[2] ? 'tw-text-greenColory' :
+        'tw-text-blueColory'
+    );
+
+    const colorYearsCla = () => (
+        yearsProgress < 0 ? 
+        'tw-border-gray-400 hover:tw-ring-4 hover:tw-ring-gray-200':
+        yearsProgress < colorimeter[0] ? 
+        'tw-border-redColory hover:tw-ring-4 hover:tw-ring-red-200': 
+        yearsProgress < colorimeter[1] ? 
+        'tw-border-yellowColory hover:tw-ring-4 hover:tw-ring-yellow-200':
+        yearsProgress < colorimeter[2] ? 
+        'tw-border-greenColory hover:tw-ring-4 hover:tw-ring-green-200':
+        'tw-border-blueColory hover:tw-ring-4 hover:tw-ring-blue-200'
+    );
+
     return (
         <ol className="tw-flex tw-justify-center tw-items-center tw-mx-4">
         {years.map((year: number, index: number) => (
             <li className="tw-grid tw-grid-rows-3 tw-w-full tw-justify-items-center"
-                key={index}>
+                key={year}>
                 <button className={`tw-rounded 
                                     tw-flex tw-justify-center tw-items-center
                                     tw-transition hover:tw-scale-110
-                                    ${
-                                    parseInt( ((yearProgress[index]??0)*100).toString()) < 0 ?
-                                    'tw-border-gray-400 hover:tw-ring-4 hover:tw-ring-gray-200' :
-                                    parseInt( ((yearProgress[index]??0)*100).toString()) < colorimeter[0] ? 
-                                    'tw-border-redColory hover:tw-ring-4 hover:tw-ring-red-200'      : 
-                                    parseInt( ((yearProgress[index]??0)*100).toString()) < colorimeter[1] ? 
-                                    'tw-border-yellowColory hover:tw-ring-4 hover:tw-ring-yellow-200':
-                                    parseInt( ((yearProgress[index]??0)*100).toString()) < colorimeter[2] ? 
-                                    'tw-border-greenColory hover:tw-ring-4 hover:tw-ring-green-200'  :
-                                    'tw-border-blueColory hover:tw-ring-4 hover:tw-ring-blue-200'}
+                                    ${colorClass(index)}
                                     ${yearSelect === year ? 'tw-ring-8' : null}
                                     ${index%2 === 0 ? 
                                         'tw-row-start-1 hover:tw--translate-y-1' : 
@@ -125,16 +154,9 @@ export const TimeLine = () => {
                                     tw-z-10 tw-absolute 
                                     tw-transition hover:tw-scale-110
                                     ${index%2 === 1 ? 'hover:tw-translate-y-1' : 'hover:tw--translate-y-1'}
-                                    ${
-                                    parseInt ( ((yearProgress[index]??0)*100).toString()) < 0 ? 
-                                    'tw-bg-gray-400 hover:tw-ring-4 hover:tw-ring-gray-200' :
-                                    parseInt ( ((yearProgress[index]??0)*100).toString()) < colorimeter[0] ?
-                                    'tw-bg-redColory hover:tw-ring-4 hover:tw-ring-red-200'      : 
-                                    parseInt ( ((yearProgress[index]??0)*100).toString()) < colorimeter[1] ?
-                                    'tw-bg-yellowColory hover:tw-ring-4 hover:tw-ring-yellow-200':
-                                    parseInt ( ((yearProgress[index]??0)*100).toString()) < colorimeter[2] ? 
-                                    'tw-bg-greenColory hover:tw-ring-4 hover:tw-ring-green-200'  :
-                                    'tw-bg-blueColory hover:tw-ring-4 hover:tw-ring-blue-200'}`}>
+                                    ${colorClass(index)}
+                                    ${colorYearCla(index)}
+                                    `}>
                     </button>
                     <div className={`tw-h-full
                                     tw-grow
@@ -142,16 +164,7 @@ export const TimeLine = () => {
                         {index%2 === 0 ? 
                             <button className={`tw-grow tw-self-center
                                                 tw-h-1/4 tw-w-2
-                                                ${
-                                                (yearProgress[index]??0)*100 < 0 ? 
-                                                'tw-bg-gray-400' :
-                                                (yearProgress[index]??0)*100 < 
-                                                colorimeter[0] ? 'tw-bg-redColory'   : 
-                                                (yearProgress[index]??0)*100 < 
-                                                colorimeter[1] ? 'tw-bg-yellowColory':
-                                                (yearProgress[index]??0)*100 < 
-                                                colorimeter[2] ? 'tw-bg-greenColory' :
-                                                'tw-bg-blueColory'}`}
+                                                ${colorYearCla(index)}`}
                                     onClick={ (event) => handleYears(event, year)}>
                             </button>
                         : null}
@@ -163,32 +176,14 @@ export const TimeLine = () => {
                                                 'hover:tw-translate-y-1' : 
                                                 'hover:tw--translate-y-1'} 
                                             hover:tw-scale-110
-                                            ${
-                                            (yearProgress[index]??0)*100 < 
-                                            0 ? 'tw-text-gray-400' :
-                                            (yearProgress[index]??0)*100 < 
-                                            colorimeter[0] ? 'tw-text-redColory'   : 
-                                            (yearProgress[index]??0)*100 < 
-                                            colorimeter[1] ? 'tw-text-yellowColory':
-                                            (yearProgress[index]??0)*100 < 
-                                            colorimeter[2] ? 'tw-text-greenColory' :
-                                            'tw-text-blueColory'}`}
+                                            ${colorTextCla(index)}`}
                                 onClick={ (event) => handleYears(event, year)}>
                             {year}
                         </button>
                         {index%2 === 1 ? 
                             <button className={`tw-grow tw-self-center
                                                 tw-h-1/4 tw-w-2
-                                                ${
-                                                (yearProgress[index]??0)*100 
-                                                < 0 ? 'tw-bg-gray-400' :
-                                                (yearProgress[index]??0)*100 
-                                                < colorimeter[0] ? 'tw-bg-redColory'   : 
-                                                (yearProgress[index]??0)*100 
-                                                < colorimeter[1] ? 'tw-bg-yellowColory':
-                                                (yearProgress[index]??0)*100 
-                                                < colorimeter[2] ? 'tw-bg-greenColory' :
-                                                'tw-bg-blueColory'}`}
+                                                ${colorYearCla(index)}`}
                                     onClick={ (event) => handleYears(event, year)}>
                             </button>
                         : null}
@@ -203,16 +198,7 @@ export const TimeLine = () => {
                             tw-w-12 tw-h-12
                             tw-transition 
                             hover:tw--translate-y-1 hover:tw-scale-110
-                            ${
-                            yearsProgress < 0 ? 
-                            'tw-border-gray-400 hover:tw-ring-4 hover:tw-ring-gray-200':
-                            yearsProgress < colorimeter[0] ? 
-                            'tw-border-redColory hover:tw-ring-4 hover:tw-ring-red-200': 
-                            yearsProgress < colorimeter[1] ? 
-                            'tw-border-yellowColory hover:tw-ring-4 hover:tw-ring-yellow-200':
-                            yearsProgress < colorimeter[2] ? 
-                            'tw-border-greenColory hover:tw-ring-4 hover:tw-ring-green-200':
-                            'tw-border-blueColory hover:tw-ring-4 hover:tw-ring-blue-200'}
+                            ${colorYearsCla()}
                             tw-ml-3 tw-px-2`}
                 title='Dar click para ver las evidencias del plan indicativo'
                 onClick={handleBtnEvidence}>

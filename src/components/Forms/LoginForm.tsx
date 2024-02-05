@@ -1,29 +1,36 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
-import { notify } from '@/utils';
+import { notify, decode } from '@/utils';
 
 import { useAppDispatch } from '@/store';
 import { thunkLogin } from '@/store/auth/thunks';
 import { setIdPlan } from "@/store/content/contentSlice";
+import { Token } from '@/interfaces';
 
-import { decode } from '@/utils/decode';
 
 export const LoginForm = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
-    const [user, setuser] = useState({
+    const [user, setUser] = useState({
         username: "",
         password: ""
     });
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setuser({
+        setUser({
             ...user,
             [e.target.name]: e.target.value
         });
     };
+
+    const validateRol = (info: Token) => (
+        (info.rol === "funcionario" || info.rol === 'planeacion' || info.rol === 'sectorialista') ?
+        (dispatch(setIdPlan(info.id_plan)),
+        navigate('/lobby')
+        ) : navigate('/')
+    );
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -32,23 +39,12 @@ export const LoginForm = () => {
         .then((res) => {
             if (res === undefined) return alert("Usuario o contraseña incorrectos");
             const info = decode(res.token);
-            info.rol === "admin" ? 
-            navigate('/pdt') :
-            (info.rol === "funcionario" || info.rol === 'planeacion' || info.rol === 'sectorialista') ?
-            (
-                dispatch(setIdPlan(info.id_plan)),
-                navigate('/lobby')
-            ) :
-            navigate('/')
+            info.rol === "admin" ? navigate('/pdt') : validateRol(info);
         })
         .catch(() => {
             notify("Error, usuario o contraseña erronea");
         }
         );
-    };
-
-    const handleCancelar = () => {
-        navigate('/');
     };
 
     return (
@@ -58,13 +54,13 @@ export const LoginForm = () => {
                             tw-bg-[#FCFCFE]
                             tw-shadow-2xl'
                 onSubmit={handleSubmit}>
-            <label className='tw-font-montserrat'>Usuario</label>
+            <p className='tw-font-montserrat'>Usuario</p>
             <input  type="text" 
                     name="username" 
                     onChange={handleChange}
                     className='tw-border tw-rounded'
                     required/><br/>
-            <label className='tw-font-montserrat'>Clave</label>
+            <p className='tw-font-montserrat'>Clave</p>
             <input  type="password" 
                     name="password" 
                     onChange={handleChange}

@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from "react";
-import Modal from 'react-modal';
-import { Spinner } from "@/assets/icons";
 import { ToastContainer } from 'react-toastify';
 import { notify } from '@/utils';
 
@@ -12,22 +10,7 @@ import {
 import { thunkGetLocations } from "@/store/plan/thunks"
 
 import { EvidenceInterface } from "@/interfaces";
-import { UbicationsPopover } from "@/components";
-
-const ModalSpinner = ({isOpen}:{isOpen: boolean}) => {
-    return (
-        <Modal  isOpen={isOpen}
-                className='tw-flex tw-flex-col tw-items-center tw-justify-center'
-                overlayClassName='tw-fixed tw-inset-0 tw-bg-black tw-opacity-50'>
-            <Spinner/>
-            <label className='tw-text-[#222222] 
-                            tw-font-bold tw-text-lg 
-                            tw-font-montserrat'>
-                Cargando Evidencia...
-            </label>
-        </Modal>
-    );
-};
+import { UbicationsPopover, ModalSpinner } from "@/components";
 
 export const EvidenceForm = () => {
     const dispatch = useAppDispatch();
@@ -41,7 +24,7 @@ export const EvidenceForm = () => {
     const [data, setData] = useState<EvidenceInterface>(evi_selected??
         {
         id_evidence: 0,
-        code: unit!.code,
+        code: unit.code,
         date: new Date().toISOString(),
         activitiesDesc: "",
         unit: "num",
@@ -118,7 +101,7 @@ export const EvidenceForm = () => {
                 id_plan: id_plan,
                 code: unit.code,
                 data: data,
-                file: documento![0],
+                file: documento[0],
                 list_points: list_points
             }))
             .unwrap()
@@ -134,7 +117,7 @@ export const EvidenceForm = () => {
             dispatch(thunkUpdateEvidence({
                 id_evidence: evi_selected.id_evidence,
                 data: data,
-                file: documento![0],
+                file: documento[0],
                 list_points: list_points
             }))
             .unwrap()
@@ -162,13 +145,13 @@ export const EvidenceForm = () => {
             <label className="tw-text-center md:tw-text-left">Fecha: {new Date().toLocaleDateString()} </label>
                     
             <div className="tw-mt-2">
-                <label >Código meta:</label>
+                <p>Código meta:</p>
                 <label className="  tw-m-3 tw-p-2 tw-rounded
                                     tw-border-2 tw-border-gray-400
                                     tw-bg-white ">{unit.code === '' ? evi_selected?.code : unit.code}</label>
             </div>
 
-            <label className="tw-mt-4">Descripcion Actividades:</label>
+            <p className="tw-mt-4">Descripcion Actividades:</p>
             <textarea 
                 name="activitiesDesc" 
                 id="activitiesDesc" 
@@ -179,12 +162,12 @@ export const EvidenceForm = () => {
                             tw-bg-white tw-resize-none"
                 onChange={(e) => handleInputChange(e)}/>
 
-            <label className="tw-mt-4">Numero de actividades:</label>
+            <p className="tw-mt-4">Numero de actividades:</p>
             <div className="tw-flex tw-flex-wrap
                             tw-rounded tw-p-2
                             tw-border-2 tw-border-gray-400">
                 <div className="tw-flex tw-flex-col">
-                    <label>Unidad</label>
+                    <p>Unidad</p>
                     <select
                         name="unit"
                         id="unit"
@@ -205,7 +188,7 @@ export const EvidenceForm = () => {
                     </select>
                 </div>
                 <div className="tw-flex tw-ml-3 tw-flex-col">
-                    <label>Cantidad</label>
+                    <p>Cantidad</p>
                     <input
                         type="number" 
                         name="amount" 
@@ -219,12 +202,12 @@ export const EvidenceForm = () => {
                 </div>
             </div>
 
-            <label className="tw-mt-4">Ubicacion</label>
+            <p className="tw-mt-4">Ubicacion</p>
             <div className="tw-flex tw-flex-wrap
                             tw-rounded tw-p-2
                             tw-border-2 tw-border-gray-400">
                 <div className="tw-flex tw-flex-col">
-                    <label>Comuna o Corregimiento</label>
+                    <p>Comuna o Corregimiento</p>
                     <select 
                         name="commune"
                         id="commune"
@@ -234,8 +217,8 @@ export const EvidenceForm = () => {
                                     tw-bg-white"
                         onChange={(e)=> handleInputChange(e)}
                         required>
-                        {locations.map((loc, index) => (
-                            <option value={loc.name} key={index}>
+                        {locations.map((loc) => (
+                            <option value={loc.name} key={loc.name.length}>
                                 {loc.name}
                             </option>
                         ))}
@@ -243,7 +226,7 @@ export const EvidenceForm = () => {
                     </select>
                 </div>
                 <div className="tw-flex tw-flex-col tw-ml-3">
-                    <label>Barrio o Vereda</label>
+                    <p>Barrio o Vereda</p>
                     <select 
                         name="neighborhood"
                         id="neighborhood"
@@ -265,7 +248,7 @@ export const EvidenceForm = () => {
                             tw-mt-4 tw-p-2 tw-rounded
                             tw-border-2 tw-border-gray-400">
                 <div className="tw-flex tw-flex-col">
-                    <label>Poblacion beneficiada</label>
+                    <p>Poblacion beneficiada</p>
                     <select 
                         name="benefited_population" 
                         id="benefited_population"
@@ -296,7 +279,7 @@ export const EvidenceForm = () => {
                     </select>
                 </div>
                 <div className="tw-flex tw-flex-col tw-ml-3">
-                    <label>Numero de poblacion beneficiada</label>
+                    <p>Numero de poblacion beneficiada</p>
                     <input  
                         type="number"
                         name="benefited_population_number"
@@ -310,7 +293,7 @@ export const EvidenceForm = () => {
                         onChange={(e)=> handleInputChange(e)}/>
                 </div>
                 <div className="tw-flex tw-flex-col tw-ml-3">
-                    <label>Recursos ejecutados</label>
+                    <p>Recursos ejecutados</p>
                     <input  
                         type="number"
                         name="executed_resources"
@@ -324,7 +307,7 @@ export const EvidenceForm = () => {
                         onChange={(e)=> handleInputChange(e)}/>
                 </div>
                 <div className="tw-flex tw-flex-col tw-ml-3">
-                    <label>Fuente de recursos</label>
+                    <p>Fuente de recursos</p>
                     <select 
                         name="resources_font"
                         id="resources_font"
@@ -358,7 +341,7 @@ export const EvidenceForm = () => {
                             tw-mt-4 tw-p-2 tw-rounded
                             tw-border-2 tw-border-gray-400">
                 <div className="tw-flex tw-flex-col">
-                    <label>Archivo de meta</label>
+                    <p>Archivo de meta</p>
                     <input  
                         type="file" 
                         name="documento" 
@@ -370,7 +353,7 @@ export const EvidenceForm = () => {
                         onChange={(e) => handleInputChangeFile(e)}/><br />
                 </div>
                 <div className="tw-flex tw-flex-col tw-ml-3">
-                    <label>Nombre documento</label>
+                    <p>Nombre documento</p>
                     <input
                         type="text"
                         name="name_file"
@@ -384,7 +367,7 @@ export const EvidenceForm = () => {
                         onChange={(e) => handleInputChange(e)}/><br />
                 </div>
                 <div className="tw-flex tw-flex-col tw-ml-3">
-                    <label>Lugar</label>
+                    <p>Lugar</p>
                     <input
                         type="text"
                         name="place"
@@ -398,7 +381,7 @@ export const EvidenceForm = () => {
                         onChange={(e) => handleInputChange(e)}/><br />
                 </div>
                 <div className="tw-flex tw-flex-col tw-ml-3">
-                    <label>Fecha del archivo</label>
+                    <p>Fecha del archivo</p>
                     <input
                         type="date"
                         name="date_file"

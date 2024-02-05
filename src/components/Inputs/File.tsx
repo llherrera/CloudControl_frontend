@@ -1,13 +1,11 @@
 import React, { useState } from "react";
 import * as XLSX from 'xlsx';
-import Modal from 'react-modal';
-import { Spinner } from "@/assets/icons";
 import ProgressBar from "@ramonak/react-progress-bar";
 
 import IconButton from "@mui/material/IconButton";
 import DownloadIcon from '@mui/icons-material/Download';
 import { ToastContainer } from 'react-toastify';
-import { notify } from '@/utils';
+import { notify, handleInputFile } from '@/utils';
 
 import { useAppSelector, useAppDispatch } from "@/store";
 import { setLevels } from "@/store/plan/planSlice";
@@ -25,26 +23,11 @@ import {
     addSecretaries,
     addNodes,
     addUnits } from "@/services/api";
-
-const ModalSpinner = ({isOpen}:{isOpen: boolean}) => {
-    return (
-        <Modal  isOpen={isOpen}
-                className='tw-flex tw-flex-col tw-items-center tw-justify-center'
-                overlayClassName='tw-fixed tw-inset-0 tw-bg-black tw-opacity-50'>
-            <Spinner/>
-            <label className='tw-text-[#222222] 
-                            tw-font-bold tw-text-lg 
-                            tw-font-montserrat'>
-                Cargando Plan...
-            </label>
-        </Modal>
-    );
-};
+import { ModalSpinner } from "../Spinner";
 
 export const FileInput = () => {
     const dispatch = useAppDispatch();
 
-    const [isOpen, setIsOpen] = useState(false);
     const [data, setData] = useState<File>();
     const [textBar, setTextBar] = useState('');
     const [progressBar, setProgressBar] = useState(0);
@@ -155,16 +138,8 @@ export const FileInput = () => {
         });
     };
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        e.preventDefault();
-        if (e.target.files === null) return;
-        const file = e.target.files[0];
-        setData(file);
-    };
-
     const handleSubmit = () => {
         if (data === undefined) return;
-        //setIsOpen(true);
         readExcel(data);
     };
 
@@ -184,14 +159,14 @@ export const FileInput = () => {
                 </IconButton>
             </a><br />
 
-            <label className='tw-text-[#222222] 
+            <p className='tw-text-[#222222] 
                                 tw-font-bold tw-text-lg 
                                 tw-font-montserrat'>
                 Importar plan por Excel
-            </label>
+            </p>
             <input  type="file" 
                     className='tw-ml-3'
-                    onChange={(e)=>handleChange(e)}/>
+                    onChange={(e)=>handleInputFile(e, setData)}/>
             <button className=' tw-ml-3 tw-py-1 tw-px-2
                                 tw-bg-gray-500 
                                 tw-text-white
@@ -200,7 +175,6 @@ export const FileInput = () => {
                     onClick={handleSubmit}>
                 Cargar Plan
             </button>
-            <ModalSpinner isOpen={isOpen}/>
         </div>
     );
 }
@@ -216,7 +190,6 @@ export const FileFinancialInput = () => {
         if (plan === undefined) return;
         if (data.length === 0) return;
         if (id_plan === 0) return;
-        //const id_city = await getCityId(plan.municipality);
         const id_city = parseInt(plan.id_municipality);
         return await updateFinancial(id_plan, id_city, data, years);
     };
@@ -251,13 +224,6 @@ export const FileFinancialInput = () => {
         });
     };
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        e.preventDefault();
-        if (e.target.files === null) return;
-        const file = e.target.files[0];
-        setData(file);
-    };
-
     const handleSubmit = () => {
         if (data === undefined) return;
         setIsOpen(true);
@@ -266,7 +232,7 @@ export const FileFinancialInput = () => {
 
     return (
         <form className="tw-border-b-4 tw-pb-4 tw-pl-4">
-             <a  className="tw-text-[#222222]
+            <a  className="tw-text-[#222222]
                             tw-font-bold tw-text-lg
                             tw-font-montserrat"
                 href={"https://firebasestorage.googleapis.com/v0/b/cloudcontrolstore.appspot.com/o/Files%2FPlantilla%20Ejecuciones%20Financieras.xlsx?alt=media&token=0ad73835-d1a0-442d-a68b-725480609e91"}
@@ -281,10 +247,11 @@ export const FileFinancialInput = () => {
             <p className="tw-text-[#222222]
                             tw-font-bold tw-text-lg
                             tw-font-montserrat">
-                Actualizar ejecuciones financieras por Excel</p>
+                Actualizar ejecuciones financieras por Excel
+            </p>
             <input  type="file" 
                     className='tw-ml-3'
-                    onChange={(e)=>handleChange(e)}/>
+                    onChange={(e)=>handleInputFile(e, setData)}/>
             <button className=' tw-ml-3 tw-py-1 tw-px-2
                                 tw-bg-gray-500 
                                 tw-text-white
@@ -343,13 +310,6 @@ export const FilePhysicalInput = () => {
         });
     };
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        e.preventDefault();
-        if (e.target.files === null) return;
-        const file = e.target.files[0];
-        setData(file);
-    };
-
     const handleSubmit = () => {
         if (data === undefined) return;
         setIsOpen(true);
@@ -358,7 +318,7 @@ export const FilePhysicalInput = () => {
 
     return (
         <form className="tw-border-b-4 tw-pb-4 tw-pl-4">
-             <a  className="tw-text-[#222222]
+            <a  className="tw-text-[#222222]
                             tw-font-bold tw-text-lg
                             tw-font-montserrat"
                 href={"https://firebasestorage.googleapis.com/v0/b/cloudcontrolstore.appspot.com/o/Files%2FPlantilla%20Ejecuciones%20fisicas.xlsx?alt=media&token=c799d7e3-246f-4b53-ac2c-61f0227718da"}
@@ -373,10 +333,11 @@ export const FilePhysicalInput = () => {
             <p className="tw-text-[#222222]
                             tw-font-bold tw-text-lg
                             tw-font-montserrat">
-                Actualizar ejecuciones fisicas por Excel</p>
+                Actualizar ejecuciones fisicas por Excel
+            </p>
             <input  type="file" 
                     className='tw-ml-3'
-                    onChange={(e)=>handleChange(e)}/>
+                    onChange={(e)=>handleInputFile(e, setData)}/>
             <button className=' tw-ml-3 tw-py-1 tw-px-2
                                 tw-bg-gray-500 
                                 tw-text-white

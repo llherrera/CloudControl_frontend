@@ -60,6 +60,13 @@ export const ColorForm = ( props : ColorFromProps ) => {
             });
     }
 
+    const colorClass = (index: number) => (
+        index=== 0 ? 'tw-bg-redColory'   : 
+        index === 1 ? 'tw-bg-yellowColory': 
+        index === 2 ? 'tw-bg-greenColory' : 
+        'tw-bg-blueColory'
+    );
+
     return (
         <form className='tw-flex tw-flex-col md:tw-flex-row 
                         tw-flex-wrap 
@@ -68,7 +75,7 @@ export const ColorForm = ( props : ColorFromProps ) => {
             {value.map((value: number[], index: number) => {
                 return (
                     <div className='tw-flex tw-mx-2'
-                        key={index}>
+                        key={value.length}>
                         <Box sx={{ width:100, display:'flex', alignItems:'center' }}>
                             <Slider min={0}
                                     max={100}
@@ -78,10 +85,7 @@ export const ColorForm = ( props : ColorFromProps ) => {
                                     disableSwap/>
                         </Box>
                         <div className={`tw-w-12 tw-h-12 tw-ml-3
-                                        ${index=== 0 ? 'tw-bg-redColory'   : 
-                                        (index === 1 ? 'tw-bg-yellowColory': 
-                                        (index === 2 ? 'tw-bg-greenColory' : 
-                                        'tw-bg-blueColory'))}
+                                        ${colorClass(index)}
                                         tw-rounded-full`}>
                             <p className='tw-mt-3 tw-font-bold tw-text-center tw-text-white'>
                                 {value[1]}

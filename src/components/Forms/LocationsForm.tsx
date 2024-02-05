@@ -65,17 +65,15 @@ export const LocationsForm = () => {
             <ToastContainer />
             <form
                 className="tw-shadow-2xl tw-p-2">
-                    <label htmlFor="">Añadir localidades/barrios</label>
+                    <p>Añadir localidades/barrios</p>
                     {data.map((location, index) => (
-                        <div key={index}>
+                        <div key={location.name.length}>
                             <label>{index + 1}</label>
                             <select name="type"
                                 onChange={(e) => handleTypeChange(e, index)}
                                 className="tw-m-2 tw-p-2 tw-rounded tw-border-2 tw-border-gray-400"
                                 required>
-                                {locationTypeOptions.map((e, i) => {
-                                return <option key={i} value={e}>{e}</option>
-                                })}
+                                {locationTypeOptions.map((e) => <option key={e.length} value={e}>{e}</option>)}
                             </select>
                             <input  className="tw-m-2 tw-p-2 tw-rounded tw-border-2 tw-border-gray-400"
                                     onChange={ (e) => handleInputChange(e, index) } value={ location.name }

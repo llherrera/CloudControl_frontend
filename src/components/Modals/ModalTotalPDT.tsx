@@ -101,6 +101,49 @@ const ModalPDT = ( props: ModalPDTProps ) => {
             loadingReport, 
             colorimeter } = useAppSelector((state) => state.plan);
 
+    const colorClass = (item: ReportPDTInterface, index: number) => (
+        item['percentExecuted'][index] < 0 ? 'tw-bg-gray-400' :
+        item['percentExecuted'][index] < colorimeter[0] ? 'tw-bg-redColory'   :
+        item['percentExecuted'][index] < colorimeter[1] ? 'tw-bg-yellowColory':
+        item['percentExecuted'][index] < colorimeter[2] ? 'tw-bg-greenColory' :
+        'tw-bg-blueColory hover:tw-ring-blue-200'
+    );
+
+    const tableBody = (item: ReportPDTInterface) => {
+        return (
+            <tr key={item.responsible.length}>
+                <td className='tw-border tw-p-2'>{item.responsible}</td>
+                <td className='tw-border tw-p-2'>{item.goalCode}</td>
+                <td className='tw-border tw-p-2'>{item.goalDescription}</td>
+                {years.map((year, index) => (
+                    <td key={year}
+                        className={`tw-border tw-p-2 tw-text-center 
+                        ${colorClass(item, index)}
+                        `}>
+                        {item['percentExecuted'][index] < 0 ? 0 : item['percentExecuted'][index]}
+                    </td>
+                ))}
+                {levels.map((level, index) => (
+                    <td className='tw-border tw-p-2' key={level.name.length}>
+                        {item['planSpecific'][index]}
+                    </td>
+                ))}
+                <td className='tw-border tw-p-2'>{item.indicator}</td>
+                <td className='tw-border tw-p-2'>{item.base}</td>
+                {years.map((year, index) => (
+                    <td className='tw-border tw-p-2' key={year}>
+                        {item['programed'][index]}
+                    </td>
+                ))}
+                {years.map((year, index) => (
+                    <td className='tw-border tw-p-2' key={year}>
+                        {item['executed'][index]}
+                    </td>
+                ))}
+            </tr>
+        );
+    };
+
     return (
         <Modal  isOpen={props.modalIsOpen}
                 onRequestClose={()=>props.callback(false)}
@@ -124,72 +167,38 @@ const ModalPDT = ( props: ModalPDTProps ) => {
                         <th className='tw-border tw-bg-gray-400 tw-p-2'>Responsable</th>
                         <th className='tw-border tw-bg-gray-400 tw-p-2'>Codigo de la meta producto</th>
                         <th className='tw-border tw-bg-gray-400 tw-p-2'>Descripción Meta producto</th>
-                        {years.map((year, index) => (
+                        {years.map((year) => (
                             <th className=' tw-border tw-bg-gray-400 
                                             tw-p-2' 
-                                key={index}>
+                                key={year}>
                                 % ejecución {year}
                             </th>
                         ))}
-                        {levels.map((level, index) => (
+                        {levels.map((level) => (
                             <th className=' tw-border tw-bg-gray-400
                                             tw-p-2' 
-                                key={index}>
+                                key={level.name.length}>
                                 {level.name}
                             </th>
                         ))}
                         <th className='tw-border tw-bg-gray-400 tw-p-2'>Indicador</th>
                         <th className='tw-border tw-bg-gray-400 tw-p-2'>Línea base</th>
-                        {years.map((year, index) => (
+                        {years.map((year) => (
                             <th className='tw-border tw-bg-gray-400 tw-p-2' 
-                                key={index}>
+                                key={year}>
                                 Programado {year}
                             </th>
                         ))}
-                        {years.map((year, index) => (
+                        {years.map((year) => (
                             <th className='tw-border tw-bg-gray-400 tw-p-2' 
-                                key={index}>
+                                key={year}>
                                 Ejecutado {year}
                             </th>
                         ))}
                     </tr>
                 </thead>
                 <tbody>
-                    {props.data.map((item, index) => (
-                        <tr key={index}>
-                            <td className='tw-border tw-p-2'>{item.responsible}</td>
-                            <td className='tw-border tw-p-2'>{item.goalCode}</td>
-                            <td className='tw-border tw-p-2'>{item.goalDescription}</td>
-                            {years.map((year, index) => (
-                                <td className={`tw-border tw-p-2 tw-text-center 
-                                    ${item['percentExecuted'][index] < 0 ? 'tw-bg-gray-400' :
-                                    (item['percentExecuted'][index]) < colorimeter[0] ? 'tw-bg-redColory'   :
-                                    (item['percentExecuted'][index]) < colorimeter[1] ? 'tw-bg-yellowColory':
-                                    (item['percentExecuted'][index]) < colorimeter[2] ? 'tw-bg-greenColory' :
-                                    'tw-bg-blueColory hover:tw-ring-blue-200'}
-                                    `} key={index}>
-                                    {item['percentExecuted'][index] < 0 ? 0 : item['percentExecuted'][index]}
-                                </td>
-                            ))}
-                            {levels.map((level, index) => (
-                                <td className='tw-border tw-p-2' key={index}>
-                                    {item['planSpecific'][index]}
-                                </td>
-                            ))}
-                            <td className='tw-border tw-p-2'>{item.indicator}</td>
-                            <td className='tw-border tw-p-2'>{item.base}</td>
-                            {years.map((year, index) => (
-                                <td className='tw-border tw-p-2' key={index}>
-                                    {item['programed'][index]}
-                                </td>
-                            ))}
-                            {years.map((year, index) => (
-                                <td className='tw-border tw-p-2' key={index}>
-                                    {item['executed'][index]}
-                                </td>
-                            ))}
-                        </tr>
-                    ))}
+                    {props.data.map((item) => tableBody(item))}
                 </tbody>
             </table>
             </div>}

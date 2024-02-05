@@ -4,10 +4,9 @@ import { useAppSelector, useAppDispatch } from "@/store";
 import { thunkAddSecretaries, thunkUpdateSecretaries } from "@/store/plan/thunks";
 
 import { Secretary } from "@/interfaces";
-import { validateEmail } from "@/utils";
+import { validateEmail, notify } from "@/utils";
 
 import { ToastContainer } from 'react-toastify';
-import { notify } from '@/utils';
 
 export const SecretaryForm = () => {
     const dispatch = useAppDispatch();
@@ -51,9 +50,9 @@ export const SecretaryForm = () => {
             <form
                 className=" tw-shadow-2xl
                             tw-p-2">
-                <label htmlFor="">Añadir secretarias</label>
+                <p>Añadir secretarias</p>
                 {data.map((secretary, index) => (
-                    <div key={index}>
+                    <div key={secretary.name.length}>
                         <label>{index + 1}</label>
                         <input  className="tw-m-2 tw-p-2 tw-rounded tw-border-2 tw-border-gray-400"
                                 onChange={ (e) => handleInputChange(e, index) } value={ secretary.name}

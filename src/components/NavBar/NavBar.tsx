@@ -20,7 +20,7 @@ export const NavBar = ( props: NavBarProps) => {
                         xl:tw-flex-col xl:tw-px-10
                         tw-bg-navBar`}>
             {props.buttons.map((button, i) => (
-                <li className='tw-shadow tw-my-1' key={i}>
+                <li className='tw-shadow tw-my-1' key={button.text.length}>
                     <ButtonComponent
                         text={button.text}
                         inside={button.inside}

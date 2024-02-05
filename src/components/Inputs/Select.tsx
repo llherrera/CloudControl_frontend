@@ -14,9 +14,7 @@ export const Select = (props: SelectProps) => {
                 disabled={props.disabled}
                 required={!!props.isRequired}>
                 {props.optionLabelFn && props.options.map((e, i) => props.optionLabelFn && props.optionLabelFn(e, i))}
-                {!props.optionLabelFn && props.options.map((e, i) => {
-                  return <option key={i} value={e}>{e}</option>
-                })}
+                {!props.optionLabelFn && props.options.map((e, i) => <option key={i} value={e}>{e}</option>)}
             </select>
         </div>
 

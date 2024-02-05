@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from 'react';
-import { useJsApiLoader, GoogleMap} from '@react-google-maps/api';
+import { GoogleMap} from '@react-google-maps/api';
+//import { useJsApiLoader} from '@react-google-maps/api';
 import { Popover } from 'react-tiny-popover';
 
 import { useAppDispatch, useAppSelector } from '@/store';
@@ -7,10 +8,10 @@ import { setPoints } from '@/store/evidence/evidenceSlice';
 
 import { LocationIcon } from '@/assets/icons';
 import { PopoverProps } from '@/interfaces';
-import { getEnvironment } from '@/utils/environment';
+//import { getEnvironment } from '@/utils/environment';
 import icono from "@/assets/icons/location.svg";
 
-const { API_KEY } = getEnvironment();
+//const { API_KEY } = getEnvironment();
 
 export const LocationPopover = (props: PopoverProps) => {
     const [poLocationIsOpen, setPoLocationIsOpen] = useState(false);
@@ -23,7 +24,7 @@ export const LocationPopover = (props: PopoverProps) => {
         <Popover
             isOpen={poLocationIsOpen}
             positions={['right']}
-            content={mapContainer(props)}
+            content={MapContainer(props)}
             onClickOutside={toggleOpen}>
             <button type="button" onClick={toggleOpen}>
                 <LocationIcon color={locationSelected ? green:red} />
@@ -41,7 +42,7 @@ export const UbicationsPopover = () => {
         <Popover
             isOpen={poLocationIsOpen}
             positions={['right']}
-            content={mapContainerUbi()}>
+            content={MapContainerUbi()}>
             <button type="button" onClick={toggleOpen}>
                 <LocationIcon color={red}/>
             </button>
@@ -93,7 +94,7 @@ const mapStyle = [
     }
 ];
 
-const mapContainer = (props: PopoverProps) => {
+const MapContainer = (props: PopoverProps) => {
     const [map, setMap] = useState<google.maps.Map | null>(null);
     const [marker, setMarker] = useState<google.maps.Marker | null>(null);
 
@@ -180,7 +181,7 @@ const mapContainer = (props: PopoverProps) => {
 
 }
 
-const mapContainerUbi = () => {
+const MapContainerUbi = () => {
     const dispatch = useAppDispatch();
 
     const [map, setMap] = useState<google.maps.Map|null>(null);
