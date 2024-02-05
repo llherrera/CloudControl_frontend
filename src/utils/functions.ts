@@ -225,3 +225,10 @@ export const generateExcelYears = (
   })
 
 }
+
+export const handleInputFile = (e: React.ChangeEvent<HTMLInputElement>, callback: (file:File)=>void) => {
+  e.preventDefault()
+  if (e.target.files === null) return
+  const file = e.target.files[0]
+  callback(file)
+};

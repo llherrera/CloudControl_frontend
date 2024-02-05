@@ -8,3 +8,4 @@ export * from './Evidence';
 export * from './UploadImage';
 export * from './Inputs';
 export * from './Popover';
+export * from './Spinner';
