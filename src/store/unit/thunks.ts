@@ -1,9 +1,9 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
-import { UnitInterface, ErrorBasicInterface, GetUnitProps, AddUnitProps } from "@/interfaces";
+import { UnitInterface, ErrorBasicInterface, GetUnitProps, AddUnitProps, propsIndicator } from "@/interfaces";
 import { parseErrorAxios } from "@/utils";
 
-import { getUnitNodeAndYears, addUnitNodeAndYears, updateUnitNodeAndYears } from "@/services/api";
+import { getUnitNodeAndYears, addUnitNodeAndYears, updateUnitNodeAndYears, updateIndicator } from "@/services/api";
 
 export const thunkGetUnit = createAsyncThunk<UnitInterface, GetUnitProps, { rejectValue: ErrorBasicInterface}>(
     "unit/getUnit", 
@@ -24,7 +24,7 @@ export const thunkGetUnit = createAsyncThunk<UnitInterface, GetUnitProps, { reje
                 }
             });
             res.years = years;
-            const {code, description, indicator, base_line, goal, responsible} = res.Node;
+            const {code, description, indicator, base_line, goal, responsible, link_hv_indicator} = res.Node;
             const para = {
                 code: code,
                 description: description,
@@ -32,6 +32,7 @@ export const thunkGetUnit = createAsyncThunk<UnitInterface, GetUnitProps, { reje
                 base: base_line,
                 goal: goal,
                 responsible: responsible,
+                hv_indicator: link_hv_indicator
             }
             const result: UnitInterface = {...para, years};
 
@@ -61,6 +62,19 @@ export const thunkUpdateUnit = createAsyncThunk<UnitInterface, AddUnitProps, { r
     async (props: AddUnitProps, { rejectWithValue }) => {
         try {
             const res = await updateUnitNodeAndYears(props.id_plan, props.id_node, props.unit, props.years);
+            return res;
+        } catch (err) {
+            const result = parseErrorAxios(err);
+            return rejectWithValue(result);
+        }
+    }
+);
+
+export const thunkUpdateIndicator = createAsyncThunk<string, propsIndicator, {rejectValue: ErrorBasicInterface}>(
+    "unit/updateIndicator",
+    async (props: propsIndicator, { rejectWithValue }) => {
+        try {
+            const res = await updateIndicator(props.id_node, props.file);
             return res;
         } catch (err) {
             const result = parseErrorAxios(err);

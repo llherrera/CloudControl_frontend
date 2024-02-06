@@ -3,7 +3,7 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { InitialStateUnitInterface, UnitInterface } from "@/interfaces";
 import { setGenericState, getGenericState, removeGenericState } from "@/utils";
 
-import { thunkGetUnit, thunkAddUnit, thunkUpdateUnit } from "./thunks";
+import { thunkGetUnit, thunkAddUnit, thunkUpdateUnit, thunkUpdateIndicator } from "./thunks";
 
 const getInitialState = (): InitialStateUnitInterface => {
     const unitState = getGenericState("unit");
@@ -43,8 +43,8 @@ const getInitialState = (): InitialStateUnitInterface => {
                     physical_execution: 0,
                     financial_execution: 0
                 },
-            ]
-        
+            ],
+            hv_indicator: ''
         },
     };
 };
@@ -104,6 +104,21 @@ export const unitSlice = createSlice({
             setGenericState('unit', state);
         });
         builder.addCase(thunkUpdateUnit.rejected, (state, action) => {
+            state.loadingUnit = false;
+            state.errorLoadingUnit = action.payload;
+        });
+        
+        
+        builder.addCase(thunkUpdateIndicator.pending, state => {
+            if (!state.loadingUnit) state.loadingUnit = true;
+            state.errorLoadingUnit = undefined;
+        });
+        builder.addCase(thunkUpdateIndicator.fulfilled, (state, action) => {
+            state.loadingUnit = false;
+            state.unit.hv_indicator = action.payload;
+            setGenericState('unit', state);
+        });
+        builder.addCase(thunkUpdateIndicator.rejected, (state, action) => {
             state.loadingUnit = false;
             state.errorLoadingUnit = action.payload;
         });

@@ -49,7 +49,8 @@ export interface UnitInterface {
     base: number,
     goal: number,
     responsible: string,
-    years: YearInterface[]
+    years: YearInterface[],
+    hv_indicator: string
 }
 
 export interface YearInterface {

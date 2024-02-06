@@ -1,17 +1,19 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import UpgradeIcon from '@mui/icons-material/Upgrade';
+import IconButton from "@mui/material/IconButton";
 
 import { useAppSelector, useAppDispatch } from "@/store";
-import { thunkGetUnit } from "@/store/unit/thunks";
+import { thunkGetUnit, thunkUpdateIndicator } from "@/store/unit/thunks";
 import { thunkGetEvidence } from '@/store/evidence/thunks'
 import { resetEvidence, setPoints } from "@/store/evidence/evidenceSlice";
 import { resetUnit } from "@/store/unit/unitSlice";
+import { AddRootTree } from "@/store/plan/planSlice";
 
 import { decode } from "@/utils";
-import { ShowEvidence, BackBtn, SettingsBtn } from "@/components";
+import { ShowEvidence, BackBtn, SettingsBtn, HvBtn } from "@/components";
 import cclogo from '@/assets/images/logo-cc.png';
 import { Spinner } from "@/assets/icons";
-import { AddRootTree } from "@/store/plan/planSlice";
 
 export const UnitNodePage = () => {
     const dispatch = useAppDispatch();
@@ -31,6 +33,7 @@ export const UnitNodePage = () => {
     const [acumFinan, setAcumFinan] = useState(0);
 
     const [showEvidence, setShowEvidence] = useState(false);
+    const fileUpload = useRef<HTMLInputElement>(null);
 
     const [rol, setRol] = useState("");
     const [id, setId] = useState(0);
@@ -62,6 +65,18 @@ export const UnitNodePage = () => {
         setAcumFinan( acumFinalcial );
     }, [unit]);
 
+    const handleChangeFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files;
+        if (file) {
+            if (file[0].type !== 'application/pdf') {
+                alert('El archivo debe ser pdf');
+                e.target.value = '';
+                return;
+            }
+            dispatch(thunkUpdateIndicator({id_node: node!.id_node, file: file![0]}));
+        }
+    };
+
     const handleSubmitButton = () => {
         dispatch(setPoints([]));
         navigate(`/pdt/PlanIndicativo/Meta/evidencia`);
@@ -88,35 +103,73 @@ export const UnitNodePage = () => {
         navigate(-1);
     };
 
+    const UploadBtn = () => (
+        <div>
+            <input  type="file" 
+                    className="tw-hidden" 
+                    id="inputFile"
+                    ref={fileUpload}
+                    onChange={handleChangeFile}/>
+            <IconButton aria-label="delete"
+                        size="small"
+                        color="inherit"
+                        title="Actualizar Hoja de vida"
+                        onClick={() => fileUpload.current?.click()}>
+                <UpgradeIcon/>
+            </IconButton>
+        </div>
+    );
+
     const handleSettings = () => navigate(`/pdt/PlanIndicativo/Meta/configuracion`);
+
+    const TernaryIndicatorShow = () => (
+        (unit.hv_indicator === '' || 
+        unit.hv_indicator === null || 
+        unit.hv_indicator === undefined) ?
+        null : <HvBtn link={unit.hv_indicator}/>
+    );
+
+    const TernaryIndicator = () => (
+        (rol === 'admin' || 
+        ((rol === 'funcionario' || rol === 'planeacion') 
+        && id === id_plan)) ? <UploadBtn/> : null
+    );
 
     const unidadForm = () => {
         if (unit === undefined || unit === null) return;
         return (
-            <div className="tw-border tw-border-gray-400 tw-bg-white tw-mx-2 md:tw-mx-10">
-                <div className="tw-px-1">
+            <div className="tw-border tw-border-slate-500 
+                            tw-bg-white tw-mx-2 md:tw-mx-10">
+                <div className="tw-px-1 tw-border-b tw-border-black">
                     <p className="tw-text-2xl tw-font-bold">
                         Codigo: {unit.code}
                     </p>
                 </div>
-                <div className="tw-px-1 tw-mt-2 tw-border-y tw-border-black">
+                <div className="tw-px-1 tw-border-b tw-border-black">
                     <p className="tw-text-2xl tw-font-bold tw-text-justify">
                         Descripcion: {unit.description}
                     </p>
                 </div>
-                <div className="tw-mx-1 tw-mt-2">
-                    <p className="tw-text-2xl tw-font-bold tw-text-justify">
-                        Indicador: {unit.indicator}
-                    </p>
-                </div>
-                <div className="tw-px-1 tw-mt-2 tw-border-y tw-border-black">
+                <div className="tw-px-1 tw-border-b tw-border-black">
                     <p className="tw-text-2xl tw-font-bold">
                         Línea base: {unit.base}
                     </p>
                 </div>
-                <div className="tw-px-1 tw-mt-2">
+                <div className="tw-px-1 tw-border-b tw-border-black">
                     <p className="tw-text-2xl tw-font-bold">
                         Meta: {unit.goal}
+                    </p>
+                </div>
+                <div className="tw-px-1 tw-border-b tw-border-black">
+                    <p className="tw-text-2xl tw-font-bold tw-text-justify">
+                        Indicador: {unit.indicator}
+                    </p>
+                </div>
+                <div className="tw-px-1">
+                    <p className="tw-text-2xl tw-font-bold tw-text-justify">
+                        Hoja de Vida Indicador:
+                        <TernaryIndicatorShow/>
+                        <TernaryIndicator/>
                     </p>
                 </div>
             </div>
@@ -126,8 +179,8 @@ export const UnitNodePage = () => {
     const yearsForm = () => {
         if (unit === undefined || unit === null) return;
         return(
-            <div className="tw-border tw-border-slate-500 tw-rounded
-                            tw-bg-white 
+            <div className="tw-border tw-border-slate-500 
+                            tw-rounded tw-bg-white 
                             tw-px-2 tw-mt-3 tw-mx-2 md:tw-mx-10">
                 <div className="tw-flex tw-justify-center tw-mt-2">
                 {(rol === "admin") || ((rol === 'funcionario' || rol === 'planeacion' || rol === 'sectorialista') && id === id_plan) ?
@@ -141,8 +194,7 @@ export const UnitNodePage = () => {
                 }
                 </div>
                 <div className="tw-flex tw-flex-wrap tw-justify-center">
-                {unit.years.map((item, index) => {
-                    return(
+                {unit.years.map((item, index) => (
                         <div key={item.year}
                             className="tw-my-2">
                             <p className="  tw-mx-2 
@@ -195,8 +247,7 @@ export const UnitNodePage = () => {
                                 </div>
                             </div>
                         </div>
-                    )
-                })}
+                ))}
                 <div className="tw-my-2">
                     <p className="  tw-mx-2 
                                     tw-border-x tw-border-t tw-border-black 
@@ -281,11 +332,13 @@ export const UnitNodePage = () => {
             </thead>
             <tbody>
                 {evidences.map((evi, index) => (
-                    <ShowEvidence evi={evi} index={index} key={evi.id_evidence}/>
+                    <ShowEvidence evi={evi} index={index} key={evi.id_evidence + index}/>
                 ))}
             </tbody>
         </table>
-    </div> : <p className="tw-text-2xl tw-font-bold tw-flex tw-justify-center">No hay evidencias cargadas</p>
+    </div> : <p className="tw-text-2xl tw-font-bold tw-flex tw-justify-center">
+        No hay evidencias cargadas
+    </p>
 
     return (
         loadingUnit ? <Spinner/>:
@@ -313,7 +366,7 @@ export const UnitNodePage = () => {
             <ol className="tw-flex tw-justify-center tw-flex-wrap">
             {rootTree.map((name) => {
                 return (
-                    <li className="tw-flex tw-mx-3" key={name.length}>
+                    <li className="tw-flex tw-mx-3" key={name[1]}>
                         <p className="tw-text-green-600 tw-text-xl tw-font-bold">{name[1]}:</p> 
                         <p className="tw-ml-1 tw-text-xl tw-font-bold">{name[0]}</p>
                     </li>

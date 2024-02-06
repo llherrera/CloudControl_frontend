@@ -6,3 +6,8 @@ export interface InitialStateUnitInterface {
     errorLoadingUnit: ErrorTypeInterface;
     unit: UnitInterface;
 }
+
+export interface propsIndicator {
+    id_node: string;
+    file: File;
+}

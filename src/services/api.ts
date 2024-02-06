@@ -39,15 +39,15 @@ api.interceptors.request.use(
                 }
                 const decoder: {exp: number} = jwtDecode(token);
                 const isExpired = new Date(decoder.exp * 1000) < new Date();
-                if (!isExpired) return request
-                const newToken = await refreshToken();
-                if (newToken)
-                // @ts-expect-error request.headers
-                    request.headers = {
-                        ...request.headers,
-                        Authorization: `Bearer ${newToken.token}`
-                    }
-                return request;
+                //if (!isExpired) return request
+                //const newToken = await refreshToken();
+                //if (newToken)
+                //// @ts-expect-error request.headers
+                //    request.headers = {
+                //        ...request.headers,
+                //        Authorization: `Bearer ${newToken.token}`
+                //    }
+                //return request;
             }
             return request;
         } catch (error) {
@@ -639,6 +639,18 @@ export const updatePhysicalExcel = async (id_plan: number, id_municipality: numb
         id_municipality: id_municipality,
         data:            data,
         years:           years,
+    });
+    return response.data;
+}
+
+export const updateIndicator = async (id_node: string, file: File) => {
+    const response = await api.put('/nodo/indicador', {
+        id_node: id_node,
+        file: file
+    },{
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        }
     });
     return response.data;
 }
