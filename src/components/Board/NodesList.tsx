@@ -150,10 +150,9 @@ export const NodesList = ( props : NodeListProps ) => {
         :<ul className={`${indexLevel === levels.length-1 ? 
                         'tw-flex tw-flex-row tw-flex-wrap':
                         'tw-flex-col tw-flex-wrap'} `} >
-            {nodes.map((item: NodeInterface, index: number) => {
-                return(
+            {nodes.map((item: NodeInterface, index: number) => (
                 <div className="tw-my-2 tw-flex tw-transition hover:tw-scale-110"
-                    key={item.id_level}>
+                    key={item.id_node}>
                     <button className={`tw-rounded
                                         tw-flex tw-justify-center tw-items-center
                                         tw-border-4
@@ -189,8 +188,7 @@ export const NodesList = ( props : NodeListProps ) => {
                                         onChange={(e)=>handleUpdateWeight(index, e)}/> 
                     :null}
                 </div>
-                );
-            })}
+            ))}
             {mode && (rol === 'admin' || (rol === 'funcionario' && id === props.id))?
             <div className='tw-flex tw-justify-center'>
                 <button className='tw-px-2 tw-mx-2 

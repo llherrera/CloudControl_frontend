@@ -124,7 +124,7 @@ export const SettingsPage = () => {
             <ol className="tw-flex tw-justify-center tw-flex-wrap">
             {rootTree.map((name) => {
                 return (
-                    <li className="tw-flex tw-mx-3" key={name.length}>
+                    <li className="tw-flex tw-mx-3" key={name[1]}>
                         <p className="tw-text-green-600 tw-text-xl tw-font-bold">{name[1]}:</p> 
                         <p className="tw-ml-1 tw-text-xl tw-font-bold">{name[0]}</p>
                     </li>
@@ -133,10 +133,10 @@ export const SettingsPage = () => {
             </ol>
             <div className="tw-p-3">
                 <p className='tw-block'>Información de la meta:</p>
-                <form   className=' tw-shadow-2xl tw-rounded tw-border-2
+                <form   className=' tw-shadow-2xl
+                                    tw-border tw-border-slate-500
                                     tw-flex tw-flex-wrap
-                                    tw-p-2
-                                    tw-bg-white'>
+                                    tw-p-2 tw-bg-white'>
                     <textarea
                             name="description"
                             placeholder='Descripción'
@@ -187,10 +187,10 @@ export const SettingsPage = () => {
             </div>
             <div className="tw-p-3">
                 <p>Información de la programación</p>
-                <form   className=' tw-shadow-2xl tw-rounded tw-border-2
+                <form   className=' tw-shadow-2xl
+                                    tw-border tw-border-slate-500 
                                     tw-flex tw-flex-wrap
-                                    tw-p-2 
-                                    tw-bg-white'>
+                                    tw-p-2 tw-bg-white'>
                     {unit.years.map((year, index) => (
                         <div key={year.year}>
                             <label  htmlFor="">{years[index]}</label>
@@ -207,10 +207,10 @@ export const SettingsPage = () => {
             </div>
             <div className="tw-p-3">
                 <p>Información de la ejecución financiera</p>
-                <form   className=' tw-shadow-2xl tw-rounded tw-border-2
+                <form   className=' tw-shadow-2xl
+                                    tw-border tw-border-slate-500 
                                     tw-flex tw-flex-wrap
-                                    tw-p-2 
-                                    tw-bg-white'>
+                                    tw-p-2 tw-bg-white'>
                     {unit.years.map((year, index) => (
                         <div key={year.year}>
                             <label  htmlFor="">{years[index]}</label>

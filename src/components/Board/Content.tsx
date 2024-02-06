@@ -164,7 +164,7 @@ export const Content = ( props : ContentProps ) => {
                                         tw-font-montserrat
                                         tw-underline tw-underline-offset-2">
                             {rootTree.map((item) => (
-                                <li key={item.length}>
+                                <li key={item[0]}>
                                     {item[0]}
                                 </li>
                             ))}
