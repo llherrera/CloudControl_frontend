@@ -70,7 +70,7 @@ export const EvidenceDetail = ( {evi, index}: EvidenceDetailProps ) => {
                 {new Date(evi.date_file).getDate()}/{new Date(evi.date_file).getMonth()+1}/{new Date(evi.date_file).getFullYear()}
             </th>
             <th  className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
-                <a href={evi.file_link}>Visitar</a>
+                <a href={evi.file_link} target="_blank">Visitar</a>
             </th>
             <th  className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
                 <button className="tw-bg-greenBtn hover:tw-bg-green-400 

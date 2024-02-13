@@ -69,6 +69,7 @@ const ListPDT = ( props: PDTPageProps ) => {
                                     tw-text-white hover:tw-text-black tw-font-bold
                                     tw-rounded tw-w-full tw-py-2 tw-mb-4"
                         onClick={handleAddPdt}
+                        type="button"
                         title="Agregar un nuevo plan">
                     Añadir Plan +
                 </button>
@@ -84,12 +85,14 @@ const ListPDT = ( props: PDTPageProps ) => {
                                         tw-bg-gray-200 hover:tw-bg-gray-300
                                         tw-border-4 tw-border-gray-400"
                             onClick={() => handlePdtid(e.id_plan!)}
+                            type="button"
                             title={e.description}>
                         <p className="tw-mr-4">{e.name}</p>
                         <p className="tw-ml-4">{e.department}</p>
                     </button>
                     <IconButton color="success"
                                 aria-label="delete"
+                                type="button"
                                 onClick={() => handleAdd(e.id_plan!)}
                                 title="Agregar funcionario al plan">
                         <PersonAddAltIcon/>
