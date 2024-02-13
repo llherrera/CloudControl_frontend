@@ -163,7 +163,7 @@ export const addPDT = async (pdt: PDTInterface) => {
             TownHall:           pdt.department,
             Municipality:       pdt.municipality,
             id_municipality:    pdt.id_municipality,
-            StartDate:          pdt.start_date.slice(0, 19).replace('T', ' '),
+            StartDate:          pdt.start_date,
             EndDate:            pdt.end_date.slice(0, 19).replace('T', ' '),
             Description:        pdt.description,
         });
@@ -651,6 +651,14 @@ export const updateIndicator = async (id_node: string, file: File) => {
         headers: {
             'Content-Type': 'multipart/form-data'
         }
+    });
+    return response.data;
+}
+
+export const updateDeadline = async (id_plan: number, date: string) => {
+    const response = await api.put('/plan-territorial/deadline', {
+        id_plan: id_plan,
+        deadline_date: date
     });
     return response.data;
 }

@@ -26,7 +26,8 @@ import {thunkGetPDTid,
         thunkAddLevel,
         thunkAddNodes,
         removePDT,
-        thunkUpdateLocations } from "./thunks";
+        thunkUpdateLocations,
+        thunkUpdateDeadline } from "./thunks";
 
 const getInitialState = (): InitialStatePlanInterface => {
     const planState = getGenericState('plan');
@@ -542,6 +543,20 @@ export const planSlice = createSlice({
         builder.addCase(removePDT, state => {
             removeGenericState('plan');
             state.plan = undefined;
+        });
+
+
+        builder.addCase(thunkUpdateDeadline.pending, state => {
+            if (!state.loadingPlan) state.loadingPlan = true;
+            state.errorLoadingPlan = undefined;
+        });
+        builder.addCase(thunkUpdateDeadline.fulfilled, (state, action) => {
+            state.plan!.deadline = action.meta.arg.date
+            state.loadingPlan = false;
+        });
+        builder.addCase(thunkUpdateDeadline.rejected, (state, action) => {
+            state.loadingPlan = false;
+            state.errorLoadingPlan = action.payload;
         });
     }
 });

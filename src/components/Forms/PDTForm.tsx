@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import IconButton from "@mui/material/IconButton";
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
@@ -34,9 +34,10 @@ export const PDTForm = () => {
         department: "",
         municipality: "",
         id_municipality: "",
-        start_date: new Date().getUTCFullYear().toString(),
-        end_date: (new Date().getUTCFullYear() + 3).toString(),
+        start_date: new Date(fechaInicio, 0, 1).toISOString(),
+        end_date: new Date(fechaInicio + 3, 11, 31).toISOString(),
         description: "",
+        deadline: ""
     });
 
     useEffect(() => {
@@ -84,7 +85,7 @@ export const PDTForm = () => {
         });
     }, [selectedDepartamento]);
 
-    useEffect(() => {
+    const registerCall = useCallback(() => {
         if (plan === undefined) return;
         const { id_plan } = plan;
         if (id_plan === undefined) return;
@@ -134,9 +135,12 @@ export const PDTForm = () => {
         });
     };
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         dispatch(thunkAddPDT(planData))
+        .then(() => {
+            registerCall();
+        })
         .catch((err) => {
             console.log(err);
         });

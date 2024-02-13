@@ -14,11 +14,13 @@ import { UbicationsPopover, ModalSpinner } from "@/components";
 
 export const EvidenceForm = () => {
     const dispatch = useAppDispatch();
+    const todayDate = new Date();
+    const deadLine = new Date(todayDate.getUTCFullYear(), 1, 1);
 
     const { unit } = useAppSelector((state) => state.unit);
     const { list_points, evi_selected } = useAppSelector((state) => state.evidence);
     const { id_plan } = useAppSelector((state) => state.content);
-    const { locations } = useAppSelector((state) => state.plan)
+    const { locations, plan } = useAppSelector((state) => state.plan)
 
     const [loading, setLoading] = useState(false);
     const [data, setData] = useState<EvidenceInterface>(evi_selected??
@@ -45,6 +47,7 @@ export const EvidenceForm = () => {
         state: 0,
     });
     const [documento, setDocumento] = useState<FileList | null>(null);
+    const [yearRegister, setYearRegister] = useState(todayDate.getUTCFullYear());
 
     useEffect(()=> {
         dispatch(thunkGetLocations(id_plan))
@@ -144,13 +147,36 @@ export const EvidenceForm = () => {
             <ToastContainer/>
             <label className="tw-text-center md:tw-text-left">Fecha: {new Date().toLocaleDateString()} </label>
                     
-            <div className="tw-mt-2">
-                <p>Código meta:</p>
-                <label className="  tw-m-3 tw-p-2 tw-rounded
+            <div className="tw-mt-2 tw-flex">
+                <p className="tw-mr-2">Código meta:</p>
+                <label className="  tw-p-2 tw-rounded
                                     tw-border-2 tw-border-gray-400
-                                    tw-bg-white ">{unit.code === '' ? evi_selected?.code : unit.code}</label>
+                                    tw-bg-white ">
+                    {unit.code === '' ? evi_selected?.code : unit.code}
+                </label>
             </div>
 
+            <div className="tw-mt-3 tw-flex tw-gap-2">
+                {todayDate < deadLine ? 
+                    <button className={`${yearRegister === todayDate.getUTCFullYear() - 1 ? 
+                        'tw-bg-blue-400' : 'tw-bg-red-400'}
+                        tw-rounded tw-p-2 
+                        tw-border tw-border-black`}
+                        onClick={()=>setYearRegister(todayDate.getUTCFullYear() - 1)}
+                        type="button">
+                        Adicionar registros {todayDate.getUTCFullYear() - 1}
+                    </button>
+                    :null
+                }
+                <button className={`${yearRegister === todayDate.getUTCFullYear() ? 
+                                    'tw-bg-blue-400' : 'tw-bg-red-400'}
+                                    tw-rounded tw-p-2 
+                                    tw-border tw-border-black`}
+                        onClick={()=>setYearRegister(todayDate.getUTCFullYear())}
+                        type="button">
+                    Adicionar registros {todayDate.getUTCFullYear()}
+                </button>
+            </div>
             <p className="tw-mt-4">Descripcion Actividades:</p>
             <textarea 
                 name="activitiesDesc" 
@@ -218,7 +244,7 @@ export const EvidenceForm = () => {
                         onChange={(e)=> handleInputChange(e)}
                         required>
                         {locations.map((loc) => (
-                            <option value={loc.name} key={loc.name.length}>
+                            <option value={loc.name} key={loc.name}>
                                 {loc.name}
                             </option>
                         ))}

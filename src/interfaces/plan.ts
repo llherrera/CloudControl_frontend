@@ -117,3 +117,8 @@ export interface AddNodeProps {
     id_plan: number;
     nodes: NodeInterface[];
 }
+
+export interface PropsDeadline {
+    id_plan: number;
+    date: string;
+}

@@ -13,7 +13,8 @@ import {PDTInterface,
         UpdateWProps,
         AddLevelProps,
         AddNodeProps, 
-        NodeInterface} from '../../interfaces';
+        NodeInterface,
+        PropsDeadline } from '../../interfaces';
 import { parseErrorAxios } from '../../utils';
 
 import {getPDTid, 
@@ -33,7 +34,8 @@ import {getPDTid,
         updateWeights,
         addLevel,
         addLevelNode,
-        updateLocations } from '@/services/api';
+        updateLocations,
+        updateDeadline } from '@/services/api';
 
 export const thunkGetPDTid = createAsyncThunk<PDTInterface, string, { rejectValue: ErrorBasicInterface }>(
     'pdt/getPDTid',
@@ -284,6 +286,19 @@ export const thunkUpdateLocations = createAsyncThunk<LocationInterface[], PropsL
     async (props: PropsLocations, { rejectWithValue }) => {
         try {
             const res = await updateLocations(props.id_plan, props.locations);
+            return res;
+        } catch (err) {
+            const result = parseErrorAxios(err);
+            return rejectWithValue(result);
+        }
+    }
+)
+
+export const thunkUpdateDeadline = createAsyncThunk<void, PropsDeadline, { rejectValue: ErrorBasicInterface }>(
+    'pdt/updateDeadline',
+    async (props: PropsDeadline, { rejectWithValue }) => {
+        try {
+            const res = await updateDeadline(props.id_plan, props.date);
             return res;
         } catch (err) {
             const result = parseErrorAxios(err);
