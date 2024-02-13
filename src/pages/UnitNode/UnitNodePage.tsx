@@ -166,11 +166,11 @@ export const UnitNodePage = () => {
                     </p>
                 </div>
                 <div className="tw-px-1">
-                    <p className="tw-text-2xl tw-font-bold tw-text-justify">
+                    <div className="tw-text-2xl tw-font-bold tw-text-justify">
                         Hoja de Vida Indicador:
                         <TernaryIndicatorShow/>
                         <TernaryIndicator/>
-                    </p>
+                    </div>
                 </div>
             </div>
         );
@@ -195,7 +195,7 @@ export const UnitNodePage = () => {
                 </div>
                 <div className="tw-flex tw-flex-wrap tw-justify-center">
                 {unit.years.map((item, index) => (
-                        <div key={item.year}
+                        <div key={item.year+1}
                             className="tw-my-2">
                             <p className="  tw-mx-2 
                                             tw-border-x tw-border-t tw-border-black 
@@ -332,7 +332,7 @@ export const UnitNodePage = () => {
             </thead>
             <tbody>
                 {evidences.map((evi, index) => (
-                    <ShowEvidence evi={evi} index={index} key={evi.id_evidence + index}/>
+                    <ShowEvidence evi={evi} index={index} key={evi.id_evidence}/>
                 ))}
             </tbody>
         </table>
@@ -364,14 +364,12 @@ export const UnitNodePage = () => {
                 : null
             }
             <ol className="tw-flex tw-justify-center tw-flex-wrap">
-            {rootTree.map((name) => {
-                return (
-                    <li className="tw-flex tw-mx-3" key={name[1]}>
-                        <p className="tw-text-green-600 tw-text-xl tw-font-bold">{name[1]}:</p> 
-                        <p className="tw-ml-1 tw-text-xl tw-font-bold">{name[0]}</p>
-                    </li>
-                );
-            })}
+            {rootTree.map((name) => (
+                <li className="tw-flex tw-mx-3" key={name[0]}>
+                    <p className="tw-text-green-600 tw-text-xl tw-font-bold">{name[1]}:</p> 
+                    <p className="tw-ml-1 tw-text-xl tw-font-bold">{name[0]}</p>
+                </li>
+            ))}
             </ol>
             <div className="tw-flex tw-justify-center">
                 {unidadForm()}

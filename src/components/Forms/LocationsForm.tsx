@@ -67,7 +67,7 @@ export const LocationsForm = () => {
                 className="tw-shadow-2xl tw-p-2">
                     <p>Añadir localidades/barrios</p>
                     {data.map((location, index) => (
-                        <div key={location.name.length}>
+                        <div key={location.name}>
                             <label>{index + 1}</label>
                             <select name="type"
                                 onChange={(e) => handleTypeChange(e, index)}
@@ -98,8 +98,9 @@ export const LocationsForm = () => {
                             onClick={ deleteLocation }>-</button>
                     </div>
                     <div className="tw-flex tw-justify-center">
-                        <button className="tw-bg-green-500 hover:tw-bg-green-300
-                                            tw-text-white tw-font-bold
+                        <button className="tw-bg-greenColory hover:tw-bg-green-400
+                                            tw-text-white hover:tw-text-black
+                                            tw-font-bold
                                             tw-p-2 tw-rounded"
                                 type="button"
                                 onClick={handleSubmit}>

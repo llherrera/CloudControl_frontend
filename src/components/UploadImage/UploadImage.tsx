@@ -93,7 +93,7 @@ export const UploadLogoCity = () => {
             <div className='tw-flex tw-justify-center'>
                 <button
                     type='button'
-                    className=' tw-bg-greenBtn hover:tw-bg-green-400 
+                    className=' tw-bg-greenColory hover:tw-bg-green-400 
                                 tw-text-white hover:tw-text-black 
                                 tw-font-bold tw-text-center
                                 tw-p-2 tw-mt-2 tw-rounded'
@@ -189,7 +189,7 @@ export const UploadLogoPlan = () => {
             <div className='tw-flex tw-justify-center'>
                 <button
                     type='button'
-                    className=' tw-bg-greenBtn hover:tw-bg-green-400 
+                    className=' tw-bg-greenColory hover:tw-bg-green-400 
                                 tw-text-white hover:tw-text-black 
                                 tw-font-bold tw-text-center
                                 tw-p-2 tw-mt-2 tw-rounded'

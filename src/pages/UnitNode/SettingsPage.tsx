@@ -137,52 +137,67 @@ export const SettingsPage = () => {
                                     tw-border tw-border-slate-500
                                     tw-flex tw-flex-wrap
                                     tw-p-2 tw-bg-white'>
-                    <textarea
-                            name="description"
-                            placeholder='Descripción'
-                            className=' tw-m-3 tw-p-2
-                                        tw-rounded tw-border-2
-                                        tw-border-gray-400'
-                            value={unit.description}
-                            onChange={(e) => handleChangeUnit(e)}/><br />
-                    <input  className=' tw-m-3 tw-p-2
-                                        tw-rounded tw-border-2
-                                        tw-border-gray-400'
-                            placeholder='Indicador'
-                            value={unit.indicator}
-                            onChange={ (e)=>handleChangeUnit(e)}
-                            type="text"
-                            name='indicator'
-                            required/><br />
-                    <input  className=' tw-m-3 tw-p-2
-                                        tw-rounded tw-border-2
-                                        tw-border-gray-400'
-                            placeholder='Meta'
-                            value={unit.goal}
-                            onChange={ (e)=>handleChangeUnit(e)}
-                            type="number"
-                            name='goal'
-                            required/><br />
-                    <input  className=' tw-m-3 tw-p-2
-                                        tw-rounded tw-border-2
-                                        tw-border-gray-400'
-                            placeholder='Línea base'
-                            value={unit.base}
-                            onChange={ (e)=>handleChangeUnit(e)}
-                            type="text"
-                            name='base'
-                            required/>
-                    <select name="responsible"
-                            onChange={ (e)=>handleChangeUnit(e) }
-                            className=' tw-m-3 tw-p-2
-                                        tw-rounded tw-border-2
-                                        tw-border-gray-400'>
-                        {secretaries.map((secretary) => (
-                            <option key={secretary.phone} value={secretary.name}>
-                                {secretary.name}
-                            </option>
-                        ))}
-                    </select>
+                    <div className='tw-flex tw-flex-col tw-ml-3'>
+                        <p>Descripción</p>
+                        <textarea
+                                name="description"
+                                placeholder='Descripción'
+                                className=' tw-p-2
+                                            tw-rounded tw-border-2
+                                            tw-border-gray-400'
+                                value={unit.description}
+                                onChange={(e) => handleChangeUnit(e)}/>
+                    </div>
+                    <div className='tw-flex tw-flex-col tw-ml-3'>
+                        <p>Indicador</p>
+                        <input  className=' tw-p-2
+                                            tw-rounded tw-border-2
+                                            tw-border-gray-400'
+                                placeholder='Indicador'
+                                value={unit.indicator}
+                                onChange={ (e)=>handleChangeUnit(e)}
+                                type="text"
+                                name='indicator'
+                                required/>
+                    </div>
+                    <div className='tw-flex tw-flex-col tw-ml-3'>
+                        <p>Meta</p>
+                        <input  className=' tw-p-2
+                                            tw-rounded tw-border-2
+                                            tw-border-gray-400'
+                                placeholder='Meta'
+                                value={unit.goal}
+                                onChange={ (e)=>handleChangeUnit(e)}
+                                type="number"
+                                name='goal'
+                                required/>
+                    </div>
+                    <div className='tw-flex tw-flex-col tw-ml-3'>
+                        <p>Línea base</p>
+                        <input  className=' tw-p-2
+                                            tw-rounded tw-border-2
+                                            tw-border-gray-400'
+                                placeholder='Línea base'
+                                value={unit.base}
+                                onChange={ (e)=>handleChangeUnit(e)}
+                                type="text"
+                                name='base'
+                                required/>
+                    </div>
+                    <div className='tw-flex tw-flex-col tw-ml-3'>
+                        <p>Secretaría</p>
+                        <select name="responsible"
+                                onChange={ (e)=>handleChangeUnit(e) }
+                                className=' tw-p-2
+                                            tw-rounded tw-border-2
+                                            tw-border-gray-400'>
+                            {secretaries.map((secretary) => (
+                                <option key={secretary.phone} value={secretary.name}>
+                                    {secretary.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
                 </form>
             </div>
             <div className="tw-p-3">
@@ -193,7 +208,7 @@ export const SettingsPage = () => {
                                     tw-p-2 tw-bg-white'>
                     {unit.years.map((year, index) => (
                         <div key={year.year}>
-                            <label  htmlFor="">{years[index]}</label>
+                            <label>{years[index]}</label>
                             <input  className="tw-m-2 tw-p-2 tw-rounded tw-border-2 tw-border-gray-400"
                                     onChange={ (e) => handleChangeYear(e, index) } 
                                     value={ year.physical_programming??0 }

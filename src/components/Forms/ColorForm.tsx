@@ -19,7 +19,7 @@ export const ColorForm = ( props : ColorFromProps ) => {
     
     const [value, setValue] = useState(
         colorimeter.length === 0 ? [[0, 24], [25, 49], [50, 74], [75, 100]] :
-        colorimeter.map((item: number, index) => [colorimeter[(index-1) < 0 ? 0 : index-1]+1, item])
+        colorimeter.map((item: number, index) => [index === 0 ? 0 : colorimeter[index-1]+1, item])
     );
 
     useEffect(() => {
@@ -28,7 +28,7 @@ export const ColorForm = ( props : ColorFromProps ) => {
             .unwrap()
             .then((res: number[]) => {
                 if (res) {
-                    const colors = res.map((item: number, index) => [res[(index-1) < 0 ? 0 : index-1]+1, item]);
+                    const colors = res.map((item: number, index) => [index === 0 ? 0 : res[index-1]+1, item]);
                     setValue(colors);
                 }
             });
@@ -72,28 +72,26 @@ export const ColorForm = ( props : ColorFromProps ) => {
                         tw-flex-wrap 
                         tw-mb-2 tw-ml-4'>
             <ToastContainer />
-            {value.map((value: number[], index: number) => {
-                return (
-                    <div className='tw-flex tw-mx-2'
-                        key={value.length}>
-                        <Box sx={{ width:100, display:'flex', alignItems:'center' }}>
-                            <Slider min={0}
-                                    max={100}
-                                    value={value}
-                                    onChange={handleChange(index)}
-                                    valueLabelDisplay="auto"
-                                    disableSwap/>
-                        </Box>
-                        <div className={`tw-w-12 tw-h-12 tw-ml-3
-                                        ${colorClass(index)}
-                                        tw-rounded-full`}>
-                            <p className='tw-mt-3 tw-font-bold tw-text-center tw-text-white'>
-                                {value[1]}
-                            </p>
-                        </div>
+            {value.map((value: number[], index: number) => (
+                <div className='tw-flex tw-mx-2'
+                    key={index}>
+                    <Box sx={{ width:100, display:'flex', alignItems:'center' }}>
+                        <Slider min={0}
+                                max={100}
+                                value={value}
+                                onChange={handleChange(index)}
+                                valueLabelDisplay="auto"
+                                disableSwap/>
+                    </Box>
+                    <div className={`tw-w-12 tw-h-12 tw-ml-3
+                                    ${colorClass(index)}
+                                    tw-rounded-full`}>
+                        <p className='tw-mt-3 tw-font-bold tw-text-center tw-text-white'>
+                            {value[1]}
+                        </p>
                     </div>
-                )
-            })}
+                </div>
+            ))}
             <button className=' tw-bg-greenColory hover:tw-bg-green-400
                                 tw-text-white hover:tw-text-black
                                 tw-px-2

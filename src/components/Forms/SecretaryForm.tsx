@@ -52,7 +52,7 @@ export const SecretaryForm = () => {
                             tw-p-2">
                 <p>Añadir secretarias</p>
                 {data.map((secretary, index) => (
-                    <div key={secretary.name.length}>
+                    <div key={secretary.name}>
                         <label>{index + 1}</label>
                         <input  className="tw-m-2 tw-p-2 tw-rounded tw-border-2 tw-border-gray-400"
                                 onChange={ (e) => handleInputChange(e, index) } value={ secretary.name}
@@ -82,8 +82,9 @@ export const SecretaryForm = () => {
                             onClick={ deleteSecretary }>-</button>
                 </div>
                 <div className="tw-flex tw-justify-center">
-                    <button className="tw-bg-green-500 hover:tw-bg-green-300
-                                        tw-text-white tw-font-bold
+                    <button className="tw-bg-greenColory hover:tw-bg-green-400
+                                        tw-text-white hover:tw-text-black
+                                        tw-font-bold
                                         tw-p-2 tw-rounded"
                             type="button"
                             onClick={handleSubmit}>
