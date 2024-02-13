@@ -1,9 +1,20 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
-import { UnitInterface, ErrorBasicInterface, GetUnitProps, AddUnitProps, propsIndicator } from "@/interfaces";
+import { 
+    UnitInterface, 
+    ErrorBasicInterface, 
+    GetUnitProps, 
+    AddUnitProps, 
+    propsIndicator,
+    PropsExecution } from "@/interfaces";
 import { parseErrorAxios } from "@/utils";
 
-import { getUnitNodeAndYears, addUnitNodeAndYears, updateUnitNodeAndYears, updateIndicator } from "@/services/api";
+import { 
+    getUnitNodeAndYears, 
+    addUnitNodeAndYears, 
+    updateUnitNodeAndYears, 
+    updateIndicator,
+    updateExecution } from "@/services/api";
 
 export const thunkGetUnit = createAsyncThunk<UnitInterface, GetUnitProps, { rejectValue: ErrorBasicInterface}>(
     "unit/getUnit", 
@@ -82,3 +93,16 @@ export const thunkUpdateIndicator = createAsyncThunk<string, propsIndicator, {re
         }
     }
 );
+
+export const thunkUpdateExecution = createAsyncThunk<void, PropsExecution, { rejectValue: ErrorBasicInterface }>(
+    'unit/updateExecution',
+    async (props: PropsExecution, { rejectWithValue }) => {
+        try {
+            const res = await updateExecution(props.year, props.value, props.code);
+            return res;
+        } catch (err) {
+            const result = parseErrorAxios(err);
+            return rejectWithValue(result);
+        }
+    }
+)

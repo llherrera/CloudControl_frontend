@@ -662,3 +662,17 @@ export const updateDeadline = async (id_plan: number, date: string) => {
     });
     return response.data;
 }
+
+export const updateExecution = async (year: number, value: number, code: string) => {
+    try {
+        const date = new Date(`${year}-01-01`)
+        const response = await api.put('/nodo/ejecucion', {
+            date,
+            value,
+            code
+        });
+        return response.data;
+    } catch (err) {
+        return alert("Error: El año no está en el formato correcto");
+    }
+}

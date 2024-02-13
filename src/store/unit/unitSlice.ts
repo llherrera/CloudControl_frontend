@@ -3,7 +3,12 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { InitialStateUnitInterface, UnitInterface } from "@/interfaces";
 import { setGenericState, getGenericState, removeGenericState } from "@/utils";
 
-import { thunkGetUnit, thunkAddUnit, thunkUpdateUnit, thunkUpdateIndicator } from "./thunks";
+import { 
+    thunkGetUnit, 
+    thunkAddUnit, 
+    thunkUpdateUnit, 
+    thunkUpdateIndicator,
+    thunkUpdateExecution } from "./thunks";
 
 const getInitialState = (): InitialStateUnitInterface => {
     const unitState = getGenericState("unit");
@@ -119,6 +124,20 @@ export const unitSlice = createSlice({
             setGenericState('unit', state);
         });
         builder.addCase(thunkUpdateIndicator.rejected, (state, action) => {
+            state.loadingUnit = false;
+            state.errorLoadingUnit = action.payload;
+        });
+
+
+        builder.addCase(thunkUpdateExecution.pending, state => {
+            if (!state.loadingUnit) state.loadingUnit = true;
+            state.errorLoadingUnit = undefined;
+        });
+        builder.addCase(thunkUpdateExecution.fulfilled, state => {
+            //state.plan!.deadline = action.meta.arg.date
+            state.loadingUnit = false;
+        });
+        builder.addCase(thunkUpdateExecution.rejected, (state, action) => {
             state.loadingUnit = false;
             state.errorLoadingUnit = action.payload;
         });
