@@ -3,7 +3,7 @@ import { useState } from "react";
 import InfoIcon from '@mui/icons-material/Info';
 import { Popover, ArrowContainer } from 'react-tiny-popover';
 
-export const InfoPopover = () => {
+export const InfoPopover = ({content}:{content: string}) => {
     const [open, setOpen] = useState(false);
 
     const handleClose = () => {
@@ -24,22 +24,22 @@ export const InfoPopover = () => {
                     arrowSize={10}
                     className='popover-arrow-container'
                     arrowClassName='popover-arrow'>
-                    <Content/>
+                    <Content content={content}/>
                 </ArrowContainer>
             )}>
-            <button onClick={()=>setOpen(!open)}>
+            <button onClick={()=>setOpen(!open)} type="button">
                 <InfoIcon color="action"/>
             </button>
         </Popover>
     );
 }
 
-const Content = () => {
+const Content = ({content}:{content:string}) => {
     return (
         <div className="tw-flex tw-flex-wrap tw-bg-white">
             <p className='  tw-border tw-border-slate-400
                             tw-rounded tw-p-1 tw-text-wrap'>
-                Al seleccionar la fecha de corte, será la misma en cada año. <br/> Se bloqueará la opción de subir o actualizar evidencias para el año anterior.
+                {content}
             </p>
         </div>
     );

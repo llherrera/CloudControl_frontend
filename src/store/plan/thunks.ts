@@ -259,7 +259,7 @@ export const thunkAddLocations = createAsyncThunk<LocationInterface[], PropsLoca
     async (props: PropsLocations, { rejectWithValue }) => {
         try {
             const { id_plan, locations } = props;
-            const res = await addLocations(id_plan, locations);
+            const res = await addLocations(id_plan, locations, props.location);
             return res;
         } catch (err) {
             const result = parseErrorAxios(err);
@@ -285,7 +285,7 @@ export const thunkUpdateLocations = createAsyncThunk<LocationInterface[], PropsL
     'pdt/updateLocations',
     async (props: PropsLocations, { rejectWithValue }) => {
         try {
-            const res = await updateLocations(props.id_plan, props.locations);
+            const res = await updateLocations(props.id_plan, props.locations, props.location);
             return res;
         } catch (err) {
             const result = parseErrorAxios(err);

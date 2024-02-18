@@ -96,13 +96,15 @@ export interface UbicationDB {
     lng: number;
 }
 export enum locationTypes {
-    neighborhood = 'Barrio / Vereda',
-    commune = 'Comuna / Corregimiento',
+    neighborhood = 'Barrio',
+    vereda = 'Vereda',
+    center = 'Centro poblado',
 }
 export interface LocationInterface {
-    id_plan: number
-    type: locationTypes
+    id_plan: number;
+    type: string;
     name: string;
-    lat?: number
-    lng?: number
+    lat?: number;
+    lng?: number;
+    belongs?: string;
 }

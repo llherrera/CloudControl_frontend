@@ -23,7 +23,7 @@ export const LocationPopover = (props: PopoverProps) => {
     return (
         <Popover
             isOpen={poLocationIsOpen}
-            positions={['right']}
+            positions={['right', 'left', 'top', 'bottom']}
             content={MapContainer(props)}
             onClickOutside={toggleOpen}>
             <button type="button" onClick={toggleOpen}>

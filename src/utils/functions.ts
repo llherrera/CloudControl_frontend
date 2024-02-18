@@ -7,7 +7,8 @@ import {
   AuthInterface, 
   ErrorBasicInterface, 
   LevelInterface,
-  ReportPDTInterface } from '../interfaces'
+  ReportPDTInterface,
+  LocationInterface } from '../interfaces'
 import { setToken } from './storage'
 
 export const debounce = <F extends (...args: Parameters<F>) => ReturnType<F>>(func: F, waitFor = 800) => {
@@ -231,4 +232,14 @@ export const handleInputFile = (e: React.ChangeEvent<HTMLInputElement>, callback
   if (e.target.files === null) return
   const file = e.target.files[0]
   callback(file)
-};
+}
+
+export const convertLocations = (locations: LocationInterface[]): Map<LocationInterface, LocationInterface[]> => {
+  let result = new Map();
+  const locs = locations.filter(loc => loc.belongs === '');
+  for(const element of locs) {
+    const blns = locations.filter(loc => loc.belongs === element.name);
+    result.set(element, blns);
+  }
+  return result;
+}

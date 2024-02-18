@@ -109,7 +109,7 @@ const SettingPageWrapper = () => {
                         onClick={()=>submitDate()}>
                         {loadingPlan ? 'Cargando...' : 'Establecer fecha'}
                     </button>
-                    <InfoPopover/>
+                    <InfoPopover content={'Al seleccionar la fecha de corte, será la misma en cada año.\nSe bloqueará la opción de subir o actualizar evidencias para el año anterior.'}/>
                 </div>
                 : null
             }

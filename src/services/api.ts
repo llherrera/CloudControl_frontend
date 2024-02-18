@@ -597,10 +597,11 @@ export const getSecretaries = async (id_plan: number) => {
     return response.data;
 }
 
-export const addLocations = async (id_plan: number, locations: LocationInterface[]) => {
+export const addLocations = async (id_plan: number, locations: LocationInterface[], location: LocationInterface) => {
     const response = await api.post(`/plan-territorial/localidades`, {
         id_plan,
-        locations
+        locations,
+        location
     });
     return response.data;
 }
@@ -610,10 +611,11 @@ export const getLocations = async (id_plan: number) => {
     return response.data;
 }
 
-export const updateLocations = async (id_plan: number, locations: LocationInterface[]) => {
+export const updateLocations = async (id_plan: number, locations: LocationInterface[], location: LocationInterface) => {
     const response = await api.put(`/plan-territorial/localidades`, {
         id_plan,
-        locations
+        locations,
+        location
     });
     return response.data;
 }

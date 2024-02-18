@@ -7,5 +7,6 @@ export interface Coordinates {
 
 export interface PropsLocations {
     id_plan: number;
-    locations: LocationInterface[]
+    locations: LocationInterface[];
+    location: LocationInterface;
 }

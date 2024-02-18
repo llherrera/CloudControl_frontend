@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { ToastContainer } from 'react-toastify';
-import { notify } from '@/utils';
+import { notify, convertLocations } from '@/utils';
 
 import { useAppSelector, useAppDispatch } from "@/store";
 import { 
@@ -9,7 +9,7 @@ import {
     thunkGetUbiEvidence } from "@/store/evidence/thunks";
 import { thunkGetLocations } from "@/store/plan/thunks"
 
-import { EvidenceInterface } from "@/interfaces";
+import { EvidenceInterface, LocationInterface } from "@/interfaces";
 import { UbicationsPopover, ModalSpinner } from "@/components";
 
 export const EvidenceForm = () => {
@@ -20,7 +20,7 @@ export const EvidenceForm = () => {
     const { unit } = useAppSelector((state) => state.unit);
     const { list_points, evi_selected } = useAppSelector((state) => state.evidence);
     const { id_plan } = useAppSelector((state) => state.content);
-    const { locations, plan } = useAppSelector((state) => state.plan)
+    const { locations } = useAppSelector((state) => state.plan)
 
     const [loading, setLoading] = useState(false);
     const [data, setData] = useState<EvidenceInterface>(evi_selected??
@@ -49,9 +49,28 @@ export const EvidenceForm = () => {
     const [documento, setDocumento] = useState<FileList | null>(null);
     const [yearRegister, setYearRegister] = useState(todayDate.getUTCFullYear());
 
+    const [locationsMap, setLocationsMap] = useState<Map<LocationInterface, LocationInterface[]>>();
+
+    const [locations_, setLocations_] = useState<LocationInterface[]>([]);
+    const [locations__, setLocations__] = useState<LocationInterface[]>([]);
+    const [indexLocations, setIndexLocations] = useState(0);
+
     useEffect(()=> {
-        dispatch(thunkGetLocations(id_plan))
+        dispatch(thunkGetLocations(id_plan));
     }, []);
+
+    useEffect(() => {
+        if (locations.length === 0) return;
+        setLocationsMap(convertLocations(locations));
+    }, [locations]);
+
+    useEffect(() => {
+        if (locationsMap === undefined) return;
+        const locsTemp = Array.from(locationsMap.keys());
+        const locTemp = locationsMap.get(locsTemp[indexLocations]);
+        setLocations_(locsTemp);
+        setLocations__(locTemp??[]);
+    }, [locationsMap, indexLocations]);
 
     useEffect(()=> {
         if (evi_selected !== undefined)
@@ -63,6 +82,11 @@ export const EvidenceForm = () => {
                                         HTMLTextAreaElement>) => {
         const { name, value } = event.target;
         setData({ ...data, [name]: value });
+    };
+
+    const handleLocationSelect = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const { selectedIndex } = event.target;
+        setIndexLocations(selectedIndex);
     };
 
     const handleInputChangeFile = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -233,7 +257,7 @@ export const EvidenceForm = () => {
                             tw-rounded tw-p-2
                             tw-border-2 tw-border-gray-400">
                 <div className="tw-flex tw-flex-col">
-                    <p>Comuna o Corregimiento</p>
+                    <p>Localidad/Comuna/Corregimiento</p>
                     <select 
                         name="commune"
                         id="commune"
@@ -241,18 +265,18 @@ export const EvidenceForm = () => {
                         className=" tw-p-2 tw-rounded
                                     tw-border-2 tw-border-gray-400
                                     tw-bg-white"
-                        onChange={(e)=> handleInputChange(e)}
+                        onChange={(e)=> {handleInputChange(e);handleLocationSelect(e);}}
                         required>
-                        {locations.map((loc) => (
+                        {locations_.map(loc =>
                             <option value={loc.name} key={loc.name}>
                                 {loc.name}
                             </option>
-                        ))}
+                        )}
                         <option value="Todas">Todas</option>
                     </select>
                 </div>
                 <div className="tw-flex tw-flex-col tw-ml-3">
-                    <p>Barrio o Vereda</p>
+                    <p>Barrio/Vereda/Centro poblado</p>
                     <select 
                         name="neighborhood"
                         id="neighborhood"
@@ -262,6 +286,11 @@ export const EvidenceForm = () => {
                                     tw-bg-white"
                         onChange={(e)=> handleInputChange(e)}
                         required>
+                        {locations__.map(loc =>
+                            <option value={loc.name} key={loc.name}>
+                                {loc.name}
+                            </option>
+                        )}
                         <option value="Todas">Todas</option>
                     </select>
                 </div>

@@ -10,12 +10,14 @@ import { ToastContainer } from 'react-toastify';
 
 export const SecretaryForm = () => {
     const dispatch = useAppDispatch();
-    const { plan, secretaries } = useAppSelector((state) => state.plan);
+    const { secretaries } = useAppSelector((state) => state.plan);
+    const { id_plan } = useAppSelector((state) => state.content);
+    const blankSecretary = { id_plan: id_plan, name: '', email: '', phone: 0 };
 
-    const [data, setData] = useState<Secretary[]>(secretaries);
+    const [data, setData] = useState<Secretary[]>(secretaries.length === 0 ? [blankSecretary] : secretaries);
 
     const addSecretary = () => {
-        const newData = [...data, { name: "", id_plan: plan?.id_plan!, email: "", phone: 0 }];
+        const newData = [...data, { name: "", id_plan: id_plan, email: "", phone: 0 }];
         setData(newData);
     };
 
@@ -39,9 +41,9 @@ export const SecretaryForm = () => {
                 return notify("El correo no es válido");
         })
         if (secretaries)
-            dispatch(thunkUpdateSecretaries({ id_plan: plan?.id_plan!, secretaries: data })).then(() => notify("Secretarias actualizadas"));
+            dispatch(thunkUpdateSecretaries({ id_plan: id_plan, secretaries: data })).then(() => notify("Secretarias actualizadas"));
         else
-            dispatch(thunkAddSecretaries({ id_plan: plan?.id_plan!, secretaries: data})).then(() => notify("Secretarias añadidas"));
+            dispatch(thunkAddSecretaries({ id_plan: id_plan, secretaries: data})).then(() => notify("Secretarias añadidas"));
     }
 
     return (
@@ -52,7 +54,7 @@ export const SecretaryForm = () => {
                             tw-p-2">
                 <p>Añadir secretarias</p>
                 {data.map((secretary, index) => (
-                    <div key={secretary.name}>
+                    <div key={index}>
                         <label>{index + 1}</label>
                         <input  className="tw-m-2 tw-p-2 tw-rounded tw-border-2 tw-border-gray-400"
                                 onChange={ (e) => handleInputChange(e, index) } value={ secretary.name}
