@@ -8,7 +8,11 @@ import {
   ErrorBasicInterface, 
   LevelInterface,
   ReportPDTInterface,
-  LocationInterface } from '../interfaces'
+  LocationInterface,
+  Secretary,
+  Item,
+  Visualization,
+  VisualizationRedux } from '../interfaces'
 import { setToken } from './storage'
 
 export const debounce = <F extends (...args: Parameters<F>) => ReturnType<F>>(func: F, waitFor = 800) => {
@@ -236,10 +240,31 @@ export const handleInputFile = (e: React.ChangeEvent<HTMLInputElement>, callback
 
 export const convertLocations = (locations: LocationInterface[]): Map<LocationInterface, LocationInterface[]> => {
   let result = new Map();
-  const locs = locations.filter(loc => loc.belongs === '');
+  const locs = locations.filter(loc => (loc.belongs === '' || loc.belongs === null));
   for(const element of locs) {
     const blns = locations.filter(loc => loc.belongs === element.name);
     result.set(element, blns);
   }
   return result;
+}
+
+export const manageVisualization = (v: Visualization): VisualizationRedux => {
+  return {
+    id: v.id,
+    title: v.title,
+    value: v.value,
+    chart: v.chart,
+    count: v.count,
+  } as VisualizationRedux
+}
+
+export const toItem = (values: LocationInterface[] | Secretary[]): Item[] => {
+  const items: Item[] = []
+  values.map(value => {
+    items.push({
+      value: value.name,
+      name: value.name,
+    })
+  })
+  return items
 }
