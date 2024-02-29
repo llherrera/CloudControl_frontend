@@ -1,6 +1,5 @@
 import { useState, useCallback, useEffect } from 'react';
 import { GoogleMap} from '@react-google-maps/api';
-//import { useJsApiLoader} from '@react-google-maps/api';
 import { Popover } from 'react-tiny-popover';
 
 import { useAppDispatch, useAppSelector } from '@/store';
@@ -8,10 +7,7 @@ import { setPoints } from '@/store/evidence/evidenceSlice';
 
 import { LocationIcon } from '@/assets/icons';
 import { PopoverProps } from '@/interfaces';
-//import { getEnvironment } from '@/utils/environment';
 import icono from "@/assets/icons/location.svg";
-
-//const { API_KEY } = getEnvironment();
 
 export const LocationPopover = (props: PopoverProps) => {
     const [poLocationIsOpen, setPoLocationIsOpen] = useState(false);
@@ -116,11 +112,6 @@ const MapContainer = (props: PopoverProps) => {
     };
 
     let item = props.item;
-    
-    //const { isLoaded } = useJsApiLoader({
-    //    id: 'google-map-script',
-    //    googleMapsApiKey: API_KEY!
-    //});
 
     const onLoad = useCallback(function callback(map: google.maps.Map) {
         if (item.lat && item.lng) {
@@ -204,11 +195,6 @@ const MapContainerUbi = () => {
         },
         center: planLocation
     };
-
-    //const { isLoaded } = useJsApiLoader({
-    //    id: 'google-map-script',
-    //    googleMapsApiKey: API_KEY!
-    //});
 
     useEffect(() => {
         if (list_points.length > 0) {

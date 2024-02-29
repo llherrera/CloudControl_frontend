@@ -3,7 +3,7 @@ import  React,
         useCallback, 
         useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { GoogleMap, useJsApiLoader } from '@react-google-maps/api';
+import { GoogleMap } from '@react-google-maps/api';
 import { ToastContainer } from 'react-toastify';
 import { notify } from '@/utils';
 import "react-toastify/dist/ReactToastify.css";
@@ -20,7 +20,6 @@ import {
     getLevelNodes, 
     getUbiEvidences, 
     getCodeEvidences } from '@/services/api';
-import { getEnvironment } from '@/utils/environment';
 
 export const InterventionMap = () => {
     return (
@@ -29,8 +28,6 @@ export const InterventionMap = () => {
         />
     );
 }
-
-const { API_KEY } = getEnvironment();
 
 const containerStyle = {
     width: '90%',
@@ -89,11 +86,6 @@ const Section = () => {
     const [programs, setPrograms] = useState<NodeInterface[][]>([]);
     const [index_, setIndex_] = useState<number[]>([0, 0]);
     const [codes, setCodes] = useState<string[]>([]);
-
-    //const { isLoaded } = useJsApiLoader({
-    //    id: 'google-map-script',
-    //    googleMapsApiKey: API_KEY!
-    //});
 
     const infoWindow = new google.maps.InfoWindow();
     const mapOptions: google.maps.MapOptions = {

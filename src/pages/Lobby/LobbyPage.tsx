@@ -13,21 +13,12 @@ import { selectOption } from '@/store/content/contentSlice';
 import { thunkGetLevelsById } from '@/store/plan/thunks';
 import { setPlanLocation, setZeroLevelIndex, AddRootTree } from '@/store/plan/planSlice';
 
-import { getEnvironment } from '@/utils';
-import { useJsApiLoader } from '@react-google-maps/api';
-
-const { API_KEY } = getEnvironment();
-
 export const LobbyPage = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
     const { id_plan } = useAppSelector(state => state.content);
     const { plan } = useAppSelector(store => store.plan);
-    //const { isLoaded, loadError} = useJsApiLoader({
-    //    id: 'google-map-script',
-    //    googleMapsApiKey: API_KEY??''
-    //});
 
     useEffect(() => {
         dispatch(thunkGetLevelsById(id_plan.toString()));
@@ -36,7 +27,6 @@ export const LobbyPage = () => {
 
     useEffect(() => {
         const fetchLocation = async () => {
-            //if (plan === undefined || !isLoaded || loadError) return;
             if (plan === undefined) return;
             const geocoder = new google.maps.Geocoder();
             await geocoder.geocode({address: `Colombia, ${plan?.department}, ${plan?.municipality}`})
@@ -50,7 +40,6 @@ export const LobbyPage = () => {
         }
         fetchLocation();
     }, [plan]);
-//    }, [isLoaded, plan]);
 
     const buttons: React.ReactNode[] = [
         <ButtonComponent
