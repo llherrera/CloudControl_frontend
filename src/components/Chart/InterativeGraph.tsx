@@ -37,12 +37,10 @@ const Component = ({index, children, callDataX, callDataY}: ComponentProps) => {
     const { id_plan } = useAppSelector(state => state.content);
     const { years } = useAppSelector(state => state.plan);
 
-    const [filterFields, setFilterFields] = useState<Field[]>([]);
     const [yearsDefault, setYearsDefault] = useState<number>(years[0]);
     const [execDefault, setExecDefault] = useState<string>('financial_execution');
     const [fieldX, setFieldX] = useState<Field|undefined>(undefined);
-    const [fieldY, setFieldY] = useState<Field|undefined>(undefined);
-    
+
     const close = (index: number) => {
         dispatch(removeItemBoard(index));
         dispatch(setIndexSelect(-1));
@@ -52,10 +50,7 @@ const Component = ({index, children, callDataX, callDataY}: ComponentProps) => {
         const item_id = e.dataTransfer.getData('item_id');
         const field = fields.find(fi => fi.id.toString() === item_id);
         if (field === undefined) return;
-        if (fieldX === undefined) setFieldX(field);
-        else if (fieldY === undefined) setFieldY(field);
-        const newFilters = [...filterFields, field];
-        setFilterFields(newFilters);
+        setFieldX(field);
     };
 
     const onClick = () => {
@@ -78,26 +73,16 @@ const Component = ({index, children, callDataX, callDataY}: ComponentProps) => {
 
     useEffect(() => {
         if (fieldX === undefined) return;
-        const { value } = fieldX; //el eje X se quiere usar para las etiquetas
+        const { value } = fieldX;
         switch (value) {
             case 'commune':
-                // To Do: obtener los nombres en forma de array de las ubicaciones que no tengan un 'belongs'
-                getLocation(true, true);
+                getLocation(true);
                 break;
             case 'neighborhood':
-                // To Do: obtener los nombres en forma de array de las ubicaciones que si tengan un 'belongs'
-                getLocation(false, true);
+                getLocation(false);
                 break;
             case 'secretary':
-                // To Do: obtener los nombres en forma de array de las secretarias
                 getDataSecretary();
-                break;
-            case 'execution':
-                // To Do: supongo que se quiere elegir entre programacion, fisica y financiera
-                break;
-            case 'years':
-                // To Do: obtener los años del plan
-                getYears(true);
                 break;
             default:
                 notify('No se ha asignado un campo');
@@ -105,36 +90,7 @@ const Component = ({index, children, callDataX, callDataY}: ComponentProps) => {
         }
     }, [fieldX, yearsDefault, execDefault]);
 
-    useEffect(() => {
-        if (fieldY === undefined) return;
-        const { value } = fieldY; //el eje Y se quiere usar para los valores de las etiquetas
-        switch (value) {
-            case 'commune':
-                // To Do: obtener la data y asignarla dispatch(thunkGetLocations(id_plan));
-                getLocation(true, false);
-                break;
-            case 'neighborhood':
-                // To Do: obtener la data y asignarla dispatch(thunkGetLocations(id_plan));
-                getLocation(false, false);
-                break;
-            case 'secretary':
-                // To Do: obtener la data y asignarla dispatch(thunkGetSecretaries(id_plan));
-                getDataSecretary();
-                break;
-            case 'execution':
-                // To Do: obtener la data y asignarla 
-                break;
-            case 'years':
-                // To Do: obtener la data y asignarla setItemsX(yearsToItem());
-                getYears(false);
-                break;
-            default:
-                notify('No se ha asignado un campo');
-                break;
-        }
-    }, [fieldY, yearsDefault, execDefault]);
-
-    const getLocation = (sw: boolean, sw2: boolean) => {
+    const getLocation = (sw: boolean) => {
         getLocations(id_plan).then(res => {
             if (!res) return;
             let locs: LocationInterface[] = res
@@ -145,12 +101,8 @@ const Component = ({index, children, callDataX, callDataY}: ComponentProps) => {
                 temp.push(loc.name);
             });
             callDataX(temp);
+            dispatch(setCategories(temp));
         })
-    };
-
-    const getYears = (sw: boolean) => {
-        const temp = years.map(year => year+'');
-        callDataX(temp);
     };
 
     const getDataSecretary = () => {
@@ -171,7 +123,6 @@ const Component = ({index, children, callDataX, callDataY}: ComponentProps) => {
         const keys = Array.from(maps.keys());
         callDataX(keys);
         dispatch(setCategories(keys));
-        //if (yearsDefault === 0) {
         let acumA = [];
         for (const year of yearsDefault === 0 ? years : [yearsDefault]) {
             const list = tempSecs.map(sec => maps.get(sec!)!.get(year));
@@ -185,21 +136,7 @@ const Component = ({index, children, callDataX, callDataY}: ComponentProps) => {
             acum = acum.map(a => parseFloat(a.toFixed(2)));
             acumA.push(acum)
         }
-        console.log(acumA);
-        
         callDataY(acumA);
-        //} else {
-        //    const list = tempSecs.map(sec => maps.get(sec!)!.get(yearsDefault));
-        //    let acum: number[] = [];
-        //    if (execDefault === 'physical_execution')
-        //        acum = list.map(temp => temp!.reduce((a, b) => a + b.physical_execution, 0));
-        //    else if (execDefault === 'financial_execution')
-        //        acum = list.map(temp => temp!.reduce((a, b) => a + (b.financial_execution/1000000), 0));
-        //    else if (execDefault === 'physical_programming')
-        //        acum = list.map(temp => temp!.reduce((a, b) => a + b.physical_programming, 0));
-        //    acum = acum.map(a => parseFloat(a.toFixed(2)));
-        //    callDataY(acum);
-        //}
     };
 
     return (
@@ -212,7 +149,7 @@ const Component = ({index, children, callDataX, callDataY}: ComponentProps) => {
                     onClick={()=>close(index)}>
                 <Close/>
             </button>
-            {filterFields.length === 0 ? 
+            {fieldX === undefined ? 
             <div className="tw-bg-white tw-h-full tw-flex tw-flex-col tw-items-center tw-justify-center">
                 <Dataset sx={{ fontSize: 80 }}/>
                 <p>Cargue un campo</p>
@@ -228,7 +165,7 @@ const Component = ({index, children, callDataX, callDataY}: ComponentProps) => {
 export const InterativeChart = ({type, index}: Props) => {
     const chartComponentRef = useRef<HighchartsReact.RefObject>(null);
 
-    const { indexSelect, yearSelect, execSelect } = useAppSelector(state => state.chart);
+    const { yearSelect } = useAppSelector(state => state.chart);
     const { years } = useAppSelector(state => state.plan);
 
     const [dataX, setDataX] = useState<string[] | number[]>([]);
@@ -243,7 +180,6 @@ export const InterativeChart = ({type, index}: Props) => {
                 y: dataY[index]
             }
         });
-        console.log(temp);
         setChartData(temp);
     }, [dataX, dataY]);
 
