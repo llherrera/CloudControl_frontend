@@ -120,7 +120,7 @@ const Dashboard = (props: Props) => {
                             <p className="tw-mx-2 tw-mb-4">Campos</p>
                             {fields.map(item =>
                                 <li role="menuitem"
-                                className="tw-mx-2 tw-flex"
+                                    className="tw-mx-2 tw-flex tw-cursor-grab"
                                     title={item.title}
                                     draggable onDragStart={(e)=>startDrag(e, item.id.toString())}
                                     key={item.id}>
@@ -140,6 +140,7 @@ const Dashboard = (props: Props) => {
                         <p className="tw-px-2">Visualización</p>
                         {visualization.map(item =>
                             <li role="menuitem"
+                                className="tw-cursor-grab"
                                 title={item.title}
                                 draggable onDragStart={(e)=>startDrag2(e, item.id)}
                                 key={item.id}>

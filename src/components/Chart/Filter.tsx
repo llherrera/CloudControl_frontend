@@ -7,7 +7,7 @@ import { setYearSelect, setExecSelect } from '@/store/chart/chartSlice';
 export const Filter = () => {
     const dispatch = useAppDispatch();
     const { years } = useAppSelector(state => state.plan);
-    const { board, indexSelect, categories } = useAppSelector(state => state.chart);
+    const { board, yearSelect, execSelect, categories } = useAppSelector(state => state.chart);
 
     if (board.length === 0) return null;
 
@@ -34,16 +34,18 @@ export const Filter = () => {
             </select>
             <p>Año</p>
             <select className='tw-w-full'
-                    onChange={handleYearSelect}>
-                {years.map(year => <option key={year} className='tw-text-clip' value={year}>{year}</option>)}
-                <option value="all">Todos</option>
+                    onChange={handleYearSelect}
+                    value={yearSelect}>
+                {years.map(year => <option key={year} value={year}>{year}</option>)}
+                <option value={0}>Todos</option>
             </select>
             <p>Ejecución</p>
             <select className='tw-w-full'
-                    onChange={handleExecutionSelect}>
-                <option value="fis">Fisica</option>
-                <option value="fin">Financiera</option>
-                <option value="pro">Programación</option>
+                    onChange={handleExecutionSelect}
+                    value={execSelect}>
+                <option value="financial_execution">Financiera</option>
+                <option value="physical_execution">Fisica</option>
+                <option value="physical_programming">Programación</option>
             </select>
         </div>
     );

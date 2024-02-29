@@ -12,7 +12,9 @@ import { Field, LocationInterface, YearDetail } from "@/interfaces";
 import {
     removeItemBoard,
     setIndexSelect,
-    setCategories } from '@/store/chart/chartSlice';
+    setCategories,
+    setYearSelect,
+    setExecSelect } from '@/store/chart/chartSlice';
 
 interface Props {
     type?: string;
@@ -22,25 +24,24 @@ interface ComponentProps {
     index: number;
     children: JSX.Element;
     callDataX: React.Dispatch<React.SetStateAction<string[] | number[]>>;
-    callDataY: React.Dispatch<React.SetStateAction<string[] | number[]>>;
+    callDataY: React.Dispatch<React.SetStateAction<number[][]>>;
 }
 interface ChartData {
-    name: string,
-    y: number
+    name: string;
+    y: number | number[];
 }
 
 const Component = ({index, children, callDataX, callDataY}: ComponentProps) => {
     const dispatch = useAppDispatch();
-    const { indexSelect, yearSelect } = useAppSelector(state => state.chart);
+    const { indexSelect, yearSelect, execSelect } = useAppSelector(state => state.chart);
     const { id_plan } = useAppSelector(state => state.content);
     const { years } = useAppSelector(state => state.plan);
 
     const [filterFields, setFilterFields] = useState<Field[]>([]);
     const [yearsDefault, setYearsDefault] = useState<number>(years[0]);
+    const [execDefault, setExecDefault] = useState<string>('financial_execution');
     const [fieldX, setFieldX] = useState<Field|undefined>(undefined);
     const [fieldY, setFieldY] = useState<Field|undefined>(undefined);
-
-    let acumAll = 0;
     
     const close = (index: number) => {
         dispatch(removeItemBoard(index));
@@ -62,12 +63,18 @@ const Component = ({index, children, callDataX, callDataY}: ComponentProps) => {
             dispatch(setIndexSelect(-1));
         } else {
             dispatch(setIndexSelect(index));
+            dispatch(setExecSelect(execDefault));
+            dispatch(setYearSelect(yearsDefault));
         }
     };
 
     useEffect(() => {
         if (index === indexSelect) setYearsDefault(yearSelect);
     }, [yearSelect]);
+
+    useEffect(() => {
+        if (index === indexSelect) setExecDefault(execSelect);
+    }, [execSelect]);
 
     useEffect(() => {
         if (fieldX === undefined) return;
@@ -96,7 +103,7 @@ const Component = ({index, children, callDataX, callDataY}: ComponentProps) => {
                 notify('No se ha asignado un campo');
                 break;
         }
-    }, [fieldX, yearsDefault]);
+    }, [fieldX, yearsDefault, execDefault]);
 
     useEffect(() => {
         if (fieldY === undefined) return;
@@ -125,7 +132,7 @@ const Component = ({index, children, callDataX, callDataY}: ComponentProps) => {
                 notify('No se ha asignado un campo');
                 break;
         }
-    }, [fieldY, yearsDefault]);
+    }, [fieldY, yearsDefault, execDefault]);
 
     const getLocation = (sw: boolean, sw2: boolean) => {
         getLocations(id_plan).then(res => {
@@ -137,15 +144,13 @@ const Component = ({index, children, callDataX, callDataY}: ComponentProps) => {
             locs.map(loc => {
                 temp.push(loc.name);
             });
-            if (sw2) callDataX(temp);
-            else if (!sw2) callDataY(temp);
+            callDataX(temp);
         })
     };
 
     const getYears = (sw: boolean) => {
         const temp = years.map(year => year+'');
-        if (sw) callDataX(temp);
-        else if (!sw) callDataY(temp);
+        callDataX(temp);
     };
 
     const getDataSecretary = () => {
@@ -166,11 +171,35 @@ const Component = ({index, children, callDataX, callDataY}: ComponentProps) => {
         const keys = Array.from(maps.keys());
         callDataX(keys);
         dispatch(setCategories(keys));
-        const list = tempSecs.map(sec => maps.get(sec!)!.get(yearsDefault));
-        let acum = list.map(temp => temp!.reduce((a, b) => a + (b.financial_execution/1000000), 0));
-        acumAll = acum.reduce((a, b) => a + b, 0);
-        acum = acum.map(a => parseFloat(a.toFixed(2)));
-        callDataY(acum);
+        //if (yearsDefault === 0) {
+        let acumA = [];
+        for (const year of yearsDefault === 0 ? years : [yearsDefault]) {
+            const list = tempSecs.map(sec => maps.get(sec!)!.get(year));
+            let acum: number[] = [];
+            if (execDefault === 'physical_execution')
+                acum = list.map(temp => temp!.reduce((a, b) => a + b.physical_execution, 0));
+            else if (execDefault === 'financial_execution')
+                acum = list.map(temp => temp!.reduce((a, b) => a + (b.financial_execution/1000000), 0));
+            else if (execDefault === 'physical_programming')
+                acum = list.map(temp => temp!.reduce((a, b) => a + b.physical_programming, 0));
+            acum = acum.map(a => parseFloat(a.toFixed(2)));
+            acumA.push(acum)
+        }
+        console.log(acumA);
+        
+        callDataY(acumA);
+        //} else {
+        //    const list = tempSecs.map(sec => maps.get(sec!)!.get(yearsDefault));
+        //    let acum: number[] = [];
+        //    if (execDefault === 'physical_execution')
+        //        acum = list.map(temp => temp!.reduce((a, b) => a + b.physical_execution, 0));
+        //    else if (execDefault === 'financial_execution')
+        //        acum = list.map(temp => temp!.reduce((a, b) => a + (b.financial_execution/1000000), 0));
+        //    else if (execDefault === 'physical_programming')
+        //        acum = list.map(temp => temp!.reduce((a, b) => a + b.physical_programming, 0));
+        //    acum = acum.map(a => parseFloat(a.toFixed(2)));
+        //    callDataY(acum);
+        //}
     };
 
     return (
@@ -199,18 +228,22 @@ const Component = ({index, children, callDataX, callDataY}: ComponentProps) => {
 export const InterativeChart = ({type, index}: Props) => {
     const chartComponentRef = useRef<HighchartsReact.RefObject>(null);
 
+    const { indexSelect, yearSelect, execSelect } = useAppSelector(state => state.chart);
+    const { years } = useAppSelector(state => state.plan);
+
     const [dataX, setDataX] = useState<string[] | number[]>([]);
-    const [dataY, setDataY] = useState<string[] | number[]>([]);
+    const [dataY, setDataY] = useState<number[][]>([]);
     const [chartData, setChartData] = useState<ChartData[]>([]);
 
     useEffect(() => {
         if (dataX.length === 0 || dataY.length === 0) return;
-        const temp = dataX.map((data, index) => {
+        const temp = dataY.map((data, index) => {
             return {
-                name: data.toString(),
-                y: parseFloat(dataY[index].toString())
+                name: dataY.length === 1 ? yearSelect.toString() : years[index].toString(),
+                y: dataY[index]
             }
         });
+        console.log(temp);
         setChartData(temp);
     }, [dataX, dataY]);
 
@@ -234,6 +267,12 @@ export const InterativeChart = ({type, index}: Props) => {
                     enabled: true,
                 },
                 showInLegend: true,
+            },
+            bar: {
+                dataLabels: {
+                    enabled: true,
+                },
+                groupPadding: 0.1
             },
         },
         annotations: [
@@ -260,17 +299,35 @@ export const InterativeChart = ({type, index}: Props) => {
                 ],
             },
         ],
-        series: [
-            {
-                name: '',
+        xAxis: {
+            categories: dataX.map(x => x.toString()),
+            title: {
+                text: null
+            },
+            gridLineWidth: 1,
+            lineWidth: 0,
+        },
+        yAxis: {
+            min: 0,
+            title: {
+                text: null,
+            },
+            labels: {
+                overflow: 'justify',
+            },
+            gridLineWidth: 0
+        },
+        series: dataY.map((data, index) => ({
+                name: dataY.length === 1 ? yearSelect.toString() : years[index].toString(),
                 type: type!.valueOf() as any,
-                data: chartData,
+                data: data,
+                size: `${100 - ((20 * index) - (5 * index))}%`,
+                innerSize: `${100 - ((20 * (index + 1)) - (5 * index))}%`,
                 dataLabels: {
                     enabled: false,
                     crop: false,
                 }
-            },
-        ],
+        })),
     };
 
     return (
@@ -291,7 +348,7 @@ export const InterativeChart = ({type, index}: Props) => {
 export const InterativeCard = ({index}: Props) => {
 
     const [dataX, setDataX] = useState<string[] | number[]>([]);
-    const [dataY, setDataY] = useState<string[] | number[]>([]);
+    const [dataY, setDataY] = useState<number[][]>([]);
 
     return (
         <Component
