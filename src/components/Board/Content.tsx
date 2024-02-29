@@ -16,6 +16,7 @@ import {
     Graph,
     BackBtn, 
     SettingsBtn } from "@/components";
+import { ModalBoard } from "../Modals";
 import { decode } from "@/utils";
 
 export const Content = ( props : ContentProps ) => {
@@ -220,9 +221,12 @@ export const Content = ( props : ContentProps ) => {
                                 tw-shadow-lg
                                 md:tw-col-span-full
                                 lg:tw-col-start-2">
-                    <p className="tw-font-montserrat tw-mt-3">
-                        Cuatrenio  {new Date(plan!.start_date).getUTCFullYear()} - {new Date(plan!.end_date).getUTCFullYear()}
-                    </p><br />
+                    <div className="tw-flex tw-justify-between">
+                        <p className="tw-font-montserrat tw-ml-2 tw-font-bold tw-mt-3">
+                            Cuatrenio  {new Date(plan!.start_date).getUTCFullYear()} - {new Date(plan!.end_date).getUTCFullYear()}
+                        </p>
+                        <ModalBoard/>
+                    </div>
                     <Graph
                         dataValues={ radioBtn === 'fisica' ? progressNodes : financial}/>
                 </div>

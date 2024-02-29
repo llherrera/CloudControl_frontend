@@ -9,3 +9,4 @@ export * from './UploadImage';
 export * from './Inputs';
 export * from './Popover';
 export * from './Spinner';
+export * from './Drawer';
