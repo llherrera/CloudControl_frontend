@@ -44,6 +44,12 @@ export default defineConfig({
         secure: false,
         rewrite: path => path.replace(/^\/geoportal-ficha/, ''),
         changeOrigin: true
+      },
+      '/geocoder': {
+        target: 'https://nominatim.openstreetmap.org/search',
+        secure: false,
+        rewrite: path => path.replace(/^\naminatim-search/, ''),
+        changeOrigin: true
       }
     }
   },

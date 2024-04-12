@@ -35,7 +35,9 @@ export const SettingsPage = () => {
     }, []);
 
     useEffect(() => {
-        dispatch(thunkGetSecretaries(id_plan));
+        if (id_plan != 0 && secretaries.length === 0) {
+            dispatch(thunkGetSecretaries(id_plan));
+        }
     }, []);
 
     const handleChangeUnit = (event: React.ChangeEvent<

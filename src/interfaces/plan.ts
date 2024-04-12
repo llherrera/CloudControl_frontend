@@ -42,7 +42,11 @@ export interface InitialStatePlanInterface {
     radioBtn: string;
     secretaries: Secretary[];
     locations: LocationInterface[];
-    planLocation: Coordinates | undefined
+    planLocation: Coordinates | undefined;
+    bounding1: number;
+    bounding2: number;
+    bounding3: number;
+    bounding4: number;
 }
 
 export interface GetNodeProps {

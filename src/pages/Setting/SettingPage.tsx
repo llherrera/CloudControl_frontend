@@ -35,7 +35,7 @@ const SettingPageWrapper = () => {
     const dispatch = useAppDispatch();
 
     const { token_info } = useAppSelector(state => state.auth);
-    const { plan, loadingPlan } = useAppSelector(store => store.plan);
+    const { plan, loadingPlan, secretaries } = useAppSelector(store => store.plan);
     const { id_plan } = useAppSelector(store => store.content);
 
     const [rol, setRol] = useState("");
@@ -51,7 +51,7 @@ const SettingPageWrapper = () => {
     }, []);
 
     useEffect(() => {
-        if (id_plan != 0) {
+        if (id_plan != 0 && secretaries.length === 0) {
             dispatch(thunkGetSecretaries(id_plan));
             dispatch(thunkGetLocations(id_plan));
         }

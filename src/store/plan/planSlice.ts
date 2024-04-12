@@ -67,7 +67,11 @@ const getInitialState = (): InitialStatePlanInterface => {
         radioBtn: 'fisica',
         secretaries: [],
         locations: [],
-        planLocation: undefined
+        planLocation: undefined,
+        bounding1: 0,
+        bounding2: 0,
+        bounding3: 0,
+        bounding4: 0,
     };
 };
 
@@ -118,6 +122,13 @@ export const planSlice = createSlice({
         },
         setPlanLocation: (state, action: PayloadAction<Coordinates>) => {
             state.planLocation = action.payload;
+            setGenericState('plan', state);
+        },
+        setBoundingbox: (state, action: PayloadAction<number[]>) => {
+            state.bounding1 = action.payload[0];
+            state.bounding2 = action.payload[1];
+            state.bounding3 = action.payload[2];
+            state.bounding4 = action.payload[3];
             setGenericState('plan', state);
         },
         setLevels: (state, action: PayloadAction<LevelInterface[]>) => {
@@ -574,6 +585,7 @@ export const {
     setLoadingReport, 
     setNodesReport, 
     setPlanLocation,
+    setBoundingbox,
     setLevels,
     AddRootTree,
     resetPlan } = planSlice.actions;
