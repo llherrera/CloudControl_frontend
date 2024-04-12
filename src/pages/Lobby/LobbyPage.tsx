@@ -11,7 +11,13 @@ import { MapICon } from '@/assets/icons';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { selectOption } from '@/store/content/contentSlice';
 import { thunkGetLevelsById } from '@/store/plan/thunks';
-import { setPlanLocation, setZeroLevelIndex, AddRootTree } from '@/store/plan/planSlice';
+import { 
+    setPlanLocation, 
+    setZeroLevelIndex, 
+    AddRootTree,
+    setBoundingbox } from '@/store/plan/planSlice';
+
+import { getCoords } from '@/services/map_api';
 
 export const LobbyPage = () => {
     const dispatch = useAppDispatch();
@@ -28,15 +34,19 @@ export const LobbyPage = () => {
     useEffect(() => {
         const fetchLocation = async () => {
             if (plan === undefined) return;
-            const geocoder = new google.maps.Geocoder();
-            await geocoder.geocode({address: `Colombia, ${plan?.department}, ${plan?.municipality}`})
-            .then((res) => {
-                let location = res.results[0].geometry.location;
+            await getCoords(
+                plan.municipality.toLowerCase().normalize('NFD'), 
+                plan.department.toLowerCase().normalize('NFD'), 
+                'Colombia')
+            .then(res => {
                 dispatch(setPlanLocation({
-                    lat: location.lat(),
-                    lng: location.lng()
+                    lat: parseFloat(res.lat),
+                    lng: parseFloat(res.lon)
                 }));
-            });
+                dispatch(setBoundingbox(
+                    res.boundingbox.map(b => parseFloat(b))
+                ));
+            })
         }
         fetchLocation();
     }, [plan]);
