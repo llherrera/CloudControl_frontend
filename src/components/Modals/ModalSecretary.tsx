@@ -52,7 +52,9 @@ const ModalPDT = ( props: ModalsecretaryProps ) => {
     const [indexYear, setIndexYear] = useState<number>(0);
 
     useEffect(() => {
-        dispatch(thunkGetSecretaries(id_plan));
+        if (id_plan != 0 && secretaries.length === 0) {
+            dispatch(thunkGetSecretaries(id_plan));
+        }
     }, []);
 
     useEffect(() => {

@@ -82,6 +82,7 @@ export interface EvidenceInterface {
     file_link: string;
     locations: UbicationDB[];
     state: number;
+    name?: string;
 }
 
 export interface LoginProps {
