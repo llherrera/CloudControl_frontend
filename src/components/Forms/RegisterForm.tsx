@@ -8,6 +8,13 @@ import { doRegister } from "@/services/api";
 import { RegisterInterface, RegisterFormProps } from "@/interfaces";
 import { validateEmail } from "@/utils";
 
+import { initializeApp } from "firebase/app";
+import { firebaseConfig } from '@/configs/firebaseConfig';
+import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth();
+
 export const RegisterForm = (props: RegisterFormProps) => {
     const navigate = useNavigate();
 
@@ -42,7 +49,14 @@ export const RegisterForm = (props: RegisterFormProps) => {
             return alert("El correo no es válido");
         doRegister(props.id, form)
         .then(() => {
-            navigate(`/pdt/PlanIndicativo`, {replace: true})
+            createUserWithEmailAndPassword(auth, form.email, form.password)
+            .then(userCredential => {
+                navigate(`/pdt/PlanIndicativo`, {replace: true})
+            })
+            .catch(err => {
+                console.log(err);
+                alert('Error al autenticar usuario');
+            })
         })
         .catch(() => {
             alert("Error al registrar usuario");

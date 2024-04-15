@@ -8,6 +8,13 @@ import { thunkLogin } from '@/store/auth/thunks';
 import { setIdPlan } from "@/store/content/contentSlice";
 import { Token } from '@/interfaces';
 
+import { initializeApp } from "firebase/app";
+import { firebaseConfig } from '@/configs/firebaseConfig';
+import { signInWithEmailAndPassword, getAuth } from "firebase/auth";
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth();
+
 
 export const LoginForm = () => {
     const dispatch = useAppDispatch();
@@ -36,10 +43,18 @@ export const LoginForm = () => {
         e.preventDefault();
         await dispatch(thunkLogin(user))
         .unwrap()
-        .then((res) => {
+        .then(res => {
             if (res === undefined) return alert("Usuario o contraseña incorrectos");
             const info = decode(res.token);
-            info.rol === "admin" ? navigate('/pdt') : validateRol(info);
+            signInWithEmailAndPassword(auth, info.email, user.password)
+            .then((userCredential) => {
+                console.log(userCredential);
+                info.rol === "admin" ? navigate('/pdt') : validateRol(info);
+            })
+            .catch(err => {
+                console.log(err);
+                alert('Error al autenticar usuario');
+            })
         })
         .catch(() => {
             notify("Error, usuario o contraseña erronea");
