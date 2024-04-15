@@ -4,13 +4,8 @@ import { notify } from '@/utils';
 import { useAppDispatch, useAppSelector } from '@/store';
 import { setEvidences } from '@/store/evidence/evidenceSlice';
 
-import { NodeInterface, EvidenceInterface } from '@/interfaces';
+import { NodeInterface, EvidenceInterface, Codes } from '@/interfaces';
 import { getLevelNodes, getCodeEvidences } from '@/services/api';
-
-interface Codes {
-    code: string;
-    name: string;
-}
 
 export const LevelsFilters = () => {
     const dispatch = useAppDispatch();
@@ -56,6 +51,7 @@ export const LevelsFilters = () => {
         }
         fetch();
     }, [index_]);
+console.log(programs);
 
     useEffect(() => {
         const fetch = async () => {
@@ -88,7 +84,7 @@ export const LevelsFilters = () => {
             evidens.forEach((item: EvidenceInterface) => {
                 if (tempCodes.includes(item.code)) {
                     const temp_ = codes.find(co => co.code === item.code)
-                    temp.push({...item, name: temp_?.name});
+                    temp.push({...item, name: temp_?.name, responsible: temp_?.responsible});
                 }
             });
             dispatch(setEvidences(temp));

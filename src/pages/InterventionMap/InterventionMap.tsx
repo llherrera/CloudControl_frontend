@@ -33,8 +33,7 @@ export const InterventionMap = () => {
 const Section = () => {
     const navigate = useNavigate();
 
-    const { 
-        levels, 
+    const {
         planLocation, 
         bounding1, 
         bounding2, 
@@ -71,7 +70,8 @@ const Section = () => {
                         <Popup>
                             {item.date.split('T')[0]} <br /><br />
                             {item.name} <br /><br />
-                            {item.activitiesDesc}
+                            {item.activitiesDesc} <br />
+                            {item.responsible}
                         </Popup>
                     </Marker>
                     markers__.push(marker__);

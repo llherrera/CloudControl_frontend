@@ -83,6 +83,7 @@ export interface EvidenceInterface {
     locations: UbicationDB[];
     state: number;
     name?: string;
+    responsible?: string;
 }
 
 export interface LoginProps {

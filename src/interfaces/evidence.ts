@@ -40,3 +40,9 @@ export interface GetUserEviProps {
     page: number;
     id_plan: number;
 }
+
+export interface Codes {
+    code: string;
+    name: string;
+    responsible: string;
+}

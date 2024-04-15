@@ -17,11 +17,6 @@ export const LocationSelect = () => {
         }
     }, []);
 
-    useEffect(() => {
-        if (locations.length > 0)
-            setLocation(locations[0].name);
-    }, [locations]);
-
     const handleChangeSecretary = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setLocation(e.target.value);
     };
@@ -39,6 +34,10 @@ export const LocationSelect = () => {
                     className=" tw-border tw-border-gray-300
                                 tw-rounded
                                 tw-mr-3 tw-w-24">
+                <option
+                    value='Todas'>
+                    Todas
+                </option>
                 {locations.map(loc => 
                     <option 
                         value={loc.name} 

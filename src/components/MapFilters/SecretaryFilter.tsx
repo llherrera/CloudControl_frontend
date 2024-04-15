@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 import { useAppSelector, useAppDispatch } from "@/store";
 import { thunkGetSecretaries } from "@/store/plan/thunks";
 
+import { NodeInterface, EvidenceInterface, Codes } from '@/interfaces';
+
 export const SecretarySelect = () => {
     const dispatch = useAppDispatch();
 
@@ -10,6 +12,7 @@ export const SecretarySelect = () => {
     const { id_plan } = useAppSelector((state) => state.content);
 
     const [secretary, setSecretary] = useState<string>('');
+    const [codes, setCodes] = useState<Codes[]>([]);
 
     useEffect(() => {
         if (id_plan != 0 && secretaries.length === 0) {
@@ -18,9 +21,8 @@ export const SecretarySelect = () => {
     }, []);
 
     useEffect(() => {
-        if (secretaries.length > 0)
-            setSecretary(secretaries[0].name);
-    }, [secretaries]);
+
+    }, [secretary]);
 
     const handleChangeSecretary = (e: React.ChangeEvent<HTMLSelectElement>) => {
         setSecretary(e.target.value);
@@ -39,9 +41,13 @@ export const SecretarySelect = () => {
                     className=" tw-border tw-border-gray-300
                                 tw-rounded
                                 tw-mr-3 tw-w-24">
-                {secretaries.map(sec => 
-                    <option 
-                        value={sec.name} 
+                <option 
+                    value='Todas'>
+                    Todas
+                </option>
+                {secretaries.map(sec =>
+                    <option
+                        value={sec.name}
                         key={sec.name}>
                         {sec.name}
                     </option>
