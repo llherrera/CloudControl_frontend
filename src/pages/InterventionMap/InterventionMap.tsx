@@ -39,8 +39,7 @@ const Section = () => {
         bounding2, 
         bounding3, 
         bounding4 } = useAppSelector(state => state.plan);
-    const { evidences } = useAppSelector(store => store.evidence);
-    const { id_plan } = useAppSelector(store => store.content);
+    const { id_plan, locs } = useAppSelector(store => store.content);
 
     const [markers, setMarkers] = useState<JSX.Element[]>([]);
 
@@ -58,28 +57,42 @@ const Section = () => {
     }, []);
 
     useEffect(() => {
-        if (evidences.length === 0) {
+        if (locs.length === 0) {
             setMarkers([]);
         } else {
-            let markers__: JSX.Element[] = [];
-            evidences.forEach((item) => {
-                item.locations.forEach((location, index) => {
-                    const { lat, lng } = location;
-                    const marker__ = <Marker key={item.id_evidence + index} 
-                        position={[lat, lng]}>
-                        <Popup>
-                            {item.date.split('T')[0]} <br /><br />
-                            {item.name} <br /><br />
-                            {item.activitiesDesc} <br />
-                            {item.responsible}
-                        </Popup>
-                    </Marker>
-                    markers__.push(marker__);
-                });
+            let markers: JSX.Element[] = [];
+            locs.forEach(loc => {
+                const { lat, lng } = loc;
+                const marker = 
+                <Marker key={loc.lat+loc.date}
+                    position={[lat, lng]}>
+                    <Popup>
+                        {loc.date.split('T')[0]} <br /><br />
+                        {loc.name}<br/><br/>
+                        {loc.activitiesDesc}<br/><br/>
+                        {loc.responsible}
+                    </Popup>
+                </Marker>
+                markers.push(marker);
             });
-            setMarkers(markers__);
+            //evidences.forEach((item) => {
+            //    item.locations.forEach((location, index) => {
+            //        const { lat, lng } = location;
+            //        const marker__ = <Marker key={item.id_evidence + index} 
+            //            position={[lat, lng]}>
+            //            <Popup>
+            //                {item.date.split('T')[0]} <br /><br />
+            //                {item.name} <br /><br />
+            //                {item.activitiesDesc} <br />
+            //                {item.responsible}
+            //            </Popup>
+            //        </Marker>
+            //        markers__.push(marker__);
+            //    });
+            //});
+            setMarkers(markers);
         }
-    }, [evidences]);
+    }, [locs]);
 
     const handleBack = () => navigate(-1);
 

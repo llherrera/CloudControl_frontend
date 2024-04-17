@@ -16,6 +16,10 @@ export interface InitialStateContentInterface {
     url_logo: string;
     url_logo_plan: string;
     reload: boolean;
+    secretary: string;
+    location: string;
+    node_code: string;
+    locs: EvidencesLocs[];
 }
 
 export interface GetUnitProps {
@@ -29,4 +33,13 @@ export interface AddUnitProps {
     unit: UnitInterface;
     years: YearInterface[];
     id_city?: number;
+}
+
+export interface EvidencesLocs {
+    date: string;
+    name: string;
+    responsible: string;
+    activitiesDesc: string;
+    lat: number;
+    lng: number;
 }

@@ -48,7 +48,6 @@ export const LoginForm = () => {
             const info = decode(res.token);
             signInWithEmailAndPassword(auth, info.email, user.password)
             .then((userCredential) => {
-                console.log(userCredential);
                 info.rol === "admin" ? navigate('/pdt') : validateRol(info);
             })
             .catch(err => {

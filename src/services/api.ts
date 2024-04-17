@@ -328,17 +328,13 @@ export const addUnits = async (
 }
 
 export const getUnitNodeAndYears = async (id_plan: string, id_node: string) => {
-    try {
-        const response = await api.get(`/nodo`, {
-            params: { 
-                id_plan: id_plan,
-                id_node: id_node
-            }
-        });
-        return response.data;
-    } catch (error) {
-        return error;
-    }
+    const response = await api.get(`/nodo`, {
+        params: { 
+            id_plan: id_plan,
+            id_node: id_node
+        }
+    });
+    return response.data;
 }
 
 export const updateUnitNodeAndYears = async (id_plan: string, id_node: string, node_unit: UnitInterface, years: YearInterface[]) => {
@@ -405,17 +401,24 @@ export const getUbiEvidences = async (id_plan?: number, id_evidence?: number) =>
 }
 
 export const getCodeEvidences = async (id_node: string, id_plan: number) => {
-    try {
-        const response = await api.get(`/nodo/evidencia-codigo`, {
-            params: {
-                id_node: id_node,
-                id_plan: id_plan
-            }
-        });
-        return response.data;
-    } catch (error) {
-        return error;
-    }
+    const response = await api.get(`/nodo/evidencia-codigo`, {
+        params: {
+            id_node: id_node,
+            id_plan: id_plan
+        }
+    });
+    return response.data;
+}
+
+export const getLatLngs = async (id_node: string, secretary: string, location: string) => {
+    const response = await api.get(`/nodo/ubicaciones`, {
+        params: {
+            id_node,
+            secretary,
+            location
+        }
+    });
+    return response.data;
 }
 
 export const getEvidence = async (id_plan: number, code: string) => {

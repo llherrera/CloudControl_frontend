@@ -3,15 +3,16 @@ import { notify } from '@/utils';
 
 import { useAppDispatch, useAppSelector } from '@/store';
 import { setEvidences } from '@/store/evidence/evidenceSlice';
+import { setCode, setLocs } from "@/store/content/contentSlice";
 
-import { NodeInterface, EvidenceInterface, Codes } from '@/interfaces';
-import { getLevelNodes, getCodeEvidences } from '@/services/api';
+import { NodeInterface, EvidenceInterface, Codes, EvidencesLocs } from '@/interfaces';
+import { getLevelNodes, getCodeEvidences, getLatLngs } from '@/services/api';
 
 export const LevelsFilters = () => {
     const dispatch = useAppDispatch();
 
     const { levels } = useAppSelector(state => state.plan);
-    const { id_plan } = useAppSelector(store => store.content);
+    const { id_plan, node_code, secretary, location } = useAppSelector(store => store.content);
 
     const [programs, setPrograms] = useState<NodeInterface[][]>([]);
     const [index_, setIndex_] = useState<number[]>([0, 0]);
@@ -48,10 +49,10 @@ export const LevelsFilters = () => {
                 weight: 0,
             })
             setPrograms(response);
+            dispatch(setCode(programs[1][index_[1]].id_node));
         }
         fetch();
     }, [index_]);
-console.log(programs);
 
     useEffect(() => {
         const fetch = async () => {
@@ -59,7 +60,7 @@ console.log(programs);
             if (programs.length === 1) {
                 dispatch(setEvidences([]));
                 return notify("No hay evidencias para mostrar");
-            } 
+            }
             await getCodeEvidences(programs[1][index_[1]].id_node, id_plan)
             .then((res) => {
                 setCodes(res);
@@ -67,6 +68,13 @@ console.log(programs);
         }
         fetch();
     }, [programs]);
+
+    useEffect(() => {
+        getLatLngs(node_code, secretary, location)
+        .then(res => {
+            dispatch(setLocs(res));
+        });
+    }, [node_code]);
 
     //obtiene los codigos de las metas del programa seleccionado
     /**

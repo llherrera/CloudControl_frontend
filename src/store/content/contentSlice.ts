@@ -1,7 +1,7 @@
 import { InitialStateContentInterface } from "@/interfaces/content";
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { RootState } from "../store";
-import { NodeInterface } from "@/interfaces";
+import { EvidencesLocs, NodeInterface } from "@/interfaces";
 import { setGenericState, getGenericState, removeGenericState } from "@/utils";
 
 const getInitialState = (): InitialStateContentInterface => {
@@ -18,6 +18,10 @@ const getInitialState = (): InitialStateContentInterface => {
         url_logo: '',
         url_logo_plan: '',
         reload: false,
+        secretary: '',
+        location: '',
+        node_code: '',
+        locs: [],
     };
 };
 
@@ -52,6 +56,18 @@ export const contentSlice = createSlice({
         setReload: (state, action: PayloadAction<boolean>) => {
             state.reload = action.payload;
         },
+        setSecretary: (state, action: PayloadAction<string>) => {
+            state.secretary = action.payload;
+        },
+        setLocation: (state, action: PayloadAction<string>) => {
+            state.location = action.payload;
+        },
+        setCode: (state, action: PayloadAction<string>) => {
+            state.node_code = action.payload;
+        },
+        setLocs: (state, action: PayloadAction<EvidencesLocs[]>) => {
+            state.locs = action.payload;
+        },
     }
 });
 
@@ -63,7 +79,11 @@ export const {
     setLogo,
     resetContent,
     setReload,
-    setLogoPlan } = contentSlice.actions;
+    setLogoPlan,
+    setSecretary,
+    setLocation,
+    setCode,
+    setLocs } = contentSlice.actions;
 export const selectContent = (state: RootState) => state.content.index;
 
 export default contentSlice.reducer;
