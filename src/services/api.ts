@@ -62,131 +62,87 @@ api.interceptors.request.use(
 )
 
 export const getPDTs = async () => {
-    try {
-        const response = await api.get("/plan-territorial");
-        return response.data;
-    } catch (error) {
-        return error;
-    }
+    const response = await api.get("/plan-territorial");
+    return response.data;
 }
 
 export const getPDTid = async (id: string) => {
-    try {
-        const response = await api.get(`/plan-territorial/${id}`);
-        return response.data;
-    } catch (error) {
-        return error;
-    }
+    const response = await api.get(`/plan-territorial/${id}`);
+    return response.data;
 }
 
 export const getPDTLevelsById = async (id: string) => {
-    try {
-        const response = await api.get(`/plan-territorial/${id}/nivel`);
-        return response.data;
-    } catch (error) {
-        return error;
-    }
+    const response = await api.get(`/plan-territorial/${id}/nivel`);
+    return response.data;
 }
 
 export const getLastPDT = async () => {
-    try {
-        const response = await api.get("/plan-territorial/ultimo");
-        return response.data[0];
-    } catch (error) {
-        return error;
-    }
+    const response = await api.get("/plan-territorial/ultimo");
+    return response.data[0];
 }
 
 export const doLogin = async (data:LoginProps) => {
     const { username, password } = data;
-    try {
-        const response = await api.post('/usuarios/inicio', {
-            username: username,
-            password: password
-        });
-        return response.data;
-    } catch (error) {
-        return error;
-    }
+    const response = await api.post('/usuarios/inicio', {
+        username: username,
+        password: password
+    });
+    return response.data;
 }
 
 export const doLogout = async () => {
-    try {
-        const response = await api.post('/usuarios/cerrar');
-        return response.data;
-    } catch (error) {
-        return error;
-    }
+    const response = await api.post('/usuarios/cerrar');
+    return response.data;
 }
 
 export const doRefreshToken = async () => {
-    try {
-        const response = await api.post('/usuarios/refrescar');
-        return response.data;
-    } catch (error) {
-        return error;
-    }
+    const response = await api.post('/usuarios/refrescar');
+    return response.data;
 }
 
 export const doRegister = async (id: number, user_data: RegisterInterface) => {
-    try {
-        const response = await api.post('/usuarios/registrar', {
-            id_plan:  id,
-            username: user_data.username,
-            lastname: user_data.lastname,
-            password: user_data.password,
-            email:    user_data.email,
-            rol:      user_data.rol,
-        });
-        return response.data;
-    } catch (error) {
-        return error;
-    }
+    const response = await api.post('/usuarios/registrar', {
+        id_plan:  id,
+        username: user_data.username,
+        lastname: user_data.lastname,
+        password: user_data.password,
+        email:    user_data.email,
+        rol:      user_data.rol,
+    });
+    return response.data;
 }
 
 export const changePermissions = async (id: number, rol: string) => {
-    try {
-        const response = await api.put('/usuarios/actualizar', {
-            id_user: id,
-            rol:     rol
-        });
-        return response.data;
-    } catch (error) {
-        return error;
-    }
+    const response = await api.put('/usuarios/actualizar', {
+        id_user: id,
+        rol:     rol
+    });
+    return response.data;
 }
 
 export const addPDT = async (pdt: PDTInterface) => {
-    try {
-        const response = await api.post("/plan-territorial", {
-            PlanName:           pdt.name,
-            TownHall:           pdt.department,
-            Municipality:       pdt.municipality,
-            id_municipality:    pdt.id_municipality,
-            StartDate:          pdt.start_date,
-            EndDate:            pdt.end_date.slice(0, 19).replace('T', ' '),
-            Description:        pdt.description,
-        });
-        return response.data;
-    } catch (error) {
-        return error;
-    }
+    const response = await api.post("/plan-territorial", {
+        PlanName:           pdt.name,
+        TownHall:           pdt.department,
+        Municipality:       pdt.municipality,
+        id_municipality:    pdt.id_municipality,
+        StartDate:          pdt.start_date,
+        EndDate:            pdt.end_date.slice(0, 19).replace('T', ' '),
+        Description:        pdt.description,
+    });
+    return response.data;
 }
 
 export const updatePDT = async (id: number, pdt: PDTInterface) => {
-    try {
-        const response = await api.put(`/plan-territorial/${id}`, {
-            PlanName:     pdt.name,
-            TownHall:     pdt.department,
-            Municipality: pdt.municipality,
-            StartDate:    pdt.start_date,
-            EndDate:      pdt.end_date,
-            Description:  pdt.description,
-        });
-        return response.data;
-    } catch (error) {
-        return error;
-    }
+    const response = await api.put(`/plan-territorial/${id}`, {
+        PlanName:     pdt.name,
+        TownHall:     pdt.department,
+        Municipality: pdt.municipality,
+        StartDate:    pdt.start_date,
+        EndDate:      pdt.end_date,
+        Description:  pdt.description,
+    });
+    return response.data;
 }
 
 export const uploadLogoCity = async ( id: number, logo: File ) => {
@@ -218,12 +174,8 @@ export const uploadLogoPlan = async ( id: number, logo: File ) => {
 }
 
 export const deletePDT = async (id: number) => {
-    try {
-        const response = await api.delete(`/plan-territorial/${id}`);
-        return response.data;
-    } catch (error) {
-        return error;
-    }
+    const response = await api.delete(`/plan-territorial/${id}`);
+    return response.data;
 }
 
 export const addLevel = async (levels: LevelInterface[], id : string) => {
@@ -232,31 +184,23 @@ export const addLevel = async (levels: LevelInterface[], id : string) => {
 }
 
 export const getLevelNodes = async (props: GetNodeProps) => {
-    try {
-        const response = await api.get(`/plan-territorial/nivel`, { 
-            params: {
-                id_level: props.id_level,
-                Parent:   props.parent
-            }
-        });
-        return response.data;
-    } catch (error) {
-        return error;
-    }
+    const response = await api.get(`/plan-territorial/nivel`, { 
+        params: {
+            id_level: props.id_level,
+            Parent:   props.parent
+        }
+    });
+    return response.data;
 }
 
 export const updateWeights = async (ids: string[], weights: number[]) => {
-    try {
-        const response = await api.put("/plan-territorial/nivel", 
-            {   
-                ids: ids,
-                weights: weights,
-            }
-        );
-        return response.data;
-    } catch (error) {
-        return error;
-    }
+    const response = await api.put("/plan-territorial/nivel", 
+        {   
+            ids: ids,
+            weights: weights,
+        }
+    );
+    return response.data;
 }
 
 export const addLevelNode = async (nodes: NodeInterface[], id_level: number) => {
@@ -277,29 +221,21 @@ export const addNodes =async (data: ExcelPlan[], id_plan: number, levelsName: st
 }
 
 export const deleteLevel = async (id: number) => {
-    try {
-        const response = await api.delete(`/plan-territorial/nivel`, {
-            params: {
-                id_level: id
-            }
-        });
-        return response.data;
-    } catch (error) {
-        return error;
-    }
+    const response = await api.delete(`/plan-territorial/nivel`, {
+        params: {
+            id_level: id
+        }
+    });
+    return response.data;
 }
 
 export const getLevelName = async (ids: string[]) => {
-    try {
-        const response = await api.get(`/nodo/nombres`, {
-            params: { 
-                id_nodes: ids 
-            }
-        });
-        return response.data;
-    } catch (error) {
-        return error;
-    }
+    const response = await api.get(`/nodo/nombres`, {
+        params: { 
+            id_nodes: ids 
+        }
+    });
+    return response.data;
 }
 
 export const addUnitNodeAndYears = async (
@@ -422,58 +358,42 @@ export const getLatLngs = async (id_node: string, secretary: string, location: s
 }
 
 export const getEvidence = async (id_plan: number, code: string) => {
-    try {
-        const response = await api.get("/nodo/evidencia", {
-            params: {
-                id_plan: id_plan,
-                code: code
-            }
-        });
-        return response.data;
-    } catch (error) {
-        return error;
-    }
+    const response = await api.get("/nodo/evidencia", {
+        params: {
+            id_plan: id_plan,
+            code: code
+        }
+    });
+    return response.data;
 }
 
 export const getEvidences = async (id_plan: number, page: number) => {
-    try {
-        const response = await api.get("/nodo/evidencias", {
-            params: {
-                id_plan: id_plan,
-                page: page
-            }
-        });
-        return response.data;
-    } catch (error) {
-        return error;
-    }
+    const response = await api.get("/nodo/evidencias", {
+        params: {
+            id_plan: id_plan,
+            page: page
+        }
+    });
+    return response.data;
 }
 
 export const getEvidenceCount = async (id_plan: number) => {
-    try {
-        const response = await api.get("/nodo/evidencia-contar", {
-            params: {
-                id_plan: id_plan
-            }
-        });
-        return response.data;
-    } catch (error) {
-        return error;
-    }
+    const response = await api.get("/nodo/evidencia-contar", {
+        params: {
+            id_plan: id_plan
+        }
+    });
+    return response.data;
 }
 
 export const getYearProgress = async (ids_nodes: string[], year: number) => {
-    try {
-        const response = await api.get(`/nodo/progreso`, {
-            params: {
-                ids:  ids_nodes,
-                year: year
-            }
-        });
-        return response.data;
-    } catch (error) {
-        return error;
-    }
+    const response = await api.get(`/nodo/progreso`, {
+        params: {
+            ids:  ids_nodes,
+            year: year
+        }
+    });
+    return response.data;
 }
 
 export const getTotalProgress = async (id_plan: number) => {
@@ -486,83 +406,59 @@ export const getTotalProgress = async (id_plan: number) => {
 }
 
 export const updateNode = async (id_plan: string, id_node: string, node: UnitInterface, years: YearInterface) => {
-    try {
-        const response = await api.put("/nodo", { 
-            id_plan: id_plan,
-            id_node: id_node,
-            node:    node,
-            years:   years
-        });
-        return response.data;
-    } catch (error) {
-        return error;
-    }
+    const response = await api.put("/nodo", { 
+        id_plan: id_plan,
+        id_node: id_node,
+        node:    node,
+        years:   years
+    });
+    return response.data;
 }
 
 export const deleteEvidence = async (id_evidence: number) => {
-    try {
-        const response = await api.delete("/nodo/evidencia", {
-            params: {
-                id_evidence: id_evidence
-            }
-        });
-        return response.data;
-    } catch (error) {
-        return error;
-    }
+    const response = await api.delete("/nodo/evidencia", {
+        params: {
+            id_evidence: id_evidence
+        }
+    });
+    return response.data;
 }
 
 export const addColor = async (id_plan: number, colors: number[]) => {
-    try {
-        const response = await api.post(`/plan-territorial/color`, {
-            id_plan:     id_plan,
-            percentages: colors
-        });
-        return response.data;
-    } catch (error) {
-        return error;
-    }
+    const response = await api.post(`/plan-territorial/color`, {
+        id_plan:     id_plan,
+        percentages: colors
+    });
+    return response.data;
 }
 
 export const getColors = async (id_plan: string) => {
-    try {
-        const response = await api.get(`/plan-territorial/color`, {
-            params: {
-                id_plan: id_plan
-            }
-        });
-        return response.data;
-    } catch (error) {
-        return error;
-    }
+    const response = await api.get(`/plan-territorial/color`, {
+        params: {
+            id_plan: id_plan
+        }
+    });
+    return response.data;
 }
 
 export const updateColor = async (id_plan: number, colors: number[]) => {
-    try {
-        const response = await api.put(`/plan-territorial/color`, {
-            id_plan:     id_plan,
-            percentages: colors
-        });
-        return response.data;
-    } catch (error) {
-        return error;
-    }
+    const response = await api.put(`/plan-territorial/color`, {
+        id_plan:     id_plan,
+        percentages: colors
+    });
+    return response.data;
 }
 
 export const approveEvidence = async (id_evidence: number, approve: number, code: string, value: number, file_date: string, reason?: string) => {
-    try {
-        const response = await api.put(`/nodo/evidencia`, {
-            id_evidence: id_evidence,
-            approve:     approve,
-            code:        code,
-            value:       value,
-            file_date:   file_date,
-            reason:      reason
-        });
-        return response.data;
-    } catch (error) {
-        return error;
-    }
+    const response = await api.put(`/nodo/evidencia`, {
+        id_evidence: id_evidence,
+        approve:     approve,
+        code:        code,
+        value:       value,
+        file_date:   file_date,
+        reason:      reason
+    });
+    return response.data;
 }
 
 export const getUserEvidences = async (page: number, id_plan: number) => {
@@ -680,4 +576,26 @@ export const updateExecution = async (year: number, value: number, code: string)
     } catch (err) {
         return alert("Error: El año no está en el formato correcto");
     }
+}
+
+export const getDataDashboardSecretary = async (id_plan: number, secretary: string, year: string) => {
+    const response = await api.get('plan-territorial/dash-secre', {
+        params: {
+            id_plan,
+            secretary,
+            year
+        }
+    });
+    return response.data;
+}
+
+export const getDataDashboardLocation = async (id_plan: number, location: string, year: string) => {
+    const response = await api.get('plan-territorial/dash-locat', {
+        params: {
+            id_plan,
+            location,
+            year
+        }
+    });
+    return response.data;
 }

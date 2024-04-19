@@ -14,10 +14,11 @@ export interface InitialStateChartInterface {
     categories: string[];
     yearSelect: number;
     execSelect: string;
+    cateSelect: string;
 }
 
 export interface Field {
-    id: number;
+    id: string;
     name: string;
     value: string;
     title: string;

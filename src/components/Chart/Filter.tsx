@@ -1,22 +1,21 @@
-import { useEffect } from 'react';
 import { ToastContainer } from 'react-toastify';
 
 import { useAppDispatch, useAppSelector } from "@/store";
-import { setYearSelect, setExecSelect } from '@/store/chart/chartSlice';
+import {
+    setYearSelect,
+    setExecSelect,
+    setCateSelect } from '@/store/chart/chartSlice';
 
 export const Filter = () => {
     const dispatch = useAppDispatch();
-    const { years } = useAppSelector(state => state.plan);
-    const { board, yearSelect, execSelect, categories } = useAppSelector(state => state.chart);
+    const { years, secretaries, locations } = useAppSelector(state => state.plan);
+    const { board, yearSelect, execSelect, cateSelect, categories } = useAppSelector(state => state.chart);
 
     if (board.length === 0) return null;
 
     const handleYearSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const { value } = e.target;
-        if (value === 'all') {
-        } else {
-            dispatch(setYearSelect(parseInt(value)));
-        }
+        dispatch(setYearSelect(parseInt(value)));
     };
 
     const handleExecutionSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -24,11 +23,18 @@ export const Filter = () => {
         dispatch(setExecSelect(value));
     };
 
+    const handleCategorySelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const { value } = e.target;
+        dispatch(setCateSelect(value));
+    };
+
     return (
         <div>
             <ToastContainer/>
             <p>Categorias</p>
-            <select className='tw-w-full'>
+            <select className='tw-w-full'
+                    onChange={handleCategorySelect}
+                    value={cateSelect}>
                 <option value=""></option>
                 {categories && categories.map(cat => <option key={cat} className='tw-text-clip' value={cat}>{cat}</option>)}
             </select>

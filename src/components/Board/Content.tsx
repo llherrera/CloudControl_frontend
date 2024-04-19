@@ -5,8 +5,7 @@ import { useAppDispatch, useAppSelector } from "@/store";
 import { thunkGetNodes } from "@/store/plan/thunks";
 import { decrementLevelIndex, setParent, AddRootTree } from "@/store/plan/planSlice";
 import { setMode } from "@/store/content/contentSlice";
-import IconButton from "@mui/material/IconButton";
-import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
+import { thunkGetLocations, thunkGetSecretaries } from '@/store/plan/thunks';
 
 import { ContentProps } from "@/interfaces";
 import { 
@@ -16,6 +15,9 @@ import {
     Graph,
     BackBtn, 
     SettingsBtn } from "@/components";
+
+import IconButton from "@mui/material/IconButton";
+import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 import { ModalBoard } from "../Modals";
 import { decode } from "@/utils";
 
@@ -34,8 +36,9 @@ export const Content = ( props : ContentProps ) => {
             radioBtn,
             nodes,
             colorimeter,
-            rootTree } = useAppSelector(store => store.plan);
-    const { mode } = useAppSelector(store => store.content);
+            rootTree,
+            secretaries } = useAppSelector(store => store.plan);
+    const { mode, id_plan } = useAppSelector(store => store.content);
 
     const [rol, setRol] = useState("");
     const [id, setId] = useState(0);
@@ -45,6 +48,13 @@ export const Content = ( props : ContentProps ) => {
             const decoded = decode(token_info.token);
             setRol(decoded.rol);
             setId(decoded.id_plan);
+        }
+    }, []);
+
+    useEffect(() => {
+        if (id_plan != 0 && secretaries.length === 0) {
+            dispatch(thunkGetSecretaries(id_plan));
+            dispatch(thunkGetLocations(id_plan));
         }
     }, []);
 

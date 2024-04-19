@@ -63,22 +63,17 @@ const Dashboard = (props: Props) => {
         {id: '5', icon: <ArrowDownward/>, title:'Minimo', value: 'number', chart: false, count:true},
     ];
 
-    const startDrag = (e: React.DragEvent<HTMLLIElement>, item_id: string) => {
-        e.dataTransfer.setData('item_id', item_id);
-    };
+    const startDrag = (e: React.DragEvent<HTMLLIElement>, item_id: string) => e.dataTransfer.setData('item_id', item_id);
 
-    const startDrag2 = (e: React.DragEvent<HTMLLIElement>, item_id: string) => {
-        e.dataTransfer.setData('chart_id', item_id);
-    };
+    const startDrag2 = (e: React.DragEvent<HTMLLIElement>, item_id: string) => e.dataTransfer.setData('chart_id', item_id);
 
-    const dragOver = (e: React.DragEvent<HTMLUListElement>) => {
-        e.preventDefault();
-    };
+    const dragOver = (e: React.DragEvent<HTMLUListElement>) => e.preventDefault();
 
     const onDrop = (e: React.DragEvent<HTMLUListElement>) => {
-        if (board.length === 4) return notify('Solo se pueden agregar 4 visualizaciones');
         const item_id = e.dataTransfer.getData('chart_id');
-        const item = visualization.find(it => it.id.toString() === item_id);
+        if (item_id === '') return;
+        if (board.length === 4) return notify('Solo se pueden agregar 4 visualizaciones');
+        const item = visualization.find(it => it.id === item_id);
         if (item === undefined) return;
         const newBoard = [...board, manageVisualization(item)];
         dispatch(addBoard(newBoard));
@@ -122,7 +117,7 @@ const Dashboard = (props: Props) => {
                                 <li role="menuitem"
                                     className="tw-mx-2 tw-flex tw-cursor-grab"
                                     title={item.title}
-                                    draggable onDragStart={(e)=>startDrag(e, item.id.toString())}
+                                    draggable onDragStart={(e)=>startDrag(e, item.id)}
                                     key={item.id}>
                                     <Dataset/>
                                     {item.name}

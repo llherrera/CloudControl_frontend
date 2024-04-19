@@ -16,6 +16,7 @@ const getInitialState = (): InitialStateChartInterface => {
         categories: [],
         yearSelect: 0,
         execSelect: '',
+        cateSelect: '',
     };
 };
 
@@ -33,6 +34,7 @@ export const chartSlice = createSlice({
         },
         addBoard: (state, action: PayloadAction<VisualizationRedux[]>) => {
             state.board = action.payload;
+            state.indexSelect = action.payload.length-1;
             setGenericState('chart', state);
         },
         removeItemBoard: (state, action: PayloadAction<number>) => {
@@ -55,6 +57,10 @@ export const chartSlice = createSlice({
             state.execSelect = action.payload;
             setGenericState('chart', state);
         },
+        setCateSelect: (state, action: PayloadAction<string>) => {
+            state.cateSelect = action.payload;
+            setGenericState('chart', state);
+        },
     }
 });
 
@@ -66,7 +72,8 @@ export const {
     setIndexSelect,
     setCategories,
     setYearSelect,
-    setExecSelect } = chartSlice.actions;
+    setExecSelect,
+    setCateSelect } = chartSlice.actions;
 export const selectChart = (state: RootState) => state.chart.data;
 
 export default chartSlice.reducer;
