@@ -1,6 +1,7 @@
 import axios from "axios";
 import jwtDecode from "jwt-decode";
 import { getEnvironment } from '../utils/environment';
+import { arrayToMapNodesSecre } from '../utils/functions';
 
 import { 
     YearInterface, 
@@ -576,6 +577,17 @@ export const updateExecution = async (year: number, value: number, code: string)
     } catch (err) {
         return alert("Error: El año no está en el formato correcto");
     }
+}
+
+export const getNodesSecretary = async (id_plan: number, secretary: string) => {
+    const response = await api.get('plan-territorial/nodos-secre', {
+        params: {
+            id_plan,
+            secretary
+        }
+    });
+    const res = arrayToMapNodesSecre(response.data)
+    return res;
 }
 
 export const getDataDashboardSecretary = async (id_plan: number, secretary: string, year: string) => {

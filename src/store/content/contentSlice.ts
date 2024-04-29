@@ -18,7 +18,7 @@ const getInitialState = (): InitialStateContentInterface => {
         url_logo: '',
         url_logo_plan: '',
         reload: false,
-        secretary: '',
+        secretary: 'void',
         location: '',
         node_code: '',
         locs: [],

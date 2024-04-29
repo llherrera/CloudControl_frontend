@@ -39,7 +39,7 @@ const Section = () => {
         bounding2, 
         bounding3, 
         bounding4 } = useAppSelector(state => state.plan);
-    const { id_plan, locs } = useAppSelector(store => store.content);
+    const { id_plan, locs, secretary } = useAppSelector(store => store.content);
 
     const [markers, setMarkers] = useState<JSX.Element[]>([]);
 
@@ -115,7 +115,41 @@ const Section = () => {
             </div>
             <ToastContainer />
 
-            <div className='tw-flex tw-justify-center'>
+            <div className='tw-flex tw-justify-center
+                            tw-gap-2 tw-mx-2 tw-pb-2
+                            tw-relative'>
+                <SecretarySelect/>
+                <MapContainer
+                    center={[planLocation.lat, planLocation.lng]}
+                    zoom={13}
+                    bounds={[[bounding1, bounding3],[bounding2, bounding4]]}
+                    scrollWheelZoom={false}>
+                    <TileLayer
+                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    />
+                    {markers}
+                    <Rectangle
+                        bounds={[[bounding1, bounding3],[bounding2, bounding4]]}
+                    />
+                </MapContainer>
+                
+                <h2 className=' tw-absolute tw-w-1/4
+                                tw-top-2 tw-z-50
+                                tw-translate-x-1/4
+                                tw-bg-white tw-p-2
+                                tw-rounded
+                                tw-font-bold
+                                tw-text-wrap'>
+                    {secretary}
+                </h2>
+            </div>
+        </div>
+    );
+}
+
+/*
+<div className='tw-flex tw-justify-center'>
                 <SecretarySelect/>
                 <LevelsFilters/>
                 <LocationSelect/>
@@ -136,6 +170,4 @@ const Section = () => {
                     />
                 </MapContainer>
             </div>
-        </div>
-    );
-}
+*/

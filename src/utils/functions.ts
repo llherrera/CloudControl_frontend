@@ -11,6 +11,7 @@ import {
   LocationInterface,
   Secretary,
   Item,
+  NodesSecretary,
   Visualization,
   VisualizationRedux } from '../interfaces'
 import { setToken } from './storage'
@@ -267,4 +268,24 @@ export const toItem = (values: LocationInterface[] | Secretary[]): Item[] => {
     })
   })
   return items
+}
+
+export const arrayToMapNodesSecre = (array: NodesSecretary[]) => {
+  const nestedArray: NodesSecretary[] = [];
+  const nodeMap: Map<string, NodesSecretary> = new Map();
+  for (const node of array) {
+    nodeMap.set(node.id_node, node);
+  }
+
+  for (const node of array) {
+    const currentNode = nodeMap.get(node.id_node)!;
+    if (node.parent) {
+      const parentNode = nodeMap.get(node.parent)!;
+      parentNode.children ??= [];
+      parentNode.children!.push(currentNode);
+    } else {
+      nestedArray.push(currentNode);
+    }
+  }
+  return nestedArray;
 }

@@ -14,3 +14,10 @@ export interface PropsSecretary {
 export interface PropsUpdateSecretary {
     secretaries: Secretary[];
 }
+
+export interface NodesSecretary {
+    id_node: string;
+    name: string;
+    parent: string | null;
+    children?: NodesSecretary[];
+}
