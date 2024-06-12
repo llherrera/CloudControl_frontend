@@ -5,60 +5,49 @@ import HighchartsReact from 'highcharts-react-official';
 import { useAppDispatch, useAppSelector } from "@/store";
 
 import { getDataDashboardSecretary,
-    getDataDashboardLocation } from '@/services/api'
+    getDataDashboardLocation,
+    getDataDashboardEvidence } from '@/services/api'
+import {
+    PropsChart,
+    ComponentProps,
+    ChartData,
+    ResponseChartSecre,
+    ResponseChartLocat,
+    ResponseChartEvide,
+    LocationInterface } from "@/interfaces";
 
 import { Close, Dataset } from '@mui/icons-material';
-import { fields, notify } from '@/utils';
-import { Field, LocationInterface, YearDetail } from "@/interfaces";
+import { fields, notify, convertLocations } from '@/utils';
 import {
     removeItemBoard,
     setIndexSelect,
     setCategories,
+    setSubCategories,
     setYearSelect,
     setExecSelect,
-    setCateSelect } from '@/store/chart/chartSlice';
+    setCateSelect,
+    setSubCateSelect,
+    setFieldSelect } from '@/store/chart/chartSlice';
 
-interface Props {
-    type?: string;
-    index: number;
-}
-interface ComponentProps {
-    index: number;
-    children: JSX.Element;
-    callDataX: React.Dispatch<React.SetStateAction<string[] | number[]>>;
-    callDataY: React.Dispatch<React.SetStateAction<number[][]>>;
-}
-interface ChartData {
-    name: string;
-    y: number | number[];
-}
-
-interface ResponseChartSecre {
-    responsible: string;
-    name: null | string;
-    year: number;
-    financial_execution: number;
-    physical_execution: number;
-    physical_programming: number;
-}
-
-interface ResponseChartLocat {
-    neighborhood: string;
-    year: number;
-    executed_resources: number;
-    amount: number;
-}
-
-const Component = ({index, children, callDataX, callDataY}: ComponentProps) => {
+const Component = ({index, children, type, callDataX, callDataY, callTitle}: ComponentProps) => {
     const dispatch = useAppDispatch();
-    const { indexSelect, yearSelect, execSelect, cateSelect, categories } = useAppSelector(state => state.chart);
+    const { indexSelect, yearSelect, execSelect, cateSelect, categories, subCategories, fieldSelect, subCateSelect } = useAppSelector(state => state.chart);
     const { id_plan } = useAppSelector(state => state.content);
     const { years, secretaries, locations } = useAppSelector(state => state.plan);
 
     const [yearsDefault, setYearsDefault] = useState<number>(years[0]);
-    const [execDefault, setExecDefault] = useState<string>('financial_execution');
+    const [execDefault, setExecDefault] = useState<string>('');
     const [cateDefault, setCateDefault] = useState<string>('');
+    const [subCateDefault, setSubCateDefault] = useState<string>('');
     const [categories_, setCategories_] = useState<string[]>([]);
+    const [subCategories_, setSubCategories_] = useState<string[]>([]);
+    const [field, setField] = useState<string>('');
+    const [fieldDefault, setFieldDefault] = useState<string>('');
+
+    const [locationsMap, setLocationsMap] = useState<Map<LocationInterface, LocationInterface[]>>();
+    const [locations_, setLocations_] = useState<LocationInterface[]>([]);
+    const [locations__, setLocations__] = useState<LocationInterface[]>([]);
+    const [indexLocations, setIndexLocations] = useState(0);
 
     const close = (index: number) => {
         dispatch(setExecSelect(''));
@@ -74,6 +63,9 @@ const Component = ({index, children, callDataX, callDataY}: ComponentProps) => {
         const field = fields.find(fi => fi.id === item_id);
         if (field === undefined) return;
         dispatch(setCateSelect(field.value));
+        setField(field.value);
+        dispatch(setFieldSelect(field.id));
+        setFieldDefault(field.id);
     };
 
     const onClick = () => {
@@ -82,112 +74,110 @@ const Component = ({index, children, callDataX, callDataY}: ComponentProps) => {
             dispatch(setExecSelect(''));
             dispatch(setYearSelect(0));
             dispatch(setCateSelect(''));
+            dispatch(setSubCateSelect(''));
             dispatch(setCategories([]));
+            dispatch(setSubCategories([]));
+            dispatch(setFieldSelect(''));
         } else {
             dispatch(setIndexSelect(index));
             dispatch(setExecSelect(execDefault));
             dispatch(setYearSelect(yearsDefault));
             dispatch(setCateSelect(cateDefault));
+            dispatch(setSubCateSelect(subCateDefault));
             dispatch(setCategories(categories_));
+            dispatch(setSubCategories(subCategories_));
+            dispatch(setFieldSelect(fieldDefault));
         }
     };
+
+    useEffect(() => {
+        if (locations.length === 0) return;
+        setLocationsMap(convertLocations(locations));
+    }, [locations]);
+
+    useEffect(() => {
+        if (locationsMap === undefined) return;
+        const locsTemp = Array.from(locationsMap.keys());
+        const locTemp = locationsMap.get(locsTemp[indexLocations]);
+        setLocations_(locsTemp);
+        setLocations__(locTemp??[]);
+    }, [locationsMap, indexLocations]);
 
     useEffect(() => {
         if (index === indexSelect) {
             setCateDefault(cateSelect);
+            setSubCateDefault(subCateDefault);
             setYearsDefault(yearSelect);
             setExecDefault(execSelect);
             setCategories_(categories);
+            setSubCategories_(subCategories);
+            setFieldDefault(fieldSelect);
         }
-    }, [cateSelect, yearSelect, execSelect, categories]);
+    }, [cateSelect, yearSelect, execSelect, categories, subCategories]);
 
     useEffect(() => {
-        let temp;
-        switch (cateDefault) {
-            case 'commune':
-                temp = locations.filter(l => l.belongs !== '');
-                dispatch(setCategories(temp.map(l => l.name)));
-                getDataDashboardLocation(id_plan, cateSelect, yearSelect === 0 ? '' : yearSelect.toString())
-                .then((res: ResponseChartLocat) => {
-                    console.log(res);
-                });
-                break;
-            case 'neighborhood':
-                temp = locations.filter(l => l.belongs === '');
-                dispatch(setCategories(temp.map(l => l.name)));
-                getDataDashboardLocation(id_plan, cateSelect, yearSelect === 0 ? '' : yearSelect.toString())
-                .then((res: ResponseChartLocat) => {
-                    console.log(res);
-                });
-                break;
+        switch (field) {
             case 'secretary':
                 dispatch(setCategories(secretaries.map(l => l.name)));
-                getDataDashboardSecretary(id_plan, cateSelect, yearSelect === 0 ? '' : yearSelect.toString())
+                dispatch(setSubCategories([]));
+                getDataDashboardSecretary(id_plan, cateDefault.replace('secretary', ''), yearsDefault === 0 ? '' : yearsDefault.toString())
                 .then((res: ResponseChartSecre[]) => {
-                    console.log(res);
                     const data = res.map(r => execDefault === 'financial_execution' ?
                         r.financial_execution : execDefault === 'physical_execution' ?
-                        r.physical_execution : r.physical_programming);
+                        r.physical_execution : r.physical_programming
+                    );
+                    const labels: string[] | number[] = yearsDefault === 0 ? res.map(r => r.year) : cateDefault === '' ? res.map(r => r.responsible) : res.map(r => r.name === null ? '' : r.name);
+                    callDataX(labels);
                     callDataY([data]);
+                    callTitle(
+                        `Secretarias:
+                        Ejecución ${execDefault === 'financial_execution' ? `financiera` : execDefault === 'physical_execution' ? `fisica` : `programada`} 
+                        ${cateDefault.replace('secretary', '') === `` ? `de todas las secretarias` : `de la secretaria ${cateDefault}`} 
+                        ${yearsDefault === 0 ? 'total por año' : `para el año ${yearsDefault}`}`);
                 });
+                break;
+            case 'evidences':
+                dispatch(setCategories(locations_.map(l => l.name)));
+                dispatch(setSubCategories(locations__.map(l => l.name)));
+                getDataDashboardEvidence(id_plan, subCateDefault, cateDefault.replace('evidences', ''), yearsDefault === 0 ? '' : yearsDefault.toString())
+                .then((res: ResponseChartEvide[]) => {
+                    const data = res.map(r => execDefault === 'done' ?
+                        r.done : execDefault === 'benefited_population_number' ?
+                        r.benefited_population_number : r.executed_resources
+                    );
+                    const labels: string[] | number[] = yearsDefault === 0 ? res.map(r => r.year) : cateDefault === '' ? res.map(r => r.code!) : res.map(r => r.code!);
+                    callDataX(labels);
+                    callDataY([data]);
+                    let val: number = 0, label: string = '';
+                    if (type === 'min') {
+                        val = Math.min(...data);
+                        label = labels[data.indexOf(val)].toString();
+                    } else if (type === 'max') {
+                        val = Math.max(...data);
+                        label = labels[data.indexOf(val)].toString();
+                    }
+                    callTitle(type === undefined ?
+                        `Evidencias:
+                        ${execDefault === 'done' ? `cantidad realizada` : execDefault === 'benefited_population_number' ? `población beneficiada` : `recursos ejecutados`} 
+                        ${subCateDefault === '' ? (
+                            cateDefault.replace('evidences', '') === `` ? `en todas las ubicaciones` : `en la ubicación de ${cateDefault}`)
+                            : `en la ubicación de ${subCateDefault}`} 
+                        ${yearsDefault === 0 ? 'total por año' : `para el año ${yearsDefault}`}`
+                    : type === 'min' ? `${isNaN(val) ? '' : `En el año ${val}`} se realizó ${label} para todas las localidades`
+                    : ``);
+                })
                 break;
             default:
                 dispatch(setCategories([]));
+                dispatch(setSubCategories([]));
+                callDataX([]);
+                callDataY([]);
+                callTitle('');
                 notify('No se ha asignado un campo');
                 break;
         }
-    }, [cateDefault]);
+    }, [field, yearsDefault, execDefault, cateDefault]);
 
-/*
-    const getLocation = (sw: boolean) => {
-        getLocations(id_plan).then(res => {
-            if (!res) return;
-            let locs: LocationInterface[] = res
-            let temp: string[] = [];
-            if (sw) locs = locs.filter(loc => loc.belongs === null || loc.belongs === '');
-            else if (!sw) locs = locs.filter(loc => loc.belongs && loc.belongs !== '');
-            locs.map(loc => {
-                temp.push(loc.name);
-            });
-            callDataX(temp);
-            dispatch(setCategories(temp));
-        })
-    };
-
-    const getDataSecretary = () => {
-        const detalleStr = localStorage.getItem('YearDeta');
-        const detalle: YearDetail[] = detalleStr ? JSON.parse(detalleStr) : [];
-        let tempSecs = detalle.map(temp => temp.responsible);
-        tempSecs = [...new Set(tempSecs)];
-        let maps: Map<string, Map<number, YearDetail[]>> = new Map();
-        for (const element of tempSecs) {
-            const details = detalle.filter(det => det.responsible === element);
-            let yearsMap: Map<number, YearDetail[]> = new Map();
-            for (const year of years) {
-                const detailsYear = details.filter(det => det.year === year)
-                yearsMap.set(year, detailsYear);
-            }
-            maps.set(element!, yearsMap);
-        }
-        const keys = Array.from(maps.keys());
-        callDataX(keys);
-        dispatch(setCategories(keys));
-        let acumA = [];
-        for (const year of yearsDefault === 0 ? years : [yearsDefault]) {
-            const list = tempSecs.map(sec => maps.get(sec!)!.get(year));
-            let acum: number[] = [];
-            if (execDefault === 'physical_execution')
-                acum = list.map(temp => temp!.reduce((a, b) => a + b.physical_execution, 0));
-            else if (execDefault === 'financial_execution')
-                acum = list.map(temp => temp!.reduce((a, b) => a + (b.financial_execution/1000000), 0));
-            else if (execDefault === 'physical_programming')
-                acum = list.map(temp => temp!.reduce((a, b) => a + b.physical_programming, 0));
-            acum = acum.map(a => parseFloat(a.toFixed(2)));
-            acumA.push(acum)
-        }
-        callDataY(acumA);
-    };
-*/
     return (
         <div role='button'
             onDrop={(e) => onDrop(e)}
@@ -198,7 +188,7 @@ const Component = ({index, children, callDataX, callDataY}: ComponentProps) => {
                     onClick={()=>close(index)}>
                 <Close/>
             </button>
-            {cateDefault === undefined ? 
+            {field === '' ? 
             <div className="tw-bg-white tw-h-full tw-flex tw-flex-col tw-items-center tw-justify-center">
                 <Dataset sx={{ fontSize: 80 }}/>
                 <p>Cargue un campo</p>
@@ -211,7 +201,7 @@ const Component = ({index, children, callDataX, callDataY}: ComponentProps) => {
     );
 };
 
-export const InterativeChart = ({type, index}: Props) => {
+export const InterativeChart = ({type, index}: PropsChart) => {
     const chartComponentRef = useRef<HighchartsReact.RefObject>(null);
 
     const { yearSelect } = useAppSelector(state => state.chart);
@@ -219,22 +209,11 @@ export const InterativeChart = ({type, index}: Props) => {
 
     const [dataX, setDataX] = useState<string[] | number[]>([]);
     const [dataY, setDataY] = useState<number[][]>([]);
-    const [chartData, setChartData] = useState<ChartData[]>([]);
-
-    useEffect(() => {
-        if (dataX.length === 0 || dataY.length === 0) return;
-        const temp = dataY.map((data, index) => {
-            return {
-                name: dataY.length === 1 ? yearSelect.toString() : years[index].toString(),
-                y: dataY[index]
-            }
-        });
-        setChartData(temp);
-    }, [dataX, dataY]);
+    const [title, setTitle] = useState<string>('');
 
     const options: Highcharts.Options = {
         title: {
-            text: ''
+            text: title
         },
         accessibility: {
             enabled: false,
@@ -243,7 +222,7 @@ export const InterativeChart = ({type, index}: Props) => {
             series: {
                 dataLabels:[{
                     enabled: true,
-                    distance: -30,
+                    //distance: -30,
                     format: '{point.percentage:.1f}%',
                 }],
             },
@@ -302,24 +281,34 @@ export const InterativeChart = ({type, index}: Props) => {
             },
             gridLineWidth: 0
         },
-        series: dataY.map((data, index) => ({
-                name: dataY.length === 1 ? yearSelect.toString() : years[index].toString(),
+        series: dataY.map((data) => {
+            const dataUse = data.map((d, i) => {
+                return {
+                    name: (yearSelect === 0 && years.length === data.length) ? years[i].toString() : dataX[i].toString(),
+                    y: d
+                }
+            })
+            return {
+                name: 'Valor en M',
                 type: type!.valueOf() as any,
-                data: data,
-                size: `${100 - ((20 * index) - (5 * index))}%`,
-                innerSize: `${100 - ((20 * (index + 1)) - (5 * index))}%`,
+                data: dataUse,
+                size: '100%',
+                innerSize: '80%',
                 dataLabels: {
                     enabled: false,
                     crop: false,
                 }
-        })),
+            }
+        }),
     };
 
     return (
         <Component
             index={index}
+            title={title}
             callDataX={setDataX}
-            callDataY={setDataY}>
+            callDataY={setDataY}
+            callTitle={setTitle}>
             <HighchartsReact
                 highcharts={Highcharts}
                 options={options}
@@ -330,18 +319,43 @@ export const InterativeChart = ({type, index}: Props) => {
     );
 }
 
-export const InterativeCard = ({index}: Props) => {
-
+export const InterativeCard = ({type, index}: PropsChart) => {
     const [dataX, setDataX] = useState<string[] | number[]>([]);
     const [dataY, setDataY] = useState<number[][]>([]);
+    const [X, setX] = useState<string>('');
+    const [Y, setY] = useState<number>(0);
+    const [title, setTitle] = useState<string>('');
+
+    useEffect(() => {
+        if (dataY.length === 0 && dataX.length === 0) return;
+        let val: number = 0, label: string = '';
+        if (type === 'min') {
+            val = Math.min(...dataY[0]);
+            label = dataX[dataY[0].indexOf(val)].toString();
+        } else if (type === 'max') {
+            val = Math.max(...dataY[0]);
+            label = dataX[dataY[0].indexOf(val)].toString();
+        }
+        setX(label);
+        setY(val);
+    }, [dataX, dataY]);
+
+    useEffect(() => {
+        console.log(dataX, dataY);
+        console.log(X, Y);
+    }, [X, Y]);
 
     return (
         <Component
             index={index}
+            title={title}
+            type={type}
             callDataX={setDataX}
-            callDataY={setDataY}>
-            <div className="tw-bg-white tw-h-full">
-                Hola
+            callDataY={setDataY}
+            callTitle={setTitle}>
+            <div className="tw-bg-white tw-h-full tw-text-center">
+                {type === 'min' ? `Mínimo` : 'Máximo'} <br />
+                {`${isNaN(parseInt(X)) ? '' : `En el año ${X}`} se realizó ${Y} para todas las localidades`}
             </div>
         </Component>
     );

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import { notify, decode } from '@/utils';
 
-import { useAppDispatch } from '@/store';
+import { useAppDispatch, useAppSelector } from '@/store';
 import { thunkLogin } from '@/store/auth/thunks';
 import { setIdPlan } from "@/store/content/contentSlice";
 import { Token } from '@/interfaces';
@@ -11,6 +11,7 @@ import { Token } from '@/interfaces';
 import { initializeApp } from "firebase/app";
 import { firebaseConfig } from '@/configs/firebaseConfig';
 import { signInWithEmailAndPassword, getAuth } from "firebase/auth";
+import { Spinner } from '@/assets/icons';
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth();
@@ -19,6 +20,8 @@ const auth = getAuth();
 export const LoginForm = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
+
+    const { authenticating } = useAppSelector(state => state.auth)
 
     const [user, setUser] = useState({
         username: "",
@@ -40,6 +43,7 @@ export const LoginForm = () => {
     );
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        if (authenticating) return;
         e.preventDefault();
         await dispatch(thunkLogin(user))
         .unwrap()
@@ -82,8 +86,11 @@ export const LoginForm = () => {
                     required/><br/>
             <button className='tw-bg-greenBtn hover:tw-opacity-50
                                 tw-text-white tw-font-montserrat
-                                tw-rounded tw-py-2'>
-                Iniciar sesión</button><br />
+                                tw-rounded tw-h-10'>
+                {authenticating ?
+                <div className='tw-h-10 tw-flex'><Spinner/></div> :
+                <p className='tw-font-bold'>Iniciar sesión</p>}
+            </button><br />
             <input  type="button" 
                     value={'¿Olvidaste tu contraseña?'}
                     className='tw-pb-10 hover:tw-bg-black-50' />

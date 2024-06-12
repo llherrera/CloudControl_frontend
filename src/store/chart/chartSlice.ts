@@ -14,9 +14,12 @@ const getInitialState = (): InitialStateChartInterface => {
         board: [],
         indexSelect: -1,
         categories: [],
+        subCategories: [],
         yearSelect: 0,
         execSelect: '',
         cateSelect: '',
+        subCateSelect: '',
+        fieldSelect: '',
     };
 };
 
@@ -49,6 +52,10 @@ export const chartSlice = createSlice({
             state.categories = action.payload;
             setGenericState('chart', state);
         },
+        setSubCategories: (state, action: PayloadAction<string[]>) => {
+            state.subCategories = action.payload;
+            setGenericState('chart', state);
+        },
         setYearSelect: (state, action: PayloadAction<number>) => {
             state.yearSelect = action.payload;
             setGenericState('chart', state);
@@ -61,6 +68,14 @@ export const chartSlice = createSlice({
             state.cateSelect = action.payload;
             setGenericState('chart', state);
         },
+        setSubCateSelect: (state, action: PayloadAction<string>) => {
+            state.subCateSelect = action.payload;
+            setGenericState('chart', state);
+        },
+        setFieldSelect: (state, action: PayloadAction<string>) => {
+            state.fieldSelect = action.payload;
+            setGenericState('chart', state);
+        },
     }
 });
 
@@ -71,9 +86,12 @@ export const {
     removeItemBoard,
     setIndexSelect,
     setCategories,
+    setSubCategories,
     setYearSelect,
     setExecSelect,
-    setCateSelect } = chartSlice.actions;
+    setCateSelect,
+    setFieldSelect,
+    setSubCateSelect } = chartSlice.actions;
 export const selectChart = (state: RootState) => state.chart.data;
 
 export default chartSlice.reducer;

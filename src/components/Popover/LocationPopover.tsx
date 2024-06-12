@@ -115,7 +115,7 @@ const UbiMarker = () => {
         },
     });
 
-    return list_points.length === 0 ? <div/> :
+    return list_points.length === 0 ? [<div/>] :
         list_points.map((p, i) => 
             <Marker
                 key={p.lat}

@@ -611,3 +611,15 @@ export const getDataDashboardLocation = async (id_plan: number, location: string
     });
     return response.data;
 }
+
+export const getDataDashboardEvidence = async (id_plan: number, neighborhood: string, location: string, year: string) => {
+    const response = await api.get('plan-territorial/dash-evide', {
+        params: {
+            id_plan,
+            neighborhood,
+            location,
+            year
+        }
+    });
+    return response.data;
+}

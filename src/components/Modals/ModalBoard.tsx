@@ -59,8 +59,8 @@ const Dashboard = (props: Props) => {
         {id: '1', icon: <PieChart/>, title:'Torta',  value: 'pie', chart: true, count: false},
         {id: '2', icon: <BarChart/>, title:'Barra', value: 'bar', chart: true, count: false},
         {id: '3', icon: <Timeline/>, title:'Linea', value: 'line', chart: true, count: false},
-        {id: '4', icon: <ArrowUpward/>, title:'Maximo', value: 'number', chart: false, count: true},
-        {id: '5', icon: <ArrowDownward/>, title:'Minimo', value: 'number', chart: false, count:true},
+        {id: '4', icon: <ArrowUpward/>, title:'Maximo', value: 'max', chart: false, count: true},
+        {id: '5', icon: <ArrowDownward/>, title:'Minimo', value: 'min', chart: false, count:true},
     ];
 
     const startDrag = (e: React.DragEvent<HTMLLIElement>, item_id: string) => e.dataTransfer.setData('item_id', item_id);
@@ -103,7 +103,7 @@ const Dashboard = (props: Props) => {
                     onDrop={(e)=>onDrop(e)}>
                     {board.map((bo, index) => {
                         if (bo.chart) return <InterativeChart key={index} type={bo.value} index={index}/>
-                        else if (bo.count) return <InterativeCard key={index} index={index}/>
+                        else if (bo.count) return <InterativeCard key={index} type={bo.value} index={index}/>
                         else return null
                     })}
                     <div className="tw-hidden">a</div>

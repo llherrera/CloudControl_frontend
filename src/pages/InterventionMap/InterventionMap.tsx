@@ -8,6 +8,7 @@ import {
     Marker,
     Popup,
     Rectangle } from 'react-leaflet';
+import { Icon } from 'leaflet';
 
 import { useAppSelector } from '@/store';
 
@@ -19,6 +20,7 @@ import {
     LocationSelect } from '@/components';
 import { getUbiEvidences } from '@/services/api';
 
+import MarkerIcon from '@/assets/icons/location.svg';
 import "react-toastify/dist/ReactToastify.css";
 import 'leaflet/dist/leaflet.css';
 
@@ -65,7 +67,12 @@ const Section = () => {
                 const { lat, lng } = loc;
                 const marker = 
                 <Marker key={loc.lat+loc.date}
-                    position={[lat, lng]}>
+                    position={[lat, lng]}
+                    icon={new Icon({
+                        iconUrl: MarkerIcon,
+                        iconSize: [25,41],
+                        iconAnchor: [12, 41]
+                    })}>
                     <Popup>
                         {loc.date.split('T')[0]} <br /><br />
                         {loc.name}<br/><br/>
@@ -138,10 +145,11 @@ const Section = () => {
                                 tw-top-2 tw-z-50
                                 tw-translate-x-1/4
                                 tw-bg-white tw-p-2
+                                tw-h-10
                                 tw-rounded
                                 tw-font-bold
                                 tw-text-wrap'>
-                    {secretary}
+                    {secretary === 'void' ? '' : secretary}
                 </h2>
             </div>
         </div>
