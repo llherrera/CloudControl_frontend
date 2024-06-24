@@ -35,14 +35,14 @@ const Component = ({index, children, type, callDataX, callDataY, callTitle}: Com
     const { id_plan } = useAppSelector(state => state.content);
     const { years, secretaries, locations } = useAppSelector(state => state.plan);
 
-    const [yearsDefault, setYearsDefault] = useState<number>(years[0]);
-    const [execDefault, setExecDefault] = useState<string>('');
-    const [cateDefault, setCateDefault] = useState<string>('');
+    const [yearsDefault  , setYearsDefault] = useState<number>(years[0]);
+    const [execDefault   , setExecDefault] = useState<string>('');
+    const [cateDefault   , setCateDefault] = useState<string>('');
     const [subCateDefault, setSubCateDefault] = useState<string>('');
-    const [categories_, setCategories_] = useState<string[]>([]);
+    const [categories_   , setCategories_] = useState<string[]>([]);
     const [subCategories_, setSubCategories_] = useState<string[]>([]);
-    const [field, setField] = useState<string>('');
-    const [fieldDefault, setFieldDefault] = useState<string>('');
+    const [field         , setField] = useState<string>('');
+    const [fieldDefault  , setFieldDefault] = useState<string>('');
 
     const [locationsMap, setLocationsMap] = useState<Map<LocationInterface, LocationInterface[]>>();
     const [locations_, setLocations_] = useState<LocationInterface[]>([]);
@@ -53,6 +53,9 @@ const Component = ({index, children, type, callDataX, callDataY, callTitle}: Com
         dispatch(setExecSelect(''));
         dispatch(setYearSelect(0));
         dispatch(setCateSelect(''));
+        dispatch(setSubCateSelect(''));
+        dispatch(setCategories([]));
+        dispatch(setSubCategories([]));
         dispatch(removeItemBoard(index));
         dispatch(setIndexSelect(-1));
     };
@@ -64,8 +67,15 @@ const Component = ({index, children, type, callDataX, callDataY, callTitle}: Com
         if (field === undefined) return;
         dispatch(setCateSelect(field.value));
         setField(field.value);
+        dispatch(setExecSelect(field.id === '3' ? 'financial_execution' : 'done'));
         dispatch(setFieldSelect(field.id));
         setFieldDefault(field.id);
+        setYearsDefault(years[0]);
+        setExecDefault('');
+        setCateDefault('');
+        setSubCateDefault('');
+        setCategories_([]);
+        setSubCategories_([]);
     };
 
     const onClick = () => {
@@ -123,17 +133,29 @@ const Component = ({index, children, type, callDataX, callDataY, callTitle}: Com
                 getDataDashboardSecretary(id_plan, cateDefault.replace('secretary', ''), yearsDefault === 0 ? '' : yearsDefault.toString())
                 .then((res: ResponseChartSecre[]) => {
                     const data = res.map(r => execDefault === 'financial_execution' ?
-                        r.financial_execution : execDefault === 'physical_execution' ?
+                        parseFloat(r.financial_execution.toString()) : execDefault === 'physical_execution' ?
                         r.physical_execution : r.physical_programming
                     );
                     const labels: string[] | number[] = yearsDefault === 0 ? res.map(r => r.year) : cateDefault === '' ? res.map(r => r.responsible) : res.map(r => r.name === null ? '' : r.name);
                     callDataX(labels);
                     callDataY([data]);
+                    let val: number = 0, label: string = '';
+                    if (type === 'min') {
+                        val = Math.min(...data);
+                        label = labels[data.indexOf(val)].toString();
+                    } else if (type === 'max') {
+                        val = Math.max(...data);
+                        label = labels[data.indexOf(val)].toString();
+                    }
                     callTitle(
-                        `Secretarias:
-                        Ejecución ${execDefault === 'financial_execution' ? `financiera` : execDefault === 'physical_execution' ? `fisica` : `programada`} 
-                        ${cateDefault.replace('secretary', '') === `` ? `de todas las secretarias` : `de la secretaria ${cateDefault}`} 
-                        ${yearsDefault === 0 ? 'total por año' : `para el año ${yearsDefault}`}`);
+                        `Secretarias: ${type === undefined ?
+                        `Ejecución ${execDefault === 'financial_execution' ? 'financiera' : execDefault === 'physical_execution' ? `física` : `programada`} 
+                            ${cateDefault.replace('secretary', '') === `` ? `de todas las secretarías` : `de la secretaría ${cateDefault}`} 
+                            ${yearsDefault === 0 ? 'total por año' : `para el año ${yearsDefault}`}`
+                        : `para la ejecución ${execDefault === 'financial_execution' ? 'financiera' : execDefault === 'physical_execution' ? `física` : `programada`}
+                            ${cateDefault.replace('secretary', '') === `` ? `de todas las secretarías` : `de la secretaría ${cateDefault}`}
+                            ${label} el ${type === 'min' ? 'mínimo' : 'máximo'} es ${val} ${yearsDefault === 0 ? 'total por año' : `para el año ${yearsDefault}`}`
+                        }`);
                 });
                 break;
             case 'evidences':
@@ -156,15 +178,19 @@ const Component = ({index, children, type, callDataX, callDataY, callTitle}: Com
                         val = Math.max(...data);
                         label = labels[data.indexOf(val)].toString();
                     }
-                    callTitle(type === undefined ?
-                        `Evidencias:
-                        ${execDefault === 'done' ? `cantidad realizada` : execDefault === 'benefited_population_number' ? `población beneficiada` : `recursos ejecutados`} 
+                    callTitle(
+                        `Evidencias: ${type === undefined ?
+                        `${execDefault === 'done' ? `cantidad realizada` : execDefault === 'benefited_population_number' ? `población beneficiada` : `recursos ejecutados`} 
                         ${subCateDefault === '' ? (
                             cateDefault.replace('evidences', '') === `` ? `en todas las ubicaciones` : `en la ubicación de ${cateDefault}`)
                             : `en la ubicación de ${subCateDefault}`} 
                         ${yearsDefault === 0 ? 'total por año' : `para el año ${yearsDefault}`}`
-                    : type === 'min' ? `${isNaN(val) ? '' : `En el año ${val}`} se realizó ${label} para todas las localidades`
-                    : ``);
+                    :   `${execDefault === 'done' ? `cantidad realizada` : execDefault === 'benefited_population_number' ? `población beneficiada` : `recursos ejecutados`} 
+                        para e
+                        ${subCateDefault === '' ? (
+                            cateDefault.replace('evidences', '') === `` ? `en todas las ubicaciones` : `en la ubicación de ${cateDefault}`)
+                            : `en la ubicación de ${subCateDefault}`} 
+                        ${yearsDefault === 0 ? 'total por año' : `para el año ${yearsDefault}`}`}`);
                 })
                 break;
             default:
@@ -340,10 +366,10 @@ export const InterativeCard = ({type, index}: PropsChart) => {
         setY(val);
     }, [dataX, dataY]);
 
-    useEffect(() => {
-        console.log(dataX, dataY);
-        console.log(X, Y);
-    }, [X, Y]);
+    //useEffect(() => {
+    //    console.log(dataX, dataY);
+    //    console.log(X, Y);
+    //}, [X, Y]);
 
     return (
         <Component
@@ -353,9 +379,12 @@ export const InterativeCard = ({type, index}: PropsChart) => {
             callDataX={setDataX}
             callDataY={setDataY}
             callTitle={setTitle}>
-            <div className="tw-bg-white tw-h-full tw-text-center">
-                {type === 'min' ? `Mínimo` : 'Máximo'} <br />
-                {`${isNaN(parseInt(X)) ? '' : `En el año ${X}`} se realizó ${Y} para todas las localidades`}
+            <div className="tw-bg-white tw-h-full
+                            tw-flex tw-flex-col tw-items-stretch">
+                <p className="tw-text-center tw-font-bold tw-text-4xl">
+                    {type === 'min' ? 'MÍNIMO' : 'MÁXIMO'}
+                </p>
+                <p className="tw-text-center">{title}</p>
             </div>
         </Component>
     );

@@ -1,5 +1,3 @@
-import { ToastContainer } from 'react-toastify';
-
 import { useAppDispatch, useAppSelector } from "@/store";
 import {
     setYearSelect,
@@ -34,9 +32,9 @@ export const Filter = () => {
         dispatch(setSubCateSelect(value));
     };
 
+    
     return (
         <div>
-            <ToastContainer/>
             <p>{(fieldSelect === '1' || fieldSelect === '2' || fieldSelect === '3') ?
             'Secretarias' : (fieldSelect === '4') ? 'Localidades' : 'Categorias'
             }</p>
