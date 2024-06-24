@@ -6,7 +6,7 @@ import { thunkAddSecretaries, thunkUpdateSecretaries } from "@/store/plan/thunks
 import { Secretary } from "@/interfaces";
 import { validateEmail, notify } from "@/utils";
 
-import { ToastContainer } from 'react-toastify';
+
 
 export const SecretaryForm = () => {
     const dispatch = useAppDispatch();
@@ -46,9 +46,9 @@ export const SecretaryForm = () => {
             dispatch(thunkAddSecretaries({ id_plan: id_plan, secretaries: data})).then(() => notify("Secretarias añadidas"));
     }
 
+    
     return (
         <div className="tw-flex tw-justify-center tw-border-t-4 tw-mt-4 tw-pt-2">
-            <ToastContainer />
             <form
                 className=" tw-shadow-2xl
                             tw-p-2">

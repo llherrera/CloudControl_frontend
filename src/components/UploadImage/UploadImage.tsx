@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ToastContainer } from 'react-toastify';
+
 import { notify } from '@/utils';
 
 import { useAppSelector } from '@/store';
@@ -55,11 +55,11 @@ export const UploadLogoCity = () => {
         });
     };
 
+    
     return (
         <form   id='logoForm'
                 encType='multipart/form-data'
                 className=' tw-mt-2 tw-ml-2'>
-            <ToastContainer/>
             <div className='tw-flex tw-justify-center tw-gap-4'>
                 {load ? 
                     <div>
@@ -151,11 +151,11 @@ export const UploadLogoPlan = () => {
         });
     };
 
+    
     return (
         <form   id='logoForm'
                 encType='multipart/form-data'
                 className=' tw-mt-2 tw-ml-2'>
-            <ToastContainer/>
             <div className='tw-flex tw-justify-center tw-gap-4'>
                 {load ? 
                     <div>

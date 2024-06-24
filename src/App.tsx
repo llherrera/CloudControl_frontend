@@ -3,6 +3,7 @@ import 'tailwindcss/tailwind.css';
 
 import { BrowserRouter } from 'react-router-dom';
 import { AppRouter } from './routers';
+import { ToastContainer } from 'react-toastify';
 
 const App = () => {
     localStorage.setItem('UnitNode', JSON.stringify([]))
@@ -11,6 +12,7 @@ const App = () => {
     return (
         <BrowserRouter>
             <AppRouter />
+            <ToastContainer/>
         </BrowserRouter>
     );
 }

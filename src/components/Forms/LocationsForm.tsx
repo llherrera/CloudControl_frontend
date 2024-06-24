@@ -3,7 +3,7 @@ import { useAppSelector, useAppDispatch } from "@/store";
 import { useState } from "react";
 import { InfoPopover, LocationPopover } from "@/components";
 import { thunkAddLocations, thunkUpdateLocations } from "@/store/plan/thunks";
-import { ToastContainer } from 'react-toastify';
+
 import { notify } from '@/utils';
 
 export const LocationsForm = () => {
@@ -72,9 +72,9 @@ export const LocationsForm = () => {
         setData(newData);
     };
 
+    
     return(
         <div className="tw-flex tw-justify-center tw-border-t-4 tw-mt-8 tw-pt-2 tw-pb-4">
-            <ToastContainer />
             <form className="tw-shadow-2xl tw-p-2">
                 <p className="tw-font-bold tw-text-center">
                     Añadir localidades/barrios

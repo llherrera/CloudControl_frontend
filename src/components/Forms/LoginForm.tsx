@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ToastContainer } from 'react-toastify';
+
 import { notify, decode } from '@/utils';
 
 import { useAppDispatch, useAppSelector } from '@/store';
@@ -94,7 +94,7 @@ export const LoginForm = () => {
             <input  type="button" 
                     value={'¿Olvidaste tu contraseña?'}
                     className='tw-pb-10 hover:tw-bg-black-50' />
-            <ToastContainer />
         </form>
     );
 }
+    

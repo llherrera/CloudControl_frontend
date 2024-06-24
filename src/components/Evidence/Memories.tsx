@@ -4,7 +4,7 @@ import SaveAsIcon from '@mui/icons-material/SaveAs';
 import { useAppDispatch, useAppSelector } from "@/store";
 import { thunkUpdateExecution } from "@/store/unit/thunks";
 
-import { ToastContainer } from 'react-toastify';
+
 import { notify } from '@/utils';
 
 interface Props {
@@ -30,13 +30,13 @@ export const Memory = ({callback}:Props) => {
     };
 
     if (unit === undefined) return <div>No hay una meta seleccionada</div>;
-
+    
+    
     return (
         <section className="tw-bg-slate-200
                             tw-border-4 tw-border-double
                             tw-border-gray-500
                             tw-mt-3 tw-px-3">
-            <ToastContainer/>
             <p className="tw-mt-3">
                 Fecha: { new Date().toLocaleDateString()} &nbsp;&nbsp;&nbsp;&nbsp;
                 Hora: { new Date().toLocaleTimeString()}

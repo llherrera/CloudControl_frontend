@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Modal from 'react-modal';
-import { ToastContainer } from 'react-toastify';
+
 
 import { useAppSelector, useAppDispatch } from "@/store";
 import { addBoard, setIndexSelect } from "@/store/chart/chartSlice";
@@ -85,11 +85,11 @@ const Dashboard = (props: Props) => {
         props.callback(false);
     };
 
+    
     return (
         <Modal  isOpen={props.isOpen}
                 onRequestClose={()=>onClose()}
                 contentLabel=''>
-            <ToastContainer/>
             <div className="tw-h-full tw-flex tw-justify-between">
                 <ul role="menuitem"
                     className={`tw-w-full tw-h-full

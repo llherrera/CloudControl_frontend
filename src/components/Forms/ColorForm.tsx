@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Slider from '@mui/material/Slider';
 import Box from '@mui/material/Box';
-import { ToastContainer } from 'react-toastify';
+
 import { notify } from '@/utils';
 
 import { useAppDispatch, useAppSelector } from '@/store';
@@ -67,11 +67,11 @@ export const ColorForm = ( props : ColorFromProps ) => {
         'tw-bg-blueColory'
     );
 
+    
     return (
         <form className='tw-flex tw-flex-col md:tw-flex-row 
                         tw-flex-wrap 
                         tw-mb-2 tw-ml-4'>
-            <ToastContainer />
             {value.map((value: number[], index: number) => (
                 <div className='tw-flex tw-mx-2'
                     key={index}>

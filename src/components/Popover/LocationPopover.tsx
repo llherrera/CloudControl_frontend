@@ -161,7 +161,7 @@ const MapContainerUbi = () => {
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            <UbiMarker/>
+            {UbiMarker()}
             <Rectangle
                 bounds={[[bounding1, bounding3],[bounding2, bounding4]]}
             />

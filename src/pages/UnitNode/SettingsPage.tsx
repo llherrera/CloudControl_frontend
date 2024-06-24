@@ -10,7 +10,7 @@ import { BackBtn } from '@/components';
 import { UnitInterface, YearInterface } from '@/interfaces';
 import { Spinner } from "@/assets/icons";
 import cclogo from '@/assets/images/logo-cc.png';
-import { ToastContainer } from 'react-toastify';
+
 import { notify } from '@/utils';
 
 export const SettingsPage = () => {
@@ -104,13 +104,13 @@ export const SettingsPage = () => {
         }
     };
 
+    
     return (
         loadingUnit ? <Spinner/>:
         <div className="tw-container tw-mx-auto tw-my-3
                         tw-bg-gray-200
                         tw-border-8 tw-border-gray-400 
                         tw-rounded-md">
-            <ToastContainer />
             <div className='tw-flex tw-justify-between
                             tw-shadow-2xl
                             tw-border-b-2 tw-border-gray-400

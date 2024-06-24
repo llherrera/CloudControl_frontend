@@ -20,7 +20,7 @@ import {
     FilePhysicalInput,
     InfoPopover } from '@/components';
 import { decode, notify } from "@/utils";
-import { ToastContainer } from 'react-toastify';
+
 
 export const SettingPage = () => {
     return (
@@ -73,11 +73,11 @@ const SettingPageWrapper = () => {
 
     const handleBack = () => navigate(-1);
 
+    
     return (
         (plan === null || plan === undefined) ? 
         <div className='tw-text-center'>No hay un plan seleccionado</div> :
         <div>
-            <ToastContainer />
             <BackBtn handle={handleBack} id={id_plan}/><br />
             <div>
                 {rol === "admin" || ((rol === 'funcionario' || rol === 'planeacion') && id_plan === plan.id_plan! ) ? 

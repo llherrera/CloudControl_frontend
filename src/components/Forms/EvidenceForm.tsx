@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ToastContainer } from 'react-toastify';
+
 import { notify, convertLocations } from '@/utils';
 
 import { useAppSelector, useAppDispatch } from "@/store";
@@ -159,6 +159,7 @@ export const EvidenceForm = () => {
         }
     };
 
+    
     return (
         loading ? <ModalSpinner isOpen={loading}/> :
         <form
@@ -168,7 +169,6 @@ export const EvidenceForm = () => {
                         tw-mt-3 tw-p-3
                         tw-border-4 tw-border-double
                         tw-border-gray-500 tw-bg-slate-200">
-            <ToastContainer/>
             <label className="tw-text-center md:tw-text-left">Fecha: {new Date().toLocaleDateString()} </label>
                     
             <div className="tw-mt-2 tw-flex">

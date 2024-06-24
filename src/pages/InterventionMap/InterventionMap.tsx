@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ToastContainer } from 'react-toastify';
+
 import { notify } from '@/utils';
 import {
     MapContainer,
@@ -103,6 +103,7 @@ const Section = () => {
 
     const handleBack = () => navigate(-1);
 
+    
     return (
         planLocation === undefined ?
         <p>Cargando...</p>:
@@ -120,7 +121,6 @@ const Section = () => {
                     </p>
                 </h1>
             </div>
-            <ToastContainer />
 
             <div className='tw-flex tw-justify-center
                             tw-gap-2 tw-mx-2 tw-pb-2

@@ -4,7 +4,7 @@ import ProgressBar from "@ramonak/react-progress-bar";
 
 import IconButton from "@mui/material/IconButton";
 import DownloadIcon from '@mui/icons-material/Download';
-import { ToastContainer } from 'react-toastify';
+
 import { notify, handleInputFile } from '@/utils';
 
 import { useAppSelector, useAppDispatch } from "@/store";
@@ -143,9 +143,9 @@ export const FileInput = () => {
         readExcel(data);
     };
 
+    
     return (
         <div className='tw-border-b-4 tw-pb-4 tw-pl-4'>
-            <ToastContainer/>
             <ProgressBar completed={progressBar} customLabel={textBar} />
             <a  className="tw-text-[#222222]
                             tw-font-bold tw-text-lg
