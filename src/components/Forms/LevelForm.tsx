@@ -97,21 +97,21 @@ export const LevelForm = ( props: LevelFormProps ) => {
                                 md:tw-col-start-4 md:tw-col-span-6 
                                 lg:tw-col-start-4 lg:tw-col-span-6 
                                 tw-gap-3">
-                {data.map((e:LevelInterface, index: number) => 
+                {data.map((e, i) => 
                     <li className=" tw-mb-3 tw-p-2 
                                     tw-bg-white 
                                     tw-shadow-lg tw-border tw-rounded"
-                        key={e.name.length}>
+                        key={i}>
                         <Input  type={"text"}
                                 label="Nombre del Nivel:"
                                 id={"name"}
                                 name={"name"}
-                                onChange={ (event) => handleInputFormChange(event, index) }/>
+                                onChange={ (event) => handleInputFormChange(event, i) }/>
                         <Input  type={"text"}
                                 label="Descripción:"
                                 id={"description"}
                                 name={"description"}
-                                onChange={ (event) => handleInputFormChange(event, index) }/>
+                                onChange={ (event) => handleInputFormChange(event, i) }/>
                     </li>
                 )}
                 <div className="tw-w-full tw-flex tw-justify-around tw-py-2 tw-bg-white tw-shadow-lg tw-border tw-rounded">

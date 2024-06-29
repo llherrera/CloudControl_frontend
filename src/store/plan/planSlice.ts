@@ -5,7 +5,7 @@ import {InitialStatePlanInterface,
         Node, 
         Coordinates, 
         LevelInterface} from "@/interfaces";
-import { setGenericState, getGenericState, removeGenericState } from "@/utils";
+import { setGenericState, getGenericState, removeGenericState, notify } from "@/utils";
 
 import {thunkGetPDTid,
         thunkGetLastPDT,
@@ -153,11 +153,11 @@ export const planSlice = createSlice({
             state.loadingPlan = false;
             state.plan = action.payload;
             state.progressNodes = [];
-            state.financial = [];
-            state.nodes = [];
-            state.nodesReport = [];
-            state.secretaries = [];
-            state.colorimeter = [];
+            //state.financial = [];
+            //state.nodes = [];
+            //state.nodesReport = [];
+            //state.secretaries = [];
+            //state.colorimeter = [];
             setGenericState('plan', state);
         });
         builder.addCase(thunkGetPDTid.rejected, (state, action) => {
@@ -512,11 +512,13 @@ export const planSlice = createSlice({
         });
         builder.addCase(thunkUpdateSecretaries.fulfilled, (state, action) => {
             state.loadingSecretaries = false;
+            if (state.secretaries) notify("Secretarias actualizadas");
+            else notify("Secretarias añadidas");
             setGenericState('plan', state);
         });
         builder.addCase(thunkUpdateSecretaries.rejected, (state, action) => {
             state.loadingSecretaries = false;
-            state.errorLoadingSecretaries = action.payload;
+            let error_text = 'Ha occurido un error.';
             if (action.payload) {
                 switch (action.payload.status) {
                     case 401:
@@ -526,7 +528,7 @@ export const planSlice = createSlice({
                         alert("No tienes permitido realizar esta acción.");
                         break;    
                     case 404:
-                        alert("Plan no existe.");
+                        alert("No se ha encontrado el recurso.");
                         break;
                     case 500:
                         alert("Ha habido un error, pruebe más tarde.");
@@ -534,6 +536,16 @@ export const planSlice = createSlice({
                     default:
                         break;
                 }
+                state.errorLoadingSecretaries = {
+                    status: action.payload.status,
+                    error_code: action.payload.error_code ?? action.payload.error,
+                    error_description: error_text
+                };
+            } else {
+                state.errorLoadingSecretaries = {
+                    error_code: action.error.code,
+                    error_description: error_text
+                };
             }
         });
 

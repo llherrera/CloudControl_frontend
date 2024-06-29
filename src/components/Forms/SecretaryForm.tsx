@@ -40,10 +40,8 @@ export const SecretaryForm = () => {
             if (!validateEmail(secretary.email))
                 return notify("El correo no es válido");
         })
-        if (secretaries)
-            dispatch(thunkUpdateSecretaries({ id_plan: id_plan, secretaries: data })).then(() => notify("Secretarias actualizadas"));
-        else
-            dispatch(thunkAddSecretaries({ id_plan: id_plan, secretaries: data})).then(() => notify("Secretarias añadidas"));
+        if (secretaries) dispatch(thunkUpdateSecretaries({ id_plan: id_plan, secretaries: data }));
+        else dispatch(thunkAddSecretaries({ id_plan: id_plan, secretaries: data}));
     }
 
     

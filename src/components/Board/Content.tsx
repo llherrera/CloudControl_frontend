@@ -41,6 +41,7 @@ export const Content = ( props : ContentProps ) => {
     const { mode, id_plan } = useAppSelector(store => store.content);
 
     const [rol, setRol] = useState("");
+    const [user, setUser] = useState("");
     const [id, setId] = useState(0);
 
     useEffect(() => {
@@ -48,6 +49,7 @@ export const Content = ( props : ContentProps ) => {
             const decoded = decode(token_info.token);
             setRol(decoded.rol);
             setId(decoded.id_plan);
+            setUser(decoded.user);
         }
     }, []);
 
@@ -101,7 +103,7 @@ export const Content = ( props : ContentProps ) => {
     const handleRol = () => (
         rol === 'admin' || (rol === 'funcionario' && id === props.id) ? 
         <button onClick={()=>handleSettings()}>Definir colorimetria</button>
-        : <p>No se ha definido una colorimetria aun</p>
+        : <p>No se ha definido una colorimetría aún</p>
     );
 
     return (
@@ -117,7 +119,7 @@ export const Content = ( props : ContentProps ) => {
                             tw-text-center
                             md:tw-text-left
                             tw-flex tw-justify-between">
-                <div>
+                <div className="tw-flex tw-items-center">
                     Plan indicativo
                     {rol === 'admin' || ((rol === 'funcionario' || rol === 'planeacion') && id === props.id) ? 
                         <SettingsBtn handle={handleSettings} id={props.id}/>
@@ -130,6 +132,13 @@ export const Content = ( props : ContentProps ) => {
                                     title="Agregar funcionario al plan">
                             <PersonAddAltIcon/>
                         </IconButton>
+                        : null
+                    }
+                    {rol === 'admin' || ((rol === 'funcionario' || rol === 'planeacion' || rol === 'sectorialista') && id === props.id) ?
+                        <p  className={`tw-truncate tw-w-6 hover:tw-w-24`}
+                            title="usuario">
+                            {user}
+                        </p>
                         : null
                     }
                 </div>

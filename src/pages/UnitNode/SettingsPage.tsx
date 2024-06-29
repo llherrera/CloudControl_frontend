@@ -17,7 +17,7 @@ export const SettingsPage = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
-    const { 
+    const {
         id_plan, 
         node, 
         url_logo,
@@ -74,16 +74,11 @@ export const SettingsPage = () => {
 
     const handleSubmit = async () => {
         if (plan === undefined) return;
-        if (unit.description === '')
-            notify('Debe ingresar una descripción');
-        if (unit.indicator === '')
-            notify('Debe ingresar un indicador');
-        if (unit.goal < 0)
-            notify('Debe ingresar una meta');
-        if (unit.responsible === '')
-            notify('Debe ingresar un responsable');
-        if (unit.years.length <= 0)
-            return notify('Debe ingresar una programación');
+        if (unit.description === '') notify('Debe ingresar una descripción');
+        if (unit.indicator === '') notify('Debe ingresar un indicador');
+        if (unit.goal < 0) notify('Debe ingresar una meta');
+        if (unit.responsible === '') notify('Debe ingresar un responsable');
+        if (unit.years.length <= 0) return notify('Debe ingresar una programación');
         
         const id_city = parseInt(plan.id_municipality);
         if (unit.code.length > 0) {
@@ -208,16 +203,17 @@ export const SettingsPage = () => {
                                     tw-border tw-border-slate-500 
                                     tw-flex tw-flex-wrap
                                     tw-p-2 tw-bg-white'>
-                    {unit.years.map((year, index) => (
-                        <div key={year.year}>
-                            <label>{years[index]}</label>
-                            <input  className="tw-m-2 tw-p-2 tw-rounded tw-border-2 tw-border-gray-400"
-                                    onChange={ (e) => handleChangeYear(e, index) } 
-                                    value={ year.physical_programming??0 }
-                                    type="number" 
-                                    name="physical_programming" 
-                                    placeholder="Programacion" 
-                                    required/>
+                    {years.map((year, i) => (
+                        <div key={year}>
+                            <label>{year}</label>
+                            <input  
+                                className="tw-m-2 tw-p-2 tw-rounded tw-border-2 tw-border-gray-400"
+                                onChange={ (e) => handleChangeYear(e, i) } 
+                                value={ unit.years[i].physical_programming ?? 0 }
+                                type="number" 
+                                name="physical_programming" 
+                                placeholder="Programacion" 
+                                required/>
                         </div>
                     ))}
                 </form>
@@ -228,16 +224,17 @@ export const SettingsPage = () => {
                                     tw-border tw-border-slate-500 
                                     tw-flex tw-flex-wrap
                                     tw-p-2 tw-bg-white'>
-                    {unit.years.map((year, index) => (
-                        <div key={year.year}>
-                            <label  htmlFor="">{years[index]}</label>
-                            <input  className="tw-m-2 tw-p-2 tw-rounded tw-border-2 tw-border-gray-400"
-                                    onChange={ (e) => handleChangeYear(e, index) } 
-                                    value={ year.financial_execution??0 }
-                                    type="number" 
-                                    name="financial_execution" 
-                                    placeholder="Recursos ejecutados" 
-                                    required/>
+                    {years.map((year, i) => (
+                        <div key={year}>
+                            <label  htmlFor="">{year}</label>
+                            <input  
+                                className="tw-m-2 tw-p-2 tw-rounded tw-border-2 tw-border-gray-400"
+                                onChange={ (e) => handleChangeYear(e, i) } 
+                                value={ unit.years[i].financial_execution ?? 0 }
+                                type="number" 
+                                name="financial_execution" 
+                                placeholder="Recursos ejecutados" 
+                                required/>
                         </div>
                     ))}
                 </form>
@@ -255,3 +252,18 @@ export const SettingsPage = () => {
         </div>
     );
 }
+
+/*
+{unit.years.map((year, index) => (
+                        <div key={year.year}>
+                            <label>{years[index]}</label>
+                            <input  className="tw-m-2 tw-p-2 tw-rounded tw-border-2 tw-border-gray-400"
+                                    onChange={ (e) => handleChangeYear(e, index) } 
+                                    value={ year.physical_programming??0 }
+                                    type="number" 
+                                    name="physical_programming" 
+                                    placeholder="Programacion" 
+                                    required/>
+                        </div>
+                    ))}
+*/

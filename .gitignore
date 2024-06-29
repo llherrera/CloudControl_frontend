@@ -13,6 +13,8 @@
 # production
 /build
 /src/configs
+.firebase/**
+.github/**
 
 # misc
 .DS_Store

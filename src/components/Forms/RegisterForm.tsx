@@ -47,19 +47,19 @@ export const RegisterForm = (props: RegisterFormProps) => {
             return alert("Por favor llene todos los campos");
         if (!validateEmail(form.email)) 
             return alert("El correo no es válido");
-        doRegister(props.id, form)
+        createUserWithEmailAndPassword(auth, form.email, form.password)
         .then(() => {
-            createUserWithEmailAndPassword(auth, form.email, form.password)
-            .then(userCredential => {
+            doRegister(props.id, form)
+            .then(() => {
                 navigate(`/pdt/PlanIndicativo`, {replace: true})
             })
             .catch(err => {
                 console.log(err);
-                alert('Error al autenticar usuario');
+                alert(`Error al registrar usuario: ${err.message}`);
             })
         })
-        .catch(() => {
-            alert("Error al registrar usuario");
+        .catch(err => {
+            alert(`Error al registrar usuario: ${err.message}`);
         })
     };
 
