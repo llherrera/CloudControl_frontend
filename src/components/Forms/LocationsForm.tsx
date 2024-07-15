@@ -1,21 +1,36 @@
-import { Coordinates, LocationInterface, locationTypes } from "@/interfaces";
-import { useAppSelector, useAppDispatch } from "@/store";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+
 import { InfoPopover, LocationPopover } from "@/components";
-import { thunkAddLocations, thunkUpdateLocations } from "@/store/plan/thunks";
+import {
+    KeyboardArrowLeft,
+    KeyboardArrowRight,
+    KeyboardDoubleArrowLeft,
+    KeyboardDoubleArrowRight } from '@mui/icons-material';
 
-import { notify } from '@/utils';
+import { useAppSelector, useAppDispatch } from "@/store";
+import { thunkAddLocations, thunkGetLocations } from "@/store/plan/thunks";
 
-export const LocationsForm = () => {
+import { Coordinates, LocationInterface, locationTypes } from "@/interfaces";
+import { notify, convertLocations } from '@/utils';
+
+interface Props {
+    locs?: LocationInterface[];
+    loc?: LocationInterface;
+}
+
+interface PaginationProps {
+    array: Array<any>;
+    page: number;
+    callback: (page: number) => void;
+}
+
+export const LocationsForm = ({loc, locs}: Props) => {
     const dispatch = useAppDispatch();
-    const { locations } = useAppSelector((state) => state.plan);
     const { id_plan } = useAppSelector((state) => state.content);
-    const blankLocation = { id_plan, type: locationTypes.neighborhood, name: '' };
-
-    const [location, setLocation] = useState('');
-    const [locationName, setLocationName] = useState('');
+    const blankLocation: LocationInterface = { id_plan, type: locationTypes.neighborhood, name: '' };
+    const [location, setLocation] = useState<LocationInterface>({id_plan, type: '', name:''});
     const [data, setData] = useState<LocationInterface[]>([blankLocation]);
-
+    
     const addLocation = () => {
         const newData = [...data, blankLocation];
         setData(newData);
@@ -41,14 +56,9 @@ export const LocationsForm = () => {
         setData(newData);
     };
 
-    const handleLocationChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const { value } = e.target;
-        setLocation(value)
-    };
-
-    const handleLocationName = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const { value } = event.target;
-        setLocationName(value);
+    const handleLocationChange = (e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setLocation({ ...location, [name]: value});
     };
 
     const handleSubmit = () => {
@@ -63,7 +73,7 @@ export const LocationsForm = () => {
         //if (locations)
         //    dispatch(thunkUpdateLocations({ id_plan, locations: data, location: {id_plan, type: location, name: locationName}})).then(() => notify("Localidades actualizadas"));
         //else
-            dispatch(thunkAddLocations({ id_plan, locations: data, location: {id_plan, type: location, name: locationName}})).then(() => notify("Localidades Añadidas"));
+            dispatch(thunkAddLocations({ id_plan, locations: data, location: {id_plan, type: location.type, name: location.name}})).then(() => notify("Localidades Añadidas"));
     };
 
     const handleLocation = (value: Coordinates, index: number) => {
@@ -71,20 +81,19 @@ export const LocationsForm = () => {
         newData[index] = { ...newData[index], lat: value.lat, lng: value.lng };
         setData(newData);
     };
-
     
     return(
-        <div className="tw-flex tw-justify-center tw-border-t-4 tw-mt-8 tw-pt-2 tw-pb-4">
-            <form className="tw-shadow-2xl tw-p-2">
+        <div className="tw-flex tw-justify-center tw-mt-8 tw-pb-4">
+            <form className="tw-shadow-2xl tw-p-2 tw-bg-white">
                 <p className="tw-font-bold tw-text-center">
                     Añadir localidades/barrios
                     <InfoPopover content={'Las localidades y comunas agrupan barrios,\nlos corregimientos se conforman por veredas y centros poblados'}/>
                 </p>
                 <div className="tw-flex tw-mt-3">
-                    <div>
+                    <div className="">
                         <select name="location"
-                                value={location}
-                                onChange={e =>handleLocationChange(e)}
+                                value={loc ? loc.type : location.type}
+                                onChange={e => handleLocationChange(e)}
                                 className="tw-m-2 tw-p-2 tw-rounded tw-border-2 tw-border-gray-400">
                             <option value="Localidad">Localidad</option>
                             <option value="Comuna">Comuna</option>
@@ -95,12 +104,13 @@ export const LocationsForm = () => {
                                 name="name"
                                 required
                                 placeholder="Nombre"
-                                onChange={e => handleLocationName(e)} value={locationName}/>
+                                onChange={e => handleLocationChange(e)}
+                                value={loc ? loc.name : location.name}/>
                     </div>
                     <ul>
-                        {data.map((location, index) => (
+                        {(locs??data).map((location, index) => (
                             <li key={index}>
-                                <label>{index + 1}</label>
+                                <label>{`${index < 9 ? '0' : ''}${index + 1}`}</label>
                                 <select name="type"
                                         value={location.type}
                                         onChange={(e) => handleTypeChange(e, index)}
@@ -149,6 +159,125 @@ export const LocationsForm = () => {
                     </button>
                 </div>
             </form>
+        </div>
+    );
+}
+
+const Pagination = ({array, page, callback}: PaginationProps) => {
+    return(
+        <ul className=" tw-flex tw-justify-center 
+                        tw-gap-4 tw-py-2
+                        tw-bg-white">
+            <li>
+                <button
+                    title="Primero"
+                    disabled={page === 1}
+                    onClick={() => callback(1)}>
+                    {page === 1 ? <KeyboardDoubleArrowLeft color="disabled"/> : <KeyboardDoubleArrowLeft/>}
+                </button>
+            </li>
+            <li>
+                <button
+                    title="Anterior"
+                    disabled={page === 1}
+                    onClick={() => callback(page - 1)}>
+                    {page === 1 ? <KeyboardArrowLeft color="disabled"/> : <KeyboardArrowLeft/>}
+                </button>
+            </li>
+
+            {array.map((e, i) => {
+                if (!(i > 0 && i < array.length - 1)) {
+                    return <li  key={i}
+                                className={`${page === i + 1 ? 'tw-ring' : ''} hover:tw-bg-zinc-200 tw-rounded tw-px-1`}>
+                        <button onClick={() => callback(i + 1)}>{i + 1}</button>
+                    </li>
+                } else if (page < 5) {
+                    if (i > 4) {
+                        if (i === 5) return <p>...</p>
+                        return null
+                    } else {
+                        return <li  key={i}
+                                    className={`${page === i + 1 ? 'tw-ring' : ''} hover:tw-bg-zinc-200 tw-rounded tw-px-1`}>
+                            <button onClick={() => callback(i + 1)}>{i + 1}</button>
+                        </li>
+                    }
+                } else if (page > array.length - 4) {
+                    if (i < array.length - 5) {
+                        if (i === array.length - 6) return <p>...</p>
+                        return null
+                    } else {
+                        return <li  key={i} 
+                                    className={`${page === i + 1 ? 'tw-ring' : ''} hover:tw-bg-zinc-200 tw-rounded tw-px-1`}>
+                            <button onClick={() => callback(i + 1)}>{i + 1}</button>
+                        </li>
+                    }
+                } else {
+                    if (page === i) 
+                        return <li  key={i} 
+                                    className={`tw-flex tw-gap-4`}>
+                            <p>...</p>
+                            <button onClick={() => callback(i - 1)} className="hover:tw-bg-zinc-200 tw-rounded tw-px-1">{i - 1}</button>
+                            <button onClick={() => callback(i)} className="tw-ring hover:tw-bg-zinc-200 tw-rounded tw-px-1">{i}</button>
+                            <button onClick={() => callback(i + 1)} className="hover:tw-bg-zinc-200 tw-rounded tw-px-1">{i + 1}</button>
+                            <p>...</p>
+                        </li>
+                }
+            })}
+
+            <li>
+                <button
+                    title="Siguiente"
+                    disabled={page === array.length}
+                    onClick={() => callback(page + 1)}>
+                    {page === array.length ? <KeyboardArrowRight color="disabled"/> : <KeyboardArrowRight/>}
+                </button>
+            </li>
+            <li>
+                <button
+                    title="Ultimo"
+                    disabled={page === array.length}
+                    onClick={() => callback(array.length)}>
+                    {page === array.length ? <KeyboardDoubleArrowRight color="disabled"/> : <KeyboardDoubleArrowRight/>}
+                </button>
+            </li>
+        </ul>
+    );
+}
+
+export const LocationsFormPage = () => {
+    const dispatch = useAppDispatch();
+    const { loadingLocations, locations } = useAppSelector((state) => state.plan);
+    const { id_plan } = useAppSelector((state) => state.content);
+
+    const [locationsMap, setLocationsMap] = useState<Map<LocationInterface, LocationInterface[]>>();
+    const [locations_, setLocations_] = useState<LocationInterface[]>([]);
+    const [locations__, setLocations__] = useState<LocationInterface[]>([]);
+    const [page, setPage] = useState(1);
+
+    const handlePage = (page: number) => setPage(page);
+
+    useEffect(() => {
+        dispatch(thunkGetLocations(id_plan));
+    }, []);
+
+    useEffect(() => {
+        if (locations.length === 0) return;
+        setLocationsMap(convertLocations(locations));
+    }, [locations]);
+
+    useEffect(() => {
+        if (locationsMap === undefined) return;
+        const locsTemp = Array.from(locationsMap.keys());
+        const locTemp = locationsMap.get(locsTemp[page - 1]);
+        setLocations_(locsTemp);
+        setLocations__(locTemp??[]);
+    }, [locationsMap, page]);
+
+    return(
+        loadingLocations ? <p>Cargando...</p> :
+        <div className="tw-flex tw-flex-col tw-justify-center">
+            <Pagination array={locations_} page={page} callback={handlePage}/>
+            <LocationsForm loc={locations_[page-1]} locs={locations__}/>
         </div>
     );
 }

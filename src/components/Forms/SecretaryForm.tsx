@@ -6,8 +6,6 @@ import { thunkAddSecretaries, thunkUpdateSecretaries } from "@/store/plan/thunks
 import { Secretary } from "@/interfaces";
 import { validateEmail, notify } from "@/utils";
 
-
-
 export const SecretaryForm = () => {
     const dispatch = useAppDispatch();
     const { secretaries } = useAppSelector((state) => state.plan);
@@ -46,11 +44,11 @@ export const SecretaryForm = () => {
 
     
     return (
-        <div className="tw-flex tw-justify-center tw-border-t-4 tw-mt-4 tw-pt-2">
-            <form
-                className=" tw-shadow-2xl
-                            tw-p-2">
-                <p>Añadir secretarias</p>
+        <div className="tw-flex tw-justify-center">
+            <form className="tw-p-2 tw-bg-white">
+                <p className="tw-font-bold tw-text-center">
+                    Añadir secretarias
+                </p>
                 {data.map((secretary, index) => (
                     <div key={index}>
                         <label>{index + 1}</label>

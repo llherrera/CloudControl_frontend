@@ -7,7 +7,7 @@ import {
     thunkUpdateEvidence, 
     thunkAddEvidenceGoal, 
     thunkGetUbiEvidence } from "@/store/evidence/thunks";
-import { thunkGetLocations } from "@/store/plan/thunks"
+import { thunkGetLocations } from "@/store/plan/thunks";
 
 import { EvidenceInterface, LocationInterface } from "@/interfaces";
 import { UbicationsPopover, ModalSpinner } from "@/components";
@@ -20,7 +20,7 @@ export const EvidenceForm = () => {
     const { unit } = useAppSelector((state) => state.unit);
     const { list_points, evi_selected } = useAppSelector((state) => state.evidence);
     const { id_plan } = useAppSelector((state) => state.content);
-    const { locations } = useAppSelector((state) => state.plan)
+    const { locations } = useAppSelector((state) => state.plan);
 
     const [loading, setLoading] = useState(false);
     const [data, setData] = useState<EvidenceInterface>(evi_selected??
@@ -50,7 +50,6 @@ export const EvidenceForm = () => {
     const [yearRegister, setYearRegister] = useState(todayDate.getUTCFullYear());
 
     const [locationsMap, setLocationsMap] = useState<Map<LocationInterface, LocationInterface[]>>();
-
     const [locations_, setLocations_] = useState<LocationInterface[]>([]);
     const [locations__, setLocations__] = useState<LocationInterface[]>([]);
     const [indexLocations, setIndexLocations] = useState(0);
@@ -349,7 +348,7 @@ export const EvidenceForm = () => {
                 </div>
                 <div className="tw-flex tw-flex-col tw-ml-3">
                     <p>Recursos ejecutados</p>
-                    <input  
+                    <input
                         type="number"
                         name="executed_resources"
                         id="executed_resources"

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import * as XLSX from 'xlsx';
 import ProgressBar from "@ramonak/react-progress-bar";
 
@@ -145,7 +145,9 @@ export const FileInput = () => {
 
     
     return (
-        <div className='tw-border-b-4 tw-pb-4 tw-pl-4'>
+        <div className='tw-p-4 tw-ml-4
+                        tw-bg-white
+                        tw-rounded'>
             <ProgressBar completed={progressBar} customLabel={textBar} />
             <a  className="tw-text-[#222222]
                             tw-font-bold tw-text-lg
@@ -231,7 +233,9 @@ export const FileFinancialInput = () => {
     }
 
     return (
-        <form className="tw-border-b-4 tw-pb-4 tw-pl-4">
+        <form className='tw-p-4 tw-ml-4
+                        tw-bg-white
+                        tw-rounded'>
             <a  className="tw-text-[#222222]
                             tw-font-bold tw-text-lg
                             tw-font-montserrat"
@@ -317,7 +321,9 @@ export const FilePhysicalInput = () => {
     }
 
     return (
-        <form className="tw-border-b-4 tw-pb-4 tw-pl-4">
+        <form className='tw-p-4 tw-ml-4
+                        tw-bg-white
+                        tw-rounded'>
             <a  className="tw-text-[#222222]
                             tw-font-bold tw-text-lg
                             tw-font-montserrat"

@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import {
     MapContainer,
     TileLayer,
     Marker,
     Rectangle,
+    Popup,
     useMapEvents } from 'react-leaflet';
 import { Popover } from 'react-tiny-popover';
 
@@ -14,6 +15,12 @@ import { LocationIcon } from '@/assets/icons';
 import { PopoverProps } from '@/interfaces';
 
 import 'leaflet/dist/leaflet.css';
+import L, { latLng } from 'leaflet';
+
+interface ProsLat {
+    lat:number 
+    lng:number
+}
 
 export const LocationPopover = (props: PopoverProps) => {
     const [poLocationIsOpen, setPoLocationIsOpen] = useState(false);
@@ -118,7 +125,7 @@ const UbiMarker = () => {
     return list_points.length === 0 ? [<div/>] :
         list_points.map((p, i) => 
             <Marker
-                key={p.lat}
+                key={i}
                 eventHandlers={{
                     click: hola
                 }}
@@ -127,12 +134,15 @@ const UbiMarker = () => {
         )
 }
 
+
+//delete L.Icon.Default.prototype._getIconUrl;
+//L.Icon.Default.mergeOptions({
+//    iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
+//    iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
+//    shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
+//});
 const MapContainerUbi = () => {
     const dispatch = useAppDispatch();
-
-    //const [map, setMap] = useState<google.maps.Map|null>(null);
-    //const [markers_, setMarkers_] = useState<google.maps.Marker[]>([]);
-    const [markers, setMarkers] = useState<JSX.Element[]>([]);
 
     const {
         planLocation,
@@ -141,11 +151,24 @@ const MapContainerUbi = () => {
         bounding3,
         bounding4
     } = useAppSelector(state => state.plan);
-    const { list_points } = useAppSelector(state => state.evidence);
 
-    const handleDeleteMarker = (index: number) => {
-        const newList = list_points.filter((point, i) => i !== index);
-        dispatch(setPoints(newList));
+    const [markers, setMarkers] = useState<ProsLat[]>([]);
+    const MapEvents = () => {
+        useMapEvents({
+            click(e) {
+                const { lat, lng } = e.latlng;
+                const markerExists = markers.some(marker => marker.lat === lat && marker.lng === lng);
+                if (!markerExists) {
+                    setMarkers([...markers, { lat, lng }]);
+                }
+            },
+        });
+        return null;
+    };
+
+    const handleMarkerClick = (index: number) => {
+        console.log('hoka');
+        //setMarkers(markers.filter((_, i) => i !== index));
     };
 
     return (
@@ -161,10 +184,38 @@ const MapContainerUbi = () => {
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            {UbiMarker()}
+            
+            <Marker
+                position={[0, 0]}
+                eventHandlers={{
+                    click: (e) => {
+                        console.log('index')
+                    }
+                }}
+            />
+            
             <Rectangle
                 bounds={[[bounding1, bounding3],[bounding2, bounding4]]}
             />
         </MapContainer>
     );
 }
+
+/*<MapEvents/>
+{markers.map((marker, index) => (
+                <Marker
+                    key={index}
+                    position={[marker.lat, marker.lng]}
+                    eventHandlers={{
+                        click: () => handleMarkerClick(index)
+                    }}
+                />
+            ))}
+*/
+
+//const { list_points } = useAppSelector(state => state.evidence);
+//const handleDeleteMarker = (index: number) => {
+//    const newList = list_points.filter((point, i) => i !== index);
+//    dispatch(setPoints(newList));
+//};
+//<UbiMarker/>

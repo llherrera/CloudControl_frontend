@@ -195,7 +195,7 @@ export const UnitNodePage = () => {
                 </div>
                 <div className="tw-flex tw-flex-wrap tw-justify-center">
                 {unit.years.map((item, index) => (
-                        <div key={item.year+1}
+                        <div key={index}
                             className="tw-my-2">
                             <p className="  tw-mx-2 
                                             tw-border-x tw-border-t tw-border-black 
@@ -221,7 +221,7 @@ export const UnitNodePage = () => {
                                                     tw-mx-2
                                                     tw-absolute
                                                     tw-bottom-0 tw-inset-x-0">
-                                        {unit.years[index].physical_programming}
+                                        {item.physical_programming}
                                     </p>
                                 </div>
                                 <div className="tw-flex tw-flex-col tw-justify-center 
@@ -232,7 +232,7 @@ export const UnitNodePage = () => {
                                     </p>
                                     <p className="  tw-text-center
                                                     tw-border-t tw-border-black">
-                                        {unit.years[index].physical_execution}
+                                        {item.physical_execution}
                                     </p>
                                 </div>
                                 <div className="tw-flex tw-flex-col tw-justify-center
@@ -242,7 +242,7 @@ export const UnitNodePage = () => {
                                     </p>
                                     <p className="  tw-text-center
                                                     tw-border-t tw-border-black">
-                                        ${unit.years[index].financial_execution}
+                                        ${item.financial_execution.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}
                                     </p>
                                 </div>
                             </div>
@@ -266,7 +266,7 @@ export const UnitNodePage = () => {
                             </p>
                             <p className="  tw-text-center
                                             tw-border-t tw-border-black">
-                                {isNaN(acum) ? 0 : parseInt(acum.toString())*100}%
+                                {isNaN(acum) ? 0 : parseFloat((acum*100).toFixed(2))}%
                             </p>
                         </div>
                         <div className="tw-flex tw-flex-col tw-justify-center
@@ -276,7 +276,7 @@ export const UnitNodePage = () => {
                             </p>
                             <p className="  tw-text-center
                                             tw-border-t tw-border-black">
-                                ${acumFinan}
+                                ${acumFinan.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,')}
                             </p>
                         </div>
                     </div>
