@@ -10,25 +10,21 @@ export const EvidencePage = () => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
 
-    const { rootTree } = useAppSelector((state) => state.plan);
-    const { unit } = useAppSelector((state) => state.unit);
-    const { id_plan } = useAppSelector((state) => state.content);
+    const { rootTree } = useAppSelector(store => store.plan);
+    const { unit } = useAppSelector(store => store.unit);
+    const { id_plan } = useAppSelector(store => store.content);
     
     const [cargar, setCargar] = useState(false);
 
     const handleBack = () => {
         dispatch(setEvidence(undefined));
         dispatch(resetEvidence());
-        navigate(-1)
+        navigate(-1);
     };
 
     const handleSubmitButton = () => setCargar(!cargar);
 
-    const ternary = (index: number) => index === 1 ? 'Meta' : null
-
-    const ternary2 = (index: number) => index === 1 ? unit.goal : null
-
-    const memorias = () => {
+    const Memorias = () => {
         if (unit === undefined)
             return <div className="tw-text-center">
                 No hay una meta seleccionada
@@ -73,10 +69,10 @@ export const EvidencePage = () => {
                                     <p className="tw-font-bold">{ name[0] }</p>
                                 </td>
                                 <td className="tw-hidden md:tw-table-cell tw-border-4 tw-border-double tw-border-gray-500">
-                                    <p className="tw-font-bold">{ index === 0 ? 'Linea base' : ternary(index) }</p>
+                                    <p className="tw-font-bold">{ index === 0 ? 'Linea base' : index === 1 ? 'Meta' : null }</p>
                                 </td>
                                 <td className="tw-hidden md:tw-table-cell tw-border-4 tw-border-double tw-border-gray-500">
-                                    <p className="tw-font-bold">{ index === 0 ? unit.base : ternary2(index) }</p>
+                                    <p className="tw-font-bold">{ index === 0 ? unit.base : index === 1 ? unit.goal : null }</p>
                                 </td>
                             </tr>
                         ))}
@@ -87,7 +83,7 @@ export const EvidencePage = () => {
         );
     };
 
-    const evidencias = () => {
+    const Evidencias = () => {
         if (unit === undefined) 
             return <div className="tw-text-center">
                 No hay una meta seleccionada
@@ -109,6 +105,6 @@ export const EvidencePage = () => {
     };
 
     return (
-        cargar ? evidencias() : memorias()
+        cargar ? <Evidencias/> : <Memorias/>
     );
 }

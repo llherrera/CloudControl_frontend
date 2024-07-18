@@ -3,19 +3,18 @@ import Slider from '@mui/material/Slider';
 import Box from '@mui/material/Box';
 
 import { notify } from '@/utils';
+import { IdNumProps } from '@/interfaces';
 
 import { useAppDispatch, useAppSelector } from '@/store';
-import { 
-    thunkAddColors, 
+import {
+    thunkAddColors,
     thunkGetColors,
     thunkUpdateColors } from '@/store/plan/thunks';
 
-import { ColorFromProps } from '@/interfaces';
-
-export const ColorForm = ( props : ColorFromProps ) => {
+export const ColorForm = ( {id} : IdNumProps ) => {
     const dispatch = useAppDispatch();
-    const { colorimeter } = useAppSelector((state) => state.plan);
-    const { id_plan } = useAppSelector((state) => state.content);
+    const { colorimeter } = useAppSelector(store => store.plan);
+    const { id_plan } = useAppSelector(store => store.content);
     
     const [value, setValue] = useState(
         colorimeter.length === 0 ? [[0, 24], [25, 49], [50, 74], [75, 100]] :
@@ -48,12 +47,12 @@ export const ColorForm = ( props : ColorFromProps ) => {
         event.preventDefault();
         const colors = value.map((item: number[]) => item[1]);
         colorimeter.length === 0 ?
-            dispatch(thunkAddColors({id_plan: props.id, colors: colors}))
+            dispatch(thunkAddColors({id_plan: id, colors: colors}))
             .unwrap()
             .then(() => {
                 notify("Colorimetria guardados correctamente");
             })
-        :  dispatch(thunkUpdateColors({id_plan: props.id, colors: colors}))
+        :  dispatch(thunkUpdateColors({id_plan: id, colors: colors}))
             .unwrap()
             .then(() => {
                 notify("Colorimetria actualizados correctamente");

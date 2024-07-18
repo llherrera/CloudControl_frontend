@@ -11,12 +11,12 @@ export const TimeLine = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
-    const { token_info } = useAppSelector(state => state.auth);
-    const { years, 
-            yearSelect, 
-            plan, 
-            colorimeter, 
-            parent, 
+    const { token_info } = useAppSelector(store => store.auth);
+    const { years,
+            yearSelect,
+            plan,
+            colorimeter,
+            parent,
             nodes } = useAppSelector(store => store.plan);
 
     const [yearProgress, setYearProgress] = useState<number[]>([]);

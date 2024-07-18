@@ -21,7 +21,7 @@ export const NodesList = ( props : NodeListProps ) => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
 
-    const { token_info } = useAppSelector(state => state.auth);
+    const { token_info } = useAppSelector(store => store.auth);
     const { nodes, 
             yearSelect, 
             levels, 
@@ -145,7 +145,7 @@ export const NodesList = ( props : NodeListProps ) => {
         'tw-bg-blueColory hover:tw-ring-blue-200'
     );
 
-    const handleShowList = () => loadingNodes ?
+    const HandleShowList = () => loadingNodes ?
         <Spinner />
         :<ul className={`${indexLevel === levels.length-1 ? 
                         'tw-flex tw-flex-row tw-flex-wrap':
@@ -203,6 +203,6 @@ export const NodesList = ( props : NodeListProps ) => {
     ;
 
     return <div>
-        {nodes.length === 0 ? null : handleShowList()}
+        {nodes.length === 0 ? null : <HandleShowList/>}
     </div>
 }

@@ -8,8 +8,8 @@ import { validateEmail, notify } from "@/utils";
 
 export const SecretaryForm = () => {
     const dispatch = useAppDispatch();
-    const { secretaries } = useAppSelector((state) => state.plan);
-    const { id_plan } = useAppSelector((state) => state.content);
+    const { secretaries } = useAppSelector(store => store.plan);
+    const { id_plan } = useAppSelector(store => store.content);
     const blankSecretary = { id_plan: id_plan, name: '', email: '', phone: 0 };
 
     const [data, setData] = useState<Secretary[]>(secretaries.length === 0 ? [blankSecretary] : secretaries);

@@ -7,8 +7,16 @@ import {
 
 export const Filter = () => {
     const dispatch = useAppDispatch();
-    const { years } = useAppSelector(state => state.plan);
-    const { board, yearSelect, execSelect, cateSelect, subCateSelect, categories, subCategories, fieldSelect } = useAppSelector(state => state.chart);
+    const { years } = useAppSelector(store => store.plan);
+    const {
+        board,
+        yearSelect,
+        execSelect,
+        cateSelect,
+        subCateSelect,
+        categories,
+        subCategories,
+        fieldSelect } = useAppSelector(store => store.chart);
 
     if (board.length === 0) return null;
 
@@ -32,7 +40,6 @@ export const Filter = () => {
         dispatch(setSubCateSelect(value));
     };
 
-    
     return (
         <div>
             <p>{(fieldSelect === '1' || fieldSelect === '2' || fieldSelect === '3') ?

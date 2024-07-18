@@ -30,8 +30,8 @@ export const PDTid = () => {
     }, []);
 
     return (
-        <Frame
-            data={levels.length === 0 ? <LevelForm id={id_plan.toString()} /> : <Board/>}
-        />
+        <Frame>
+            {levels.length === 0 ? <LevelForm id={id_plan.toString()} /> : <Board/>}
+        </Frame>
     );
 }

@@ -10,27 +10,21 @@ import {
 import { useAppSelector, useAppDispatch } from "@/store";
 import { thunkAddLocations, thunkGetLocations } from "@/store/plan/thunks";
 
-import { Coordinates, LocationInterface, locationTypes } from "@/interfaces";
+import {
+    Coordinates,
+    LocationInterface,
+    locationTypes,
+    LocFormProps,
+    PaginationProps } from "@/interfaces";
 import { notify, convertLocations } from '@/utils';
 
-interface Props {
-    locs?: LocationInterface[];
-    loc?: LocationInterface;
-}
-
-interface PaginationProps {
-    array: Array<any>;
-    page: number;
-    callback: (page: number) => void;
-}
-
-export const LocationsForm = ({loc, locs}: Props) => {
+export const LocationsForm = ({loc, locs}: LocFormProps) => {
     const dispatch = useAppDispatch();
-    const { id_plan } = useAppSelector((state) => state.content);
+    const { id_plan } = useAppSelector(store => store.content);
     const blankLocation: LocationInterface = { id_plan, type: locationTypes.neighborhood, name: '' };
     const [location, setLocation] = useState<LocationInterface>({id_plan, type: '', name:''});
     const [data, setData] = useState<LocationInterface[]>([blankLocation]);
-    
+
     const addLocation = () => {
         const newData = [...data, blankLocation];
         setData(newData);
@@ -81,7 +75,7 @@ export const LocationsForm = ({loc, locs}: Props) => {
         newData[index] = { ...newData[index], lat: value.lat, lng: value.lng };
         setData(newData);
     };
-    
+
     return(
         <div className="tw-flex tw-justify-center tw-mt-8 tw-pb-4">
             <form className="tw-shadow-2xl tw-p-2 tw-bg-white">
@@ -246,8 +240,8 @@ const Pagination = ({array, page, callback}: PaginationProps) => {
 
 export const LocationsFormPage = () => {
     const dispatch = useAppDispatch();
-    const { loadingLocations, locations } = useAppSelector((state) => state.plan);
-    const { id_plan } = useAppSelector((state) => state.content);
+    const { loadingLocations, locations } = useAppSelector(store => store.plan);
+    const { id_plan } = useAppSelector(store => store.content);
 
     const [locationsMap, setLocationsMap] = useState<Map<LocationInterface, LocationInterface[]>>();
     const [locations_, setLocations_] = useState<LocationInterface[]>([]);

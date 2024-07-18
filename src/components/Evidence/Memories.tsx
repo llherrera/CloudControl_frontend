@@ -4,7 +4,6 @@ import SaveAsIcon from '@mui/icons-material/SaveAs';
 import { useAppDispatch, useAppSelector } from "@/store";
 import { thunkUpdateExecution } from "@/store/unit/thunks";
 
-
 import { notify } from '@/utils';
 
 interface Props {
@@ -12,9 +11,8 @@ interface Props {
 }
 
 export const Memory = ({callback}:Props) => {
-    const dispatch = useAppDispatch()
-    const { unit } = useAppSelector((state) => state.unit);
-
+    const dispatch = useAppDispatch();
+    const { unit } = useAppSelector(store => store.unit);
     const [value, setValue] = useState(0);
 
     const handleChangeValue = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -30,8 +28,7 @@ export const Memory = ({callback}:Props) => {
     };
 
     if (unit === undefined) return <div>No hay una meta seleccionada</div>;
-    
-    
+
     return (
         <section className="tw-bg-slate-200
                             tw-border-4 tw-border-double

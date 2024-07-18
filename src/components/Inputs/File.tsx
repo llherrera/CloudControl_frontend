@@ -32,8 +32,8 @@ export const FileInput = () => {
     const [textBar, setTextBar] = useState('');
     const [progressBar, setProgressBar] = useState(0);
 
-    const { id_plan } = useAppSelector((state) => state.content);
-    const { years, plan } = useAppSelector((state) => state.plan);
+    const { id_plan } = useAppSelector(store => store.content);
+    const { years, plan } = useAppSelector(store => store.plan);
 
 
     let levels_: LevelInterface[] = [];
@@ -185,8 +185,8 @@ export const FileFinancialInput = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [data, setData] = useState<File>();
 
-    const { plan, years } = useAppSelector((state) => state.plan);
-    const { id_plan } = useAppSelector((state) => state.content);
+    const { plan, years } = useAppSelector(store => store.plan);
+    const { id_plan } = useAppSelector(store => store.content);
 
     const updateFinancials = async (data: ExcelFinancial[]) => {
         if (plan === undefined) return;
@@ -273,8 +273,8 @@ export const FilePhysicalInput = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [data, setData] = useState<File>();
 
-    const { plan, years } = useAppSelector((state) => state.plan);
-    const { id_plan } = useAppSelector((state) => state.content);
+    const { plan, years } = useAppSelector(store => store.plan);
+    const { id_plan } = useAppSelector(store => store.content);
 
     const updatePhysical = async (data: ExcelPhysical[]) => {
         if (plan === undefined) return;

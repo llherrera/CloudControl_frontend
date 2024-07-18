@@ -19,9 +19,6 @@ export const MyEvidence = ({evidence}: Props) => {
         navigate(`/PlanIndicativo/evidencia`);
     };
 
-    const handleStateEvi = (state: number) => (state === 1 ? "Aprobado" : "Rechazado");
-    const handleColorCla = (state: number) => (state === 1 ? 'tw-bg-greenBtn': 'tw-bg-redBtn');
-
     return (
         <tr>
             <th className="tw-bg-blue-200 tw-rounded 
@@ -38,8 +35,8 @@ export const MyEvidence = ({evidence}: Props) => {
                             tw-my-1 tw-px-3
                             tw-border tw-border-black
                             ${evidence.state === 0 ? 
-                            'tw-bg-gray-300': handleColorCla(evidence.state)}`}>
-                {evidence.state === 0 ? "Pendiente" : handleStateEvi(evidence.state)}
+                            'tw-bg-gray-300': evidence.state === 1 ? 'tw-bg-greenBtn': 'tw-bg-redBtn'}`}>
+                {evidence.state === 0 ? "Pendiente" : evidence.state === 1 ? "Aprobado" : "Rechazado"}
             </th>
             <th className="tw-bg-blue-200 tw-rounded
                             tw-my-1 tw-px-3

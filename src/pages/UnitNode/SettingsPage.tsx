@@ -18,8 +18,8 @@ export const SettingsPage = () => {
     const navigate = useNavigate();
 
     const {
-        id_plan, 
-        node, 
+        id_plan,
+        node,
         url_logo,
         url_logo_plan } = useAppSelector(store => store.content);
     const { unit, loadingUnit } = useAppSelector(store => store.unit);

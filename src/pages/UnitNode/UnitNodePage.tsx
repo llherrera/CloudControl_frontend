@@ -19,7 +19,7 @@ export const UnitNodePage = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
-    const { token_info } = useAppSelector(state => state.auth);
+    const { token_info } = useAppSelector(store => store.auth);
     const { rootTree } = useAppSelector(store => store.plan);
     const { unit, loadingUnit } = useAppSelector(store => store.unit);
     const { evidences } = useAppSelector(store => store.evidence);

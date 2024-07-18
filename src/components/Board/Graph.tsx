@@ -7,7 +7,6 @@ import { setRadioBtn } from '@/store/plan/planSlice';
 import { setType } from '@/store/chart/chartSlice';
 
 import { GraphProps } from '@/interfaces';
-import {  } from '@/services/api';
 import { ModalTotalPDT, ModalSecretary, ModalProgram } from '@/components/Modals';
 import { decode } from "@/utils";
 
@@ -15,7 +14,7 @@ export const Graph = ( props: GraphProps ) => {
     const dispatch = useAppDispatch();
     const chartComponentRef = useRef<HighchartsReact.RefObject>(null);
 
-    const { token_info } = useAppSelector(state => state.auth);
+    const { token_info } = useAppSelector(store => store.auth);
     const { colorimeter, radioBtn, nodes } = useAppSelector(store => store.plan);
     const { type } = useAppSelector(store => store.chart);
     const [indexType, setIndexType] = useState(0);

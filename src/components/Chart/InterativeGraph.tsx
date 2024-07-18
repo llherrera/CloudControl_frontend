@@ -4,7 +4,8 @@ import HighchartsReact from 'highcharts-react-official';
 
 import { useAppDispatch, useAppSelector } from "@/store";
 
-import { getDataDashboardSecretary,
+import {
+    getDataDashboardSecretary,
     getDataDashboardLocation,
     getDataDashboardEvidence } from '@/services/api'
 import {
@@ -31,9 +32,17 @@ import {
 
 const Component = ({index, children, type, callDataX, callDataY, callTitle}: ComponentProps) => {
     const dispatch = useAppDispatch();
-    const { indexSelect, yearSelect, execSelect, cateSelect, categories, subCategories, fieldSelect, subCateSelect } = useAppSelector(state => state.chart);
-    const { id_plan } = useAppSelector(state => state.content);
-    const { years, secretaries, locations } = useAppSelector(state => state.plan);
+    const {
+        indexSelect,
+        yearSelect,
+        execSelect,
+        cateSelect,
+        categories,
+        subCategories,
+        fieldSelect,
+        subCateSelect } = useAppSelector(store => store.chart);
+    const { id_plan } = useAppSelector(store => store.content);
+    const { years, secretaries, locations } = useAppSelector(store => store.plan);
 
     const [yearsDefault  , setYearsDefault] = useState<number>(years[0]);
     const [execDefault   , setExecDefault] = useState<string>('');
@@ -230,8 +239,8 @@ const Component = ({index, children, type, callDataX, callDataY, callTitle}: Com
 export const InterativeChart = ({type, index}: PropsChart) => {
     const chartComponentRef = useRef<HighchartsReact.RefObject>(null);
 
-    const { yearSelect } = useAppSelector(state => state.chart);
-    const { years } = useAppSelector(state => state.plan);
+    const { yearSelect } = useAppSelector(store => store.chart);
+    const { years } = useAppSelector(store => store.plan);
 
     const [dataX, setDataX] = useState<string[] | number[]>([]);
     const [dataY, setDataY] = useState<number[][]>([]);

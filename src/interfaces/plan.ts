@@ -68,6 +68,11 @@ export interface AddColorsProps {
     colors: number[];
 }
 
+export interface PDTDepartment {
+    dept: string,
+    muni: string;
+}
+
 export interface Level {
     id_plan: number;
     name: string;

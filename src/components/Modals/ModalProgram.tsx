@@ -26,7 +26,7 @@ export const ModalProgram = () => {
             nodesReport, 
             years, 
             loadingReport, 
-            colorimeter } = useAppSelector((state) => state.plan);
+            colorimeter } = useAppSelector(store => store.plan);
     let levels_ = levels.slice(0, -1);
 
     const [modalIsOpen, setModalIsOpen] = useState(false);

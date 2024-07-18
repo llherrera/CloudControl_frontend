@@ -15,7 +15,7 @@ import { thunkGetPDTid } from "@/store/plan/thunks";
 
 export const PDT = () => {
     const [data, setData] = useState<PDTInterface[]>([]);
-    const { token_info } = useAppSelector(state => state.auth);
+    const { token_info } = useAppSelector(store => store.auth);
 
     let rol = "";
     
@@ -35,11 +35,9 @@ export const PDT = () => {
     }, []);
 
     return (
-        <Header
-            components={[
-                <ListPDT data={data} rol={rol} key={data.length}/>
-            ]}
-        />
+        <Header>
+            {[<ListPDT data={data} rol={rol} key={data.length}/>]}
+        </Header>
     );
 }
 
@@ -74,10 +72,8 @@ const ListPDT = ( props: PDTPageProps ) => {
                     Añadir Plan +
                 </button>
                 </li>
-                {
-                    props.data.length === 0 ? <p>No hay planes de momento</p> : null
-                }
-                { props.data.map(( e:PDTInterface )=>
+                {props.data.length === 0 ? <p>No hay planes de momento</p> : null}
+                {props.data.map((e:PDTInterface) =>
                 <li className="tw-flex"
                     key={e.id_plan}>
                     <button className=" tw-flex tw-justify-between tw-w-full 

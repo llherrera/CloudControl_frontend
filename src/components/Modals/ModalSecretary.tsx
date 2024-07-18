@@ -44,8 +44,8 @@ const ModalPDT = ( props: ModalsecretaryProps ) => {
             levels,
             secretaries,
             loadingReport,
-            colorimeter } = useAppSelector((state) => state.plan);
-    const { id_plan } = useAppSelector((state) => state.content);
+            colorimeter } = useAppSelector(store => store.plan);
+    const { id_plan } = useAppSelector(store => store.content);
 
     const [data, setData] = useState<ReportPDTInterface[]>([]);
     const [secretary, setSecretary] = useState<string>('');

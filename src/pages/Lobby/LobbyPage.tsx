@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import planLogo from '@/assets/icons/plan-indicativo.svg';
@@ -23,7 +23,7 @@ export const LobbyPage = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
-    const { id_plan } = useAppSelector(state => state.content);
+    const { id_plan } = useAppSelector(store => store.content);
     const { plan } = useAppSelector(store => store.plan);
 
     useEffect(() => {
@@ -51,7 +51,7 @@ export const LobbyPage = () => {
         fetchLocation();
     }, [plan]);
 
-    const buttons: React.ReactNode[] = [
+    const buttons: JSX.Element[] = [
         <ButtonComponent
             key={0}
             inside={false}
@@ -96,6 +96,8 @@ export const LobbyPage = () => {
     ];
 
     return (
-        <Header components={buttons}/>
+        <Header>
+            {buttons}
+        </Header>
     );
 }

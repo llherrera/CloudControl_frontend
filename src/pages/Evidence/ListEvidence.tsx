@@ -13,7 +13,9 @@ import { decode } from "@/utils";
 
 export const ListEvidence = () => {
     return (
-        <Frame data={<Evidence />}/>
+        <Frame>
+            {<Evidence />}
+        </Frame>
     );
 }
 
@@ -21,7 +23,7 @@ const Evidence = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
-    const { token_info } = useAppSelector(state => state.auth);
+    const { token_info } = useAppSelector(store => store.auth);
     const { evidences, evi_count } = useAppSelector(store => store.evidence);
     const { id_plan } = useAppSelector(store => store.content);
 
@@ -185,7 +187,6 @@ const Evidence = () => {
                 : <div></div>
                 }
             </div> : null}
-            
         </div>
     );
 }

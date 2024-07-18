@@ -1,26 +1,24 @@
 import React, { useState, useEffect } from "react";
-
 import { notify, convertLocations } from '@/utils';
-
-import { useAppSelector, useAppDispatch } from "@/store";
-import { 
-    thunkUpdateEvidence, 
-    thunkAddEvidenceGoal, 
-    thunkGetUbiEvidence } from "@/store/evidence/thunks";
-import { thunkGetLocations } from "@/store/plan/thunks";
-
 import { EvidenceInterface, LocationInterface } from "@/interfaces";
 import { UbicationsPopover, ModalSpinner } from "@/components";
+
+import { useAppSelector, useAppDispatch } from "@/store";
+import {
+    thunkUpdateEvidence,
+    thunkAddEvidenceGoal,
+    thunkGetUbiEvidence } from "@/store/evidence/thunks";
+import { thunkGetLocations } from "@/store/plan/thunks";
 
 export const EvidenceForm = () => {
     const dispatch = useAppDispatch();
     const todayDate = new Date();
     const deadLine = new Date(todayDate.getUTCFullYear(), 1, 1);
 
-    const { unit } = useAppSelector((state) => state.unit);
-    const { list_points, evi_selected } = useAppSelector((state) => state.evidence);
-    const { id_plan } = useAppSelector((state) => state.content);
-    const { locations } = useAppSelector((state) => state.plan);
+    const { unit } = useAppSelector(store => store.unit);
+    const { list_points, evi_selected } = useAppSelector(store => store.evidence);
+    const { id_plan } = useAppSelector(store => store.content);
+    const { locations } = useAppSelector(store => store.plan);
 
     const [loading, setLoading] = useState(false);
     const [data, setData] = useState<EvidenceInterface>(evi_selected??
@@ -54,7 +52,7 @@ export const EvidenceForm = () => {
     const [locations__, setLocations__] = useState<LocationInterface[]>([]);
     const [indexLocations, setIndexLocations] = useState(0);
 
-    useEffect(()=> {
+    useEffect(() => {
         dispatch(thunkGetLocations(id_plan));
     }, []);
 
@@ -71,7 +69,7 @@ export const EvidenceForm = () => {
         setLocations__(locTemp??[]);
     }, [locationsMap, indexLocations]);
 
-    useEffect(()=> {
+    useEffect(() => {
         if (evi_selected !== undefined)
             dispatch(thunkGetUbiEvidence(evi_selected.id_evidence));
     }, [evi_selected]);

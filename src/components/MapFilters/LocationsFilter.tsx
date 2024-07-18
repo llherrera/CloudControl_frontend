@@ -8,8 +8,12 @@ import { setLocs } from "@/store/content/contentSlice";
 export const LocationSelect = () => {
     const dispatch = useAppDispatch();
 
-    const { locations } = useAppSelector((state) => state.plan);
-    const { id_plan, secretary, location, node_code } = useAppSelector((state) => state.content);
+    const { locations } = useAppSelector(store => store.plan);
+    const {
+        id_plan,
+        secretary,
+        location,
+        node_code } = useAppSelector(store => store.content);
 
     const [loc, setLoc] = useState<string>('');
 

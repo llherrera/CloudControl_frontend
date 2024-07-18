@@ -10,8 +10,12 @@ import { NodesSecretary } from "@/interfaces";
 export const SecretarySelect = () => {
     const dispatch = useAppDispatch();
 
-    const { secretaries } = useAppSelector((state) => state.plan);
-    const { id_plan, secretary, location, node_code } = useAppSelector((state) => state.content);
+    const { secretaries } = useAppSelector(store => store.plan);
+    const {
+        id_plan,
+        secretary,
+        location,
+        node_code } = useAppSelector(store => store.content);
     const [data, setData] = useState<NodesSecretary[]>([]);
     const [index, setIndex] = useState<number[]>([]);
 

@@ -1,12 +1,11 @@
-import React from 'react'
-import { Frame } from '@/components'
+import { Frame } from '@/components';
 
 export const POAI = () => {
     return (
-        <Frame
-            data={<div>
+        <Frame>
+            <div>
                 <h1>POAI</h1>
-            </div>}
-        />
+            </div>
+        </Frame>
     );
 }

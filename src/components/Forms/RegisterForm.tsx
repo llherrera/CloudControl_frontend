@@ -1,11 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import IconButton from "@mui/material/IconButton";
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 
-import { Input } from "@/components";
+import { Input, BackBtn } from "@/components";
 import { doRegister } from "@/services/api";
-import { RegisterInterface, RegisterFormProps } from "@/interfaces";
+import { RegisterInterface, IdNumProps } from "@/interfaces";
 import { validateEmail } from "@/utils";
 
 import { initializeApp } from "firebase/app";
@@ -15,7 +13,7 @@ import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
 const app = initializeApp(firebaseConfig);
 const auth = getAuth();
 
-export const RegisterForm = (props: RegisterFormProps) => {
+export const RegisterForm = ({id}: IdNumProps) => {
     const navigate = useNavigate();
 
     const [form, setForm] = useState<RegisterInterface>({
@@ -49,7 +47,7 @@ export const RegisterForm = (props: RegisterFormProps) => {
             return alert("El correo no es válido");
         createUserWithEmailAndPassword(auth, form.email, form.password)
         .then(() => {
-            doRegister(props.id, form)
+            doRegister(id, form)
             .then(() => {
                 navigate(`/pdt/PlanIndicativo`, {replace: true})
             })
@@ -63,22 +61,10 @@ export const RegisterForm = (props: RegisterFormProps) => {
         })
     };
 
-    const backIconButton = () => {
-        return (
-            <IconButton aria-label="delete"
-                        size="small"
-                        color="secondary"
-                        onClick={()=>navigate(-1)}
-                        title="Regresar">
-                <ArrowBackIosIcon/>
-            </IconButton>
-        );
-    }
-
     return (
         <div className="tw-flex tw-justify-center tw-my-4">
             <div className="tw-float">
-                {backIconButton()}
+                <BackBtn handle={()=>navigate(-1)} id={form.username.length}/>
             </div>
             <form   onSubmit={submitForm}
                     className=" tw-px-10 tw-shadow-2xl

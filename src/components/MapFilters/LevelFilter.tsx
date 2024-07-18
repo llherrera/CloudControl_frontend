@@ -11,7 +11,7 @@ import { getLevelNodes, getCodeEvidences, getLatLngs } from '@/services/api';
 export const LevelsFilters = () => {
     const dispatch = useAppDispatch();
 
-    const { levels } = useAppSelector(state => state.plan);
+    const { levels } = useAppSelector(store => store.plan);
     const { id_plan, node_code, secretary, location } = useAppSelector(store => store.content);
 
     const [programs, setPrograms] = useState<NodeInterface[][]>([]);

@@ -1,10 +1,9 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect } from 'react';
 import {
     MapContainer,
     TileLayer,
     Marker,
     Rectangle,
-    Popup,
     useMapEvents } from 'react-leaflet';
 import { Popover } from 'react-tiny-popover';
 
@@ -84,7 +83,7 @@ const MapContainer_ = (props: PopoverProps) => {
         bounding2,
         bounding3,
         bounding4
-    } = useAppSelector(state => state.plan);
+    } = useAppSelector(store => store.plan);
 
     return (
         planLocation === undefined ?
@@ -109,7 +108,7 @@ const MapContainer_ = (props: PopoverProps) => {
 
 const UbiMarker = () => {
     const dispatch = useAppDispatch();
-    const { list_points } = useAppSelector(state => state.evidence);
+    const { list_points } = useAppSelector(store => store.evidence);
     const hola = () => console.log('hhh');
     const map = useMapEvents({
         click(e) {
@@ -150,7 +149,7 @@ const MapContainerUbi = () => {
         bounding2,
         bounding3,
         bounding4
-    } = useAppSelector(state => state.plan);
+    } = useAppSelector(store => store.plan);
 
     const [markers, setMarkers] = useState<ProsLat[]>([]);
     const MapEvents = () => {
@@ -213,7 +212,7 @@ const MapContainerUbi = () => {
             ))}
 */
 
-//const { list_points } = useAppSelector(state => state.evidence);
+//const { list_points } = useAppSelector(store => store.evidence);
 //const handleDeleteMarker = (index: number) => {
 //    const newList = list_points.filter((point, i) => i !== index);
 //    dispatch(setPoints(newList));

@@ -1,16 +1,8 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import IconButton from "@mui/material/IconButton";
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 
-import { Input, Select } from "@/components";
-import { 
-    PDTInterface, 
-    DepartmentGeoPortal, 
-    MunicipalityGeoPortal } from "@/interfaces";
-import { 
-    getDepartmentsGeoportal, 
-    getMunicipalities } from "@/services/col_api";
+import { Input, Select, SelectDept, BackBtn } from "@/components";
+import { PDTInterface } from "@/interfaces";
 
 import { useAppDispatch, useAppSelector } from '@/store';
 import { thunkAddPDT } from "@/store/plan/thunks";
@@ -19,16 +11,10 @@ import { setIdPlan, setLogo, setLogoPlan } from "@/store/content/contentSlice";
 export const PDTForm = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
-    const { plan } = useAppSelector((state) => state.plan);
+    const { plan } = useAppSelector(store => store.plan);
 
     const fechaInicio = new Date().getFullYear();
 
-    const [departamentOptions, setDepartamentOptions] = 
-        useState<DepartmentGeoPortal[]|null>(null);
-    const [municipioOptions, setMunicipioOptions] = 
-        useState<MunicipalityGeoPortal[]|null>(null);
-    const [selectedDepartamento, setSelectedDepartamento] = 
-        useState<DepartmentGeoPortal|null>(null);
     const [planData, setPlanData] = useState<PDTInterface>({
         name: "",
         department: "",
@@ -39,51 +25,6 @@ export const PDTForm = () => {
         description: "",
         deadline: ""
     });
-
-    useEffect(() => {
-        getDepartmentsGeoportal()
-        .then((res) => {
-            const departamentos = res.resultado.map((e: DepartmentGeoPortal) => {
-                return {
-                    CODIGO_DEPARTAMENTO: e.CODIGO_DEPARTAMENTO,
-                    NOMBRE_DEPARTAMENTO: e.NOMBRE_DEPARTAMENTO,
-                };
-            })
-            setDepartamentOptions([{
-                CODIGO_DEPARTAMENTO: '',
-                NOMBRE_DEPARTAMENTO: '',
-            }, ...departamentos]);
-        });
-    }, []);
-    
-    useEffect(() => {
-        if (!selectedDepartamento || 
-            selectedDepartamento.CODIGO_DEPARTAMENTO === '') return;
-        getMunicipalities(selectedDepartamento.CODIGO_DEPARTAMENTO)
-        .then((res) => {
-            const municipios = res.resultado.map(
-                (e: MunicipalityGeoPortal) => {
-                return {
-                    CODIGO_AREA_METRO: e.CODIGO_AREA_METRO,
-                    CODIGO_DEPARTAMENTO: e.CODIGO_DEPARTAMENTO,
-                    CODIGO_DISTRITO: e.CODIGO_DISTRITO,
-                    CODIGO_DPTO_MPIO: e.CODIGO_DPTO_MPIO,
-                    CODIGO_MUNICIPIO: e.CODIGO_MUNICIPIO,
-                    CODIGO_TIPO_MUNICIPIO: e.CODIGO_TIPO_MUNICIPIO,
-                    NOMBRE_MUNICIPIO: e.NOMBRE_MUNICIPIO,
-                };
-            })
-            setMunicipioOptions([{
-                CODIGO_AREA_METRO: '',
-                CODIGO_DEPARTAMENTO: '',
-                CODIGO_DISTRITO: '',
-                CODIGO_DPTO_MPIO: '',
-                CODIGO_MUNICIPIO: '',
-                CODIGO_TIPO_MUNICIPIO: '',
-                NOMBRE_MUNICIPIO: '',
-            }, ...municipios]);
-        });
-    }, [selectedDepartamento]);
 
     const registerCall = useCallback(() => {
         if (plan === undefined) return;
@@ -112,26 +53,20 @@ export const PDTForm = () => {
         });
     };
 
-    const handleDepartmentChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const { value } = e.target;
-        if (!departamentOptions) return;
-        setMunicipioOptions(null);
-        setSelectedDepartamento(departamentOptions[parseInt(value)]);
+    const handleDepartmentChange = (name: string, code: string) => {
         setPlanData({
             ...planData,
-            department: departamentOptions[parseInt(value)].NOMBRE_DEPARTAMENTO,
+            department: name,
             municipality: '',
-            id_municipality: departamentOptions[parseInt(value)].CODIGO_DEPARTAMENTO+'000',
+            id_municipality: code,
         });
     };
 
-    const handleMunicipioChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const { value } = e.target;
-        if (!municipioOptions) return;
+    const handleMunicipioChange = (name: string, code: string) => {
         setPlanData({
             ...planData,
-            municipality: municipioOptions[parseInt(value)].NOMBRE_MUNICIPIO,
-            id_municipality: municipioOptions[parseInt(value)].CODIGO_DPTO_MPIO,
+            municipality: name,
+            id_municipality: code,
         });
     };
 
@@ -146,30 +81,6 @@ export const PDTForm = () => {
         });
     };
 
-    const backIconButton = () => {
-        return (
-            <IconButton aria-label="delete"
-                        size="small"
-                        color="secondary"
-                        onClick={()=>navigate(-1)}
-                        title="Regresar">
-                <ArrowBackIosIcon/>
-            </IconButton>
-        );
-    };
-
-    const optionDept = (e:any, i:any) => (
-        <option key={e.CODIGO_DEPARTAMENTO} 
-            value={i}>{e.NOMBRE_DEPARTAMENTO}
-        </option>
-    );
-
-    const optionMuni = (e:any ,i: any) => (
-        <option key={e.CODIGO_MUNICIPIO} value={i}>
-            {e.NOMBRE_MUNICIPIO}
-        </option>
-    );
-
     const optioDate = (e: any) => (
         <option key={e} value={fechaInicio + e}>
             {fechaInicio + e}
@@ -178,7 +89,7 @@ export const PDTForm = () => {
 
     return (
         <div className="tw-flex tw-justify-center">
-            {backIconButton()}
+            <BackBtn handle={()=>navigate(-1)} id={plan?.id_plan??0}/>
             <form   onSubmit={handleSubmit}
                     className=" tw-rounded tw-shadow-2xl
                                 tw-p-10">
@@ -193,21 +104,7 @@ export const PDTForm = () => {
                         name={"name"}
                         onChange={handleInputChange}
                 />
-                <Select label="Departamento:"
-                        id="department"
-                        name="department"
-                        onChange={handleDepartmentChange}
-                        options={departamentOptions ?? []}
-                        optionLabelFn={(e, i) => optionDept(e,i)}
-                />
-                <Select label="Municipio:"
-                        id="municipality"
-                        name="municipality"
-                        onChange={handleMunicipioChange}
-                        options={municipioOptions ?? []}
-                        optionLabelFn={(e, i) => optionMuni(e,i)}
-                        disabled={!selectedDepartamento}
-                />
+                <SelectDept callbackDept={handleDepartmentChange} callbackMuni={handleMunicipioChange}/>
                 <Input  type={"text"}
                         label="Descripción:"
                         id={"description"}

@@ -12,36 +12,51 @@ import {PDTInterface,
         LocationInterface,
         UpdateWProps,
         AddLevelProps,
-        AddNodeProps, 
+        AddNodeProps,
         NodeInterface,
-        PropsDeadline } from '../../interfaces';
+        PropsDeadline,
+        PDTDepartment } from '../../interfaces';
 import { parseErrorAxios } from '../../utils';
 
-import {getPDTid, 
+import {getPDTid,
         addPDT,
         getLastPDT,
-        getColors, 
-        getLevelNodes, 
+        getColors,
+        getLevelNodes,
         addColor,
         updateColor,
-        getPDTLevelsById, 
-        getLevelName, 
+        getPDTLevelsById,
+        getLevelName,
         getSecretaries,
-        addSecretaries, 
-        addLocations, 
+        addSecretaries,
+        addLocations,
         getLocations,
         updateSecretaries,
         updateWeights,
         addLevel,
         addLevelNode,
         updateLocations,
-        updateDeadline } from '@/services/api';
+        updateDeadline,
+        getPDTByDept } from '@/services/api';
 
 export const thunkGetPDTid = createAsyncThunk<PDTInterface, string, { rejectValue: ErrorBasicInterface }>(
     'pdt/getPDTid',
     async (props: string, { rejectWithValue }) => {
         try {
             const res = await getPDTid(props);
+            return res;
+        } catch (err) {
+            const result = parseErrorAxios(err);
+            return rejectWithValue(result);
+        }
+    }
+)
+
+export const thunkGetPDTByDept = createAsyncThunk<PDTInterface, PDTDepartment, { rejectValue: ErrorBasicInterface }>(
+    'pdt/getPDTByDept',
+    async (props: PDTDepartment, { rejectWithValue }) => {
+        try {
+            const res = await getPDTByDept(props.dept, props.muni);
             return res;
         } catch (err) {
             const result = parseErrorAxios(err);

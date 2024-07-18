@@ -1,14 +1,14 @@
-import React from "react";
 import { LoginForm } from "@/components";
 import { Header } from "@/components/Header";
 
 export const LoginPage = () => {
-    
-    const componentes: React.ReactNode[] = [
+    const componentes: JSX.Element[] = [
         <LoginForm key={0}/>
     ];
 
     return (
-        <Header components={componentes}/>
+        <Header>
+            {componentes}
+        </Header>
     );
 }

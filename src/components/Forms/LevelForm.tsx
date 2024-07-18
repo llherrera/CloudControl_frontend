@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from "react";
-import IconButton from "@mui/material/IconButton";
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import { useNavigate } from "react-router-dom";
 
 import { useAppDispatch } from "@/store";
 import { thunkAddLevel } from "@/store/plan/thunks";
 
-import { Input, FileInput } from "@/components";
+import { Input, FileInput, BackBtn } from "@/components";
 import { LevelInterface, LevelFormProps } from "@/interfaces";
 import { getToken, decode } from "@/utils";
 
@@ -20,7 +18,7 @@ export const LevelForm = ( props: LevelFormProps ) => {
         { name: "", description: "" }
     ]);
 
-    const [nivel, setNivel] = useState<LevelInterface>({
+    const [level, setLevel] = useState<LevelInterface>({
         name: "", description: ""
     });
 
@@ -44,26 +42,13 @@ export const LevelForm = ( props: LevelFormProps ) => {
         return () => abortController.abort();
     });
 
-    const backIconButton = () => {
-        return (
-            <IconButton aria-label="delete"
-                        size="small"
-                        color="secondary"
-                        onClick={()=>navigate(-1)}
-                        title="Regresar"
-                        key={data.length}>
-                <ArrowBackIosIcon/>
-            </IconButton>
-        );
-    }
-
-    const agregarNivel = () => {
-        const newData = [...data, nivel];
+    const addLevel = () => {
+        const newData = [...data, level];
         setData(newData);
-        setNivel({ name: "", description: "" } as LevelInterface);
+        setLevel({ name: "", description: "" } as LevelInterface);
     }
 
-    const eliminarNivel = () => {
+    const deleteLevel = () => {
         if (data.length > 1) {
             const newData = data.slice(0, data.length - 1);
             setData(newData);
@@ -87,7 +72,7 @@ export const LevelForm = ( props: LevelFormProps ) => {
 
     return (
         <div className="tw-bg-[url('/src/assets/images/bg-pi-1.png')] tw-bg-cover">
-            {backIconButton()}
+            <BackBtn handle={()=>navigate(-1)} id={id_}/>
             <p className="tw-text-center tw-font-bold tw-text-2xl">Definir niveles del plan</p>
             {(rol === "admin") || (rol === 'funcionario' && id_ === parseInt(props.id)) ?
             (<div>
@@ -121,14 +106,14 @@ export const LevelForm = ( props: LevelFormProps ) => {
                                         tw-w-12 tw-p-2 tw-rounded"
                             type="button"
                             title="Agregar un nuevo nivel"
-                            onClick={ agregarNivel }>+</button>
+                            onClick={addLevel}>+</button>
                     <button className=" tw-bg-red-500 
                                         hover:tw-bg-red-300 
                                         tw-text-white tw-font-bold
                                         tw-w-12 tw-p-2 tw-rounded"
                             type="button"
                             title="Eliminar un nivel"
-                            onClick={ eliminarNivel }>-</button>
+                            onClick={deleteLevel}>-</button>
                 </div>
                 </ul>
                 <button type="button"

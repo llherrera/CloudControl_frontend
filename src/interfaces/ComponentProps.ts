@@ -45,7 +45,7 @@ export interface EvidenceDetailProps {
     index: number;
 };
 
-export interface ColorFromProps {
+export interface IdNumProps {
     id: number;
 }
 
@@ -58,16 +58,12 @@ export interface NodeFormProps {
     id: number;
 }
 
-export interface RegisterFormProps {
-    id: number;
-}
-
 export interface FrameProps {
-    data: React.ReactNode;
+    children: JSX.Element;
 }
 
 export interface HeaderProps {
-    components: React.ReactNode[];
+    children: JSX.Element[];
 }
 
 export interface InputProps {
@@ -105,4 +101,15 @@ export interface PopoverProps {
     callback: Function;
     index: number;
     item: LocationInterface;
+}
+
+export interface LocFormProps {
+    locs?: LocationInterface[];
+    loc?: LocationInterface;
+}
+
+export interface PaginationProps {
+    array: Array<any>;
+    page: number;
+    callback: (page: number) => void;
 }

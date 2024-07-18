@@ -72,6 +72,16 @@ export const getPDTid = async (id: string) => {
     return response.data;
 }
 
+export const getPDTByDept = async (dept: string, muni: string) => {
+    const response = await api.get(`/plan-territorial`, { 
+        params: {
+            department:   dept,
+            municipality: muni
+        }
+    });
+    return response.data;
+}
+
 export const getPDTLevelsById = async (id: string) => {
     const response = await api.get(`/plan-territorial/${id}/nivel`);
     return response.data;

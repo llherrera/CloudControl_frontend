@@ -9,18 +9,18 @@ import { thunkLogout } from '@/store/auth/thunks';
 import { setLogo, setLogoPlan, setReload } from '@/store/content/contentSlice';
 
 import { NavBar } from '@/components';
-import { 
-    BancoProyectoIcon, 
-    PlanIndicativoIcon, 
-    POAIIcon, 
+import {
+    BancoProyectoIcon,
+    PlanIndicativoIcon,
+    POAIIcon,
     MapICon } from '@/assets/icons';
 import { FrameProps } from '@/interfaces';
 
-export const Frame = (props: FrameProps) => {
+export const Frame = ({children}: FrameProps) => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
 
-    const { plan } = useAppSelector(state => state.plan);
+    const { plan } = useAppSelector(store => store.plan);
     const { index, url_logo, url_logo_plan } = useAppSelector(store => store.content);
     
     const bgcolor='greenBtn';
@@ -106,7 +106,7 @@ export const Frame = (props: FrameProps) => {
             <div className='tw-flex tw-flex-col xl:tw-flex-row tw-flex-grow'>
                 <NavBar buttons={buttons}/>
                 <div className='tw-flex-grow'>
-                    {props.data}
+                    {children}
                 </div>
             </div>
         </div>

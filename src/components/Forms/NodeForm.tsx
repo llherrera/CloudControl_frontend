@@ -43,7 +43,7 @@ export const NodeForm = ( props : NodeFormProps ) => {
         weight: 0
     });
 
-    const agregarNodo = () => {
+    const addNode = () => {
         const newData = [...data, nodo];
         setData(newData);
         nodo = ({ 
@@ -56,7 +56,7 @@ export const NodeForm = ( props : NodeFormProps ) => {
         });
     };
 
-    const eliminarNodo = () => {
+    const deleteNode = () => {
         if (data.length > 1) {
             const newData = data.slice(0, data.length - 1);
             setData(newData);
@@ -134,14 +134,14 @@ export const NodeForm = ( props : NodeFormProps ) => {
                                         tw-py-2 tw-px-1 tw-rounded tw-mr-5" 
                             type='button'
                             title='Agregar Nodo'
-                            onClick={agregarNodo}>Agregar Nodo</button>
+                            onClick={addNode}>Agregar Nodo</button>
                     <button className=" tw-bg-red-500
                                         hover:tw-bg-red-300
                                         tw-text-white tw-font-bold
                                         tw-py-2 tw-rounded tw-ml-5"
                             type='button'
                             title='Eliminar Nodo'
-                            onClick={eliminarNodo}>Eliminar Nodo</button>
+                            onClick={deleteNode}>Eliminar Nodo</button>
                 </div>
             </ul>
             <input  type="submit"

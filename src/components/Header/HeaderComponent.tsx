@@ -1,7 +1,7 @@
 import cclogo from "@/assets/images/logo-cc.png";
 import { HeaderProps } from "@/interfaces";
 
-export const Header = ( {components}: HeaderProps) => {
+export const Header = ( {children}: HeaderProps) => {
     return (
         <main className="   tw-mx-auto tw-my-4
                             tw-grid 
@@ -15,13 +15,8 @@ export const Header = ( {components}: HeaderProps) => {
                 <p className="tw-font-montserrat tw-font-bold">
                     Selecciona un usuario en la derecha para comenzar</p>
             </div>
-            <ul className="tw-pl-3 tw-flex md:tw-flex-col tw-justify-center">
-                {components.map((component, index) => (
-                    <li key={index} className="tw-m-3">
-                        {component}
-                    </li>
-                ))
-                }
+            <ul className="tw-pl-3 tw-flex md:tw-flex-col tw-justify-center tw-gap-3">
+                {children}
             </ul>
         </main>
     );

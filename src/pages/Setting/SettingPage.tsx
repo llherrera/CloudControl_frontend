@@ -24,9 +24,9 @@ import { decode, notify } from "@/utils";
 
 export const SettingPage = () => {
     return (
-        <Frame 
-            data={<SettingPageWrapper/>}
-        />
+        <Frame>
+            <SettingPageWrapper/>
+        </Frame>
     );
 }
 
@@ -34,7 +34,7 @@ const SettingPageWrapper = () => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
 
-    const { token_info } = useAppSelector(state => state.auth);
+    const { token_info } = useAppSelector(store => store.auth);
     const { plan, loadingPlan, secretaries } = useAppSelector(store => store.plan);
     const { id_plan } = useAppSelector(store => store.content);
 

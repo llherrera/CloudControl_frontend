@@ -25,7 +25,7 @@ export const Content = ( props : ContentProps ) => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
 
-    const { token_info } = useAppSelector(state => state.auth);
+    const { token_info } = useAppSelector(store => store.auth);
     const { plan,
             years,
             indexLevel,

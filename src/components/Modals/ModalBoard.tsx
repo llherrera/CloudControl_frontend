@@ -53,7 +53,7 @@ export const ModalBoard = () => {
 const Dashboard = (props: Props) => {
     const dispatch = useAppDispatch();
 
-    const { board, indexSelect } = useAppSelector((state) => state.chart);
+    const { board, indexSelect } = useAppSelector(store => store.chart);
 
     const visualization: Visualization[] = [
         {id: '1', icon: <PieChart/>, title:'Torta',  value: 'pie', chart: true, count: false},

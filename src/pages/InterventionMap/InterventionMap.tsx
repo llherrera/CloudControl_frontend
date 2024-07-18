@@ -26,9 +26,9 @@ import 'leaflet/dist/leaflet.css';
 
 export const InterventionMap = () => {
     return (
-        <Frame
-            data={<Section/>}
-        />
+        <Frame>
+            <Section/>
+        </Frame>
     );
 }
 
@@ -40,7 +40,7 @@ const Section = () => {
         bounding1, 
         bounding2, 
         bounding3, 
-        bounding4 } = useAppSelector(state => state.plan);
+        bounding4 } = useAppSelector(store => store.plan);
     const { id_plan, locs, secretary } = useAppSelector(store => store.content);
 
     const [markers, setMarkers] = useState<JSX.Element[]>([]);

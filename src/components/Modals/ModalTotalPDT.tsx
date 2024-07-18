@@ -19,7 +19,7 @@ import { generateExcelYears } from "@/utils";
 
 export const ModalTotalPDT = () => {
     const dispatch = useAppDispatch();
-    const { levels } = useAppSelector((state) => state.plan);
+    const { levels } = useAppSelector(store => store.plan);
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [data, setData] = useState<ReportPDTInterface[]>([]);
 
@@ -99,7 +99,7 @@ const ModalPDT = ( props: ModalPDTProps ) => {
     const { years, 
             levels, 
             loadingReport, 
-            colorimeter } = useAppSelector((state) => state.plan);
+            colorimeter } = useAppSelector(store => store.plan);
 
     const colorClass = (item: ReportPDTInterface, index: number) => (
         item['percentExecuted'][index] < 0 ? 'tw-bg-gray-400' :
