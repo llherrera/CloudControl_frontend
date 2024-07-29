@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { Input, BackBtn } from "@/components";
 import { doRegister } from "@/services/api";
 import { RegisterInterface, IdNumProps } from "@/interfaces";
-import { validateEmail } from "@/utils";
+import { validateEmail, notify } from "@/utils";
 
 import { initializeApp } from "firebase/app";
 import { firebaseConfig } from '@/configs/firebaseConfig';
@@ -16,6 +16,11 @@ const auth = getAuth();
 export const RegisterForm = ({id}: IdNumProps) => {
     const navigate = useNavigate();
 
+    const min = 6, max = 16;
+    const [hasNumber, setHasNumber] = useState(false);
+    const [hasMayus, setHasMayus] = useState(false);
+    const [hasSpecialChar, setHasSpecialChar] = useState(false);
+    const [noHasSpace, setNoHasSpace] = useState(false);
     const [form, setForm] = useState<RegisterInterface>({
         username: '',
         lastname: '',
@@ -29,6 +34,18 @@ export const RegisterForm = ({id}: IdNumProps) => {
             React.ChangeEvent<HTMLInputElement | 
             HTMLSelectElement>) => {
         const { name, value } = event.target;
+        
+        if (name == 'password') {
+            const hasNumber = /[0-9]/.test(value);
+            const hasMayus  = /[A-Z]/.test(value);
+            const hasSpecialChar = /[!@#$%^&*()_+{}\[\]:;<>,.?~\-\\/]/.test(value);
+            const noHasSpace = !/\s/.test(value);
+            setHasNumber(hasNumber);
+            setHasMayus(hasMayus);
+            setHasSpecialChar(hasSpecialChar);
+            setNoHasSpace(noHasSpace);
+        }
+
         setForm({ ...form, [name]: value });
     };
 
@@ -36,15 +53,26 @@ export const RegisterForm = ({id}: IdNumProps) => {
         setForm({ ...form, ['rol']: value });
     };
 
+    const validatePassword = (password: string) => {
+        if (password.length >= min && password.length <= max) {
+            if (hasNumber && hasMayus && hasSpecialChar && noHasSpace) return true;
+            else return false;
+        } else {
+            return false;
+        }
+    }
+
     const submitForm = (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        if (form.password !== form.confirm_password) 
-            return alert("Las contraseñas no coinciden");
+        if (!validatePassword(form.password))
+            return notify('La contraseña no cunple los requerimientos');
+        if (form.password !== form.confirm_password)
+            return notify("Las contraseñas no coinciden");
         if (form.username === '' || form.lastname === '' || 
-            form.email === '' || form.password === '') 
-            return alert("Por favor llene todos los campos");
-        if (!validateEmail(form.email)) 
-            return alert("El correo no es válido");
+            form.email === '' || form.password === '')
+            return notify("Por favor llene todos los campos");
+        if (!validateEmail(form.email))
+            return notify("El correo no es válido");
         createUserWithEmailAndPassword(auth, form.email, form.password)
         .then(() => {
             doRegister(id, form)
@@ -53,11 +81,11 @@ export const RegisterForm = ({id}: IdNumProps) => {
             })
             .catch(err => {
                 console.log(err);
-                alert(`Error al registrar usuario: ${err.message}`);
+                notify(`Error al registrar usuario: ${err.message}`);
             })
         })
         .catch(err => {
-            alert(`Error al registrar usuario: ${err.message}`);
+            notify(`Error al registrar usuario: ${err.message}`);
         })
     };
 
@@ -89,16 +117,36 @@ export const RegisterForm = ({id}: IdNumProps) => {
                         id={"email"}
                         name={"email"}
                         onChange={(event)=>handleInputChange(event)}/>
-                <Input  label={"Contraseña"}
-                        type={"password"}
-                        id={"password"}
-                        name={"password"}
-                        onChange={(event)=>handleInputChange(event)}/>
+                <Input
+                    label={"Contraseña"}
+                    type={"password"}
+                    id={"password"}
+                    name={"password"}
+                    onChange={(event)=>handleInputChange(event)}/>
                 <Input  label={"Confirmar Contraseña"}
                         type={"password"}
                         id={"confirm_password"}
                         name={"confirm_password"}
                         onChange={(event)=>handleInputChange(event)}/>
+                <div className="tw-shadow tw-mb-3">
+                    Requerimientos de la contraseña:
+                    <p className={`${form.password.length >= min && form.password.length <= max ? 'tw-text-green-400' : 'tw-text-red-400'}`}>
+                        {form.password.length >= min && form.password.length <= max ?
+                        '✓' : 'X'} Entre 6 y 16 caracteres
+                    </p>
+                    <p className={`${hasMayus ? 'tw-text-green-400' : 'tw-text-red-400'}`}>
+                        {hasNumber ? '✓' : 'X'} Al menos una letra mayuscula
+                    </p>
+                    <p className={`${hasNumber ? 'tw-text-green-400' : 'tw-text-red-400'}`}>
+                        {hasMayus ? '✓' : 'X'} Al menos un número
+                    </p>
+                    <p className={`${hasSpecialChar ? 'tw-text-green-400' : 'tw-text-red-400'}`}>
+                        {hasSpecialChar ? '✓' : 'X'} Al menos un caracter especia
+                    </p>
+                    <p className={`${noHasSpace ? 'tw-text-green-400' : 'tw-text-red-400'}`}>
+                        {noHasSpace ? '✓' : 'X'} No espacios
+                    </p>
+                </div>
                 <div className="tw-flex tw-justify-center tw-mb-3">
                     <button
                         className={`${form.rol === 'funcionario' ? 

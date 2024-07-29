@@ -133,3 +133,51 @@ export const SelectDept = ({callbackDept, callbackMuni}: Props) => {
         </div>
     );
 }
+
+interface PropsS {
+    opts: {
+        label: string;
+        value: string;
+    }[];
+}
+
+export const SelectStyled = ({opts}: PropsS) => {
+    const [value, setValue] = useState('');
+
+    const handleValueChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const { value } = e.target;
+        setValue(value);
+    }
+
+    return(
+        <select className=" tw-flex-shrink-0
+                            tw-inline-flex tw-items-center
+                            tw-py-2.5 tw-px-4 tw-z-10
+                            tw-rounded-lg
+                            tw-text-sm tw-font-medium tw-text-center tw-text-gray-500
+                            tw-bg-gray-100 hover:tw-bg-gray-200 
+                            tw-border tw-border-gray-300
+                            focus:tw-ring-4 focus:tw-ring-gray-100
+                            focus:tw-outline-none"
+                value={value}
+                onChange={(e) => handleValueChange(e)}>
+            <option value=''
+                    className=" tw-inline-flex
+                                tw-w-full tw-px-4 tw-py-2
+                                tw-text-sm tw-text-gray-700
+                                hover:tw-bg-gray-100">
+                
+            </option>
+            {opts.map(opt =>
+                <option value={opt.value}
+                        className=" tw-inline-flex
+                                    tw-w-full tw-px-4 tw-py-2
+                                    tw-text-sm tw-text-gray-700
+                                    hover:tw-bg-gray-100"
+                        key={opt.label}>
+                    {opt.label}
+                </option>
+            )}
+        </select>
+    );
+}

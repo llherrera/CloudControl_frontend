@@ -5,6 +5,7 @@ export const getEnvironment = () => {
         GEOPORTAL_BASE_URL: process.env.VITE_GEOPORTAL_DANE_API,
         API_KEY: process.env.VITE_API_KEY_MAPS,
         ENC_KEY: process.env.VITE_ENCRYPTED_KEY,
-        OPENCAGE: process.env.VITE_API_KEY_CAGE
+        OPENCAGE: process.env.VITE_API_KEY_CAGE,
+        API_KEY_IA: process.env.VITE_API_KEY_OPENAI
     }
 }

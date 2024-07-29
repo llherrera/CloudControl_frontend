@@ -3,22 +3,22 @@ import jwtDecode from "jwt-decode";
 import { getEnvironment } from '../utils/environment';
 import { arrayToMapNodesSecre } from '../utils/functions';
 
-import { 
-    YearInterface, 
-    UnitInterface, 
-    NodeInterface, 
-    LevelInterface, 
-    RegisterInterface, 
-    PDTInterface, 
-    EvidenceInterface, 
-    GetNodeProps, 
-    Secretary, 
-    LoginProps, 
+import {
+    YearInterface,
+    UnitInterface,
+    NodeInterface,
+    LevelInterface,
+    RegisterInterface,
+    PDTInterface,
+    EvidenceInterface,
+    GetNodeProps,
+    Secretary,
+    LoginProps,
     Coordinates,
-    ExcelFinancial, 
+    ExcelFinancial,
     ExcelPlan,
     ExcelPhysical,
-    LocationInterface} from "../interfaces";
+    LocationInterface } from "../interfaces";
 
 import { getToken, refreshToken } from "@/utils";
 
@@ -50,10 +50,12 @@ api.interceptors.request.use(
                 //    }
                 //return request;
             }
+            request
             return request;
         } catch (error) {
             console.log(error);
         }
+
     return request;
     }, error => {
         console.log(error);

@@ -152,7 +152,7 @@ export const FileInput = () => {
             <a  className="tw-text-[#222222]
                             tw-font-bold tw-text-lg
                             tw-font-montserrat"
-                href={'https://firebasestorage.googleapis.com/v0/b/cloudcontrolstore.appspot.com/o/Files%2FPlantilla%20Plan%20CC.xlsx?alt=media&token=e9bbd944-718b-48e4-8c91-42094e6bbf6d'}
+                href={'https://firebasestorage.googleapis.com/v0/b/cloudcontrol-51ebb.appspot.com/o/Files%2FPlantilla%20Plan%20CC.xlsx?alt=media&token=9e5156af-6f87-4cbb-b382-0e7172895e6d'}
                 download='Plantilla_Plan_Indicativo_Excel.xlsx'>
                 Descargar plantilla de Excel
                 <IconButton className='tw-p-1 tw-ml-3'
@@ -239,7 +239,7 @@ export const FileFinancialInput = () => {
             <a  className="tw-text-[#222222]
                             tw-font-bold tw-text-lg
                             tw-font-montserrat"
-                href={"https://firebasestorage.googleapis.com/v0/b/cloudcontrolstore.appspot.com/o/Files%2FPlantilla%20Ejecuciones%20Financieras.xlsx?alt=media&token=0ad73835-d1a0-442d-a68b-725480609e91"}
+                href={"https://firebasestorage.googleapis.com/v0/b/cloudcontrol-51ebb.appspot.com/o/Files%2FPlantilla%20Ejecuciones%20Financieras.xlsx?alt=media&token=880c28f5-a7d1-4392-90f6-be847b74abd4"}
                 download='Plantilla_Ejecuciones_Financieras.xlsx'>
                 Descargar plantilla de Excel
                 <IconButton className='tw-p-1 tw-ml-3'
@@ -327,7 +327,7 @@ export const FilePhysicalInput = () => {
             <a  className="tw-text-[#222222]
                             tw-font-bold tw-text-lg
                             tw-font-montserrat"
-                href={"https://firebasestorage.googleapis.com/v0/b/cloudcontrolstore.appspot.com/o/Files%2FPlantilla%20Ejecuciones%20fisicas.xlsx?alt=media&token=c799d7e3-246f-4b53-ac2c-61f0227718da"}
+                href={"https://firebasestorage.googleapis.com/v0/b/cloudcontrol-51ebb.appspot.com/o/Files%2FPlantilla%20Ejecuciones%20fisicas.xlsx?alt=media&token=24847705-e3e7-4c1a-91d0-7f34fe4a271a"}
                 download='Plantilla_Ejecuciones_Fisicas.xlsx'>
                 Descargar plantilla de Excel
                 <IconButton className='tw-p-1 tw-ml-3'

@@ -42,16 +42,16 @@ export const LoginForm = () => {
         ) : navigate('/')
     );
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        if (authenticating) return;
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        await dispatch(thunkLogin(user))
+        if (authenticating) return;
+        dispatch(thunkLogin(user))
         .unwrap()
         .then(res => {
             if (res === undefined) return alert("Usuario o contraseña incorrectos");
             const info = decode(res.token);
             signInWithEmailAndPassword(auth, info.email, user.password)
-            .then((userCredential) => {
+            .then(() => {
                 info.rol === "admin" ? navigate('/pdt') : validateRol(info);
             })
             .catch(err => {
@@ -61,8 +61,7 @@ export const LoginForm = () => {
         })
         .catch(() => {
             notify("Error, usuario o contraseña erronea");
-        }
-        );
+        });
     };
 
     return (

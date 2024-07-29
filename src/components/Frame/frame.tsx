@@ -105,7 +105,10 @@ export const Frame = ({children}: FrameProps) => {
             </header>
             <div className='tw-flex tw-flex-col xl:tw-flex-row tw-flex-grow'>
                 <NavBar buttons={buttons}/>
-                <div className='tw-flex-grow'>
+                <div className="tw-h-full tw-w-full tw-border
+                                tw-bg-[url('/src/assets/images/bg-pi-1.png')]
+                                tw-bg-cover
+                                tw-opacity-80">
                     {children}
                 </div>
             </div>

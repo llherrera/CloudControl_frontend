@@ -2,15 +2,17 @@ import axios from "axios";
 import { ResponseGeocoder } from '@/interfaces';
 import { getEnvironment } from '@/utils';
 
-const { OPENCAGE } = getEnvironment();
+const { BASE_URL } = getEnvironment();
+const api = axios.create({
+    baseURL: BASE_URL,
+})
 
 export const getCoords = async (city: string, deparment: string, country: string): Promise<ResponseGeocoder> => {
-    //const res = await axios.get('/geocoder', {
-    const res = await axios.get('https://nominatim.openstreetmap.org/search', {
+    const res = await api.get('/servicios/geocoder', {
         params: {
-            addressdetail: 1,
-            q: `{${city}},{${deparment}},{${country}}`,
-            format: 'json'
+            city,
+            deparment,
+            country
         }
     });
     const resultCity = res.data.filter((i: ResponseGeocoder) => i.addresstype === 'city')
@@ -18,17 +20,11 @@ export const getCoords = async (city: string, deparment: string, country: string
 }
 
 export const getReverseGeocode = async (lat: number, lng: number): Promise<any> => {
-    const API_KEY = OPENCAGE;
-    try {
-        const res = await axios.get('/reverse-geocoding', {
-        //const res = await axios.get('https://nominatim.openstreetmap.org/search', {
-            params: {
-                q: `${lat}+${lng}`,
-                key: API_KEY
-            }
-        });
-        return res;
-    } catch (error) {
-        return error;
-    }
+    const res = await api.get('/servicios/reverse-geo', {
+        params: {
+            lat,
+            lng
+        }
+    });
+    return res;
 }

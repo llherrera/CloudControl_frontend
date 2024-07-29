@@ -26,36 +26,6 @@ export default defineConfig({
         target: 'http://localhost:8080',
         secure: false,
         rewrite: path => path.replace(/^\/api/, '')
-      },
-      '/geoportal-deparments': {
-        target: 'https://geoportal.dane.gov.co/laboratorio/serviciosjson/gdivipola/servicios/departamentos.php',
-        secure: false,
-        rewrite: path => path.replace(/^\/geoportal-deparments/, ''),
-        changeOrigin: true
-      },
-      '/geoportal-municipality': {
-        target: 'https://geoportal.dane.gov.co/laboratorio/serviciosjson/gdivipola/servicios/municipios.php',
-        secure: false,
-        rewrite: path => path.replace(/^\/geoportal-municipality/, ''),
-        changeOrigin: true
-      },
-      '/geoportal-ficha': {
-        target: 'https://geoportal.dane.gov.co/laboratorio/serviciosjson/gdivipola/servicios/ficha.php',
-        secure: false,
-        rewrite: path => path.replace(/^\/geoportal-ficha/, ''),
-        changeOrigin: true
-      },
-      '/geocoder': {
-        target: 'https://nominatim.openstreetmap.org/search',
-        secure: false,
-        rewrite: path => path.replace(/^\/geocoder/, ''),
-        changeOrigin: true
-      },
-      '/reverse-geocoding': {
-        target: 'https://api.opencagedata.com/geocode/v1/json',
-        secure: false,
-        rewrite: path => path.replace(/^\/reverse-geocoding/, ''),
-        changeOrigin: true
       }
     }
   },

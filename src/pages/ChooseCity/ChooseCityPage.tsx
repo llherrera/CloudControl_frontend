@@ -2,16 +2,18 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { useAppDispatch, useAppSelector } from "@/store";
-import { thunkGetPDTByDept } from "@/store/plan/thunks";
+import { setIdPlan } from "@/store/content/contentSlice";
+import { thunkGetPDTByDept, thunkGetPDTid } from "@/store/plan/thunks";
 
 import { Header, SelectDept, BackBtn } from '@/components';
 import { Coordinates } from '@/interfaces';
 import { getReverseGeocode } from "@/services/map_api";
+import { notify } from '@/utils';
 
 export const ChooseCityPage = () => {
-    const navigate = useNavigate();
     const dispatch = useAppDispatch();
-
+    const navigate = useNavigate();
+    
     const { plan, loadingPlan } = useAppSelector(store => store.plan);
 
     const [location, setLocation] = useState<Coordinates>({ lat: 0, lng: 0 });
@@ -46,7 +48,6 @@ export const ChooseCityPage = () => {
         if (location.lat && location.lng) {
             getReverseGeocode(location.lat, location.lng)
             .then(res => {
-                console.log('1');
                 const data = res.data;
                 if (data.results.length > 0) {
                     const result = data.results[0];
@@ -56,6 +57,7 @@ export const ChooseCityPage = () => {
                         municipality: componentsAddress.city,
                         id_municipality: '0'
                     });
+                    setPress(true);
                 } else {
                     setError('No address found for these coordinates');
                 }
@@ -67,15 +69,23 @@ export const ChooseCityPage = () => {
     }, [location]);
 
     useEffect(() => {
-        if (!press) return;
-        searchPlan()
-        .then(res => {
+        if (!press) return console.log('negativo para plan');
+        if (locationNames.department === "") return console.log('negativo para plan 2');
+        dispatch(thunkGetPDTByDept({
+            dept: locationNames.department,
+            muni: locationNames.municipality
+        }));
+        //dispatch(setIdPlan(id));
+        //dispatch(thunkGetPDTid(id.toString()));
+        //navigate(`/lobby`);
+    }, [press]);
 
-        })
-        .catch(error => {
-
-        });
-    }, [locationNames.municipality]);
+    useEffect(() => {
+        if (plan === undefined) return console.log('negativo para plan 3');
+        notify('ahhhhhh dangueon meshi');
+        console.log(plan);
+        setPress(false);
+    }, [plan]);
 
     const handleDepartmentChange = (name: string, code: string) => {
         setLocationsNames({
@@ -93,17 +103,8 @@ export const ChooseCityPage = () => {
         });
     };
 
-    const searchPlan = async () => {
-        if (locationNames.department === "") return;
-        dispatch(thunkGetPDTByDept({
-            dept: locationNames.department,
-            muni: locationNames.municipality
-        }));
-    }
-
-    const handleSearchPlan = async () => {
+    const handleSearchPlan = () => {
         setPress(true);
-        await searchPlan();
     };
 
     return (
@@ -121,10 +122,11 @@ export const ChooseCityPage = () => {
                             callbackMuni={handleMunicipioChange}
                         />
                         <button className=" tw-bg-green-500 hover:tw-bg-green-300
-                                            tw-text-white tw-font-bold 
+                                            tw-text-white tw-font-bold
                                             hover:tw-text-black
                                             tw-rounded
-                                            tw-p-2"
+                                            tw-p-2
+                                            tw-justify-self-center"
                             onClick={handleSearchPlan}>
                             Buscar Plan Territorial
                         </button>

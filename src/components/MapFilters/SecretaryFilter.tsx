@@ -32,7 +32,8 @@ export const SecretarySelect = () => {
     }, [secretary]);
 
     useEffect(() => {
-        getNodesSecretary(id_plan, secretary).then(res => {
+        getNodesSecretary(id_plan, secretary)
+        .then(res => {
             let arr = new Array(calculateDepth(res)).fill(0);
             setIndex(arr);
             setData(res);

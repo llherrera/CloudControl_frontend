@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import Modal from 'react-modal';
 
-
 import { useAppSelector, useAppDispatch } from "@/store";
 import { addBoard, setIndexSelect } from "@/store/chart/chartSlice";
 

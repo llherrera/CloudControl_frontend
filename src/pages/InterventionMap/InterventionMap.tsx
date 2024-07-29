@@ -107,10 +107,7 @@ const Section = () => {
     return (
         planLocation === undefined ?
         <p>Cargando...</p>:
-        <div className={`tw-bg-[url('/src/assets/images/bg-pi-1.png')]
-                         tw-bg-cover
-                         tw-h-full tw-border
-                         tw-opacity-80`} >
+        <div className={``} >
             <div className='tw-flex tw-my-4'>
                 <BackBtn handle={handleBack} id={id_plan} />
                 <h1 className='tw-grow tw-text-center'>
@@ -138,6 +135,7 @@ const Section = () => {
                     {markers}
                     <Rectangle
                         bounds={[[bounding1, bounding3],[bounding2, bounding4]]}
+                        pathOptions={{color:'blue', fillOpacity: 0}}
                     />
                 </MapContainer>
                 

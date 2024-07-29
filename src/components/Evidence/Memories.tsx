@@ -106,7 +106,7 @@ export const Memory = ({callback}:Props) => {
                                     className=" tw-bg-green-300 tw-border tw-border-black
                                                 tw-px-2 tw-w-1/2"
                                     onChange={(e)=>handleChangeValue(e)}/>
-                            <button type="button" 
+                            <button type="button"
                                     onClick={handleSave}
                                     title="Guardar solo el valor ejecutado... Recuerde que esta ejecución sera aprobada por el responsable">
                                 <SaveAsIcon/>

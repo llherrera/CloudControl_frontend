@@ -6,12 +6,12 @@ import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 
 import { useAppSelector, useAppDispatch } from "@/store";
 import { setIdPlan } from "@/store/content/contentSlice";
+import { thunkGetPDTid } from "@/store/plan/thunks";
 
 import { getPDTs } from "@/services/api";
 import { PDTInterface, PDTPageProps } from "@/interfaces";
 import { decode } from "@/utils";
 import { BackBtn, Header } from "@/components";
-import { thunkGetPDTid } from "@/store/plan/thunks";
 
 export const PDT = () => {
     const [data, setData] = useState<PDTInterface[]>([]);
@@ -52,8 +52,11 @@ const ListPDT = ( props: PDTPageProps ) => {
         dispatch(thunkGetPDTid(id.toString()));
         navigate(`/lobby`);
     };
-
-    const handleAdd = (id: number) => navigate(`/register`, {state: {id}});
+    
+    const handleAdd = (id: number) => {
+        dispatch(setIdPlan(id));
+        navigate(`/register`)
+    };
 
     return (
         <div className="tw-flex tw-relative tw-justify-center tw-mt-10">
@@ -63,14 +66,14 @@ const ListPDT = ( props: PDTPageProps ) => {
             {props.rol === "admin" ? 
             <ul className="tw-shadow-2xl tw-p-4 tw-border-2 tw-rounded">
                 <li>
-                <button className=" tw-bg-greenBtn hover:tw-bg-green-300 
-                                    tw-text-white hover:tw-text-black tw-font-bold
-                                    tw-rounded tw-w-full tw-py-2 tw-mb-4"
-                        onClick={handleAddPdt}
-                        type="button"
-                        title="Agregar un nuevo plan">
-                    Añadir Plan +
-                </button>
+                    <button className=" tw-bg-greenBtn hover:tw-bg-green-300 
+                                        tw-text-white hover:tw-text-black tw-font-bold
+                                        tw-rounded tw-w-full tw-py-2 tw-mb-4"
+                            onClick={handleAddPdt}
+                            type="button"
+                            title="Agregar un nuevo plan">
+                        Añadir Plan +
+                    </button>
                 </li>
                 {props.data.length === 0 ? <p>No hay planes de momento</p> : null}
                 {props.data.map((e:PDTInterface) =>

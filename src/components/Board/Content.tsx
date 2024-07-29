@@ -18,7 +18,7 @@ import {
 
 import IconButton from "@mui/material/IconButton";
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
-import { ModalBoard } from "../Modals";
+import { ModalBoard, ModalAi } from "../Modals";
 import { decode } from "@/utils";
 
 export const Content = ( props : ContentProps ) => {
@@ -100,17 +100,14 @@ export const Content = ( props : ContentProps ) => {
         index === 3 ? 'tw-bg-blueColory hover:tw-bg-blue-200' :null
     );
 
-    const handleRol = () => (
+    const HandleRol = () => (
         rol === 'admin' || (rol === 'funcionario' && id === props.id) ? 
         <button onClick={()=>handleSettings()}>Definir colorimetria</button>
         : <p>No se ha definido una colorimetría aún</p>
     );
 
     return (
-        <div className="tw-h-full tw-border
-                        tw-bg-[url('/src/assets/images/bg-pi-1.png')]
-                        tw-bg-cover
-                        tw-opacity-80">
+        <div className="tw-h-full tw-border">
             <h1 className=" tw-mx-6 tw-mt-6 
                             tw-text-[#222222] 
                             tw-font-bold
@@ -142,7 +139,7 @@ export const Content = ( props : ContentProps ) => {
                         : null
                     }
                 </div>
-                <div className="tw-mb-2">
+                <div className="tw-mb-2 tw-flex tw-items-center">
                     {colorimeter.length > 0 ?
                         <ul className="tw-flex tw-gap-2">
                             <div className={`tw-rounded-full
@@ -164,7 +161,11 @@ export const Content = ( props : ContentProps ) => {
                                 </div>
                             ))}
                         </ul>
-                        : handleRol()
+                        : <HandleRol/>
+                    }
+                    {rol === 'admin' || ((rol === 'funcionario' || rol === 'planeacion' || rol === 'sectorialista') && id === props.id) ?
+                        <ModalAi/>
+                        : null
                     }
                 </div>
             </h1>
