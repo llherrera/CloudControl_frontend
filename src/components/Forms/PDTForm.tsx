@@ -23,7 +23,8 @@ export const PDTForm = () => {
         start_date: new Date(fechaInicio, 0, 1).toISOString(),
         end_date: new Date(fechaInicio + 3, 11, 31).toISOString(),
         description: "",
-        deadline: ""
+        deadline: "",
+        uuid: ''
     });
 
     const registerCall = useCallback(() => {

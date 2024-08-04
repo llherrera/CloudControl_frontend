@@ -59,6 +59,14 @@ export const Frame = ({children}: FrameProps) => {
             bgColor: bgcolor,
             textColor: textcolor,
             icon: <MapICon color={ index === 3 ? logocolor : textcolor}/>
+        },
+        {
+            inside: true,
+            onClick: () => navigate('/PQRS', {replace: true}),
+            text: 'PQRS',
+            bgColor: bgcolor,
+            textColor: textcolor,
+            icon: <MapICon color={ index === 4 ? logocolor : textcolor}/>
         }
     ];
 

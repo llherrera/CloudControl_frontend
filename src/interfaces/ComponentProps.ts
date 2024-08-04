@@ -63,7 +63,7 @@ export interface FrameProps {
 }
 
 export interface HeaderProps {
-    children: JSX.Element[];
+    children: JSX.Element | JSX.Element[];
 }
 
 export interface InputProps {
@@ -71,20 +71,24 @@ export interface InputProps {
     label: string;
     id: string;
     name: string;
-    value?: string;
+    value?: string | number;
+    placeholder?: string;
     onChange: (e: React.ChangeEvent<HTMLInputElement>, index:(number | void)) => void;
     isRequired?: boolean;
+    classname?: string;
 }
 
 export interface SelectProps {
     id: string;
     label: string;
     name: string;
+    value?: string | number;
     options: any[];
     onChange: ChangeEventHandler<HTMLSelectElement>;
     optionLabelFn?: (option: any, index?: number) => any;
     isRequired?: boolean;
     disabled?: boolean;
+    classname?: string;
 }
 
 export interface NavBarProps {

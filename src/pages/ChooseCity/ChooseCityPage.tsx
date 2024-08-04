@@ -27,7 +27,7 @@ export const ChooseCityPage = () => {
 
     useEffect(() => {
         if (!navigator.geolocation) {
-            setError('Geolocation is not supported by your browser');
+            setError('Geolocación no está soportada en tu navegador');
             return;
         }
 
@@ -38,7 +38,7 @@ export const ChooseCityPage = () => {
         };
 
         const error = () => {
-            setError('Unable to retrieve your location');
+            setError('No se puede acceder a su ubicación');
         };
 
         navigator.geolocation.getCurrentPosition(success, error);
@@ -59,11 +59,11 @@ export const ChooseCityPage = () => {
                     });
                     setPress(true);
                 } else {
-                    setError('No address found for these coordinates');
+                    setError('No se encontró la ciudad o departamento para estas coordenadas');
                 }
             })
-            .catch(error => {
-                setError('Failed to fetch address');
+            .catch(() => {
+                setError('Fallo al acceder a su ciudad o departamento');
             });
         }
     }, [location]);
@@ -75,16 +75,13 @@ export const ChooseCityPage = () => {
             dept: locationNames.department,
             muni: locationNames.municipality
         }));
-        //dispatch(setIdPlan(id));
-        //dispatch(thunkGetPDTid(id.toString()));
-        //navigate(`/lobby`);
     }, [press]);
 
     useEffect(() => {
         if (plan === undefined) return console.log('negativo para plan 3');
-        notify('ahhhhhh dangueon meshi');
-        console.log(plan);
         setPress(false);
+        dispatch(setIdPlan(plan.id_plan!));
+        navigate(`/lobby`);
     }, [plan]);
 
     const handleDepartmentChange = (name: string, code: string) => {
@@ -103,9 +100,7 @@ export const ChooseCityPage = () => {
         });
     };
 
-    const handleSearchPlan = () => {
-        setPress(true);
-    };
+    const handleSearchPlan = () => setPress(true);
 
     return (
         <Header>
@@ -140,7 +135,9 @@ export const ChooseCityPage = () => {
                 )}
             </div>
             <p>
-                {loadingPlan ? 'cargando' : plan ? plan.id_plan : 'Nada'}
+                {loadingPlan ? 'cargando' :
+                plan ? 'Plan encontrado en su zona' :
+                'No se encuentra un plan en su zona'}
             </p>
         </Header>
     );

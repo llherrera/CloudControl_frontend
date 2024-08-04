@@ -39,9 +39,9 @@ import {getPDTid,
         updateDeadline,
         getPDTByDept } from '@/services/api';
 
-export const thunkGetPDTid = createAsyncThunk<PDTInterface, string, { rejectValue: ErrorBasicInterface }>(
+export const thunkGetPDTid = createAsyncThunk<PDTInterface, number, { rejectValue: ErrorBasicInterface }>(
     'pdt/getPDTid',
-    async (props: string, { rejectWithValue }) => {
+    async (props: number, { rejectWithValue }) => {
         try {
             const res = await getPDTid(props);
             return res;
@@ -91,9 +91,9 @@ export const thunkAddPDT = createAsyncThunk<PDTInterface, PDTInterface, { reject
     }
 )
 
-export const thunkGetColors = createAsyncThunk<number[], string, { rejectValue: ErrorBasicInterface }>(
+export const thunkGetColors = createAsyncThunk<number[], number, { rejectValue: ErrorBasicInterface }>(
     'pdt/getColors',
-    async (props: string, { rejectWithValue }) => {
+    async (props: number, { rejectWithValue }) => {
         try {
             const res = await getColors(props);
             if (res.length === 0) {
@@ -195,9 +195,9 @@ export const thunkUpdateWeight = createAsyncThunk<[], UpdateWProps, { rejectValu
     }
 )
 
-export const thunkGetLevelsById = createAsyncThunk<LevelInterface[], string, { rejectValue: ErrorBasicInterface }>(
+export const thunkGetLevelsById = createAsyncThunk<LevelInterface[], number, { rejectValue: ErrorBasicInterface }>(
     'pdt/getLevelsId',
-    async (props: string, {rejectWithValue}) => {
+    async (props: number, {rejectWithValue}) => {
         try {
             const res = await getPDTLevelsById(props);
             const resArr = [...res];

@@ -5,7 +5,7 @@ import { NodesWeight, Percentages, YearDetail } from '@/interfaces';
 import { getTotalProgress } from '@/services/api';
 
 import { useAppDispatch, useAppSelector } from '@/store';
-import { thunkGetPDTid, thunkGetColors } from '@/store/plan/thunks';
+import { thunkGetPDTid } from '@/store/plan/thunks';
 
 export const Board = () => {
     const dispatch = useAppDispatch();
@@ -13,8 +13,7 @@ export const Board = () => {
     const { plan } = useAppSelector(store => store.plan);
 
     useEffect(() => {
-        dispatch(thunkGetPDTid(id_plan.toString()));
-        dispatch(thunkGetColors(id_plan.toString()));
+        dispatch(thunkGetPDTid(id_plan));
         
         getTotalProgress(id_plan)
         .then((res) => {

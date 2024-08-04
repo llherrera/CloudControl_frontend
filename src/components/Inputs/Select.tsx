@@ -4,13 +4,14 @@ import { SelectProps, DepartmentGeoPortal, MunicipalityGeoPortal } from "@/inter
 
 export const Select = (props: SelectProps) => {
     return(
-        <div className="tw-flex tw-justify-between">
+        <div className={`tw-flex tw-justify-between ${props.classname}`}>
             <label className="tw-mr-4 tw-self-center" htmlFor={props.id}>
                 {props.label}
             </label>
             <select name={props.name}
                 id={props.id}
                 onChange={props.onChange}
+                value={props.value}
                 className=" tw-m-3 tw-p-2
                             tw-w-1/2
                             tw-rounded
@@ -152,7 +153,7 @@ export const SelectStyled = ({opts}: PropsS) => {
     return(
         <select className=" tw-flex-shrink-0
                             tw-inline-flex tw-items-center
-                            tw-py-2.5 tw-px-4 tw-z-10
+                            tw-py-2.5 tw-w-20 tw-z-10
                             tw-rounded-lg
                             tw-text-sm tw-font-medium tw-text-center tw-text-gray-500
                             tw-bg-gray-100 hover:tw-bg-gray-200 

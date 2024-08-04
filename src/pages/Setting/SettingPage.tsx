@@ -18,6 +18,7 @@ import {
     FileInput,
     FileFinancialInput,
     FilePhysicalInput,
+    FileUnitInput,
     InfoPopover,
     DrawerMenu } from '@/components';
 import { decode, notify } from "@/utils";
@@ -41,7 +42,8 @@ const SettingPageWrapper = () => {
     const [page, setPage] = useState(0);
     const [rol, setRol] = useState("");
     const [deadline, setDeadline] = useState<Date>(
-        plan === undefined ? new Date() : plan.deadline === null ? new Date() : new Date(plan.deadline)
+        plan === undefined ? new Date() :
+        plan.deadline === null ? new Date() : new Date(plan.deadline)
     );
 
     useEffect(() => {
@@ -79,12 +81,7 @@ const SettingPageWrapper = () => {
     return (
         (plan === null || plan === undefined) ? 
         <div className='tw-text-center'>No hay un plan seleccionado</div> :
-        <div className={`tw-flex tw-flex-col xl:tw-flex-row
-                        tw-h-full tw-border
-                        tw-bg-[url('/src/assets/images/bg-pi-1.png')]
-                        tw-bg-cover
-                        tw-opacity-80
-        `}>
+        <div className={`tw-flex tw-flex-col xl:tw-flex-row`}>
             <div className='tw-flex md:tw-flex-col tw-self-start'>
                 <BackBtn handle={handleBack} id={id_plan}/>
                 <DrawerMenu page={page} callback={handlePage}/>
@@ -107,7 +104,8 @@ const SettingPageWrapper = () => {
                                 : null
                             }
                         </div>
-                        {rol === "admin" ? <FilePhysicalInput/>: null}
+                        {rol === "admin" ? <FilePhysicalInput/>: null}<br />
+                        {rol === "admin" ? <FileUnitInput/>: null}
                     </div> :
                 page === 1 ?
                     <div>

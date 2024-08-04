@@ -36,7 +36,7 @@ export const PDT = () => {
 
     return (
         <Header>
-            {[<ListPDT data={data} rol={rol} key={data.length}/>]}
+            <ListPDT data={data} rol={rol} key={data.length}/>
         </Header>
     );
 }
@@ -49,7 +49,7 @@ const ListPDT = ( props: PDTPageProps ) => {
 
     const handlePdtid = (id: number) => {
         dispatch(setIdPlan(id));
-        dispatch(thunkGetPDTid(id.toString()));
+        dispatch(thunkGetPDTid(id));
         navigate(`/lobby`);
     };
     

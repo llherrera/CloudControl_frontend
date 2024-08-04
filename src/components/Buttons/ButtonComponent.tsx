@@ -8,12 +8,12 @@ export const ButtonComponent = ( props : BtnProps ) => {
                     onClick={props.onClick}
                     className={`hover:tw-bg-navBar
                                 ${props.bgColor}
-                                tw-border 
+                                tw-border
                                 tw-border-greenBtn
                                 tw-p-4 tw-rounded
                                 tw-w-16 tw-h-16
-                                md:tw-w-20 md:tw-h-20
-                                lg:tw-w-28 lg:tw-h-28
+                                md:tw-w-20 md:tw-h-20 md:tw-text-[10px]
+                                2xl:tw-w-28 2xl:tw-h-28 2xl:tw-text-base
                                 tw-flex tw-flex-col
                                 tw-justify-center
                                 tw-items-center`}>
@@ -28,6 +28,8 @@ export const ButtonComponent = ( props : BtnProps ) => {
                                 tw-flex tw-flex-wrap 
                                 tw-font-montserrat 
                                 tw-self-center
+                                md:tw-text-xs
+                                2xl:tw-text-lg
                                 ${props.textColor}
                                 tw-hidden lg:tw-block
                                 `}>

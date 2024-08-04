@@ -111,3 +111,27 @@ export interface LocationInterface {
     lng?: number;
     belongs?: string;
 }
+
+export interface PQRSInform {
+    id_plan: number;
+    tipo_solicitante: string;
+	tipo_identificacion: string; 
+	numero_identificacion: number;
+	razon_social: string;
+	primer_nombre: string;
+	segundo_nombre?: string;
+	primer_apellido: string;
+	segundo_apellido: string;
+	email: string;
+	telefono: number
+	direccion: string;
+	barrio: string;
+	ciudad: string;
+	departamento: string;
+	pais: string;
+    fecha: Date;
+    tipo_peticion: string;
+    secretaria: string;
+    asunto: string;
+    peticion: string;
+}

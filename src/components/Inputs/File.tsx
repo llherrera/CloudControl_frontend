@@ -10,15 +10,17 @@ import { notify, handleInputFile } from '@/utils';
 import { useAppSelector, useAppDispatch } from "@/store";
 import { setLevels } from "@/store/plan/planSlice";
 
-import { 
+import {
     ExcelPlan,
     LevelInterface,
     ExcelFinancial,
     ExcelPhysical,
+    ExcelUnitNode,
     Secretary} from "@/interfaces";
-import { 
+import {
     updateFinancial,
     updatePhysicalExcel,
+    updateUniNodeExcel,
     addLevel,
     addSecretaries,
     addNodes,
@@ -351,6 +353,94 @@ export const FilePhysicalInput = () => {
                     type="button"
                     onClick={handleSubmit}>
                 Cargar ejecuciones
+            </button>
+            <ModalSpinner isOpen={isOpen}/>
+        </form>
+    );
+}
+
+export const FileUnitInput = () => {
+    const [isOpen, setIsOpen] = useState(false);
+    const [data, setData] = useState<File>();
+
+    const { plan, years } = useAppSelector(store => store.plan);
+    const { id_plan } = useAppSelector(store => store.content);
+
+    const updateUnit = async (data: ExcelUnitNode[]) => {
+        if (plan === undefined) return;
+        if (data.length === 0) return;
+        if (id_plan === 0) return;
+        const id_city = parseInt(plan.id_municipality);
+        return await updateUniNodeExcel(id_plan, id_city, data, years);
+    };
+
+    const readExcel = (file: File) => {
+        const promise = new Promise((resolve, reject) => {
+            const fileReader = new FileReader();
+            fileReader.readAsArrayBuffer(file);
+
+            fileReader.onload = (e: any) => {
+                const bufferArray = e.target.result;
+                const wb = XLSX.read(bufferArray, {type: 'buffer'});
+                const wsname = wb.SheetNames[0];
+                const ws = wb.Sheets[wsname];
+                const data = XLSX.utils.sheet_to_json(ws);
+                resolve(data);
+            };
+
+            fileReader.onerror = (error) => {
+                reject(error);
+            };
+        });
+
+        promise.then( async (d) => {
+            const data = d as ExcelUnitNode[];
+
+            await updateUnit(data)
+            .then(() => (alert('Se han cargado con éxito las ejecuciones fisicas')))
+            .catch(() => (alert('Ha ocurrido un error cargando las ejecuciones del plan')));
+
+            setIsOpen(false);
+        });
+    };
+
+    const handleSubmit = () => {
+        if (data === undefined) return;
+        setIsOpen(true);
+        readExcel(data);
+    }
+
+    return (
+        <form className='tw-p-4 tw-ml-4
+                        tw-bg-white
+                        tw-rounded'>
+            <a  className="tw-text-[#222222]
+                            tw-font-bold tw-text-lg
+                            tw-font-montserrat"
+                href={"https://firebasestorage.googleapis.com/v0/b/cloudcontrol-51ebb.appspot.com/o/Files%2FPlantilla%20Ejecuciones%20fisicas.xlsx?alt=media&token=24847705-e3e7-4c1a-91d0-7f34fe4a271a"}
+                download='Plantilla_Metas_Unidad.xlsx'>
+                Descargar plantilla de Excel
+                <IconButton className='tw-p-1 tw-ml-3'
+                            size='large'>
+                    <DownloadIcon/>
+                </IconButton>
+            </a><br />
+
+            <p className="tw-text-[#222222]
+                            tw-font-bold tw-text-lg
+                            tw-font-montserrat">
+                Actualizar metas por Excel
+            </p>
+            <input  type="file" 
+                    className='tw-ml-3'
+                    onChange={(e)=>handleInputFile(e, setData)}/>
+            <button className=' tw-ml-3 tw-py-1 tw-px-2
+                                tw-bg-gray-500 
+                                tw-text-white
+                                tw-rounded'
+                    type="button"
+                    onClick={handleSubmit}>
+                Cargar metas
             </button>
             <ModalSpinner isOpen={isOpen}/>
         </form>

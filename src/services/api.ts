@@ -18,6 +18,7 @@ import {
     ExcelFinancial,
     ExcelPlan,
     ExcelPhysical,
+    ExcelUnitNode,
     LocationInterface } from "../interfaces";
 
 import { getToken, refreshToken } from "@/utils";
@@ -69,7 +70,7 @@ export const getPDTs = async () => {
     return response.data;
 }
 
-export const getPDTid = async (id: string) => {
+export const getPDTid = async (id: number) => {
     const response = await api.get(`/plan-territorial/${id}`);
     return response.data;
 }
@@ -84,7 +85,7 @@ export const getPDTByDept = async (dept: string, muni: string) => {
     return response.data;
 }
 
-export const getPDTLevelsById = async (id: string) => {
+export const getPDTLevelsById = async (id: number) => {
     const response = await api.get(`/plan-territorial/${id}/nivel`);
     return response.data;
 }
@@ -445,7 +446,7 @@ export const addColor = async (id_plan: number, colors: number[]) => {
     return response.data;
 }
 
-export const getColors = async (id_plan: string) => {
+export const getColors = async (id_plan: number) => {
     const response = await api.get(`/plan-territorial/color`, {
         params: {
             id_plan: id_plan
@@ -549,6 +550,16 @@ export const loadExcel = async (id_plan: number, data: ExcelPlan[], years: numbe
 
 export const updatePhysicalExcel = async (id_plan: number, id_municipality: number, data: ExcelPhysical[], years: number[]) => {
     const response = await api.put('/nodo/fisico', {
+        id_plan:         id_plan,
+        id_municipality: id_municipality,
+        data:            data,
+        years:           years,
+    });
+    return response.data;
+}
+
+export const updateUniNodeExcel = async (id_plan: number, id_municipality: number, data: ExcelUnitNode[], years: number[]) => {
+    const response = await api.put('/nodo/unitAll', {
         id_plan:         id_plan,
         id_municipality: id_municipality,
         data:            data,

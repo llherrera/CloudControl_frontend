@@ -51,27 +51,23 @@ export const HomePage = () => {
         }
     };
 
-    const buttons: JSX.Element[] = [
-        <ButtonComponent
-            key={0}
-            inside={false}
-            text='Funcionario'
-            src={funcLogo}
-            onClick={() => navigate('/login')}
-            bgColor="tw-bg-greenBtn"/>,
-        <ButtonComponent
-            key={1}
-            inside={false}
-            text='Ciudadano'
-            src={citiLogo}
-            onClick={handleBtnCiudadano}
-            bgColor="tw-bg-greenBtn"/>
-    ];
-
     return (
         <div>
             <Header>
-                {buttons}
+                <ButtonComponent
+                    key={0}
+                    inside={false}
+                    text='Funcionario'
+                    src={funcLogo}
+                    onClick={() => navigate('/login')}
+                    bgColor="tw-bg-greenBtn"/>
+                <ButtonComponent
+                    key={1}
+                    inside={false}
+                    text='Ciudadano'
+                    src={citiLogo}
+                    onClick={handleBtnCiudadano}
+                    bgColor="tw-bg-greenBtn"/>
             </Header>
         </div>
     );

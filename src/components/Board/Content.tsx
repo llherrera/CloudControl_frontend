@@ -8,12 +8,12 @@ import { setMode } from "@/store/content/contentSlice";
 import { thunkGetLocations, thunkGetSecretaries } from '@/store/plan/thunks';
 
 import { ContentProps } from "@/interfaces";
-import { 
-    NodeForm, 
-    NodesList, 
-    TimeLine, 
+import {
+    NodeForm,
+    NodesList,
+    TimeLine,
     Graph,
-    BackBtn, 
+    BackBtn,
     SettingsBtn } from "@/components";
 
 import IconButton from "@mui/material/IconButton";
@@ -58,7 +58,7 @@ export const Content = ( props : ContentProps ) => {
             dispatch(thunkGetSecretaries(id_plan));
             dispatch(thunkGetLocations(id_plan));
         }
-    }, []);
+    }, [id_plan]);
 
     useEffect(() => {
         dispatch(thunkGetNodes({id_level: levels[indexLevel].id_level!, parent: parent}))

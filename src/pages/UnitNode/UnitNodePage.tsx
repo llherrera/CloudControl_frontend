@@ -11,8 +11,7 @@ import { resetUnit } from "@/store/unit/unitSlice";
 import { AddRootTree } from "@/store/plan/planSlice";
 
 import { decode } from "@/utils";
-import { ShowEvidence, BackBtn, SettingsBtn, HvBtn } from "@/components";
-import cclogo from '@/assets/images/logo-cc.png';
+import { ShowEvidence, BackBtn, SettingsBtn, HvBtn, UnitFrame } from "@/components";
 import { Spinner } from "@/assets/icons";
 
 export const UnitNodePage = () => {
@@ -23,11 +22,9 @@ export const UnitNodePage = () => {
     const { rootTree } = useAppSelector(store => store.plan);
     const { unit, loadingUnit } = useAppSelector(store => store.unit);
     const { evidences } = useAppSelector(store => store.evidence);
-    const { 
-        id_plan, 
-        node, 
-        url_logo,
-        url_logo_plan } = useAppSelector(store => store.content);
+    const {
+        id_plan,
+        node } = useAppSelector(store => store.content);
 
     const [acum, setAcum] = useState(0);
     const [acumFinan, setAcumFinan] = useState(0);
@@ -342,22 +339,7 @@ export const UnitNodePage = () => {
 
     return (
         loadingUnit ? <Spinner/>:
-        <div className="tw-container tw-mx-auto tw-my-3
-                        tw-bg-gray-200
-                        tw-border-8 
-                        tw-border-gray-400 tw-rounded-md ">
-            <div className='tw-flex tw-justify-between
-                            tw-mb-4
-                            tw-shadow-2xl
-                            tw-border-b-2 tw-border-gray-400
-                            tw-z-40'>
-                <img src={cclogo} alt="" width={100} height={100}/>
-                <div className='tw-flex tw-gap-3'>
-                    {url_logo && <img src={url_logo} alt="" title='Municipio' width={100} /> }
-                    {url_logo_plan && <img src={url_logo_plan} alt="" title='Plan' width={100} /> }
-                </div>
-                <img src="/src/assets/images/Plan-indicativo.png" alt="" width={60} />
-            </div>
+        <UnitFrame>
             <BackBtn handle={handleBack} id={id_plan}/>
             {rol === 'admin' || (rol === 'funcionario' && id === id_plan) ?
                 <SettingsBtn handle={handleSettings} id={id_plan}/>
@@ -390,6 +372,6 @@ export const UnitNodePage = () => {
                 </button>
             </div>
             {showEvidence ? ternary : null}
-        </div>
+        </UnitFrame>
     );
 }

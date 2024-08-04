@@ -11,3 +11,4 @@ export * from './Popover';
 export * from './Spinner';
 export * from './MapFilters';
 export * from './Drawer';
+export * from './Dropdown';

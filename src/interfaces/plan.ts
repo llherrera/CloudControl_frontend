@@ -89,27 +89,45 @@ export interface ExcelPlan {
     Niveles: string;
     Nodos: string;
     Peso: number;
-    ProgramadoAño1: number | null;
-    ProgramadoAño2: number | null;
-    ProgramadoAño3: number | null;
-    ProgramadoAño4: number | null;
+    ProgramadoAnno1: number | null;
+    ProgramadoAnno2: number | null;
+    ProgramadoAnno3: number | null;
+    ProgramadoAnno4: number | null;
     Responsable: string | null;
 }
 
 export interface ExcelFinancial {
     IdNodo: string;
-    Año1: number | null;
-    Año2: number | null;
-    Año3: number | null;
-    Año4: number | null;
+    Anno1: number | null;
+    Anno2: number | null;
+    Anno3: number | null;
+    Anno4: number | null;
 }
 
 export interface ExcelPhysical {
     IdNodo: string;
-    Año1: number | null;
-    Año2: number | null;
-    Año3: number | null;
-    Año4: number | null;
+    Anno1: number | null;
+    Anno2: number | null;
+    Anno3: number | null;
+    Anno4: number | null;
+}
+
+export interface ExcelUnitNode {
+    IdNodo: string;
+    ProgramadoAnno1: number | null;
+    ProgramadoAnno2: number | null;
+    ProgramadoAnno3: number | null;
+    ProgramadoAnno4: number | null;
+
+    EjecutadoAnno1: number | null;
+    EjecutadoAnno2: number | null;
+    EjecutadoAnno3: number | null;
+    EjecutadoAnno4: number | null;
+
+    FinanciadoAnno1: number | null;
+    FinanciadoAnno2: number | null;
+    FinanciadoAnno3: number | null;
+    FinanciadoAnno4: number | null;
 }
 
 export interface UpdateWProps {

@@ -6,17 +6,13 @@ export const NotFoundPage = () => {
 
     const handleBack = () => navigate(-1);
 
-    const notFound: JSX.Element[] = [
-        <div key={0}>
-            <h1>404</h1>
-            <h2>Page not found</h2>
-            <BackBtn handle={handleBack} id={1}/>
-        </div>
-    ];
-
     return (
         <Header>
-            {notFound}
+            <div key={0}>
+                <h1>404</h1>
+                <h2>Page not found</h2>
+                <BackBtn handle={handleBack} id={1}/>
+            </div>
         </Header>
     );
 };
