@@ -1,11 +1,8 @@
 import React, { useState } from "react";
-import OpenAI from 'openai';
 import Modal from 'react-modal';
 
 import { SelectStyled } from "../Inputs";
-import { getEnvironment } from '@/utils/environment';
-
-const { API_KEY_IA } = getEnvironment();
+import { chatModel } from "@/services/chat.api";
 
 interface Props {
     isOpen: boolean;
@@ -36,13 +33,9 @@ export const ModalAi = () => {
 
 const ProntInput = (props: Props) => {
     const [text, setText] = useState("");
+    const [conversations, setConversations] = useState<string[]>([]);
     const [response, setResponse] = useState<string | undefined>(undefined);
     const [loading, setLoading] = useState<boolean>(false);
-
-    const openai = new OpenAI({
-        apiKey: API_KEY_IA,
-        dangerouslyAllowBrowser: true
-    });
 
     const onClose = () => {
         props.callback(false);
@@ -61,48 +54,46 @@ const ProntInput = (props: Props) => {
     };
 
     const request = async (msg: string) => {
-        let response;
         try {
             setLoading(true);
-            response = await openai.chat.completions.create({
-                model: "gpt-3.5-turbo",
-                messages: [{
-                    role: 'user',
-                    content: msg
-                }],
-                temperature: 1,
-                max_tokens: 256,
-                top_p: 1,
-                frequency_penalty: 0,
-                presence_penalty: 0,
-            });
-            console.log(response);
-        } catch (error) {
+            const response = await chatModel(msg);
+            setResponse(response['res']);
+            setConversations([...conversations, msg, response['res']]);
+        } catch (error: any) {
             console.log(error);
+            setResponse(error.response.data);
         } finally {
             setLoading(false);
             setText('');
         }
-        //setResponse(response.choices[0].message?.content);
     }
-
+//tw-gap-2
+//tw-grid-cols-2 tw-grid-rows-2
     return (
         <Modal  isOpen={props.isOpen}
                 onRequestClose={()=>onClose()}
                 contentLabel=''>
-            <div className="tw-h-full tw-flex tw-justify-between">
+            <div className="tw-h-full tw-flex tw-justify-between
+                            tw-flex-col md:tw-flex-row">
                 <ul className={`tw-w-full tw-h-full
                                 tw-bg-gray-300 
                                 tw-mr-2 tw-p-2
-                                tw-grid tw-gap-2
-                                tw-grid-cols-2 tw-grid-rows-2`}>
-                    {loading ?
-                        <p>Procesando...</p> :
-                        <p>Cloud-i: {response}</p>
-                    }
+                                tw-rounded`}>
+                {conversations.length === 0 ?
+                <p>Hazme una pregunta</p> :
+                <div className="tw-flex tw-flex-col tw-gap-2">
+                    {conversations.map((c, i) => (
+                        <li key={i}
+                            className={`tw-rounded tw-flex
+                                        ${i % 2 === 0 ? 'tw-justify-end tw-ml-4' : 'tw-justify-start tw-mr-4'}`}>
+                            <p className="tw-bg-white tw-p-1 tw-rounded">{c}</p>
+                        </li>
+                    ))}
+                    {loading ? <p>Procesando...</p> : null}
+                </div>}
                 </ul>
-                <div className="tw-max-w-lg
-                                tw-mx-auto tw-p-6
+                <div className="md:tw-max-w-lg md:tw-mx-auto
+                                tw-p-6 tw-mt-2 md:tw-mt-0
                                 tw-bg-white
                                 tw-rounded-lg tw-border
                                 tw-shadow-md">
@@ -116,15 +107,16 @@ const ProntInput = (props: Props) => {
                         value={text}
                         onKeyDown={(e) => handleKeyPress(e)}
                         placeholder="Preguntame sobre tu plan"
-                        className=" tw-w-full tw-h-1/2
+                        className=" tw-w-full tw-h-1/3 md:tw-h-1/2
                                     tw-p-2 tw-mb-4
                                     tw-border tw-rounded
                                     tw-resize-none
                                     tw-text-wrap"
                     />
 
-                    <div className="tw-flex tw-justify-between 
-                                    tw-items-center tw-mb-4">
+                    <div className=" tw-justify-between 
+                                    tw-items-center tw-mb-4
+                                    tw-hidden md:tw-flex">
                         <SelectStyled opts={[
                             {
                                 label: 'Secretaria',
@@ -169,8 +161,8 @@ const ProntInput = (props: Props) => {
                         ]}/>
                     </div>
 
-                    <div className="tw-flex tw-justify-end">
-                        <button className=" tw-py-2 tw-px-6
+                    <div className="tw-flex tw-justify-center md:tw-justify-end">
+                        <button className=" tw-py-2 tw-px-6 tw-mb-2
                                             tw-bg-purple-500 hover:tw-bg-purple-700
                                             tw-text-white tw-font-bold
                                             tw-rounded"

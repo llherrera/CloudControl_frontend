@@ -1,27 +1,10 @@
 import axios from "axios";
 import jwtDecode from "jwt-decode";
 import { getEnvironment } from '../utils/environment';
-import { arrayToMapNodesSecre } from '../utils/functions';
 
-import {
-    YearInterface,
-    UnitInterface,
-    NodeInterface,
-    LevelInterface,
-    RegisterInterface,
-    PDTInterface,
-    EvidenceInterface,
-    GetNodeProps,
-    Secretary,
-    LoginProps,
-    Coordinates,
-    ExcelFinancial,
-    ExcelPlan,
-    ExcelPhysical,
-    ExcelUnitNode,
-    LocationInterface } from "../interfaces";
+import {  } from "../interfaces";
 
-import { getToken, refreshToken } from "@/utils";
+import { getToken } from "@/utils";
 
 const { BASE_URL } = getEnvironment();
 const api = axios.create({
