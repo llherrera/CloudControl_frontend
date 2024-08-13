@@ -69,8 +69,8 @@ export const ChooseCityPage = () => {
     }, [location]);
 
     useEffect(() => {
-        if (!press) return console.log('negativo para plan');
-        if (locationNames.department === "") return console.log('negativo para plan 2');
+        if (!press) return notify('No se ha encontrado un Plan de Desarrollo en esta localidad');
+        if (locationNames.department === "") return notify('No se ha encontrado un Plan de Desarrollo en este Departamente');
         dispatch(thunkGetPDTByDept({
             dept: locationNames.department,
             muni: locationNames.municipality
@@ -78,7 +78,7 @@ export const ChooseCityPage = () => {
     }, [press]);
 
     useEffect(() => {
-        if (plan === undefined) return console.log('negativo para plan 3');
+        if (plan === undefined || plan.toString() == '') return notify('No se ha encontrado un Plan de Desarrollo en esta localidad');
         setPress(false);
         dispatch(setIdPlan(plan.id_plan!));
         navigate(`/lobby`);
@@ -86,9 +86,9 @@ export const ChooseCityPage = () => {
 
     const handleDepartmentChange = (name: string, code: string) => {
         setLocationsNames({
-            ...locationNames,
             department: name,
             municipality: '',
+            id_municipality: code + '000'
         });
     };
 
@@ -100,7 +100,13 @@ export const ChooseCityPage = () => {
         });
     };
 
-    const handleSearchPlan = () => setPress(true);
+    const handleSearchPlan = () => {
+        if (locationNames.department === "") return notify('No se ha encontrado un Plan de Desarrollo en este Departamento');
+        dispatch(thunkGetPDTByDept({
+            dept: locationNames.department,
+            muni: locationNames.municipality
+        }));
+    }
 
     return (
         <Header>
@@ -109,7 +115,7 @@ export const ChooseCityPage = () => {
                 id={location.lat}
                 key={location.lat}
             />
-            <div key={locationNames.id_municipality}>
+            <div>
                 {error ? (
                     <div>
                         <SelectDept
@@ -136,8 +142,8 @@ export const ChooseCityPage = () => {
             </div>
             <p>
                 {loadingPlan ? 'cargando' :
-                plan ? 'Plan encontrado en su zona' :
-                'No se encuentra un plan en su zona'}
+                plan ? 'Plan encontrado en esta zona' :
+                'No se encuentra un plan en esta zona'}
             </p>
         </Header>
     );

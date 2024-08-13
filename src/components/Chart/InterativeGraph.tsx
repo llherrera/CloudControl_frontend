@@ -110,6 +110,7 @@ const Component = ({index, children, type, callDataX, callDataY, callTitle}: Com
     };
 
     useEffect(() => {
+        if (locations == undefined) return;
         if (locations.length === 0) return;
         setLocationsMap(convertLocations(locations));
     }, [locations]);
@@ -137,6 +138,7 @@ const Component = ({index, children, type, callDataX, callDataY, callTitle}: Com
     useEffect(() => {
         switch (field) {
             case 'secretary':
+                if (secretaries == undefined) return;
                 dispatch(setCategories(secretaries.map(l => l.name)));
                 dispatch(setSubCategories([]));
                 getDataDashboardSecretary(id_plan, cateDefault.replace('secretary', ''), yearsDefault === 0 ? '' : yearsDefault.toString())

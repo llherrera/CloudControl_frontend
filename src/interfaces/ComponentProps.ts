@@ -83,12 +83,25 @@ export interface SelectProps {
     label: string;
     name: string;
     value?: string | number;
-    options: any[];
+    options: string[] | number[];
     onChange: ChangeEventHandler<HTMLSelectElement>;
-    optionLabelFn?: (option: any, index?: number) => any;
     isRequired?: boolean;
     disabled?: boolean;
     classname?: string;
+}
+
+export interface SelectOpts {
+    opts: {
+        label: string;
+        value: string;
+    }[];
+    value: string;
+    callback: React.Dispatch<React.SetStateAction<string>>;
+}
+
+export interface SelectDetsOps {
+    callbackDept: (name: string, code: string) => void;
+    callbackMuni: (name: string, code: string) => void;
 }
 
 export interface NavBarProps {

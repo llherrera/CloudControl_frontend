@@ -82,12 +82,6 @@ export const PDTForm = () => {
         });
     };
 
-    const optioDate = (e: any) => (
-        <option key={e} value={fechaInicio + e}>
-            {fechaInicio + e}
-        </option>
-    );
-
     return (
         <div className="tw-flex tw-justify-center">
             <BackBtn handle={()=>navigate(-1)} id={plan?.id_plan??0}/>
@@ -105,7 +99,10 @@ export const PDTForm = () => {
                         name={"name"}
                         onChange={handleInputChange}
                 />
-                <SelectDept callbackDept={handleDepartmentChange} callbackMuni={handleMunicipioChange}/>
+                <SelectDept
+                    callbackDept={handleDepartmentChange}
+                    callbackMuni={handleMunicipioChange}
+                />
                 <Input  type={"text"}
                         label="Descripción:"
                         id={"description"}
@@ -118,7 +115,6 @@ export const PDTForm = () => {
                         name="start_date"
                         onChange={handleInputYearChange}
                         options={Array.from(Array(5).keys())}
-                        optionLabelFn={(e) => optioDate(e)}
                 />
                 </div>
                 <div className="tw-flex tw-justify-center">

@@ -36,7 +36,11 @@ const SettingPageWrapper = () => {
     const dispatch = useAppDispatch();
 
     const { token_info } = useAppSelector(store => store.auth);
-    const { plan, loadingPlan, secretaries } = useAppSelector(store => store.plan);
+    const { 
+        plan, 
+        loadingPlan, 
+        secretaries,
+        locations } = useAppSelector(store => store.plan);
     const { id_plan } = useAppSelector(store => store.content);
 
     const [page, setPage] = useState(0);
@@ -54,10 +58,11 @@ const SettingPageWrapper = () => {
     }, []);
 
     useEffect(() => {
-        if (id_plan != 0 && secretaries.length === 0) {
+        if (id_plan <= 0) return;
+        if (secretaries == undefined)
             dispatch(thunkGetSecretaries(id_plan));
+        if (locations == undefined)
             dispatch(thunkGetLocations(id_plan));
-        }
     }, []);
 
     const handleDate = (e: React.ChangeEvent<HTMLInputElement>) => {

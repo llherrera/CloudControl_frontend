@@ -20,7 +20,8 @@ export const SecretarySelect = () => {
     const [index, setIndex] = useState<number[]>([]);
 
     useEffect(() => {
-        if (id_plan != 0 && secretaries.length === 0)
+        if (id_plan <= 0) return;
+        if (secretaries == undefined)
             dispatch(thunkGetSecretaries(id_plan));
     }, []);
 
@@ -105,7 +106,7 @@ export const SecretarySelect = () => {
                                 tw-rounded
                                 tw-mr-3 tw-mb-3 tw-w-24">
                 <option value='void'></option>
-                {secretaries.map(sec =>
+                {secretaries && secretaries.map(sec =>
                     <option
                         value={sec.name}
                         key={sec.name}>

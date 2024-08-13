@@ -30,7 +30,7 @@ export interface ModalPDTProps {
     data: ReportPDTInterface[]
 }
 
-export interface ModalsecretaryProps {
+export interface ModalProps {
     modalIsOpen: boolean
     callback: React.Dispatch<React.SetStateAction<boolean>>,
 }

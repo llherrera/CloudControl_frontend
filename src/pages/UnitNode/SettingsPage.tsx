@@ -32,9 +32,9 @@ export const SettingsPage = () => {
     }, []);
 
     useEffect(() => {
-        if (id_plan != 0 && secretaries.length === 0) {
+        if (id_plan <= 0) return;
+        if (secretaries == undefined)
             dispatch(thunkGetSecretaries(id_plan));
-        }
     }, []);
 
     const handleChangeUnit = (event: React.ChangeEvent<
@@ -171,7 +171,7 @@ export const SettingsPage = () => {
                                 className=' tw-p-2
                                             tw-rounded tw-border-2
                                             tw-border-gray-400'>
-                            {secretaries.map((secretary) => (
+                            {secretaries && secretaries.map((secretary) => (
                                 <option key={secretary.phone} value={secretary.name}>
                                     {secretary.name}
                                 </option>

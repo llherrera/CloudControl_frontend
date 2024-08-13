@@ -18,9 +18,9 @@ export const LocationSelect = () => {
     const [loc, setLoc] = useState<string>('');
 
     useEffect(() => {
-        if (id_plan != 0 && locations.length === 0) {
+        if (id_plan <= 0) return;
+        if (locations == undefined)
             dispatch(thunkGetLocations(id_plan));
-        }
     }, []);
 
     useEffect(() => {
@@ -47,7 +47,7 @@ export const LocationSelect = () => {
                                 tw-rounded
                                 tw-mr-3 tw-w-24">
                 <option value=''>Todas</option>
-                {locations.map(loc => 
+                {locations && locations.map(loc => 
                     <option 
                         value={loc.name} 
                         key={loc.name}>

@@ -37,7 +37,8 @@ export const Content = ( props : ContentProps ) => {
             nodes,
             colorimeter,
             rootTree,
-            secretaries } = useAppSelector(store => store.plan);
+            secretaries,
+            locations } = useAppSelector(store => store.plan);
     const { mode, id_plan } = useAppSelector(store => store.content);
 
     const [rol, setRol] = useState("");
@@ -54,10 +55,11 @@ export const Content = ( props : ContentProps ) => {
     }, []);
 
     useEffect(() => {
-        if (id_plan != 0 && secretaries.length === 0) {
+        if (id_plan <= 0) return;
+        if (secretaries == undefined)
             dispatch(thunkGetSecretaries(id_plan));
+        if (locations == undefined)
             dispatch(thunkGetLocations(id_plan));
-        }
     }, [id_plan]);
 
     useEffect(() => {

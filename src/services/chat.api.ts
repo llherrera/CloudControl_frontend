@@ -6,10 +6,10 @@ const api = axios.create({
     baseURL: BASE_URL,
 })
 
-export const chatModel = async (message: string) => {
+export const chatModel = async (messages: string[]) => {
     const response = await api.get("/servicios/chat", {
         params: {
-            msg: message
+            msgs: messages
         }
     });
     return response.data;

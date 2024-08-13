@@ -13,7 +13,7 @@ import { generateExcel } from "@/utils";
 import { 
     ReportPDTInterface, 
     YearDetail, 
-    ModalsecretaryProps, 
+    ModalProps, 
     NodesWeight } from "@/interfaces";
 
 export const ModalSecretary = () => {
@@ -37,7 +37,7 @@ export const ModalSecretary = () => {
     );
 }
 
-const ModalPDT = ( props: ModalsecretaryProps ) => {
+const ModalPDT = ( props: ModalProps ) => {
     const dispatch = useAppDispatch();
 
     const { years,
@@ -52,12 +52,13 @@ const ModalPDT = ( props: ModalsecretaryProps ) => {
     const [indexYear, setIndexYear] = useState<number>(0);
 
     useEffect(() => {
-        if (id_plan != 0 && secretaries.length === 0) {
+        if (id_plan <= 0) return;
+        if (secretaries == undefined)
             dispatch(thunkGetSecretaries(id_plan));
-        }
     }, []);
 
     useEffect(() => {
+        if (secretaries == undefined) return;
         if (secretaries.length > 0)
             setSecretary(secretaries[0].name);
     }, [secretaries]);
@@ -188,7 +189,7 @@ const ModalPDT = ( props: ModalsecretaryProps ) => {
                             value={secretary} 
                             onChange={(e)=>handleChangeSecretary(e)}
                             className="tw-border-2 tw-p-1 tw-mb-2 tw-rounded">
-                        {secretaries.map((sec) => (<option value={sec.name} key={sec.name.length}>{sec.name}</option>))}
+                        {secretaries && secretaries.map((sec) => (<option value={sec.name} key={sec.name.length}>{sec.name}</option>))}
                     </select>
                 </div>
                 <button className=' tw-bg-gray-300 hover:tw-bg-gray-500

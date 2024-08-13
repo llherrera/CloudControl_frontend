@@ -40,8 +40,8 @@ export interface InitialStatePlanInterface {
     namesTree: [string[]];
     rootTree: string[][];
     radioBtn: string;
-    secretaries: Secretary[];
-    locations: LocationInterface[];
+    secretaries?: Secretary[];
+    locations?: LocationInterface[];
     planLocation: Coordinates | undefined;
     bounding1: number;
     bounding2: number;

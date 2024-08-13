@@ -13,7 +13,7 @@ import {
     ArrowUpward, 
     ArrowDownward, 
     Dataset } from '@mui/icons-material';
-import { Visualization } from "@/interfaces";
+import { Visualization, ModalProps } from "@/interfaces";
 import { 
     manageVisualization, 
     notify, 
@@ -23,18 +23,13 @@ import {
     InterativeCard, 
     Filter } from "../Chart";
 
-interface Props {
-    isOpen: boolean;
-    callback: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
 export const ModalBoard = () => {
     const [isOpen, setIsOpen] = useState(false);
 
     return (
         <div>
             <Dashboard
-                isOpen={isOpen}
+                modalIsOpen={isOpen}
                 callback={setIsOpen}/>
             <IconButton aria-label="delete" 
                         size="large" 
@@ -49,7 +44,7 @@ export const ModalBoard = () => {
     )
 }
 
-const Dashboard = (props: Props) => {
+const Dashboard = (props: ModalProps) => {
     const dispatch = useAppDispatch();
 
     const { board, indexSelect } = useAppSelector(store => store.chart);
@@ -86,7 +81,7 @@ const Dashboard = (props: Props) => {
 
     
     return (
-        <Modal  isOpen={props.isOpen}
+        <Modal  isOpen={props.modalIsOpen}
                 onRequestClose={()=>onClose()}
                 contentLabel=''>
             <div className="tw-h-full tw-flex tw-justify-between">

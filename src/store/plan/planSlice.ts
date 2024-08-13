@@ -70,8 +70,8 @@ const getInitialState = (): InitialStatePlanInterface => {
         namesTree: [['Dimension', 'Nivel']],
         rootTree: [],
         radioBtn: 'fisica',
-        secretaries: [],
-        locations: [],
+        secretaries: undefined,
+        locations: undefined,
         planLocation: undefined,
         bounding1: 0,
         bounding2: 0,
@@ -185,7 +185,9 @@ export const planSlice = createSlice({
             state.secretaries = [];
             state.colorimeter = [];
             setGenericState('plan', state);
-            notify('Redirigiendo');
+            state.plan.toString() != '' ?
+                notify('Redirigiendo') :
+                notify('No se ha encontrado un Plan de Desarrollo en esta localidad');
         });
         builder.addCase(thunkGetPDTByDept.rejected, (state, action) => {
             state.loadingPlan = false;

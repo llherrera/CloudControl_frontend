@@ -1,6 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { getDepartmentsGeoportal, getMunicipalities } from "@/services/col_api";
-import { SelectProps, DepartmentGeoPortal, MunicipalityGeoPortal } from "@/interfaces";
+import {
+    SelectProps,
+    SelectOpts,
+    SelectDetsOps,
+    DepartmentGeoPortal,
+    MunicipalityGeoPortal } from "@/interfaces";
 
 export const Select = (props: SelectProps) => {
     return(
@@ -8,29 +13,26 @@ export const Select = (props: SelectProps) => {
             <label className="tw-mr-4 tw-self-center" htmlFor={props.id}>
                 {props.label}
             </label>
-            <select name={props.name}
+            <select
+                name={props.name}
                 id={props.id}
                 onChange={props.onChange}
-                value={props.value}
+                //value={props.value}
                 className=" tw-m-3 tw-p-2
                             tw-w-1/2
                             tw-rounded
                             tw-border-2 tw-border-gray-400"
                 disabled={props.disabled}
                 required={!!props.isRequired}>
-                {props.optionLabelFn && props.options.map((e, i) => props.optionLabelFn && props.optionLabelFn(e, i))}
-                {!props.optionLabelFn && props.options.map((e, i) => <option key={i} value={e}>{e}</option>)}
+                {props.options.map((e, i) => 
+                    <option key={e} value={i}>{e}</option>
+                )}
             </select>
         </div>
     );
 }
 
-interface Props {
-    callbackDept: (name: string, code: string) => void;
-    callbackMuni: (name: string, code: string) => void;
-}
-
-export const SelectDept = ({callbackDept, callbackMuni}: Props) => {
+export const SelectDept = ({callbackDept, callbackMuni }: SelectDetsOps) => {
     const [departamentOptions, setDepartamentOptions] = useState<DepartmentGeoPortal[]|null>(null);
     const [municipioOptions, setMunicipioOptions] = useState<MunicipalityGeoPortal[]|null>(null);
     const [selectedDepartamento, setSelectedDepartamento] = useState<DepartmentGeoPortal|null>(null);
@@ -55,7 +57,7 @@ export const SelectDept = ({callbackDept, callbackMuni}: Props) => {
     }, []);
 
     useEffect(() => {
-        if (!selectedDepartamento || 
+        if (selectedDepartamento == null || 
             selectedDepartamento.CODIGO_DEPARTAMENTO === '') return;
         getMunicipalities(selectedDepartamento.CODIGO_DEPARTAMENTO)
         .then(res => {
@@ -91,7 +93,7 @@ export const SelectDept = ({callbackDept, callbackMuni}: Props) => {
         if (!departamentOptions) return;
         setMunicipioOptions(null);
         setSelectedDepartamento(departamentOptions[parseInt(value)]);
-        callbackDept(departamentOptions[parseInt(value)].NOMBRE_DEPARTAMENTO, departamentOptions[parseInt(value)].CODIGO_DEPARTAMENTO+'000');
+        callbackDept(departamentOptions[parseInt(value)].NOMBRE_DEPARTAMENTO, departamentOptions[parseInt(value)].CODIGO_DEPARTAMENTO);
     };
 
     const handleMunicipioChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -100,18 +102,6 @@ export const SelectDept = ({callbackDept, callbackMuni}: Props) => {
         callbackMuni(municipioOptions[parseInt(value)].NOMBRE_MUNICIPIO, municipioOptions[parseInt(value)].CODIGO_DPTO_MPIO);
     };
 
-    const optionDept = (e:any, i:any) => (
-        <option key={e.CODIGO_DEPARTAMENTO} 
-            value={i}>{e.NOMBRE_DEPARTAMENTO}
-        </option>
-    );
-
-    const optionMuni = (e:any ,i: any) => (
-        <option key={e.CODIGO_MUNICIPIO} value={i}>
-            {e.NOMBRE_MUNICIPIO}
-        </option>
-    );
-
     return (
         <div>
             <Select
@@ -119,35 +109,24 @@ export const SelectDept = ({callbackDept, callbackMuni}: Props) => {
                 id="department"
                 name="department"
                 onChange={handleDepartmentChange}
-                options={departamentOptions ?? []}
-                optionLabelFn={(e, i) => optionDept(e,i)}
+                options={departamentOptions?.map(d => d.NOMBRE_DEPARTAMENTO) ?? []}
             />
             <Select
                 label="Municipio:"
                 id="municipality"
                 name="municipality"
                 onChange={handleMunicipioChange}
-                options={municipioOptions ?? []}
-                optionLabelFn={(e, i) => optionMuni(e,i)}
+                options={municipioOptions?.map(m => m.NOMBRE_MUNICIPIO) ?? []}
                 disabled={!selectedDepartamento}
             />
         </div>
     );
 }
 
-interface PropsS {
-    opts: {
-        label: string;
-        value: string;
-    }[];
-}
-
-export const SelectStyled = ({opts}: PropsS) => {
-    const [value, setValue] = useState('');
-
+export const SelectStyled = ({opts, value, callback}: SelectOpts) => {
     const handleValueChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const { value } = e.target;
-        setValue(value);
+        callback(value);
     }
 
     return(

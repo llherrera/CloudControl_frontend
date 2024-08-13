@@ -251,10 +251,12 @@ export const LocationsFormPage = () => {
     const handlePage = (page: number) => setPage(page);
 
     useEffect(() => {
-        dispatch(thunkGetLocations(id_plan));
+        if (locations == undefined)
+            dispatch(thunkGetLocations(id_plan));
     }, []);
 
     useEffect(() => {
+        if (locations == undefined) return
         if (locations.length === 0) return;
         setLocationsMap(convertLocations(locations));
     }, [locations]);
