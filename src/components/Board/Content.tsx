@@ -2,18 +2,25 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useAppDispatch, useAppSelector } from "@/store";
-import { thunkGetNodes } from "@/store/plan/thunks";
-import { decrementLevelIndex, setParent, AddRootTree } from "@/store/plan/planSlice";
+import {
+    decrementLevelIndex,
+    setParent,
+    AddRootTree,
+    setZeroLevelIndex } from "@/store/plan/planSlice";
+import {
+    thunkGetNodes,
+    thunkGetLocations,
+    thunkGetSecretaries } from '@/store/plan/thunks';
 import { setMode } from "@/store/content/contentSlice";
-import { thunkGetLocations, thunkGetSecretaries } from '@/store/plan/thunks';
 
-import { ContentProps } from "@/interfaces";
+import { IdProps } from "@/interfaces";
 import {
     NodeForm,
     NodesList,
     TimeLine,
     Graph,
     BackBtn,
+    DoubleBackBtn,
     SettingsBtn } from "@/components";
 
 import IconButton from "@mui/material/IconButton";
@@ -21,7 +28,7 @@ import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 import { ModalBoard, ModalAi } from "../Modals";
 import { decode } from "@/utils";
 
-export const Content = ( props : ContentProps ) => {
+export const Content = ( props : IdProps ) => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
 
@@ -67,6 +74,11 @@ export const Content = ( props : ContentProps ) => {
         .unwrap()
         .catch((err) => {console.log(err)});
     }, [years, indexLevel]);
+
+    const handleStartReturn = () => {
+        dispatch(AddRootTree([]));
+        dispatch(setZeroLevelIndex());
+    };
 
     const handleBack = () => {
         if (indexLevel === 0) {
@@ -208,7 +220,11 @@ export const Content = ( props : ContentProps ) => {
                                 lg:tw-w-4/5 lg:tw-h-full lg:tw-row-span-2
                                 xl:tw-row-span-2">
                     <p className="tw-ml-4 tw-mt-3 tw-font-montserrat tw-font-bold">
-                        <BackBtn handle={handleBack} id={props.id}/>
+                        {indexLevel < 2 ? null : <DoubleBackBtn handle={handleStartReturn} id={props.id} />}
+                        <BackBtn 
+                            handle={handleBack}
+                            id={props.id}
+                            className={`${indexLevel < 2 ? '' : 'tw--translate-x-6'}`}/>
                         {levels[indexLevel].name}
                         {rol === 'admin' || (rol === 'funcionario' && id === props.id) ?
                         <button className={`tw-ml-4 tw-p-2 

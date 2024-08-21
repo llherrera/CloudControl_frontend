@@ -43,6 +43,7 @@ export const PQRSPage = () => {
 
     return (
         <Frame>
+            {true ? <p>Coming soon</p> :
             <div className='tw-h-screen tw-border'>
                 <h1 className=' tw-mx-6 tw-mt-6
                                 tw-text-black tw-text-lg
@@ -72,6 +73,7 @@ export const PQRSPage = () => {
                     />
                 </div>
             </div>
+            }
         </Frame>
     );
 }

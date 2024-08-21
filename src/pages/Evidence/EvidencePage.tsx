@@ -3,8 +3,10 @@ import { useNavigate } from "react-router-dom";
 
 import { useAppSelector, useAppDispatch } from "@/store";
 import { resetEvidence, setEvidence } from "@/store/evidence/evidenceSlice";
+import { AddRootTree, setZeroLevelIndex } from "@/store/plan/planSlice";
+import { resetUnit } from "@/store/unit/unitSlice";
 
-import { BackBtn, EvidenceForm, Memory } from "@/components";
+import { BackBtn, DoubleBackBtn, EvidenceForm, Memory } from "@/components";
 
 export const EvidencePage = () => {
     const navigate = useNavigate();
@@ -15,6 +17,14 @@ export const EvidencePage = () => {
     const { id_plan } = useAppSelector(store => store.content);
     
     const [cargar, setCargar] = useState(false);
+
+    const handleStartReturn = () => {
+        dispatch(AddRootTree([]));
+        dispatch(resetEvidence());
+        dispatch(resetUnit());
+        dispatch(setZeroLevelIndex());
+        navigate(-2);
+    };
 
     const handleBack = () => {
         dispatch(setEvidence(undefined));
@@ -33,6 +43,7 @@ export const EvidencePage = () => {
             <div className="tw-mx-3 tw-mt-2">
                 <header className=" tw-flex tw-border-4 tw-border-double
                                     tw-border-gray-500 tw-bg-slate-200">
+                    <DoubleBackBtn handle={handleStartReturn} id={id_plan}/>
                     <BackBtn handle={handleBack} id={id_plan}/>
                     <h1 className=" tw-text-3xl tw-text-center 
                                     tw-font-bold tw-text-blue-700
@@ -92,6 +103,7 @@ export const EvidencePage = () => {
             <div className="tw-mx-3 tw-mt-2">
                 <header className=" tw-flex tw-border-4 tw-border-double
                                     tw-border-gray-500 tw-bg-slate-200">
+                    <DoubleBackBtn handle={handleStartReturn} id={id_plan}/>
                     <BackBtn handle={handleSubmitButton} id={id_plan}/>
                     <h1 className=" tw-text-3xl tw-text-center
                                     tw-font-bold tw-text-blue-700

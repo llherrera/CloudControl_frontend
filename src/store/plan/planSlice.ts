@@ -161,7 +161,7 @@ export const planSlice = createSlice({
             state.financial = [];
             state.nodes = [];
             state.nodesReport = [];
-            state.secretaries = [];
+            state.secretaries = undefined;
             state.colorimeter = [];
             setGenericState('plan', state);
         });
@@ -182,7 +182,7 @@ export const planSlice = createSlice({
             state.financial = [];
             state.nodes = [];
             state.nodesReport = [];
-            state.secretaries = [];
+            state.secretaries = undefined;
             state.colorimeter = [];
             setGenericState('plan', state);
             state.plan.toString() != '' ?
@@ -207,7 +207,7 @@ export const planSlice = createSlice({
             state.financial = [];
             state.nodes = [];
             state.nodesReport = [];
-            state.secretaries = [];
+            state.secretaries = undefined;
             state.colorimeter = [];
             setGenericState('plan', state);
         });
@@ -231,7 +231,7 @@ export const planSlice = createSlice({
             state.financial = [];
             state.nodes = [];
             state.nodesReport = [];
-            state.secretaries = [];
+            state.secretaries = undefined;
             state.colorimeter = [];
             setGenericState('plan', state);
         });

@@ -220,7 +220,6 @@ export const EvidenceForm = () => {
                     <select
                         name="unit"
                         id="unit"
-                        value={data.unit}
                         className=" tw-p-2 tw-rounded
                                     tw-border-2 tw-border-gray-400
                                     tw-bg-white"
@@ -260,7 +259,6 @@ export const EvidenceForm = () => {
                     <select 
                         name="commune"
                         id="commune"
-                        value={data.commune}
                         className=" tw-p-2 tw-rounded
                                     tw-border-2 tw-border-gray-400
                                     tw-bg-white"
@@ -279,7 +277,6 @@ export const EvidenceForm = () => {
                     <select 
                         name="neighborhood"
                         id="neighborhood"
-                        value={data.neighborhood}
                         className=" tw-p-2 tw-rounded
                                     tw-border-2 tw-border-gray-400
                                     tw-bg-white"
@@ -440,7 +437,6 @@ export const EvidenceForm = () => {
                         type="date"
                         name="date_file"
                         id="date_file"
-                        value={data.date_file === '' ? undefined : new Date(data.date_file).toISOString()}
                         className=" tw-p-2 tw-rounded
                                     tw-border-2 tw-border-gray-400
                                     tw-bg-white"

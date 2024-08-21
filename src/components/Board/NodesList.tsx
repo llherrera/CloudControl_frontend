@@ -13,11 +13,11 @@ import { setNode } from "@/store/content/contentSlice";
 import {NodeInterface, 
         NodesWeight, 
         Percentages, 
-        NodeListProps } from '@/interfaces';
+        IdProps } from '@/interfaces';
 import { Spinner } from '@/assets/icons';
 import { decode } from "@/utils";
 
-export const NodesList = ( props : NodeListProps ) => {
+export const NodesList = ( props : IdProps ) => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
 
@@ -161,7 +161,7 @@ export const NodesList = ( props : NodeListProps ) => {
                                         tw-w-12 tw-h-12
                                         tw-font-bold`}
                             onClick={ () => handleButton(index)}
-                            title={item.description}>
+                            title={`${item.description} ${indexLevel !== levels.length-1 ? '' : `\n${item.id_node}`}`}>
                         { parseInt( ((progressNodes[index] === undefined || 
                             progressNodes[index] < 0 ? 0 : progressNodes[index])*100).toString())}%
                     </button>
@@ -174,7 +174,9 @@ export const NodesList = ( props : NodeListProps ) => {
                                         tw-font-montserrat`}
                             onClick={ () => handleButton(index)}
                             title={item.description}>
-                        <p>{item.name}</p>
+                        <p className='tw-truncate hover:tw-w-full'>
+                            {item.name}
+                        </p>
                     </button>
                     :null}
                     {rol === 'admin' || (rol === 'funcionario' && id === props.id) ?

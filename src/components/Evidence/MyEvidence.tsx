@@ -31,13 +31,6 @@ export const MyEvidence = ({evidence}: Props) => {
                             tw-border tw-border-black">
                 {evidence.code}
             </th>
-            <th className={`tw-rounded 
-                            tw-my-1 tw-px-3
-                            tw-border tw-border-black
-                            ${evidence.state === 0 ? 
-                            'tw-bg-gray-300': evidence.state === 1 ? 'tw-bg-greenBtn': 'tw-bg-redBtn'}`}>
-                {evidence.state === 0 ? "Pendiente" : evidence.state === 1 ? "Aprobado" : "Rechazado"}
-            </th>
             <th className="tw-bg-blue-200 tw-rounded
                             tw-my-1 tw-px-3
                             tw-border tw-border-black">

@@ -128,6 +128,7 @@ export const PQRSForm = () => {
                         value={data.numero_identificacion}
                         placeholder="Número de identificación"
                         onChange={e => handleInputChange(e)}
+                        center={true}
                         isRequired/>
                     {data.tipo_identificacion === 'NIT' ? <div>
                         <Input
@@ -139,6 +140,7 @@ export const PQRSForm = () => {
                             value={data.razon_social}
                             placeholder="Razón Social"
                             onChange={e => handleInputChange(e)}
+                            center={true}
                             isRequired/>
                     </div> : <div className='tw-grid'>
                         <Input
@@ -150,6 +152,7 @@ export const PQRSForm = () => {
                             value={data.primer_nombre}
                             placeholder="Primer Nombre"
                             onChange={e => handleInputChange(e)}
+                            center={true}
                             isRequired/>
                         <Input
                             classname={`tw-col-start-3 tw-col-span-1`}
@@ -160,6 +163,7 @@ export const PQRSForm = () => {
                             value={data.segundo_nombre}
                             placeholder="Segundo Nombre"
                             onChange={e => handleInputChange(e)}
+                            center={true}
                             isRequired/>
                         <Input
                             classname={`tw-col-start-1 tw-col-span-1`}
@@ -170,6 +174,7 @@ export const PQRSForm = () => {
                             value={data.primer_apellido}
                             placeholder="Primer Apellido"
                             onChange={e => handleInputChange(e)}
+                            center={true}
                             isRequired/>
                         <Input
                             classname={`tw-col-start-3 tw-col-span-1`}
@@ -180,6 +185,7 @@ export const PQRSForm = () => {
                             value={data.segundo_nombre}
                             placeholder="Segundo Apellido"
                             onChange={e => handleInputChange(e)}
+                            center={true}
                             isRequired/>
                     </div>
                     }
@@ -192,6 +198,7 @@ export const PQRSForm = () => {
                         value={data.telefono}
                         placeholder="Teléfono"
                         onChange={e => handleInputChange(e)}
+                        center={true}
                         isRequired/>
                     <Input
                         classname={`tw-col-start-1`}
@@ -202,6 +209,7 @@ export const PQRSForm = () => {
                         value={data.email}
                         placeholder="Correo"
                         onChange={e => handleInputChange(e)}
+                        center={true}
                         isRequired/>
                     <Input
                         classname={`tw-col-start-5`}
@@ -212,6 +220,7 @@ export const PQRSForm = () => {
                         value={data.direccion}
                         placeholder="Dirección"
                         onChange={e => handleInputChange(e)}
+                        center={true}
                         isRequired/>
                     <Input
                         classname={`tw-col-start-9`}
@@ -222,6 +231,7 @@ export const PQRSForm = () => {
                         value={data.barrio}
                         placeholder="Barrio"
                         onChange={e => handleInputChange(e)}
+                        center={true}
                         isRequired/>
                     <Input
                         classname={`tw-col-start-1`}
@@ -232,6 +242,7 @@ export const PQRSForm = () => {
                         value={data.ciudad}
                         placeholder="Ciudad"
                         onChange={e => handleInputChange(e)}
+                        center={true}
                         isRequired/>
                     <Input
                         classname={`tw-col-start-5`}
@@ -242,6 +253,7 @@ export const PQRSForm = () => {
                         value={data.departamento}
                         placeholder="Departamento"
                         onChange={e => handleInputChange(e)}
+                        center={true}
                         isRequired/>
                     <Input
                         classname={`tw-col-start-9 tw-ml-3`}
@@ -252,6 +264,7 @@ export const PQRSForm = () => {
                         value={data.pais}
                         placeholder="País"
                         onChange={e => handleInputChange(e)}
+                        center={true}
                         isRequired/>
                 </div>
             </DropdownC>
@@ -267,6 +280,7 @@ export const PQRSForm = () => {
                         value={data.asunto}
                         placeholder="Asunto"
                         onChange={e => handleInputChange(e)}
+                        center={true}
                         isRequired/>
                     <Select
                         classname={`tw-col-start-6 tw-col-span-4`}

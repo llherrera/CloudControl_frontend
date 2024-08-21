@@ -3,7 +3,7 @@ import Slider from '@mui/material/Slider';
 import Box from '@mui/material/Box';
 
 import { notify } from '@/utils';
-import { IdNumProps } from '@/interfaces';
+import { IdProps } from '@/interfaces';
 
 import { useAppDispatch, useAppSelector } from '@/store';
 import {
@@ -11,7 +11,7 @@ import {
     thunkGetColors,
     thunkUpdateColors } from '@/store/plan/thunks';
 
-export const ColorForm = ( {id} : IdNumProps ) => {
+export const ColorForm = ( {id} : IdProps ) => {
     const dispatch = useAppDispatch();
     const { colorimeter } = useAppSelector(store => store.plan);
     const { id_plan } = useAppSelector(store => store.content);
@@ -23,7 +23,7 @@ export const ColorForm = ( {id} : IdNumProps ) => {
 
     useEffect(() => {
         if (colorimeter.length === 0) {
-            dispatch(thunkGetColors(id_plan.toString()))
+            dispatch(thunkGetColors(id_plan))
             .unwrap()
             .then((res: number[]) => {
                 if (res) {

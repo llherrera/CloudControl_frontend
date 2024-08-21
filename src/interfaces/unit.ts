@@ -13,7 +13,10 @@ export interface propsIndicator {
 }
 
 export interface PropsExecution {
-    year: number;
+    date: Date;
     value: number;
     code: string;
+    user_id: number;
+    plan_id: number;
+    reason?: string;
 }

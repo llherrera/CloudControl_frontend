@@ -91,12 +91,18 @@ export const LevelForm = ( props: LevelFormProps ) => {
                                 label="Nombre del Nivel:"
                                 id={"name"}
                                 name={"name"}
-                                onChange={ (event) => handleInputFormChange(event, i) }/>
+                                onChange={ (event) => handleInputFormChange(event, i) }
+                                center={true}
+                                classname="tw-justify-between tw-gap-2"
+                        />
                         <Input  type={"text"}
                                 label="Descripción:"
                                 id={"description"}
                                 name={"description"}
-                                onChange={ (event) => handleInputFormChange(event, i) }/>
+                                onChange={ (event) => handleInputFormChange(event, i) }
+                                center={true}
+                                classname="tw-justify-between tw-gap-2"
+                        />
                     </li>
                 )}
                 <div className="tw-w-full tw-flex tw-justify-around tw-py-2 tw-bg-white tw-shadow-lg tw-border tw-rounded">

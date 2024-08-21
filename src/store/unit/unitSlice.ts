@@ -1,12 +1,16 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 import { InitialStateUnitInterface, UnitInterface } from "@/interfaces";
-import { setGenericState, getGenericState, removeGenericState } from "@/utils";
+import {
+    setGenericState,
+    getGenericState,
+    removeGenericState,
+    notify } from "@/utils";
 
-import { 
-    thunkGetUnit, 
-    thunkAddUnit, 
-    thunkUpdateUnit, 
+import {
+    thunkGetUnit,
+    thunkAddUnit,
+    thunkUpdateUnit,
     thunkUpdateIndicator,
     thunkUpdateExecution } from "./thunks";
 
@@ -90,7 +94,7 @@ export const unitSlice = createSlice({
         });
         builder.addCase(thunkAddUnit.fulfilled, (state, action) => {
             state.loadingUnit = false;
-            state.unit = action.payload;
+            //state.unit = action.payload;
             setGenericState('unit', state);
         });
         builder.addCase(thunkAddUnit.rejected, (state, action) => {
@@ -105,7 +109,7 @@ export const unitSlice = createSlice({
         });
         builder.addCase(thunkUpdateUnit.fulfilled, (state, action) => {
             state.loadingUnit = false;
-            state.unit = action.payload;
+            //state.unit = action.payload;
             setGenericState('unit', state);
         });
         builder.addCase(thunkUpdateUnit.rejected, (state, action) => {
@@ -140,6 +144,7 @@ export const unitSlice = createSlice({
         builder.addCase(thunkUpdateExecution.rejected, (state, action) => {
             state.loadingUnit = false;
             state.errorLoadingUnit = action.payload;
+            notify('Ha ocurrido un error, vuelva a intertarlo más tarde');
         });
     }
 })

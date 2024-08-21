@@ -294,3 +294,11 @@ export function getEnumKeys<T extends string, TEnumValue extends string | number
   enumVariable: { [key in T]: TEnumValue }) {
   return Object.keys(enumVariable) as Array<T>;
 }
+
+export function dividirArreglo(arreglo: any[], tamaño: number = 100) {
+    const subArreglos = [];
+    for (let i = 0; i < arreglo.length; i += tamaño) {
+        subArreglos.push(arreglo.slice(i, i + tamaño));
+    }
+    return subArreglos;
+}

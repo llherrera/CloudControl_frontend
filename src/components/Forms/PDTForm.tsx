@@ -14,6 +14,10 @@ export const PDTForm = () => {
     const { plan } = useAppSelector(store => store.plan);
 
     const fechaInicio = new Date().getFullYear();
+    const years = [];
+    for (let i = -1; i <= 4; i++) {
+        years.push(fechaInicio + i);
+    }
 
     const [planData, setPlanData] = useState<PDTInterface>({
         name: "",
@@ -39,10 +43,15 @@ export const PDTForm = () => {
 
     const handleInputYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const { value } = e.target;
+        let newYear = new Date().getFullYear() + parseInt(value) - 1;
+        let newDate = new Date(newYear, 0, 1).toISOString();
+        let endYear = new Date().getFullYear() + parseInt(value) + 2;
+        let endDate = new Date(endYear, 11, 31).toISOString();
+
         setPlanData({
             ...planData,
-            start_date: new Date(parseInt(value), 0, 1).toISOString(),
-            end_date: new Date(parseInt(value) + 3, 11, 31).toISOString(),
+            start_date: newDate,
+            end_date: endDate,
         });
     };
 
@@ -75,7 +84,13 @@ export const PDTForm = () => {
         e.preventDefault();
         dispatch(thunkAddPDT(planData))
         .then(() => {
-            registerCall();
+            if (plan === undefined) return;
+            const { id_plan } = plan;
+            if (id_plan === undefined) return;
+            dispatch(setIdPlan(id_plan));
+            dispatch(setLogo(''));
+            dispatch(setLogoPlan(''));
+            navigate(`/register`, {replace: true});
         })
         .catch((err) => {
             console.log(err);
@@ -87,7 +102,8 @@ export const PDTForm = () => {
             <BackBtn handle={()=>navigate(-1)} id={plan?.id_plan??0}/>
             <form   onSubmit={handleSubmit}
                     className=" tw-rounded tw-shadow-2xl
-                                tw-p-10">
+                                tw-bg-white
+                                tw-p-10 tw-my-2">
                 <h1 className=" tw-mb-4 tw-grow 
                                 tw-text-center tw-text-xl tw-font-bold">
                     Registrar Plan de Desarrollo
@@ -98,6 +114,8 @@ export const PDTForm = () => {
                         id={"name"}
                         name={"name"}
                         onChange={handleInputChange}
+                        center={true}
+                        classname="tw-justify-between tw-gap-2"
                 />
                 <SelectDept
                     callbackDept={handleDepartmentChange}
@@ -108,13 +126,15 @@ export const PDTForm = () => {
                         id={"description"}
                         name={"description"}
                         onChange={handleInputChange}
+                        center={true}
+                        classname="tw-justify-between tw-gap-2"
                 />
 
                 <Select label="Fecha de inicio:"
                         id="start_date"
                         name="start_date"
                         onChange={handleInputYearChange}
-                        options={Array.from(Array(5).keys())}
+                        options={years}
                 />
                 </div>
                 <div className="tw-flex tw-justify-center">

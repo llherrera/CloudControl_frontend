@@ -391,6 +391,16 @@ export const getEvidences = async (id_plan: number, page: number) => {
     return response.data;
 }
 
+export const getExecutionsToApro = async (id_plan: number, page: number) => {
+    const response = await api.get("/nodo/ejecucion", {
+        params: {
+            id_plan: id_plan,
+            page: page
+        }
+    });
+    return response.data;
+}
+
 export const getEvidenceCount = async (id_plan: number) => {
     const response = await api.get("/nodo/evidencia-contar", {
         params: {
@@ -485,10 +495,11 @@ export const getUserEvidences = async (page: number, id_plan: number) => {
     return response.data;
 }
 
-export const addSecretaries = async (id_plan: number, secretaries: Secretary[]) => {
+export const addSecretaries = async (id_plan: number, secretaries: Secretary[], valid?: boolean) => {
     const response = await api.post(`/plan-territorial/secretarias`, {
         id_plan:     id_plan,
-        secretaries: secretaries
+        secretaries: secretaries,
+        valid
     });
     return response.data;
 }
@@ -588,18 +599,18 @@ export const updateDeadline = async (id_plan: number, date: string) => {
     return response.data;
 }
 
-export const updateExecution = async (year: number, value: number, code: string) => {
-    try {
-        const date = new Date(`${year}-01-01`)
-        const response = await api.put('/nodo/ejecucion', {
-            date,
-            value,
-            code
-        });
-        return response.data;
-    } catch (err) {
-        return alert("Error: El año no está en el formato correcto");
-    }
+export const updateExecution = async (date: Date, value: number, code: string, user_id: number, plan_id: number, reason?: string) => {
+    let dateForm = date.getFullYear() + '-' + (date.getMonth() + 1).toString().padStart(2, '0') + '-' + date.getDate().toString().padStart(2, '0');
+    console.log(dateForm);
+    const response = await api.put('/nodo/ejecucion', {
+        date: dateForm,
+        value,
+        code,
+        user_id,
+        plan_id,
+        reason
+    });
+    return response.data;
 }
 
 export const getNodesSecretary = async (id_plan: number, secretary: string) => {

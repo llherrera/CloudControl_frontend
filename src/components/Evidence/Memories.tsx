@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import SaveAsIcon from '@mui/icons-material/SaveAs';
 
 import { useAppDispatch, useAppSelector } from "@/store";
 import { thunkUpdateExecution } from "@/store/unit/thunks";
 
-import { notify } from '@/utils';
+import { decode, notify } from '@/utils';
 
 interface Props {
     callback: ()=>void;
@@ -12,21 +12,42 @@ interface Props {
 
 export const Memory = ({callback}:Props) => {
     const dispatch = useAppDispatch();
+    const { token_info } = useAppSelector(store => store.auth);
     const { unit } = useAppSelector(store => store.unit);
+    const { plan } = useAppSelector(store => store.plan);
+    const { id_plan } = useAppSelector(store => store.content);
     const [value, setValue] = useState(0);
+    const [id, setId] = useState(0);
+    const today = new Date();
 
+    useEffect(() => {
+        if (token_info?.token !== undefined) {
+            const decoded = decode(token_info.token);
+            setId(decoded.id);
+        }
+    }, [token_info]);
+    
     const handleChangeValue = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { value } = e.target;
         const newData = parseInt(value);
         setValue(newData);
-    }
+    };
 
     const handleSave = () => {
-        dispatch(thunkUpdateExecution({year:2024, value, code: unit.code}))
+        dispatch(thunkUpdateExecution({date: today, value, code: unit.code, user_id: id, plan_id: id_plan}))
         .unwrap()
         .then(() => notify('Ejecucion actualizada'));
     };
 
+    if (plan === undefined) return <div>No hay un plan seleccionado</div>;
+    const deadline = plan.deadline !== null ? plan.deadline.split('-').slice(1).reverse().join('/') : 'No hay fecha de corte';
+    let temp = new Date(plan.deadline!);
+
+    const year = today.getMonth() < temp.getMonth() ? today.getFullYear() :
+        today.getDate() <= temp.getDate() + 1 && today.getMonth() < temp.getMonth() ? today.getFullYear() :
+        today.getFullYear() + 1;
+    temp = new Date(year, temp.getMonth(), temp.getDate() + 1);
+    
     if (unit === undefined) return <div>No hay una meta seleccionada</div>;
 
     return (
@@ -36,7 +57,8 @@ export const Memory = ({callback}:Props) => {
                             tw-mt-3 tw-px-3">
             <p className="tw-mt-3">
                 Fecha: { new Date().toLocaleDateString()} &nbsp;&nbsp;&nbsp;&nbsp;
-                Hora: { new Date().toLocaleTimeString()}
+                Hora: { new Date().toLocaleTimeString()} &nbsp;&nbsp;&nbsp;&nbsp;
+                Fecha de Corte: { deadline }
             </p>
             <div className="tw-flex tw-flex-col md:tw-flex-row">
                 <p className="tw-font-bold tw-mt-4">
@@ -100,7 +122,7 @@ export const Memory = ({callback}:Props) => {
                                         tw-text-blue-800 tw-font-bold">{item.year}</p>
                         <p className="tw-text-center">{item.physical_programming}</p>
                         <p className="tw-text-center tw-border-t tw-border-black">{item.physical_execution}</p>
-                        {index === unit.years.length - 1 ?
+                        {today >= (index === 0 ? new Date(item.year, 0, 1) : new Date(item.year, temp.getMonth(), temp.getDate() + 1) ) && today < new Date(item.year+ 1, temp.getMonth(), temp.getDate() + 1) ?
                         <div>
                             <input  type="number"
                                     className=" tw-bg-green-300 tw-border tw-border-black
@@ -114,7 +136,7 @@ export const Memory = ({callback}:Props) => {
                         </div>
                         : null}
                     </li>
-                ))}
+                    ))}
             </ul>
             <div className="tw-flex tw-justify-center tw-my-4">
                 <button className=" tw-bg-blue-500

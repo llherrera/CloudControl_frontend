@@ -1,2 +1,2 @@
-export * from './Frame';
+export * from './frame';
 export * from './UnitFrame';

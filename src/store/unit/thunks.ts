@@ -98,7 +98,7 @@ export const thunkUpdateExecution = createAsyncThunk<void, PropsExecution, { rej
     'unit/updateExecution',
     async (props: PropsExecution, { rejectWithValue }) => {
         try {
-            const res = await updateExecution(props.year, props.value, props.code);
+            const res = await updateExecution(props.date, props.value, props.code, props.user_id, props.plan_id, props.reason);
             return res;
         } catch (err) {
             const result = parseErrorAxios(err);

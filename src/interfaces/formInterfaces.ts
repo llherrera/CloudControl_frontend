@@ -87,6 +87,15 @@ export interface EvidenceInterface {
     responsible?: string;
 }
 
+export interface ExecutionInterface {
+    year: Date;
+    code: string;
+    physical_execution: number;
+    modified_execution: number;
+    modified_date: Date;
+    id_user: number;
+}
+
 export interface LoginProps {
     username: string
     password: string

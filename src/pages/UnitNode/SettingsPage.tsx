@@ -6,7 +6,7 @@ import { thunkGetSecretaries } from '@/store/plan/thunks';
 import { thunkGetUnit, thunkAddUnit, thunkUpdateUnit } from '@/store/unit/thunks';
 import { setUnit } from '@/store/unit/unitSlice';
 
-import { BackBtn, UnitFrame } from '@/components';
+import { BackBtn, UnitFrame, Input, SelectInput } from '@/components';
 import { UnitInterface, YearInterface } from '@/interfaces';
 import { Spinner } from "@/assets/icons";
 
@@ -128,56 +128,49 @@ export const SettingsPage = () => {
                                 value={unit.description}
                                 onChange={(e) => handleChangeUnit(e)}/>
                     </div>
-                    <div className='tw-flex tw-flex-col tw-ml-3'>
-                        <p>Indicador</p>
-                        <input  className=' tw-p-2
-                                            tw-rounded tw-border-2
-                                            tw-border-gray-400'
-                                placeholder='Indicador'
-                                value={unit.indicator}
-                                onChange={ (e)=>handleChangeUnit(e)}
-                                type="text"
-                                name='indicator'
-                                required/>
-                    </div>
-                    <div className='tw-flex tw-flex-col tw-ml-3'>
-                        <p>Meta</p>
-                        <input  className=' tw-p-2
-                                            tw-rounded tw-border-2
-                                            tw-border-gray-400'
-                                placeholder='Meta'
-                                value={unit.goal}
-                                onChange={ (e)=>handleChangeUnit(e)}
-                                type="number"
-                                name='goal'
-                                required/>
-                    </div>
-                    <div className='tw-flex tw-flex-col tw-ml-3'>
-                        <p>Línea base</p>
-                        <input  className=' tw-p-2
-                                            tw-rounded tw-border-2
-                                            tw-border-gray-400'
-                                placeholder='Línea base'
-                                value={unit.base}
-                                onChange={ (e)=>handleChangeUnit(e)}
-                                type="text"
-                                name='base'
-                                required/>
-                    </div>
-                    <div className='tw-flex tw-flex-col tw-ml-3'>
-                        <p>Secretaría</p>
-                        <select name="responsible"
-                                onChange={ (e)=>handleChangeUnit(e) }
-                                className=' tw-p-2
-                                            tw-rounded tw-border-2
-                                            tw-border-gray-400'>
-                            {secretaries && secretaries.map((secretary) => (
-                                <option key={secretary.phone} value={secretary.name}>
-                                    {secretary.name}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
+                    <Input
+                        classname='tw-flex-col'
+                        type='text'
+                        label='Indicador'
+                        placeholder='Indicator'
+                        id='indicator'
+                        name='indicator'
+                        value={unit.indicator}
+                        onChange={e => handleChangeUnit(e)}
+                        center={false}
+                    />
+                    <Input
+                        classname='tw-flex-col'
+                        type='number'
+                        label='Meta'
+                        placeholder='Meta'
+                        id='goal'
+                        name='goal'
+                        value={unit.goal}
+                        onChange={e => handleChangeUnit(e)}
+                        center={false}
+                    />
+                    <Input
+                        classname='tw-flex-col'
+                        type='number'
+                        label='Línea base'
+                        placeholder='Línea base'
+                        id='base'
+                        name='base'
+                        value={unit.base}
+                        onChange={e => handleChangeUnit(e)}
+                        center={false}
+                    />
+                    <SelectInput
+                        classname='tw-flex-col'
+                        id='responsible'
+                        name='responsible'
+                        label='Secretaría'
+                        value={unit.responsible}
+                        onChange={e => handleChangeUnit(e)}
+                        options={secretaries ? secretaries.map(s => s.name) : []}
+                        center={false}
+                    />
                 </form>
             </div>
             <div className="tw-p-3">

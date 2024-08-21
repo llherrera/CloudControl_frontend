@@ -10,7 +10,7 @@ import { MapICon } from '@/assets/icons';
 
 import { useAppDispatch, useAppSelector } from '@/store';
 import { selectOption } from '@/store/content/contentSlice';
-import { thunkGetLevelsById } from '@/store/plan/thunks';
+import { thunkGetLevelsById, thunkGetPDTid } from '@/store/plan/thunks';
 import {
     setPlanLocation,
     setZeroLevelIndex,
@@ -27,9 +27,13 @@ export const LobbyPage = () => {
     const { plan } = useAppSelector(store => store.plan);
 
     useEffect(() => {
+        if (plan == undefined) dispatch(thunkGetPDTid(id_plan));
+    }, []);
+
+    useEffect(() => {
         dispatch(thunkGetLevelsById(id_plan));
         dispatch(setZeroLevelIndex());
-    }, [])
+    }, []);
 
     useEffect(() => {
         const fetchLocation = async () => {

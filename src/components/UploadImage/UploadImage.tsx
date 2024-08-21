@@ -169,7 +169,7 @@ export const UploadLogoPlan = () => {
                     <div>
                     {logoPlan === null ?
                         <label>
-                            Cargar logo del municipio
+                            Cargar logo del plan
                             <LoadIcon/>
                         </label>:
                         <img    

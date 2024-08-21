@@ -5,7 +5,7 @@ import ProgressBar from "@ramonak/react-progress-bar";
 import IconButton from "@mui/material/IconButton";
 import DownloadIcon from '@mui/icons-material/Download';
 
-import { notify, handleInputFile } from '@/utils';
+import { notify, handleInputFile, dividirArreglo } from '@/utils';
 
 import { useAppSelector, useAppDispatch } from "@/store";
 import { setLevels } from "@/store/plan/planSlice";
@@ -70,14 +70,30 @@ export const FileInput = () => {
             }
             return secretary;
         });
-        await addSecretaries(id_plan, secretaries_);
+        await addSecretaries(id_plan, secretaries_, true);
     };
 
     const addNodess = async (data: ExcelPlan[]) => {
+        //const parts = dividirArreglo(data, 50);
+        //for (let i = 0; i < parts.length; i++) {
+        //    try {
+        //        await addNodes(parts[i], id_plan, levelsName);
+        //    } catch (error) {
+        //        console.error(`Error al enviar la parte ${i + 1}:`, error);
+        //    }
+        //}
         await addNodes(data, id_plan, levelsName);
     };
 
     const addUnitss = async (data: ExcelPlan[], id_muni: string) => {
+        //const parts = dividirArreglo(data, 50);
+        //for (let i = 0; i < parts.length; i++) {
+        //    try {
+        //        await addUnits(id_plan, parts[i], years, id_muni);
+        //    } catch (error) {
+        //        console.error(`Error al enviar la parte ${i + 1}:`, error);
+        //    }
+        //}
         await addUnits(id_plan, data, years, id_muni);
     };
 

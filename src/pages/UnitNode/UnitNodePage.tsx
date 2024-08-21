@@ -5,13 +5,19 @@ import IconButton from "@mui/material/IconButton";
 
 import { useAppSelector, useAppDispatch } from "@/store";
 import { thunkGetUnit, thunkUpdateIndicator } from "@/store/unit/thunks";
+import { resetUnit } from "@/store/unit/unitSlice";
 import { thunkGetEvidence } from '@/store/evidence/thunks'
 import { resetEvidence, setPoints } from "@/store/evidence/evidenceSlice";
-import { resetUnit } from "@/store/unit/unitSlice";
-import { AddRootTree } from "@/store/plan/planSlice";
+import { AddRootTree, setZeroLevelIndex } from "@/store/plan/planSlice";
 
-import { decode } from "@/utils";
-import { ShowEvidence, BackBtn, SettingsBtn, HvBtn, UnitFrame } from "@/components";
+import { decode, notify } from "@/utils";
+import {
+    ShowEvidence,
+    BackBtn,
+    DoubleBackBtn,
+    SettingsBtn,
+    HvBtn,
+    UnitFrame } from "@/components";
 import { Spinner } from "@/assets/icons";
 
 export const UnitNodePage = () => {
@@ -19,7 +25,7 @@ export const UnitNodePage = () => {
     const navigate = useNavigate();
 
     const { token_info } = useAppSelector(store => store.auth);
-    const { rootTree } = useAppSelector(store => store.plan);
+    const { rootTree, years } = useAppSelector(store => store.plan);
     const { unit, loadingUnit } = useAppSelector(store => store.unit);
     const { evidences } = useAppSelector(store => store.evidence);
     const {
@@ -85,10 +91,18 @@ export const UnitNodePage = () => {
         .unwrap()
         .then((res) => {
             if (res.length === 0)
-                alert('No hay evidencias para esta unidad');
+                notify('No hay evidencias para esta meta');
             else
                 setShowEvidence(true);
         })
+    };
+
+    const handleStartReturn = () => {
+        dispatch(AddRootTree([]));
+        dispatch(resetEvidence());
+        dispatch(resetUnit());
+        dispatch(setZeroLevelIndex());
+        navigate(-1);
     };
 
     const handleBack = () => {
@@ -199,7 +213,7 @@ export const UnitNodePage = () => {
                                             tw-text-xl tw-text-center
                                             tw-bg-yellow-300
                                             tw-rounded-t">
-                                {item.year}
+                                {years[index]}
                             </p>
                             <div className="tw-flex tw-justify-between 
                                             tw-mx-2 
@@ -340,6 +354,7 @@ export const UnitNodePage = () => {
     return (
         loadingUnit ? <Spinner/>:
         <UnitFrame>
+            <DoubleBackBtn handle={handleStartReturn} id={id_plan}/>
             <BackBtn handle={handleBack} id={id_plan}/>
             {rol === 'admin' || (rol === 'funcionario' && id === id_plan) ?
                 <SettingsBtn handle={handleSettings} id={id_plan}/>

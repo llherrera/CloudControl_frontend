@@ -4,22 +4,27 @@ import {
     TileLayer,
     Marker,
     Rectangle,
-    useMapEvents } from 'react-leaflet';
+    useMapEvents,
+    useMap } from 'react-leaflet';
+import L, { latLng, Icon } from 'leaflet';
 import { Popover } from 'react-tiny-popover';
 
 import { useAppDispatch, useAppSelector } from '@/store';
 import { setPoints } from '@/store/evidence/evidenceSlice';
+import { Coordinates } from '@/interfaces';
 
 import { LocationIcon } from '@/assets/icons';
 import { PopoverProps } from '@/interfaces';
 
-import 'leaflet/dist/leaflet.css';
-import L, { latLng } from 'leaflet';
+import MarkerIcon from '@/assets/icons/location.svg';
 
-interface ProsLat {
-    lat:number 
-    lng:number
-}
+const ResizeMap = () => {
+    const map = useMap();
+    useEffect(() => {
+        map.invalidateSize();
+    }, [map]);
+    return null;
+};
 
 export const LocationPopover = (props: PopoverProps) => {
     const [poLocationIsOpen, setPoLocationIsOpen] = useState(false);
@@ -94,6 +99,7 @@ const MapContainer_ = (props: PopoverProps) => {
             zoom={13}
             bounds={[[bounding1, bounding3],[bounding2, bounding4]]}
             scrollWheelZoom={false}>
+            <ResizeMap/>
             <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -151,7 +157,7 @@ const MapContainerUbi = () => {
         bounding4
     } = useAppSelector(store => store.plan);
 
-    const [markers, setMarkers] = useState<ProsLat[]>([]);
+    const [markers, setMarkers] = useState<Coordinates[]>([]);
     const MapEvents = () => {
         useMapEvents({
             click(e) {
@@ -165,9 +171,13 @@ const MapContainerUbi = () => {
         return null;
     };
 
+    useEffect(() => {
+        dispatch(setPoints(markers));
+    }, [markers]);
+
     const handleMarkerClick = (index: number) => {
-        console.log('hoka');
-        //setMarkers(markers.filter((_, i) => i !== index));
+        //console.log('hoka');
+        setMarkers(markers.filter((_, i) => i !== index));
     };
 
     return (
@@ -179,19 +189,26 @@ const MapContainerUbi = () => {
             zoom={13}
             bounds={[[bounding1, bounding3],[bounding2, bounding4]]}
             scrollWheelZoom={false}>
+            <ResizeMap/>
             <TileLayer
                 attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-            
-            <Marker
-                position={[0, 0]}
-                eventHandlers={{
-                    click: (e) => {
-                        console.log('index')
-                    }
-                }}
-            />
+            <MapEvents/>
+            {markers.map((marker, index) => (
+                <Marker
+                    key={index}
+                    position={[marker.lat, marker.lng]}
+                    icon={new Icon({
+                        iconUrl: MarkerIcon,
+                        iconSize: [25,41],
+                        iconAnchor: [12, 41]
+                    })}
+                    eventHandlers={{
+                        click: () => handleMarkerClick(index)
+                    }}
+                />
+            ))}
             
             <Rectangle
                 bounds={[[bounding1, bounding3],[bounding2, bounding4]]}

@@ -1,15 +1,16 @@
 import { ChangeEventHandler } from "react";
-import { EvidenceInterface, LocationInterface, PDTInterface } from "./formInterfaces";
+import {
+    EvidenceInterface,
+    LocationInterface,
+    PDTInterface,
+    ExecutionInterface } from "./formInterfaces";
 
-export interface ContentProps {
-    id: number;
-}
-
-export interface NodeListProps {
+export interface IdProps {
     id: number;
 }
 
 export interface BackBtnProps {
+    className?: string;
     handle: () => void;
     id: number;
 }
@@ -45,9 +46,10 @@ export interface EvidenceDetailProps {
     index: number;
 };
 
-export interface IdNumProps {
-    id: number;
-}
+export interface ExecutedProps {
+    ex: ExecutionInterface;
+    index: number;
+};
 
 export interface LevelFormProps {
     id: string;
@@ -76,6 +78,28 @@ export interface InputProps {
     onChange: (e: React.ChangeEvent<HTMLInputElement>, index:(number | void)) => void;
     isRequired?: boolean;
     classname?: string;
+    center: boolean;
+}
+
+export interface SelectInputProps {
+    label: string;
+    id: string;
+    name: string;
+    value?: string | number;
+    onChange: (e: React.ChangeEvent<HTMLSelectElement>, index:(number | void)) => void;
+    isRequired?: boolean;
+    disabled?: boolean;
+    classname?: string;
+    center: boolean;
+    options: string[] | number[];
+}
+
+export interface InputPropChild {
+    label: string;
+    id: string;
+    classname?: string;
+    center: boolean;
+    children: JSX.Element;
 }
 
 export interface SelectProps {

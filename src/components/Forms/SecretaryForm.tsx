@@ -12,7 +12,7 @@ export const SecretaryForm = () => {
     const { id_plan } = useAppSelector(store => store.content);
     const blankSecretary = { id_plan: id_plan, name: '', email: '', phone: 0 };
 
-    const [data, setData] = useState<Secretary[]>(secretaries.length === 0 ? [blankSecretary] : secretaries);
+    const [data, setData] = useState<Secretary[]>(secretaries == undefined ? [blankSecretary] : secretaries);
 
     const addSecretary = () => {
         const newData = [...data, { name: "", id_plan: id_plan, email: "", phone: 0 }];

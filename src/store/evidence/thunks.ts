@@ -1,25 +1,27 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
 import {
-    EvidenceInterface, 
-    ErrorBasicInterface, 
-    GetEvidenceProps, 
-    GetEvidencesProps, 
+    EvidenceInterface,
+    ErrorBasicInterface,
+    GetEvidenceProps,
+    GetEvidencesProps,
     AddEvidenceProps,
     UpdateEvidenceProps,
     Coordinates,
     UbicationDB,
-    GetUserEviProps } from "@/interfaces";
+    GetUserEviProps,
+    ExecutionInterface } from "@/interfaces";
 import { parseErrorAxios } from "@/utils";
 
-import { 
-    getEvidence, 
-    getEvidences, 
-    getEvidenceCount, 
+import {
+    getEvidence,
+    getEvidences,
+    getEvidenceCount,
     getUserEvidences,
     addEvicenceGoal,
     updateEvicenceGoal,
-    getUbiEvidences } from "@/services/api";
+    getUbiEvidences,
+    getExecutionsToApro } from "@/services/api";
 
 export const thunkGetEvidence = createAsyncThunk<EvidenceInterface[], GetEvidenceProps, { rejectValue: ErrorBasicInterface}>(
     "evidence/getEvidence", 
@@ -39,6 +41,19 @@ export const thunkGetEvidences = createAsyncThunk<EvidenceInterface[], GetEviden
     async (props: GetEvidencesProps, { rejectWithValue }) => {
         try {
             const res = await getEvidences(props.id, props.page);
+            return res;
+        } catch (err) {
+            const result = parseErrorAxios(err);
+            return rejectWithValue(result);
+        }
+    }
+);
+
+export const thunkGetExecutionsToApro = createAsyncThunk<ExecutionInterface[], GetEvidencesProps, { rejectValue: ErrorBasicInterface}>(
+    "evidence/getExecution", 
+    async (props: GetEvidencesProps, { rejectWithValue }) => {
+        try {
+            const res = await getExecutionsToApro(props.id, props.page);
             return res;
         } catch (err) {
             const result = parseErrorAxios(err);
