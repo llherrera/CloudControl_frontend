@@ -1,38 +1,44 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
-import {InitialStatePlanInterface,
-        NodeInterface,
-        Node,
-        Coordinates,
-        LevelInterface } from "@/interfaces";
+import {
+    InitialStatePlanInterface,
+    NodeInterface,
+    Node,
+    Coordinates,
+    LevelInterface } from "@/interfaces";
 import {
     setGenericState,
     getGenericState,
     removeGenericState,
     notify } from "@/utils";
 
-import {thunkGetPDTid,
-        thunkGetPDTByDept,
-        thunkGetLastPDT,
-        thunkAddPDT,
-        thunkGetColors,
-        thunkAddColors,
-        thunkUpdateColors,
-        thunkGetNodes,
-        thunkUpdateYears,
-        thunkGetLevelsById,
-        thunkGetLevelName,
-        thunkUpdateWeight,
-        thunkGetSecretaries,
-        thunkAddSecretaries,
-        thunkUpdateSecretaries,
-        thunkAddLocations,
-        thunkGetLocations,
-        thunkAddLevel,
-        thunkAddNodes,
-        removePDT,
-        thunkUpdateLocations,
-        thunkUpdateDeadline } from "./thunks";
+import {
+    thunkGetPDTid,
+    thunkGetPDTByDept,
+    thunkGetLastPDT,
+    thunkAddPDT,
+    thunkGetColors,
+    thunkAddColors,
+    thunkUpdateColors,
+    thunkGetNodes,
+    thunkUpdateYears,
+    thunkGetLevelsById,
+    thunkGetLevelName,
+    thunkUpdateWeight,
+    thunkGetSecretaries,
+    thunkAddSecretaries,
+    thunkUpdateSecretaries,
+    thunkAddLocations,
+    thunkGetLocations,
+    thunkAddLevel,
+    thunkAddNodes,
+    removePDT,
+    thunkUpdateLocations,
+    thunkUpdateDeadline,
+    thunkGetProjects,
+    thunkAddProjects,
+    thunkUpdateProjects,
+    thunkGetCountProjects } from "./thunks";
 
 const getInitialState = (): InitialStatePlanInterface => {
     const planState = getGenericState('plan');
@@ -47,6 +53,7 @@ const getInitialState = (): InitialStatePlanInterface => {
         loadingSecretaries: false,
         loadingLocations: false,
         loadingReport: false,
+        loadingProjects: false,
         errorLoadingPlan: undefined,
         errorLoadingColors: undefined,
         errorLoadingNodes: undefined,
@@ -55,6 +62,7 @@ const getInitialState = (): InitialStatePlanInterface => {
         errorLoadingLogo: undefined,
         errorLoadingSecretaries: undefined,
         errorLoadingLocations: undefined,
+        errorLoadingProjects: undefined,
         plan: undefined,
         colorimeter: [],
         color: undefined,
@@ -77,6 +85,8 @@ const getInitialState = (): InitialStatePlanInterface => {
         bounding2: 0,
         bounding3: 0,
         bounding4: 0,
+        projects: undefined,
+        proje_s: 0
     };
 };
 
@@ -608,6 +618,64 @@ export const planSlice = createSlice({
             state.loadingPlan = false;
         });
         builder.addCase(thunkUpdateDeadline.rejected, (state, action) => {
+            state.loadingPlan = false;
+            state.errorLoadingPlan = action.payload;
+        });
+
+
+        builder.addCase(thunkGetProjects.pending, state => {
+            if (!state.loadingProjects) state.loadingProjects = true;
+            state.errorLoadingProjects = undefined;
+        });
+        builder.addCase(thunkGetProjects.fulfilled, (state, action) => {
+            state.loadingProjects = false;
+            state.projects = action.payload;
+            setGenericState('plan', state);
+        });
+        builder.addCase(thunkGetProjects.rejected, (state, action) => {
+            state.loadingPlan = false;
+            state.errorLoadingProjects = action.payload;
+        });
+
+
+        builder.addCase(thunkGetCountProjects.pending, state => {
+            if (!state.loadingProjects) state.loadingProjects = true;
+            state.errorLoadingProjects = undefined;
+        });
+        builder.addCase(thunkGetCountProjects.fulfilled, (state, action) => {
+            state.loadingProjects = false;
+            state.proje_s = action.payload;
+            setGenericState('plan', state);
+        });
+        builder.addCase(thunkGetCountProjects.rejected, (state, action) => {
+            state.loadingPlan = false;
+            state.errorLoadingProjects = action.payload;
+        });
+
+
+        builder.addCase(thunkAddProjects.pending, state => {
+            if (!state.loadingProjects) state.loadingProjects = true;
+            state.errorLoadingProjects = undefined;
+        });
+        builder.addCase(thunkAddProjects.fulfilled, (state, action) => {
+            state.loadingProjects = false;
+            setGenericState('plan', state);
+        });
+        builder.addCase(thunkAddProjects.rejected, (state, action) => {
+            state.loadingProjects = false;
+            state.errorLoadingProjects = action.payload;
+        });
+
+
+        builder.addCase(thunkUpdateProjects.pending, state => {
+            if (!state.loadingPlan) state.loadingPlan = true;
+            state.errorLoadingPlan = undefined;
+        });
+        builder.addCase(thunkUpdateProjects.fulfilled, (state, action) => {
+            state.projects = action.payload;
+            setGenericState('plan', state);
+        });
+        builder.addCase(thunkUpdateProjects.rejected, (state, action) => {
             state.loadingPlan = false;
             state.errorLoadingPlan = action.payload;
         });

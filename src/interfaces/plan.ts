@@ -17,6 +17,7 @@ export interface InitialStatePlanInterface {
     loadingSecretaries: boolean;
     loadingReport: boolean;
     loadingLocations: boolean;
+    loadingProjects: boolean;
     errorLoadingPlan: ErrorTypeInterface;
     errorLoadingColors: ErrorTypeInterface;
     errorLoadingNodes: ErrorTypeInterface;
@@ -25,6 +26,7 @@ export interface InitialStatePlanInterface {
     errorLoadingLogo: ErrorTypeInterface;
     errorLoadingSecretaries: ErrorTypeInterface;
     errorLoadingLocations: ErrorTypeInterface;
+    errorLoadingProjects: ErrorTypeInterface;
     plan?: PDTInterface;
     colorimeter: number[];
     color?: boolean;
@@ -47,6 +49,8 @@ export interface InitialStatePlanInterface {
     bounding2: number;
     bounding3: number;
     bounding4: number;
+    projects?: Project[];
+    proje_s: number;
 }
 
 export interface GetNodeProps {
@@ -148,4 +152,12 @@ export interface AddNodeProps {
 export interface PropsDeadline {
     id_plan: number;
     date: string;
+}
+
+export interface Project {
+    BPIM: number;
+    entity: string;
+    name: string;
+    year: number;
+    link: string;
 }

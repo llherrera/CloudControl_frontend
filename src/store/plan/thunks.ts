@@ -15,8 +15,9 @@ import {PDTInterface,
         AddNodeProps,
         NodeInterface,
         PropsDeadline,
-        PDTDepartment } from '../../interfaces';
-import { parseErrorAxios } from '../../utils';
+        PDTDepartment, 
+        Project} from '@/interfaces';
+import { parseErrorAxios } from '@/utils';
 
 import {getPDTid,
         addPDT,
@@ -37,7 +38,11 @@ import {getPDTid,
         addLevelNode,
         updateLocations,
         updateDeadline,
-        getPDTByDept } from '@/services/api';
+        getPDTByDept,
+        getProjectsByPlan,
+        addProjectsAtPlan,
+        updateProjectById,
+        getCountProjectsByPlan } from '@/services/api';
 
 export const thunkGetPDTid = createAsyncThunk<PDTInterface, number, { rejectValue: ErrorBasicInterface }>(
     'pdt/getPDTid',
@@ -314,6 +319,73 @@ export const thunkUpdateDeadline = createAsyncThunk<void, PropsDeadline, { rejec
     async (props: PropsDeadline, { rejectWithValue }) => {
         try {
             const res = await updateDeadline(props.id_plan, props.date);
+            return res;
+        } catch (err) {
+            const result = parseErrorAxios(err);
+            return rejectWithValue(result);
+        }
+    }
+)
+
+interface PropsGetProjects {
+    id_plan: number;
+    page: number;
+    year: number
+}
+export const thunkGetProjects = createAsyncThunk<Project[], PropsGetProjects, { rejectValue: ErrorBasicInterface }>(
+    'pdt/getProjects',
+    async (props: PropsGetProjects, { rejectWithValue }) => {
+        try {
+            const res = await getProjectsByPlan(props.id_plan, props.page, props.year);
+            return res;
+        } catch (err) {
+            const result = parseErrorAxios(err);
+            return rejectWithValue(result);
+        }
+    }
+)
+
+export const thunkGetCountProjects = createAsyncThunk<number, number, { rejectValue: ErrorBasicInterface }>(
+    'pdt/getCountProjects',
+    async (props: number, { rejectWithValue }) => {
+        try {
+            const res = await getCountProjectsByPlan(props);
+            return res;
+        } catch (err) {
+            const result = parseErrorAxios(err);
+            return rejectWithValue(result);
+        }
+    }
+)
+
+interface PropsAddProjects {
+    id_plan: number;
+    project: Project;
+    file: File;
+}
+export const thunkAddProjects = createAsyncThunk<Project[], PropsAddProjects, { rejectValue: ErrorBasicInterface }>(
+    'pdt/addProjects',
+    async (props: PropsAddProjects, { rejectWithValue }) => {
+        try {
+            const res = await addProjectsAtPlan(props.id_plan, props.project, props.file);
+            return res;
+        } catch (err) {
+            const result = parseErrorAxios(err);
+            return rejectWithValue(result);
+        }
+    }
+)
+
+interface PropsUpdateProjects {
+    id_project: number;
+    project: Project;
+    file: File;
+}
+export const thunkUpdateProjects = createAsyncThunk<Project[], PropsUpdateProjects, { rejectValue: ErrorBasicInterface }>(
+    'pdt/updateProjects',
+    async (props: PropsUpdateProjects, { rejectWithValue }) => {
+        try {
+            const res = await updateProjectById(props.id_project, props.project, props.file);
             return res;
         } catch (err) {
             const result = parseErrorAxios(err);

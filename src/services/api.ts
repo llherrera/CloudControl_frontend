@@ -19,7 +19,8 @@ import {
     ExcelPlan,
     ExcelPhysical,
     ExcelUnitNode,
-    LocationInterface } from "../interfaces";
+    LocationInterface,
+    Project } from "../interfaces";
 
 import { getToken, refreshToken } from "@/utils";
 
@@ -655,5 +656,55 @@ export const getDataDashboardEvidence = async (id_plan: number, neighborhood: st
             year
         }
     });
+    return response.data;
+}
+
+export const getProjectsByPlan = async (id_plan: number, page: number, year: number) => {
+    const response = await api.get(`/plan-territorial/proyectos`, {
+        params: {
+            id_plan,
+            page,
+            year
+        }
+    });
+    return response.data;
+}
+
+export const getCountProjectsByPlan = async (id_plan: number) => {
+    const response = await api.get(`/plan-territorial/proye-count`, {
+        params: {
+            id_plan
+        }
+    });
+    return response.data;
+}
+
+export const addProjectsAtPlan = async (id_plan: number, project: Project, file: File) => {
+    const response = await api.post("/plan-territorial/proyectos", 
+        {
+            id_plan: id_plan,
+            project: project,
+            file: file
+        },{
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        }
+    );
+    return response.data;
+}
+
+export const updateProjectById = async (id_project: number, project: Project, file: File) => {
+    const response = await api.put("/plan-territorial/proyectos", 
+        {
+            id_project: id_project,
+            project: project,
+            file: file
+        },{
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        }
+    );
     return response.data;
 }
