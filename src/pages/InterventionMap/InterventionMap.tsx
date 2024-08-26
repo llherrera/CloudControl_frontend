@@ -74,10 +74,23 @@ const Section = () => {
                         iconAnchor: [12, 41]
                     })}>
                     <Popup>
-                        {loc.date.split('T')[0]} <br /><br />
-                        {loc.name}<br/><br/>
-                        {loc.activitiesDesc}<br/><br/>
+                        {loc.date.split('T')[0]}
+                        <p className='tw-font-bold'>Meta: </p> {loc.name}
+                        <p className='tw-font-bold'>Actividades: </p>{loc.activitiesDesc}<br/>
                         {loc.responsible}
+                        
+                        <div className='tw-flex tw-gap-1'>
+                            <p className='tw-font-bold'>Población beneficiada:</p>
+                            <p>{loc.benefited_population}</p>
+                            <p className='tw-font-bold'>Cantidad de personas beneficiadas:</p>
+                            <p>{loc.benefited_population_number}</p>
+                        </div>
+                        <div className='tw-flex tw-gap-1'>
+                            <p className='tw-font-bold'>Fuente de recursos:</p><p>{loc.resource_font}</p>
+                        </div>
+                        <div className='tw-flex tw-gap-1'>
+                            <p className='tw-font-bold'>Recursos ejecutados:</p><p>{loc.executed_resources}</p>
+                        </div>
                     </Popup>
                 </Marker>
                 markers.push(marker);

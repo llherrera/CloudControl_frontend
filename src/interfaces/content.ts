@@ -42,4 +42,8 @@ export interface EvidencesLocs {
     activitiesDesc: string;
     lat: number;
     lng: number;
+    benefited_population_number: number;
+    benefited_population: string;
+    executed_resources: number;
+    resource_font: string;
 }
