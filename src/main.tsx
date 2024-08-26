@@ -11,6 +11,13 @@ import App from './App';
 import { createTheme } from '@mui/material';
 import { ThemeProvider } from '@emotion/react';
 
+declare module '@mui/material/styles' {
+    interface BreakpointOverrides {
+        '2xl': true;
+    }
+}
+  
+
 const theme = createTheme({
     breakpoints: {
         values: {
@@ -18,7 +25,8 @@ const theme = createTheme({
             sm: 640,
             md: 768,
             lg: 1024,
-            xl: 1280
+            xl: 1280,
+            '2xl': 1536
         },
     },
 });

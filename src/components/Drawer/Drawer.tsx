@@ -1,22 +1,33 @@
+import { useEffect } from "react";
+
 import {
     Drawer,
     Box,
     List,
+    useMediaQuery,
     ListItem,
     ListItemButton,
-    ListItemText,
-    useMediaQuery } from '@mui/material';
+    ListItemText } from '@mui/material';
 
 interface Props {
-    page: number;
-    callback: (page: number) => void;
+    children: JSX.Element[];
+    height?: string;
 }
 
-export const DrawerMenu = ({page, callback}:Props) => {
+interface ListProps {
+    title: string;
+    page: number;
+    index: number;
+    setPage: (page: number) => void;
+    setTitle?: (title: string) => void;
+}
 
-    const handleButton = (page: number) => {
-        callback(page);
-    }
+export const DrawerMenu = ({children, height}:Props) => {
+
+    useEffect(() => {
+        const bar = document.getElementById('bar');
+        bar?.scrollIntoView({ behavior: 'smooth', block: 'end' })
+    }, []);
 
     return (
         <Drawer
@@ -25,60 +36,95 @@ export const DrawerMenu = ({page, callback}:Props) => {
                     display: 'flex',
                     flexDirection: { xs: 'row', md: 'column' },
                     width: {xs: '100%', md:'160px'},
-                    height: {md: '70%'},
+                    height: {md: `${height == undefined ? '70%': height}`},
                     position: 'absolute',
-                    top: { xs: '230px', md: '250px', lg: '280px', xl: '140px' },
-                    left: { xs: 0, xl: '192px' },
+                    top: { xs: '235px', md: '250px', lg: '250px', xl: '142px' },
+                    left: { md: '0', xl: '10rem', '2xl': '12rem' },
                     border: '',
+                    maxWidth: {
+                        xs: '100%',
+                        sm: '80%',
+                        md: '60%',
+                        lg: '50%',
+                        xl: '40%',
+                        '2xl': '30%',
+                    },
+                    minWidth: {
+                        xs: '100%',
+                        sm: '100%',
+                        md: '10%',
+                        lg: '10%',
+                        xl: '10%',
+                        '2xl': '10%'
+                    },
+                    maxHeight: {
+                        xs: '15%',
+                        sm: '15%',
+                        md: `${height == undefined ? '70%': height}`,
+                        lg: `${height == undefined ? '70%': height}`,
+                        xl: `${height == undefined ? '70%': height}`,
+                        '2xl': `${height == undefined ? '70%': height}`,
+                    },
+                    minHeight: {
+                        xs: '15%',
+                        sm: '15%',
+                        md: `${height == undefined ? '70%': height}`,
+                        lg: `${height == undefined ? '70%': height}`,
+                        xl: `${height == undefined ? '70%': height}`,
+                        '2xl': `${height == undefined ? '70%': height}`
+                    },
                 }
             }}
             variant="permanent"
             anchor={useMediaQuery('(min-width:768px)') ? 'left' : 'top'}
             >
-            <Box role="presentation" sx={{ display: 'flex', width: '100%' }}>
-                <List 
-                    sx={{ 
-                        display: 'flex', 
-                        flexDirection: {
-                            xs: 'row', 
-                            md: 'column'
-                        },
-                        width: '100%'
-                    }}
-                >
-                    <ListItem>
-                        <ListItemButton
-                            selected={page === 0}
-                            onClick={() => handleButton(0)}>
-                            <ListItemText primary={'Cargar plan'} primaryTypographyProps={{ fontWeight: 'bold' }}/>
-                        </ListItemButton>
-                    </ListItem>
-
-                    <ListItem>
-                        <ListItemButton
-                            selected={page === 1}
-                            onClick={() => handleButton(1)}>
-                            <ListItemText primary={'Ajustes'} primaryTypographyProps={{ fontWeight: 'bold' }}/>
-                        </ListItemButton>
-                    </ListItem>
-
-                    <ListItem>
-                        <ListItemButton
-                            selected={page === 2}
-                            onClick={() => handleButton(2)}>
-                            <ListItemText primary={'Secretarías'} primaryTypographyProps={{ fontWeight: 'bold' }}/>
-                        </ListItemButton>
-                    </ListItem>
-
-                    <ListItem>
-                        <ListItemButton
-                            selected={page === 3}
-                            onClick={() => handleButton(3)}>
-                            <ListItemText primary={'Localidades'} primaryTypographyProps={{ fontWeight: 'bold' }}/>
-                        </ListItemButton>
-                    </ListItem>
-                </List>
-            </Box>
+            <div id="bar" className="tw-flex">
+                <Box role="presentation" sx={{ display: 'flex', width: '100%' }}>
+                    <List
+                        sx={{ 
+                            display: 'flex', 
+                            flexDirection: {
+                                xs: 'row', 
+                                md: 'column'
+                            },
+                            width: '100%'
+                        }}
+                    >
+                        {children}
+                    </List>
+                </Box>
+            </div>
         </Drawer>
+    );
+}
+
+export const ListItemComp = ({title, page, index, setPage, setTitle}: ListProps) => {
+
+    const handlePage = () => {
+        setPage(page);
+        setTitle ? setTitle(title) : null;
+    };
+
+    return(
+        <ListItem>
+            <ListItemButton
+                selected={page === index}
+                onClick={() => handlePage()}
+                sx={{
+                    '&.Mui-selected': {
+                        backgroundColor: 'rgba(0, 132, 50, 0.3)'
+                    },
+                    '&.Mui-selected:hover': {
+                        backgroundColor: 'rgba(0, 132, 50, 0.5)',
+                    },
+                    '&:hover': {
+                        backgroundColor: 'rgba(0, 132, 50, 0.5)',
+                    },
+                }}>
+                <ListItemText
+                    primary={title}
+                    primaryTypographyProps={{ fontWeight: 'bold' }}/>
+            </ListItemButton>
+        </ListItem>
     );
 }

@@ -20,7 +20,8 @@ import {
     FilePhysicalInput,
     FileUnitInput,
     InfoPopover,
-    DrawerMenu } from '@/components';
+    DrawerMenu,
+    ListItemComp } from '@/components';
 import { decode, notify } from "@/utils";
 
 export const SettingPage = () => {
@@ -36,9 +37,9 @@ const SettingPageWrapper = () => {
     const dispatch = useAppDispatch();
 
     const { token_info } = useAppSelector(store => store.auth);
-    const { 
-        plan, 
-        loadingPlan, 
+    const {
+        plan,
+        loadingPlan,
         secretaries,
         locations } = useAppSelector(store => store.plan);
     const { id_plan } = useAppSelector(store => store.content);
@@ -80,7 +81,7 @@ const SettingPageWrapper = () => {
     };
 
     const handleBack = () => navigate(-1);
-    
+
     const handlePage = (page: number) => setPage(page);
     
     return (
@@ -89,7 +90,28 @@ const SettingPageWrapper = () => {
         <div className={`tw-flex tw-flex-col xl:tw-flex-row`}>
             <div className='tw-flex md:tw-flex-col tw-self-start'>
                 <BackBtn handle={handleBack} id={id_plan}/>
-                <DrawerMenu page={page} callback={handlePage}/>
+                <DrawerMenu >
+                    <ListItemComp
+                        page={page}
+                        index={0}
+                        setPage={() => handlePage(0)}
+                        title='Cargar plan'/>
+                    <ListItemComp
+                        page={page}
+                        index={1}
+                        setPage={() => handlePage(1)}
+                        title='Ajustes'/>
+                    <ListItemComp
+                        page={page}
+                        index={2}
+                        setPage={() => handlePage(2)}
+                        title='Secretarías'/>
+                    <ListItemComp
+                        page={page}
+                        index={3}
+                        setPage={() => handlePage(3)}
+                        title='Localidades'/>
+                </DrawerMenu>
             </div>
             <div className='tw-mt-28 tw-mr-4 tw-pb-4
                             sm:tw-mt-20
