@@ -161,3 +161,26 @@ export interface Project {
     year: number;
     link: string;
 }
+
+export interface PropsGetProjects {
+    id_plan: number;
+    page: number;
+    year: number;
+}
+
+export interface PropsGetProjectsCount {
+    id_plan: number;
+    year?: number;
+}
+
+export interface PropsAddProjects {
+    id_plan: number;
+    project: Project;
+    file: File;
+}
+
+export interface PropsUpdateProjects {
+    id_project: number;
+    project: Project;
+    file: File;
+}

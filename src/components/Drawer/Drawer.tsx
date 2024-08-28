@@ -9,20 +9,9 @@ import {
     ListItemButton,
     ListItemText } from '@mui/material';
 
-interface Props {
-    children: JSX.Element[];
-    height?: string;
-}
+import { DrawerProps, ListItemProps } from "@/interfaces";
 
-interface ListProps {
-    title: string;
-    page: number;
-    index: number;
-    setPage: (page: number) => void;
-    setTitle?: (title: string) => void;
-}
-
-export const DrawerMenu = ({children, height}:Props) => {
+export const DrawerMenu = ({children, height}: DrawerProps) => {
 
     useEffect(() => {
         const bar = document.getElementById('bar');
@@ -98,7 +87,7 @@ export const DrawerMenu = ({children, height}:Props) => {
     );
 }
 
-export const ListItemComp = ({title, page, index, setPage, setTitle}: ListProps) => {
+export const ListItemComp = ({title, page, index, setPage, setTitle}: ListItemProps) => {
 
     const handlePage = () => {
         setPage(page);

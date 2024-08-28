@@ -1,11 +1,8 @@
 import cclogo from '@/assets/images/logo-cc.png';
 import { useAppSelector } from '@/store';
+import { UnitFrameProps } from '@/interfaces';
 
-interface Props {
-    children: (JSX.Element | null)[] | JSX.Element
-}
-
-export const UnitFrame = ({children}: Props) => {
+export const UnitFrame = ({children}: UnitFrameProps) => {
     const {
         url_logo,
         url_logo_plan } = useAppSelector(store => store.content);

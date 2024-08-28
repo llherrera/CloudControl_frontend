@@ -1,14 +1,7 @@
 import { useState } from "react";
+import { DropdownProps } from "@/interfaces";
 
-interface Props {
-    title: string;
-    children: JSX.Element | JSX.Element[];
-    m: string;
-    bg?: string;
-    textColor?: string;
-}
-
-export const DropdownC = ({title, children, m, bg, textColor}: Props) => {
+export const DropdownC = ({title, children, m, bg, textColor}: DropdownProps) => {
     const [show, setShow] = useState(false);
     const handlerClick = () => setShow(!show);
 

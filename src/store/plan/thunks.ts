@@ -15,8 +15,12 @@ import {PDTInterface,
         AddNodeProps,
         NodeInterface,
         PropsDeadline,
-        PDTDepartment, 
-        Project} from '@/interfaces';
+        PDTDepartment,
+        Project,
+        PropsGetProjects,
+        PropsGetProjectsCount,
+        PropsAddProjects,
+        PropsUpdateProjects } from '@/interfaces';
 import { parseErrorAxios } from '@/utils';
 
 import {getPDTid,
@@ -327,11 +331,6 @@ export const thunkUpdateDeadline = createAsyncThunk<void, PropsDeadline, { rejec
     }
 )
 
-interface PropsGetProjects {
-    id_plan: number;
-    page: number;
-    year: number;
-}
 export const thunkGetProjects = createAsyncThunk<Project[], PropsGetProjects, { rejectValue: ErrorBasicInterface }>(
     'pdt/getProjects',
     async (props: PropsGetProjects, { rejectWithValue }) => {
@@ -344,10 +343,7 @@ export const thunkGetProjects = createAsyncThunk<Project[], PropsGetProjects, { 
         }
     }
 )
-interface PropsGetProjectsCount {
-    id_plan: number;
-    year?: number;
-}
+
 export const thunkGetCountProjects = createAsyncThunk<number, PropsGetProjectsCount, { rejectValue: ErrorBasicInterface }>(
     'pdt/getCountProjects',
     async (props: PropsGetProjectsCount, { rejectWithValue }) => {
@@ -361,11 +357,6 @@ export const thunkGetCountProjects = createAsyncThunk<number, PropsGetProjectsCo
     }
 )
 
-interface PropsAddProjects {
-    id_plan: number;
-    project: Project;
-    file: File;
-}
 export const thunkAddProjects = createAsyncThunk<Project[], PropsAddProjects, { rejectValue: ErrorBasicInterface }>(
     'pdt/addProjects',
     async (props: PropsAddProjects, { rejectWithValue }) => {
@@ -379,11 +370,6 @@ export const thunkAddProjects = createAsyncThunk<Project[], PropsAddProjects, { 
     }
 )
 
-interface PropsUpdateProjects {
-    id_project: number;
-    project: Project;
-    file: File;
-}
 export const thunkUpdateProjects = createAsyncThunk<Project[], PropsUpdateProjects, { rejectValue: ErrorBasicInterface }>(
     'pdt/updateProjects',
     async (props: PropsUpdateProjects, { rejectWithValue }) => {

@@ -1,4 +1,4 @@
-import { BtnProps } from "@/interfaces";
+import { BtnProps, PQRSBtnProps } from "@/interfaces";
 
 export const ButtonComponent = ( props : BtnProps ) => {
     return (
@@ -47,3 +47,24 @@ export const ButtonComponent = ( props : BtnProps ) => {
         </div>
     );
 }
+
+export const PQRSButton = ({title, desc, navigate}: PQRSBtnProps) => (
+    <button className=' tw-bg-white
+                        tw-w-40 tw-p-2
+                        tw-rounded
+                        tw-flex tw-flex-col
+                        tw-justify-between
+                        tw-text-left'
+            onClick={navigate}>
+        <p className='tw-font-bold'>
+            {title}
+        </p>
+        <p className=''>
+            {desc}
+        </p>
+        <span className='tw-rotate-90
+                        tw-self-end'>
+            ▲
+        </span>
+    </button>
+);

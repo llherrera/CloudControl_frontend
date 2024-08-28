@@ -3,13 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from "@/store";
 import { setEvidence, setPoints } from "@/store/evidence/evidenceSlice";
 
-import { EvidenceInterface } from "@/interfaces";
+import { EvidenceProps } from "@/interfaces";
 
-interface Props {
-    evidence: EvidenceInterface;
-};
-
-export const MyEvidence = ({evidence}: Props) => {
+export const MyEvidence = ({evidence}: EvidenceProps) => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
 

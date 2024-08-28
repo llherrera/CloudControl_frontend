@@ -154,3 +154,42 @@ export interface PaginationProps {
     page: number;
     callback: (page: number) => void;
 }
+
+export interface DrawerProps {
+    children: JSX.Element[];
+    height?: string;
+}
+
+export interface ListItemProps {
+    title: string;
+    page: number;
+    index: number;
+    setPage: (page: number) => void;
+    setTitle?: (title: string) => void;
+}
+
+export interface DropdownProps {
+    title: string;
+    children: JSX.Element | JSX.Element[];
+    m: string;
+    bg?: string;
+    textColor?: string;
+}
+
+export interface MemoryProps {
+    callback: ()=>void;
+}
+
+export interface EvidenceProps {
+    evidence: EvidenceInterface;
+};
+
+export interface UnitFrameProps {
+    children: (JSX.Element | null)[] | JSX.Element
+}
+
+export interface PQRSBtnProps {
+    title: string;
+    desc: string;
+    navigate: () => void;
+}
