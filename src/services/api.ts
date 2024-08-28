@@ -670,10 +670,11 @@ export const getProjectsByPlan = async (id_plan: number, page: number, year: num
     return response.data;
 }
 
-export const getCountProjectsByPlan = async (id_plan: number) => {
+export const getCountProjectsByPlan = async (id_plan: number, year?: number) => {
     const response = await api.get(`/plan-territorial/proye-count`, {
         params: {
-            id_plan
+            id_plan,
+            year
         }
     });
     return response.data;

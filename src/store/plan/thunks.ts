@@ -330,7 +330,7 @@ export const thunkUpdateDeadline = createAsyncThunk<void, PropsDeadline, { rejec
 interface PropsGetProjects {
     id_plan: number;
     page: number;
-    year: number
+    year: number;
 }
 export const thunkGetProjects = createAsyncThunk<Project[], PropsGetProjects, { rejectValue: ErrorBasicInterface }>(
     'pdt/getProjects',
@@ -344,12 +344,15 @@ export const thunkGetProjects = createAsyncThunk<Project[], PropsGetProjects, { 
         }
     }
 )
-
-export const thunkGetCountProjects = createAsyncThunk<number, number, { rejectValue: ErrorBasicInterface }>(
+interface PropsGetProjectsCount {
+    id_plan: number;
+    year?: number;
+}
+export const thunkGetCountProjects = createAsyncThunk<number, PropsGetProjectsCount, { rejectValue: ErrorBasicInterface }>(
     'pdt/getCountProjects',
-    async (props: number, { rejectWithValue }) => {
+    async (props: PropsGetProjectsCount, { rejectWithValue }) => {
         try {
-            const res = await getCountProjectsByPlan(props);
+            const res = await getCountProjectsByPlan(props.id_plan, props.year);
             return res;
         } catch (err) {
             const result = parseErrorAxios(err);

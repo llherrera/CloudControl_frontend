@@ -13,6 +13,7 @@ const getInitialState = (): InitialStateContentInterface => {
         index: 0,
         list_department: [],
         id_plan: 0,
+        projectPage: 5,
         mode: false,
         node: undefined,
         url_logo: '',
@@ -42,6 +43,7 @@ export const contentSlice = createSlice({
         },
         setNode(state, action: PayloadAction<NodeInterface>) {
             state.node = action.payload;
+            setGenericState('content', state);
         },
         setLogo(state, action: PayloadAction<string>) {
             state.url_logo = action.payload;
@@ -49,7 +51,7 @@ export const contentSlice = createSlice({
         setLogoPlan(state, action: PayloadAction<string>) {
             state.url_logo_plan = action.payload;
         },
-        resetContent: (state) => {
+        resetContent: () => {
             removeGenericState('content');
             return getInitialState();
         },
@@ -58,22 +60,29 @@ export const contentSlice = createSlice({
         },
         setSecretary: (state, action: PayloadAction<string>) => {
             state.secretary = action.payload;
+            setGenericState('content', state);
         },
         setLocation: (state, action: PayloadAction<string>) => {
             state.location = action.payload;
         },
         setCode: (state, action: PayloadAction<string>) => {
             state.node_code = action.payload;
+            setGenericState('content', state);
         },
         setLocs: (state, action: PayloadAction<EvidencesLocs[]>) => {
             state.locs = action.payload;
+            setGenericState('content', state);
         },
+        setProjectPage: (state, action: PayloadAction<number>) => {
+            state.projectPage = action.payload;
+            setGenericState('content', state);
+        }
     }
 });
 
-export const { 
-    selectOption, 
-    setIdPlan, 
+export const {
+    selectOption,
+    setIdPlan,
     setMode,
     setNode,
     setLogo,
@@ -83,7 +92,8 @@ export const {
     setSecretary,
     setLocation,
     setCode,
-    setLocs } = contentSlice.actions;
+    setLocs,
+    setProjectPage } = contentSlice.actions;
 export const selectContent = (state: RootState) => state.content.index;
 
 export default contentSlice.reducer;

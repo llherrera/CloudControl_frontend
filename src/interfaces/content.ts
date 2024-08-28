@@ -11,6 +11,7 @@ export interface InitialStateContentInterface {
     index: number;
     list_department: string[];
     id_plan: number;
+    projectPage: number;
     mode: boolean;
     node?: NodeInterface;
     url_logo: string;
