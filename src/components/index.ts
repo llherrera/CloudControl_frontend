@@ -1,3 +1,4 @@
+export * from './Bank';
 export * from "./Buttons";
 export * from "./Forms";
 export * from "./Board";
