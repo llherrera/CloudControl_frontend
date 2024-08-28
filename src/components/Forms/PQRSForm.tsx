@@ -86,6 +86,7 @@ export const PQRSForm = () => {
             onSubmit={(e) => handleSubmit(e)}
             className='tw-pb-4'>
             <DropdownC
+                m='tw-mt-4'
                 title='PASO 1: Datos del Solicitante'>
                 <div className='tw-flex tw-justify-center'>
                     <ToggleButtonGroup
@@ -269,6 +270,7 @@ export const PQRSForm = () => {
                 </div>
             </DropdownC>
             <DropdownC
+                m='tw-mt-4'
                 title='PASO 2: Datos de la solicitud'>
                 <div className='tw-grid tw-grid-cols-12 tw-gap-2'>
                     <Input

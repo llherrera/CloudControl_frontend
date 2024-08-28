@@ -1,22 +1,26 @@
 import { useState } from "react";
 
 interface Props {
-    title: string
-    children: JSX.Element | JSX.Element[]
+    title: string;
+    children: JSX.Element | JSX.Element[];
+    m: string;
+    bg?: string;
+    textColor?: string;
 }
 
-export const DropdownC = ({title, children}: Props) => {
+export const DropdownC = ({title, children, m, bg, textColor}: Props) => {
     const [show, setShow] = useState(false);
     const handlerClick = () => setShow(!show);
 
     return (
-        <div className="tw-mt-4 tw-px-36">
+        <div className={`tw-${m} tw-px-36`}>
             <div 
                 className={`tw-flex tw-justify-between tw-items-center
                             tw-cursor-pointer tw-py-4
-                            tw-bg-white
+                            tw-bg-${bg ?? 'white'}
                             tw-border tw-border-gray-300
-                            tw-rounded-md`}
+                            tw-rounded-md
+                            tw-text-${textColor ?? 'black'}`}
                 onClick={handlerClick}>
                 <h2 className="tw-text tw-mx-4">
                     {title}
