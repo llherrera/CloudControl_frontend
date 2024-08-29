@@ -2,43 +2,22 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 import {
     InitialStatePlanInterface,
-    NodeInterface,
-    Node,
-    Coordinates,
-    LevelInterface } from "@/interfaces";
+    NodeInterface, Node,
+    Coordinates, LevelInterface } from "@/interfaces";
 import {
-    setGenericState,
-    getGenericState,
-    removeGenericState,
-    notify } from "@/utils";
+    setGenericState, getGenericState,
+    removeGenericState, notify } from "@/utils";
 
 import {
-    thunkGetPDTid,
-    thunkGetPDTByDept,
-    thunkGetLastPDT,
-    thunkAddPDT,
-    thunkGetColors,
-    thunkAddColors,
-    thunkUpdateColors,
-    thunkGetNodes,
-    thunkUpdateYears,
-    thunkGetLevelsById,
-    thunkGetLevelName,
-    thunkUpdateWeight,
-    thunkGetSecretaries,
-    thunkAddSecretaries,
-    thunkUpdateSecretaries,
-    thunkAddLocations,
-    thunkGetLocations,
-    thunkAddLevel,
-    thunkAddNodes,
-    removePDT,
-    thunkUpdateLocations,
-    thunkUpdateDeadline,
-    thunkGetProjects,
-    thunkAddProjects,
-    thunkUpdateProjects,
-    thunkGetCountProjects } from "./thunks";
+    thunkGetPDTid, thunkGetPDTByDept, thunkGetLastPDT,
+    thunkAddPDT, thunkGetColors, thunkAddColors,
+    thunkUpdateColors, thunkGetNodes, thunkUpdateYears,
+    thunkGetLevelsById, thunkGetLevelName, thunkUpdateWeight,
+    thunkGetSecretaries, thunkAddSecretaries, thunkUpdateSecretaries,
+    thunkAddLocations, thunkGetLocations, thunkAddLevel,
+    thunkAddNodes, removePDT, thunkUpdateLocations, thunkUpdateDeadline,
+    thunkGetProjects, thunkAddProjects, thunkUpdateProjects,
+    thunkGetCountProjects, thunkGetPDTByUuid } from "./thunks";
 
 const getInitialState = (): InitialStatePlanInterface => {
     const planState = getGenericState('plan');
@@ -202,6 +181,29 @@ export const planSlice = createSlice({
         builder.addCase(thunkGetPDTByDept.rejected, (state, action) => {
             state.loadingPlan = false;
             state.errorLoadingPlan = action.payload;
+            notify('Ha ocurrido un error buscando el Plan Territorial');
+        });
+
+
+        builder.addCase(thunkGetPDTByUuid.pending, state => {
+            if (!state.loadingPlan) state.loadingPlan = true;
+            state.errorLoadingPlan = undefined;
+        });
+        builder.addCase(thunkGetPDTByUuid.fulfilled, (state, action) => {
+            state.loadingPlan = false;
+            state.plan = action.payload.toString() == '' ? undefined : action.payload;
+            state.progressNodes = [];
+            state.financial = [];
+            state.nodes = [];
+            state.nodesReport = [];
+            state.secretaries = undefined;
+            state.colorimeter = [];
+            setGenericState('plan', state);
+        });
+        builder.addCase(thunkGetPDTByUuid.rejected, (state, action) => {
+            state.loadingPlan = false;
+            state.errorLoadingPlan = action.payload;
+            state.plan = undefined;
             notify('Ha ocurrido un error buscando el Plan Territorial');
         });
 

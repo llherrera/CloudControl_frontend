@@ -708,3 +708,12 @@ export const updateProjectById = async (id_project: number, project: Project, fi
     );
     return response.data;
 }
+
+export const getPlanByUuid = async (uuid: string) => {
+    const response = await api.get(`/plan-territorial/plan`, {
+        params: {
+            uuid
+        }
+    });
+    return response.data;
+}

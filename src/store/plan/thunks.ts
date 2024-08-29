@@ -1,52 +1,21 @@
 import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
 
-import {PDTInterface,
-        ErrorBasicInterface,
-        GetNodeProps,
-        AddColorsProps,
-        LevelInterface,
-        Level,
-        Secretary,
-        PropsSecretary,
-        PropsLocations,
-        LocationInterface,
-        UpdateWProps,
-        AddLevelProps,
-        AddNodeProps,
-        NodeInterface,
-        PropsDeadline,
-        PDTDepartment,
-        Project,
-        PropsGetProjects,
-        PropsGetProjectsCount,
-        PropsAddProjects,
-        PropsUpdateProjects } from '@/interfaces';
+import {PDTInterface, ErrorBasicInterface, GetNodeProps,
+        AddColorsProps, LevelInterface, Level, Secretary,
+        PropsSecretary, PropsLocations, LocationInterface,
+        UpdateWProps, AddLevelProps, AddNodeProps, NodeInterface,
+        PropsDeadline, PDTDepartment, Project, PropsGetProjects,
+        PropsGetProjectsCount, PropsAddProjects, PropsUpdateProjects
+    } from '@/interfaces';
 import { parseErrorAxios } from '@/utils';
 
-import {getPDTid,
-        addPDT,
-        getLastPDT,
-        getColors,
-        getLevelNodes,
-        addColor,
-        updateColor,
-        getPDTLevelsById,
-        getLevelName,
-        getSecretaries,
-        addSecretaries,
-        addLocations,
-        getLocations,
-        updateSecretaries,
-        updateWeights,
-        addLevel,
-        addLevelNode,
-        updateLocations,
-        updateDeadline,
-        getPDTByDept,
-        getProjectsByPlan,
-        addProjectsAtPlan,
-        updateProjectById,
-        getCountProjectsByPlan } from '@/services/api';
+import {getPDTid, addPDT, getLastPDT, getColors, getLevelNodes,
+        addColor, updateColor, getPDTLevelsById, getLevelName,
+        getSecretaries, addSecretaries, addLocations, getLocations,
+        updateSecretaries, updateWeights, addLevel, addLevelNode,
+        updateLocations, updateDeadline, getPDTByDept, getProjectsByPlan,
+        addProjectsAtPlan, updateProjectById, getCountProjectsByPlan,
+        getPlanByUuid } from '@/services/api';
 
 export const thunkGetPDTid = createAsyncThunk<PDTInterface, number, { rejectValue: ErrorBasicInterface }>(
     'pdt/getPDTid',
@@ -66,6 +35,19 @@ export const thunkGetPDTByDept = createAsyncThunk<PDTInterface, PDTDepartment, {
     async (props: PDTDepartment, { rejectWithValue }) => {
         try {
             const res = await getPDTByDept(props.dept, props.muni);
+            return res;
+        } catch (err) {
+            const result = parseErrorAxios(err);
+            return rejectWithValue(result);
+        }
+    }
+)
+
+export const thunkGetPDTByUuid = createAsyncThunk<PDTInterface, string, { rejectValue: ErrorBasicInterface }>(
+    'pdt/getPDTByUuid',
+    async (props: string, { rejectWithValue }) => {
+        try {
+            const res = await getPlanByUuid(props);
             return res;
         } catch (err) {
             const result = parseErrorAxios(err);
