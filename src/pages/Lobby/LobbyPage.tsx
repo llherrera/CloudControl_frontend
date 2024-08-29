@@ -9,7 +9,7 @@ import { Header, ButtonComponent } from '@/components';
 import { MapICon } from '@/assets/icons';
 
 import { useAppDispatch, useAppSelector } from '@/store';
-import { selectOption } from '@/store/content/contentSlice';
+import { selectOption, setProjectPage } from '@/store/content/contentSlice';
 import { thunkGetLevelsById, thunkGetPDTid } from '@/store/plan/thunks';
 import {
     setPlanLocation,
@@ -75,6 +75,7 @@ export const LobbyPage = () => {
                 src={bankLogo}
                 onClick={() => {
                     dispatch(selectOption(1))
+                    dispatch(setProjectPage(5));
                     navigate('/PlanIndicativo/Banco-proyectos')
                 }}
                 bgColor="tw-bg-greenBtn" />

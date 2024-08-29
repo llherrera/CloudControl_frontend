@@ -2,30 +2,19 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useAppDispatch, useAppSelector } from "@/store";
-import {
-    decrementLevelIndex,
-    setParent,
-    AddRootTree,
-    setZeroLevelIndex } from "@/store/plan/planSlice";
-import {
-    thunkGetNodes,
-    thunkGetLocations,
+import { decrementLevelIndex, setParent,
+    AddRootTree, setZeroLevelIndex } from "@/store/plan/planSlice";
+import { thunkGetNodes, thunkGetLocations,
     thunkGetSecretaries } from '@/store/plan/thunks';
 import { setMode } from "@/store/content/contentSlice";
 
 import { IdProps } from "@/interfaces";
-import {
-    NodeForm,
-    NodesList,
-    TimeLine,
-    Graph,
-    BackBtn,
-    DoubleBackBtn,
-    SettingsBtn } from "@/components";
+import { NodeForm, NodesList, TimeLine,
+    Graph, BackBtn, DoubleBackBtn, SettingsBtn } from "@/components";
 
 import IconButton from "@mui/material/IconButton";
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
-import { ModalBoard, ModalAi } from "../Modals";
+import { ModalBoard, ModalAi, ModalShare } from "../Modals";
 import { decode } from "@/utils";
 
 export const Content = ( props : IdProps ) => {
@@ -33,18 +22,9 @@ export const Content = ( props : IdProps ) => {
     const dispatch = useAppDispatch();
 
     const { token_info } = useAppSelector(store => store.auth);
-    const { plan,
-            years,
-            indexLevel,
-            levels,
-            parent,
-            progressNodes,
-            financial,
-            radioBtn,
-            nodes,
-            colorimeter,
-            rootTree,
-            secretaries,
+    const { plan, years, indexLevel, levels, parent,
+            progressNodes, financial, radioBtn, nodes,
+            colorimeter, rootTree, secretaries,
             locations } = useAppSelector(store => store.plan);
     const { mode, id_plan } = useAppSelector(store => store.content);
 
@@ -134,6 +114,10 @@ export const Content = ( props : IdProps ) => {
                     Plan indicativo
                     {rol === 'admin' || ((rol === 'funcionario' || rol === 'planeacion') && id === props.id) ? 
                         <SettingsBtn handle={handleSettings} id={props.id}/>
+                        : null
+                    }
+                    {rol === 'admin' || ((rol === 'funcionario' || rol === 'planeacion') && id === props.id) ? 
+                        <ModalShare/>
                         : null
                     }
                     {rol === 'admin' || (rol === 'funcionario' && id === props.id) ?

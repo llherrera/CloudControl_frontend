@@ -302,3 +302,8 @@ export function dividirArreglo(arreglo: any[], tamaño: number = 100) {
     }
     return subArreglos;
 }
+
+export const validateUUID = (uuid: string): boolean => {
+  const uuidPat: RegExp = /[A-F0-9]{8}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{12}/;
+  return uuidPat.test(uuid);
+}
