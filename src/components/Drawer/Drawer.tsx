@@ -23,10 +23,10 @@ export const DrawerMenu = ({children, height}: DrawerProps) => {
             PaperProps={{
                 sx: {
                     display: 'flex',
+                    background: '#E7E6E8',
                     flexDirection: { xs: 'row', md: 'column' },
                     width: {xs: '100%', md:'160px'},
                     height: {md: `${height == undefined ? '70%': height}`},
-                    position: 'absolute',
                     top: { xs: '235px', md: '250px', lg: '250px', xl: '142px' },
                     left: { md: '0', xl: '10rem', '2xl': '12rem' },
                     border: '',
@@ -64,7 +64,8 @@ export const DrawerMenu = ({children, height}: DrawerProps) => {
                     },
                 }
             }}
-            variant="permanent"
+            variant="persistent"
+            open={true}
             anchor={useMediaQuery('(min-width:768px)') ? 'left' : 'top'}
             >
             <div id="bar" className="tw-flex">

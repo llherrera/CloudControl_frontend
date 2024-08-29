@@ -1,7 +1,7 @@
 import IconButton from "@mui/material/IconButton";
-import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
-import SettingsIcon from '@mui/icons-material/Settings';
-import EditNoteIcon from '@mui/icons-material/EditNote';
+import { ArrowBackIos, Settings,
+    EditNote, Share } from '@mui/icons-material';
+
 import { BackBtnProps } from "@/interfaces";
 
 export const BackBtn = ({handle, id, className}: BackBtnProps) => {
@@ -12,7 +12,7 @@ export const BackBtn = ({handle, id, className}: BackBtnProps) => {
                     onClick={handle}
                     title="Regresar"
                     key={id}>
-            <ArrowBackIosIcon className={className}/>
+            <ArrowBackIos className={className}/>
         </IconButton>
     );
 }
@@ -25,8 +25,8 @@ export const DoubleBackBtn = ({handle, id}: BackBtnProps) => {
                     onClick={handle}
                     title="Regresar al inicio"
                     key={id}>
-            <ArrowBackIosIcon/>
-            <ArrowBackIosIcon className="tw--translate-x-4"/>
+            <ArrowBackIos/>
+            <ArrowBackIos className="tw--translate-x-4"/>
         </IconButton>
     );
 }
@@ -39,7 +39,7 @@ export const SettingsBtn = ({handle, id}: BackBtnProps) => {
                     onClick={handle}
                     title="Configuración"
                     key={id}>
-            <SettingsIcon/>
+            <Settings/>
         </IconButton>
     );
 }
@@ -51,7 +51,20 @@ export const HvBtn = ({link}:{link:string}) => {
                     color="success"
                     onClick={()=>(window.open(link, '_blank'))}
                     title="Ver Hoja de vida">
-            <EditNoteIcon/>
+            <EditNote/>
+        </IconButton>
+    );
+}
+
+export const ShareBtn = ({handle, id, className}: BackBtnProps) => {
+    return (
+        <IconButton aria-label="delete"
+                    size="small"
+                    color="inherit"
+                    onClick={handle}
+                    title="Regresar"
+                    key={id}>
+            <Share className={className}/>
         </IconButton>
     );
 }

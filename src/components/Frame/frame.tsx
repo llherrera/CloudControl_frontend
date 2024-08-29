@@ -6,7 +6,11 @@ import cclogo from '@/assets/images/logo-cc.png';
 
 import { useAppDispatch, useAppSelector } from '@/store';
 import { thunkLogout } from '@/store/auth/thunks';
-import { setLogo, setLogoPlan, setReload } from '@/store/content/contentSlice';
+import {
+    setLogo,
+    setLogoPlan,
+    setReload,
+    setProjectPage } from '@/store/content/contentSlice';
 
 import { NavBar } from '@/components';
 import {
@@ -38,7 +42,10 @@ export const Frame = ({children}: FrameProps) => {
         },
         {
             inside: true,
-            onClick: () => navigate('/PlanIndicativo/Banco-proyectos', {replace: true}),
+            onClick: () => {
+                dispatch(setProjectPage(5));
+                navigate('/PlanIndicativo/Banco-proyectos', {replace: true});
+            },
             text: 'Banco de proyectos',
             bgColor: bgcolor,
             textColor: textcolor,
