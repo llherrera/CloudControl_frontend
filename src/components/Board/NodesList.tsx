@@ -161,7 +161,7 @@ export const NodesList = ( props : IdProps ) => {
                                         tw-w-12 tw-h-12
                                         tw-font-bold`}
                             onClick={ () => handleButton(index)}
-                            title={`${item.description} ${indexLevel !== levels.length-1 ? '' : `\n${item.id_node}`}`}>
+                            title={`${item.description} ${indexLevel !== levels.length-1 ? '' : `\n${item.id_node}\n${item.responsible}`}`}>
                         { parseInt( ((progressNodes[index] === undefined || 
                             progressNodes[index] < 0 ? 0 : progressNodes[index])*100).toString())}%
                     </button>

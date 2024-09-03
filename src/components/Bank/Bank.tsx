@@ -50,12 +50,7 @@ export const Bank = () => {
     return(
         <div ref={contentRef} className={isFullHeight ? 'tw-h-screen' : ''}>
             <div>
-                <div className="tw-flex tw-justify-between tw-mt-1">
-                    <BackBtn handle={handleBack} id={id_plan}/>
-                    <p className="tw-bg-white tw-mb-1 tw-rounded tw-p-1 tw-font-bold">{title}</p>
-                    <div></div>
-                </div>
-                <DrawerMenu height={'87%'}>
+                <DrawerMenu height={'80%'}>
                     <ListItemComp
                         page={projectPage}
                         index={0}
@@ -96,13 +91,17 @@ export const Bank = () => {
             </div>
             <div className="sm:tw-ml-2 md:tw-ml-40 tw-mr-2 xl:tw-ml-40
                     tw-mt-24 md:tw-mt-0">
+                <div className="tw-flex tw-justify-between tw-mt-1">
+                    <BackBtn handle={handleBack} id={id_plan}/>
+                    <p className="tw-bg-white tw-mb-1 tw-rounded tw-p-1 tw-font-bold">{title}</p>
+                    <div></div>
+                </div>
                 {projectPage === 0 ? <InfoPage/> :
                 projectPage === 1 ? <DocsPage/> :
                 projectPage === 2 ? <RulesPage/> :
                 projectPage === 3 ? <MGAWEB/> :
                 projectPage === 4 ? <PresentationPage/> :
-                <ProjectList/>
-                }
+                <ProjectList/> }
             </div>
         </div>
     );

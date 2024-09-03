@@ -1,5 +1,5 @@
 import IconButton from "@mui/material/IconButton";
-import { ArrowBackIos, Settings,
+import { ArrowBackIos, Settings, Close,
     EditNote, Share } from '@mui/icons-material';
 
 import { BackBtnProps } from "@/interfaces";
@@ -65,6 +65,16 @@ export const ShareBtn = ({handle, id, className}: BackBtnProps) => {
                     title="Regresar"
                     key={id}>
             <Share className={className}/>
+        </IconButton>
+    );
+}
+
+export const CloseBtn = ({handle, id}: BackBtnProps) => {
+    return (
+        <IconButton edge="end"
+                    aria-label="delete"
+                    onClick={() => handle(id)}>
+            <Close />
         </IconButton>
     );
 }

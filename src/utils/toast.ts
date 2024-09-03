@@ -1,8 +1,10 @@
 import { toast } from 'react-toastify';
 
 const existingToast = toast.isActive('notify');
+// `One of: 'info', 'success', 'warning', 'error', 'default'`
+type ListTypes = 'info' | 'success' | 'warning' | 'error' | 'default';
 
-export const notify = (text: string) => {
+export const notify = (text: string, type?: ListTypes) => {
     if (existingToast) {
         toast.update(
             text, { 
@@ -13,6 +15,7 @@ export const notify = (text: string) => {
                 draggable: true,
                 progress: undefined,
                 theme: "light",
+                type: type ?? 'default'
             });
     } else {
         toast(
@@ -25,6 +28,7 @@ export const notify = (text: string) => {
                 progress: undefined,
                 theme: "light",
                 toastId: 'notify',
+                type: type ?? 'default'
             }
         );
     }
