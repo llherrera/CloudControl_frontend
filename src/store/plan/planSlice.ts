@@ -325,18 +325,7 @@ export const planSlice = createSlice({
         });
         builder.addCase(thunkGetNodes.fulfilled, (state, action) => {
             state.loadingNodes = false;
-            const temp = [] as NodeInterface[]
-            action.payload.forEach((item:Node) => {
-                temp.push({
-                    id_node: item.id_node,
-                    name: item.name,
-                    description: item.description,
-                    parent: item.parent,
-                    id_level: item.id_level,
-                    weight: item.weight,
-                })
-            });
-            state.nodes = temp;
+            state.nodes = action.payload;
             setGenericState('plan', state);
         });
         builder.addCase(thunkGetNodes.rejected, (state, action) => {
@@ -351,18 +340,7 @@ export const planSlice = createSlice({
         });
         builder.addCase(thunkAddNodes.fulfilled, (state, action) => {
             state.loadingNodes = false;
-            const temp = [] as NodeInterface[]
-            action.payload.forEach((item:Node) => {
-                temp.push({
-                    id_node: item.id_node,
-                    name: item.name,
-                    description: item.description,
-                    parent: item.parent,
-                    id_level: item.id_level,
-                    weight: item.weight,
-                })
-            });
-            state.nodes = temp;
+            state.nodes = action.payload;
             setGenericState('plan', state);
         });
         builder.addCase(thunkAddNodes.rejected, (state, action) => {

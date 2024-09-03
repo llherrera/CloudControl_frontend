@@ -125,7 +125,7 @@ export const thunkUpdateColors = createAsyncThunk<number[], AddColorsProps, { re
     }
 )
 
-export const thunkGetNodes = createAsyncThunk<[], GetNodeProps, { rejectValue: ErrorBasicInterface }>(
+export const thunkGetNodes = createAsyncThunk<NodeInterface[], GetNodeProps, { rejectValue: ErrorBasicInterface }>(
     'pdt/getNodes',
     async (props: GetNodeProps, { rejectWithValue }) => {
         try {
