@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from '@/store';
 import { setEvidences } from '@/store/evidence/evidenceSlice';
 import { setCode, setLocs } from "@/store/content/contentSlice";
 
-import { NodeInterface, EvidenceInterface, Codes, EvidencesLocs } from '@/interfaces';
+import { NodeInterface, EvidenceInterface, Codes } from '@/interfaces';
 import { getLevelNodes, getCodeEvidences, getLatLngs } from '@/services/api';
 
 export const LevelsFilters = () => {
@@ -133,12 +133,82 @@ export const LevelsFilters = () => {
                             className=" tw-border tw-border-gray-300
                                         tw-rounded
                                         tw-mr-3 tw-w-24">
-                        {program.map((node) => (
+                        {program.map((node) =>
                             <option value={node.name} key={node.name}>{node.name}</option>
-                        ))}
+                        )}
                     </select>
                 </div>
             ))}
         </div>
     )
+}
+
+interface Props {
+    callback: (data: NodeInterface) => void;
+}
+
+export const LevelsSelect = ({callback}: Props) => {
+    const { levels } = useAppSelector(store => store.plan);
+    const [programs, setPrograms] = useState<NodeInterface[][]>([]);
+    const [index_, setIndex_] = useState<number[]>(levels.map(() => 0));
+
+    useEffect(() => {
+        const fetch = async () => {
+            if (levels.length === 0) return;
+            let parent: (string | null) = null;
+            let response = [] as NodeInterface[][];
+            for (let i = 0; i < levels.length; i++) {
+                const { id_level } = levels[i];
+                if (id_level) {
+                    const res: NodeInterface[] = await getLevelNodes({id_level: id_level, parent: parent});
+                    parent = res[index_[i]].id_node;
+                    response.push(res);
+                }
+            }
+            response[levels.length - 1].splice(0, 0, {
+                id_node: '',
+                name: '',
+                description: '',
+                parent: null,
+                id_level: 0,
+                weight: 0,
+            });
+            setPrograms(response);
+        }
+        fetch();
+    }, [index_]);
+
+    const handleChangePrograms = (index: number, event: React.ChangeEvent<HTMLSelectElement>) => {
+        const newIndex = event.target.selectedIndex;
+        let newIndex_ = [...index_];
+        if (newIndex === 0) {
+            newIndex_[index] = newIndex;
+        } else {
+            newIndex_[index] = newIndex;
+            for (let i = index+1; i < newIndex_.length; i++) {
+                newIndex_[i] = 0;
+            }
+        }
+        if (index == levels.length - 1 && newIndex > 0) callback(programs[index][newIndex]);
+        setIndex_(newIndex_);
+    };
+
+    return (
+        <div className='tw-flex tw-flex-col tw-m-auto tw-gap-2
+                        tw-justify-center tw-items-center'>
+            {programs.map((program, index) =>
+                <div key={index}
+                    className='tw-grid tw-grid-cols-2 tw-gap-4 tw-items-center'>
+                    <label className='tw-text-right'>{levels[index].name}</label>
+                    <select onChange={(e)=>handleChangePrograms(index, e)}
+                            className=' tw-p-2 tw-rounded
+                                        tw-border-2 tw-border-gray-400
+                                        tw-mr-3 tw-w-24
+                                        tw-col-span-1'>
+                        {program.map((node, index) => (<option value={node.id_node} key={index}>{node.name}</option>))}
+                    </select>
+                </div>
+            )}
+        </div>
+    );
 }

@@ -11,7 +11,7 @@ export interface IdProps {
 
 export interface BackBtnProps {
     className?: string;
-    handle: () => void;
+    handle: (param: any) => void;
     id: number;
 }
 

@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
 
-import {useAppSelector, useAppDispatch } from '@/store';
-import {
-    thunkGetProjects,
-    thunkGetCountProjects } from '@/store/plan/thunks';
+import { useAppSelector, useAppDispatch } from '@/store';
+import { thunkGetProjects, thunkGetCountProjects } from '@/store/plan/thunks';
 
-import { SettingsBtn, ProjectForm } from '@/components';
+import { ProjectForm } from '@/components';
+import { ModalSettingPro } from '../Modals';
 import { decode } from "@/utils";
 
 export const ProjectList = () => {
@@ -43,10 +42,6 @@ export const ProjectList = () => {
 
     const handleYearChange = (year: number) => setYearSe(year);
 
-    const handleSettings = () => {
-
-    };
-
     return(
         <div className="tw-flex tw-flex-col tw-justify-center ">
             <div className='tw-flex tw-justify-center'>
@@ -66,7 +61,8 @@ export const ProjectList = () => {
                             <button className={`tw-p-2 tw-rounded-t-lg hover:tw-bg-blueBar
                                     tw-font-bold
                                     ${yearSe === y ? '' : 'tw-bg-hoverBlueBar tw-text-white'}`}
-                                onClick={() => handleYearChange(y)}>
+                                onClick={() => handleYearChange(y)}
+                                key={y}>
                                 {y}
                             </button>
                         )}
@@ -101,9 +97,10 @@ export const ProjectList = () => {
                         <p className='tw-basis-1/4 tw-p-1 tw-mx-2'>
                             {p.entity}
                         </p>
-                        <p className='tw-basis-1/2 tw-p-1'>
+                        <div className='tw-basis-1/2 tw-p-1 tw-flex tw-justify-between'>
                             {p.name}
-                        </p>
+                            <ModalSettingPro index={i} id={p.id_project}/>
+                        </div>
                     </li>
                     )}
                 </ul>
@@ -129,10 +126,7 @@ export const ProjectList = () => {
                 </div>
             </div>
             : secretaries == undefined ? <p>No se han definido las secretarías</p>
-            :   <ProjectForm/>
-            }
+            : <ProjectForm/>}
         </div>
     );
 }
-
-// <SettingsBtn handle={handleSettings} id={i}/>

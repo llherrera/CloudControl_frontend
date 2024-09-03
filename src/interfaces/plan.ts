@@ -155,6 +155,7 @@ export interface PropsDeadline {
 }
 
 export interface Project {
+    readonly id_project: number;
     BPIM: number;
     entity: string;
     name: string;

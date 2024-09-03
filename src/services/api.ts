@@ -717,3 +717,21 @@ export const getPlanByUuid = async (uuid: string) => {
     });
     return response.data;
 }
+
+export const getNodesProject = async (id_project: number) => {
+    const response = await api.get(`/plan-territorial/proy-node`, {
+        params: {
+            id_project
+        }
+    });
+    return response.data;
+}
+
+export const doProjectToNodes = async (id_plan: number, id_project: number, nodes: NodeInterface[]) => {
+    const response = await api.post(`/plan-territorial/proy-node`, {
+        id_plan,
+        id_project,
+        nodes
+    });
+    return response.data;
+}

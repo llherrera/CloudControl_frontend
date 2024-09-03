@@ -42,6 +42,7 @@ export interface NodeInterface {
     parent: (string | null);
     id_level: number;
     weight: number;
+    responsible?: (string | null);
 }
 
 export interface UnitInterface {
