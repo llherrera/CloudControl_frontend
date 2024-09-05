@@ -87,10 +87,9 @@ const SettingPageWrapper = () => {
     return (
         (plan === null || plan === undefined) ? 
         <div className='tw-text-center'>No hay un plan seleccionado</div> :
-        <div className={`tw-flex tw-flex-col xl:tw-flex-row`}>
-            <div className='tw-flex md:tw-flex-col tw-self-start'>
-                <BackBtn handle={handleBack} id={id_plan}/>
-                <DrawerMenu >
+        <div className={``}>
+            <div>
+                <DrawerMenu>
                     <ListItemComp
                         page={page}
                         index={0}
@@ -113,11 +112,13 @@ const SettingPageWrapper = () => {
                         title='Localidades'/>
                 </DrawerMenu>
             </div>
-            <div className='tw-mt-28 tw-mr-4 tw-pb-4
-                            sm:tw-mt-20
-                            md:tw-mt-0 md:tw-ml-40
-                            xl:tw-mt-12 xl:tw-ml-28
-                            tw-flex-grow'>
+            <div className='sm:tw-ml-2 md:tw-ml-40 tw-mr-2 xl:tw-ml-40
+                    tw-mt-24 md:tw-mt-0'>
+                <div className="tw-flex tw-justify-between tw-mt-1">
+                    <BackBtn handle={handleBack} id={id_plan}/>
+                    <p className="tw-bg-white tw-mb-1 tw-rounded tw-p-1 tw-font-bold">Ajustes</p>
+                    <div></div>
+                </div>
                 {page === 0 ?
                     <div>
                         <div>
