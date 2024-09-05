@@ -735,3 +735,6 @@ export const doProjectToNodes = async (id_plan: number, id_project: number, node
     });
     return response.data;
 }
+
+
+export default api;
