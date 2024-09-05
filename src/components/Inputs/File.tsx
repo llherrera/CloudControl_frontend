@@ -10,21 +10,10 @@ import { notify, handleInputFile, dividirArreglo } from '@/utils';
 import { useAppSelector, useAppDispatch } from "@/store";
 import { setLevels } from "@/store/plan/planSlice";
 
-import {
-    ExcelPlan,
-    LevelInterface,
-    ExcelFinancial,
-    ExcelPhysical,
-    ExcelUnitNode,
-    Secretary} from "@/interfaces";
-import {
-    updateFinancial,
-    updatePhysicalExcel,
-    updateUniNodeExcel,
-    addLevel,
-    addSecretaries,
-    addNodes,
-    addUnits } from "@/services/api";
+import { ExcelPlan, LevelInterface, ExcelFinancial,
+    ExcelPhysical, ExcelUnitNode, Secretary} from "@/interfaces";
+import { updateFinancial, updatePhysicalExcel, updateUniNodeExcel,
+    addLevel, addSecretaries, addNodes, addUnits } from "@/services/api";
 import { ModalSpinner } from "../Spinner";
 
 export const FileInput = () => {
@@ -43,10 +32,10 @@ export const FileInput = () => {
 
     const addLevels = async (data: ExcelPlan[]) => {
         const levels = data.filter((reg, index) => {
-            return data.findIndex((reg2) => reg2.Niveles === reg.Niveles) === index;
+            return data.findIndex(reg2 => reg2.Niveles === reg.Niveles) === index;
         });
-        levelsName = levels.map((reg) => (reg.Niveles));
-        levels_ = levelsName.map((reg) => {
+        levelsName = levels.map(reg => reg.Niveles);
+        levels_ = levelsName.map(reg => {
             const level: LevelInterface = {
                 name: reg,
                 description: '',
@@ -74,27 +63,27 @@ export const FileInput = () => {
     };
 
     const addNodess = async (data: ExcelPlan[]) => {
-        //const parts = dividirArreglo(data, 50);
-        //for (let i = 0; i < parts.length; i++) {
-        //    try {
-        //        await addNodes(parts[i], id_plan, levelsName);
-        //    } catch (error) {
-        //        console.error(`Error al enviar la parte ${i + 1}:`, error);
-        //    }
-        //}
-        await addNodes(data, id_plan, levelsName);
+        const parts = dividirArreglo(data, 50);
+        for (let i = 0; i < parts.length; i++) {
+            try {
+                await addNodes(parts[i], id_plan, levelsName);
+            } catch (error) {
+                console.error(`Error al enviar la parte ${i + 1}:`, error);
+            }
+        }
+        //await addNodes(data, id_plan, levelsName);
     };
 
     const addUnitss = async (data: ExcelPlan[], id_muni: string) => {
-        //const parts = dividirArreglo(data, 50);
-        //for (let i = 0; i < parts.length; i++) {
-        //    try {
-        //        await addUnits(id_plan, parts[i], years, id_muni);
-        //    } catch (error) {
-        //        console.error(`Error al enviar la parte ${i + 1}:`, error);
-        //    }
-        //}
-        await addUnits(id_plan, data, years, id_muni);
+        const parts = dividirArreglo(data, 50);
+        for (let i = 0; i < parts.length; i++) {
+            try {
+                await addUnits(id_plan, parts[i], years, id_muni);
+            } catch (error) {
+                console.error(`Error al enviar la parte ${i + 1}:`, error);
+            }
+        }
+        //await addUnits(id_plan, data, years, id_muni);
     };
 
     const readExcel = (file: File) => {
@@ -119,9 +108,9 @@ export const FileInput = () => {
 
         promise.then( async (d) => {
             const data = d as ExcelPlan[];
-            
+
             await addLevels(data)
-            .then((res) => {
+            .then(res => {
                 levels_ = levels_.map((reg, index) => {
                     reg.id_level = res.result[index];
                     return reg;
@@ -129,30 +118,39 @@ export const FileInput = () => {
                 setTextBar('Niveles añadidos')
                 setProgressBar(20);
             })
-            .catch(() => notify('Ha ocurrido un error cargando los niveles'))
+            .catch(err => {
+                const { status } = err.response;
+                if (status == 409) notify('Este plan ya tiene niveles definidos', 'warning')
+                else notify('Ha ocurrido un error cargando los niveles', 'error')
+            });
 
             await addSecretariess(data)
             .then(() => {
-                setTextBar('Secretarias añadidas')
+                setTextBar('Secretarías añadidas')
                 setProgressBar(40);
             })
-            .catch(() => notify('Ha ocurrido un error cargando los secretarios'))
+            .catch(err => {
+                const { status } = err.response;
+                if (status == 409) notify('Este plan ya tiene secretarías definidas', 'warning');
+                else notify('Ha ocurrido un error cargando las secretarías', 'error');
+            });
 
             await addNodess(data)
             .then(() => {
                 setTextBar('Nodos añadidos')
                 setProgressBar(75);
             })
-            .catch(() => notify('Ha ocurrido un error cargando los nodos'))
+            .catch(() => notify('Ha ocurrido un error cargando los nodos', 'error'))
 
             await addUnitss(data, plan.id_municipality)
             .then(() => {
                 setTextBar('Metas añadidas')
                 setProgressBar(100);
-                notify('Plan cargado con éxito');
+                notify('Plan cargado con éxito', 'success');
                 dispatch(setLevels(levels_));
             })
-            .catch(() => notify('Ha ocurrido un error cargando las unidades'));
+            .catch(() => notify('Ha ocurrido un error cargando las unidades', 'error'));
+
         });
     };
 
@@ -170,7 +168,7 @@ export const FileInput = () => {
             <a  className="tw-text-[#222222]
                             tw-font-bold tw-text-lg
                             tw-font-montserrat"
-                href={'https://firebasestorage.googleapis.com/v0/b/cloudcontrol-51ebb.appspot.com/o/Files%2FPlantilla%20Plan%20CC.xlsx?alt=media&token=9e5156af-6f87-4cbb-b382-0e7172895e6d'}
+                href={'https://firebasestorage.googleapis.com/v0/b/cloudcontrol-51ebb.appspot.com/o/Files%2FPlantilla%20Plan%20CC%20CompletoAll.xlsx?alt=media&token=8eec32d0-0271-4523-a424-925125765d0d'}
                 download='Plantilla_Plan_Indicativo_Excel.xlsx'>
                 Descargar plantilla de Excel
                 <IconButton className='tw-p-1 tw-ml-3'
@@ -211,7 +209,16 @@ export const FileFinancialInput = () => {
         if (data.length === 0) return;
         if (id_plan === 0) return;
         const id_city = parseInt(plan.id_municipality);
-        return await updateFinancial(id_plan, id_city, data, years);
+//        return await updateFinancial(id_plan, id_city, data, years);
+
+        const parts = dividirArreglo(data, 50);
+        for (let i = 0; i < parts.length; i++) {
+            try {
+                await updateFinancial(id_plan, id_city, parts[i], years);
+            } catch (error) {
+                console.error(`Error al enviar la parte ${i + 1}:`, error);
+            }
+        }
     };
 
     const readExcel = (file: File) => {
@@ -237,8 +244,8 @@ export const FileFinancialInput = () => {
             const data = d as ExcelFinancial[];
 
             await updateFinancials(data)
-            .then(() => (alert('Se han cargado con éxito las ejecuciones financieras')))
-            .catch(() => (alert('Ha ocurrido un error cargando las ejecuciones del plan')));
+            .then(() => notify('Se han cargado con éxito las ejecuciones financieras', 'success'))
+            .catch(() => notify('Ha ocurrido un error cargando las ejecuciones del plan', 'error'));
 
             setIsOpen(false);
         });
@@ -257,7 +264,7 @@ export const FileFinancialInput = () => {
             <a  className="tw-text-[#222222]
                             tw-font-bold tw-text-lg
                             tw-font-montserrat"
-                href={"https://firebasestorage.googleapis.com/v0/b/cloudcontrol-51ebb.appspot.com/o/Files%2FPlantilla%20Ejecuciones%20Financieras.xlsx?alt=media&token=880c28f5-a7d1-4392-90f6-be847b74abd4"}
+                href={"https://firebasestorage.googleapis.com/v0/b/cloudcontrol-51ebb.appspot.com/o/Files%2FPlantilla%20Ejecuciones%20Financieras%20definitivo.xlsx?alt=media&token=60af1a7f-adca-4994-8fcc-06f72c595e14"}
                 download='Plantilla_Ejecuciones_Financieras.xlsx'>
                 Descargar plantilla de Excel
                 <IconButton className='tw-p-1 tw-ml-3'
@@ -299,7 +306,16 @@ export const FilePhysicalInput = () => {
         if (data.length === 0) return;
         if (id_plan === 0) return;
         const id_city = parseInt(plan.id_municipality);
-        return await updatePhysicalExcel(id_plan, id_city, data, years);
+//        return await updatePhysicalExcel(id_plan, id_city, data, years);
+
+        const parts = dividirArreglo(data, 50);
+        for (let i = 0; i < parts.length; i++) {
+            try {
+                await updatePhysicalExcel(id_plan, id_city, parts[i], years);
+            } catch (error) {
+                console.error(`Error al enviar la parte ${i + 1}:`, error);
+            }
+        }
     };
 
     const readExcel = (file: File) => {
@@ -325,8 +341,8 @@ export const FilePhysicalInput = () => {
             const data = d as ExcelPhysical[];
 
             await updatePhysical(data)
-            .then(() => (alert('Se han cargado con éxito las ejecuciones fisicas')))
-            .catch(() => (alert('Ha ocurrido un error cargando las ejecuciones del plan')));
+            .then(() => notify('Se han cargado con éxito las ejecuciones fisicas', 'success'))
+            .catch(() => notify('Ha ocurrido un error cargando las ejecuciones del plan', 'error'));
 
             setIsOpen(false);
         });
@@ -345,7 +361,7 @@ export const FilePhysicalInput = () => {
             <a  className="tw-text-[#222222]
                             tw-font-bold tw-text-lg
                             tw-font-montserrat"
-                href={"https://firebasestorage.googleapis.com/v0/b/cloudcontrol-51ebb.appspot.com/o/Files%2FPlantilla%20Ejecuciones%20fisicas.xlsx?alt=media&token=24847705-e3e7-4c1a-91d0-7f34fe4a271a"}
+                href={"https://firebasestorage.googleapis.com/v0/b/cloudcontrol-51ebb.appspot.com/o/Files%2FPlantilla%20Ejecuciones%20fisicas%20definitivo.xlsx?alt=media&token=dad43700-3cf9-4569-8991-8f2c18fd0fda"}
                 download='Plantilla_Ejecuciones_Fisicas.xlsx'>
                 Descargar plantilla de Excel
                 <IconButton className='tw-p-1 tw-ml-3'
@@ -387,7 +403,16 @@ export const FileUnitInput = () => {
         if (data.length === 0) return;
         if (id_plan === 0) return;
         const id_city = parseInt(plan.id_municipality);
-        return await updateUniNodeExcel(id_plan, id_city, data, years);
+//        return await updateUniNodeExcel(id_plan, id_city, data, years);
+
+        const parts = dividirArreglo(data, 50);
+        for (let i = 0; i < parts.length; i++) {
+            try {
+                await updateUniNodeExcel(id_plan, id_city, parts[i], years);
+            } catch (error) {
+                console.error(`Error al enviar la parte ${i + 1}:`, error);
+            }
+        }
     };
 
     const readExcel = (file: File) => {
@@ -413,8 +438,8 @@ export const FileUnitInput = () => {
             const data = d as ExcelUnitNode[];
 
             await updateUnit(data)
-            .then(() => (alert('Se han cargado con éxito las ejecuciones fisicas')))
-            .catch(() => (alert('Ha ocurrido un error cargando las ejecuciones del plan')));
+            .then(() => notify('Se han cargado con éxito las ejecuciones fisicas', 'success'))
+            .catch(() => notify('Ha ocurrido un error cargando las ejecuciones del plan', 'error'));
 
             setIsOpen(false);
         });
@@ -433,7 +458,7 @@ export const FileUnitInput = () => {
             <a  className="tw-text-[#222222]
                             tw-font-bold tw-text-lg
                             tw-font-montserrat"
-                href={"https://firebasestorage.googleapis.com/v0/b/cloudcontrol-51ebb.appspot.com/o/Files%2FPlantilla%20Ejecuciones%20fisicas.xlsx?alt=media&token=24847705-e3e7-4c1a-91d0-7f34fe4a271a"}
+                href={"https://firebasestorage.googleapis.com/v0/b/cloudcontrol-51ebb.appspot.com/o/Files%2FPlantilla%20Nodos%20Completa.xlsx?alt=media&token=8ae2d09f-3ea1-4b25-9a3a-010b61d39be1"}
                 download='Plantilla_Metas_Unidad.xlsx'>
                 Descargar plantilla de Excel
                 <IconButton className='tw-p-1 tw-ml-3'
