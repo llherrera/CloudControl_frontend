@@ -10,7 +10,8 @@ import { MapICon } from '@/assets/icons';
 
 import { useAppDispatch, useAppSelector } from '@/store';
 import { selectOption, setProjectPage } from '@/store/content/contentSlice';
-import { thunkGetLevelsById, thunkGetPDTid } from '@/store/plan/thunks';
+import { thunkGetLevelsById, thunkGetPDTid,
+    thunkGetLocations, thunkGetSecretaries } from '@/store/plan/thunks';
 import {
     setPlanLocation,
     setZeroLevelIndex,
@@ -24,7 +25,7 @@ export const LobbyPage = () => {
     const navigate = useNavigate();
 
     const { id_plan } = useAppSelector(store => store.content);
-    const { plan } = useAppSelector(store => store.plan);
+    const { plan, secretaries, locations } = useAppSelector(store => store.plan);
 
     useEffect(() => {
         if (plan == undefined) dispatch(thunkGetPDTid(id_plan));
@@ -34,6 +35,14 @@ export const LobbyPage = () => {
         dispatch(thunkGetLevelsById(id_plan));
         dispatch(setZeroLevelIndex());
     }, []);
+
+    useEffect(() => {
+        if (id_plan <= 0) return;
+        if (secretaries == undefined)
+            dispatch(thunkGetSecretaries(id_plan));
+        if (locations == undefined)
+            dispatch(thunkGetLocations(id_plan));
+    }, [id_plan]);
 
     useEffect(() => {
         const fetchLocation = async () => {

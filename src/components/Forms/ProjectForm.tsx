@@ -2,20 +2,27 @@ import { useState, useEffect } from 'react';
 
 import {useAppSelector, useAppDispatch } from '@/store';
 import {
-    thunkGetSecretaries,
     thunkAddProjects,
     thunkUpdateProjects } from '@/store/plan/thunks';
+
+import { Box, Button, CircularProgress } from '@mui/material';
 
 import { Project } from '@/interfaces';
 import { notify } from "@/utils";
 
-export const ProjectForm = () => {
+interface Props {
+    callback: (see:boolean) => void;
+}
+
+export const ProjectForm = ({callback}: Props) => {
     const dispatch = useAppDispatch();
 
-    const { years, secretaries } = useAppSelector(store => store.plan);
+    const { years, secretaries, loadingProjects
+    } = useAppSelector(store => store.plan);
     const { id_plan } = useAppSelector(store => store.content);
 
     const [projectsF, setProjectsF] = useState<Project[]>([{
+        id_project: 0,
         BPIM: 0,
         entity: '',
         name: '',
@@ -24,12 +31,8 @@ export const ProjectForm = () => {
     }]);
     const [files, setFiles] = useState<(File | null)[]>([null]);
 
-    useEffect(() => {
-        if (secretaries == undefined) dispatch(thunkGetSecretaries(id_plan));
-    }, []);
-
     const addProject = () => {
-        const newData = [...projectsF, { BPIM: 0, entity: '', name: '', year: 0, link: '' }];
+        const newData = [...projectsF, { id_project: 0, BPIM: 0, entity: '', name: '', year: 0, link: '' }];
         setProjectsF(newData);
         setFiles([...files, null]);
     };
@@ -61,13 +64,15 @@ export const ProjectForm = () => {
         projectsF.forEach((p, i) => {
             if (p.name === "" || p.BPIM === 0 || p.year === 0 || p.entity === '' || files[i] === null){
                 valid = false;
-                return notify("Por favor llene todos los campos");
+                return notify("Por favor llene todos los campos", 'warning');
             }
         })
         if (valid) {
             for (let i = 0; i < projectsF.length; i++) {
                 await dispatch(thunkAddProjects({ id_plan: id_plan, project: projectsF[i], file: files[i]! }));
             }
+            notify('Se ha agregado correctamente', 'success');
+            callback(false);
         }
     };
 
@@ -97,7 +102,7 @@ export const ProjectForm = () => {
                     <option value="0">Año</option>
                     {years.map(y => <option key={y} value={y}>{y}</option>)}
                 </select>
-                <input  className={`tw-m-2 tw-p-2 tw-rounded tw-border-2 ${files[index] !== null ? 'tw-border-green-400' : 'tw-border-gray-400'} tw-w-32`}
+                <input  className={`tw-m-2 tw-p-2 tw-rounded tw-border-2 ${files[index] !== null ? 'tw-border-green-400' : 'tw-border-gray-400'} `}
                         onChange={ (e) => handleFileChange(e, index) }
                         type="file" name="file" required placeholder="Enlace" />
             </div>
@@ -119,14 +124,16 @@ export const ProjectForm = () => {
                     onClick={ deleteProject }>-</button>
         </div>
         <div className="tw-flex tw-justify-center">
-            <button className="tw-bg-greenColory hover:tw-bg-green-400
-                                tw-text-white hover:tw-text-black
-                                tw-font-bold
-                                tw-p-2 tw-rounded"
-                    type="button"
-                    onClick={handleSubmit}>
-                Guardar
-            </button>
+            <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 2 }}>
+                {loadingProjects ?
+                <Box sx={{ display: 'flex' }}>
+                    <CircularProgress />
+                </Box> :
+                <Button variant="contained" color="primary" onClick={handleSubmit}>
+                    Guardar
+                </Button>
+                }
+            </Box>
         </div>
     </form>);
 }

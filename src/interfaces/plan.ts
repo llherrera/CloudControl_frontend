@@ -183,5 +183,4 @@ export interface PropsAddProjects {
 export interface PropsUpdateProjects {
     id_project: number;
     project: Project;
-    file: File;
 }

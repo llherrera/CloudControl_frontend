@@ -652,11 +652,16 @@ export const planSlice = createSlice({
             state.errorLoadingPlan = undefined;
         });
         builder.addCase(thunkUpdateProjects.fulfilled, (state, action) => {
-            state.projects = action.payload;
+            state.loadingPlan = false;
+            const index = state.projects!.findIndex(p => p.id_project = action.payload.id_project);
+            if (index !== 1)
+                state.projects![index] = action.payload;
+            notify('Información del proyecto actualizado', 'success');
             setGenericState('plan', state);
         });
         builder.addCase(thunkUpdateProjects.rejected, (state, action) => {
             state.loadingPlan = false;
+            notify('ha ocurrido un error al actualizar, intente mas tarde', 'error');
             state.errorLoadingPlan = action.payload;
         });
     }

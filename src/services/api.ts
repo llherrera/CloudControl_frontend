@@ -694,16 +694,11 @@ export const addProjectsAtPlan = async (id_plan: number, project: Project, file:
     return response.data;
 }
 
-export const updateProjectById = async (id_project: number, project: Project, file: File) => {
+export const updateProjectById = async (id_project: number, project: Project) => {
     const response = await api.put("/plan-territorial/proyectos", 
         {
             id_project: id_project,
-            project: project,
-            file: file
-        },{
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
+            project: project
         }
     );
     return response.data;

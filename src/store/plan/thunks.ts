@@ -352,11 +352,11 @@ export const thunkAddProjects = createAsyncThunk<Project[], PropsAddProjects, { 
     }
 )
 
-export const thunkUpdateProjects = createAsyncThunk<Project[], PropsUpdateProjects, { rejectValue: ErrorBasicInterface }>(
+export const thunkUpdateProjects = createAsyncThunk<Project, PropsUpdateProjects, { rejectValue: ErrorBasicInterface }>(
     'pdt/updateProjects',
     async (props: PropsUpdateProjects, { rejectWithValue }) => {
         try {
-            const res = await updateProjectById(props.id_project, props.project, props.file);
+            const res = await updateProjectById(props.id_project, props.project);
             return res;
         } catch (err) {
             const result = parseErrorAxios(err);

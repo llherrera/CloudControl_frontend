@@ -41,13 +41,13 @@ export const Content = ( props : IdProps ) => {
         }
     }, []);
 
-    useEffect(() => {
-        if (id_plan <= 0) return;
-        if (secretaries == undefined)
-            dispatch(thunkGetSecretaries(id_plan));
-        if (locations == undefined)
-            dispatch(thunkGetLocations(id_plan));
-    }, [id_plan]);
+    //useEffect(() => {
+    //    if (id_plan <= 0) return;
+    //    if (secretaries == undefined)
+    //        dispatch(thunkGetSecretaries(id_plan));
+    //    if (locations == undefined)
+    //        dispatch(thunkGetLocations(id_plan));
+    //}, [id_plan]);
 
     useEffect(() => {
         dispatch(thunkGetNodes({id_level: levels[indexLevel].id_level!, parent: parent}))

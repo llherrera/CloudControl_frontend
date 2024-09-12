@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 
 import { useAppSelector, useAppDispatch } from '@/store';
-import { thunkGetProjects, thunkGetCountProjects } from '@/store/plan/thunks';
+import { thunkGetProjects, thunkGetCountProjects,
+    thunkGetSecretaries } from '@/store/plan/thunks';
 
+import { Box, Button, CircularProgress } from '@mui/material';
 import { ProjectForm } from '@/components';
 import { ModalSettingPro } from '../Modals';
 import { decode } from "@/utils";
@@ -11,7 +13,8 @@ export const ProjectList = () => {
     const dispatch = useAppDispatch();
 
     const { token_info } = useAppSelector(store => store.auth);
-    const { years, secretaries, projects, proje_s } = useAppSelector(store => store.plan);
+    const { years, secretaries, projects, proje_s,
+        loadingSecretaries } = useAppSelector(store => store.plan);
     const { id_plan } = useAppSelector(store => store.content);
 
     const [seeForm, setSeeForm] = useState(false);
@@ -33,10 +36,16 @@ export const ProjectList = () => {
     }, []);
 
     useEffect(() => {
-        dispatch(thunkGetProjects({id_plan, page, year: yearSe}));
-    }, [yearSe]);
+        if (id_plan <= 0) return;
+        if (secretaries == undefined && seeForm)
+            dispatch(thunkGetSecretaries(id_plan));
+    }, [id_plan, seeForm]);
 
-    const handleForm = () => setSeeForm(!seeForm);
+    useEffect(() => {
+        dispatch(thunkGetProjects({id_plan, page, year: yearSe}));
+    }, [yearSe, seeForm]);
+
+    const handleForm = (see?: boolean) => setSeeForm(see ?? !seeForm);
 
     const handlePage = (page: number) => setPage(page);
 
@@ -46,11 +55,18 @@ export const ProjectList = () => {
         <div className="tw-flex tw-flex-col tw-justify-center ">
             <div className='tw-flex tw-justify-center'>
                 {(rol === "admin") || ((rol === 'funcionario' || rol === 'planeacion') && id === id_plan) ?
-                    <button
-                        onClick={() => handleForm()}
-                        className='tw-bg-blueBar hover:tw-bg-blueColory tw-p-2 tw-rounded tw-mt-2'>
-                        {seeForm ? 'Ver listado de proyectos' : 'Definir proyectos'}
-                    </button>
+                    <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 2 }}>
+                        {loadingSecretaries ?
+                        <Box sx={{ display: 'flex' }}>
+                            <CircularProgress />
+                        </Box> :
+                        <button
+                            onClick={() => handleForm()}
+                            className='tw-bg-blueBar hover:tw-bg-blueColory tw-p-2 tw-rounded tw-mt-2'>
+                            {seeForm ? 'Ver listado de proyectos' : 'Definir proyectos'}
+                        </button>
+                        }
+                    </Box>
                 : null}
             </div>
             {!seeForm ?
@@ -126,7 +142,7 @@ export const ProjectList = () => {
                 </div>
             </div>
             : secretaries == undefined ? <p>No se han definido las secretarías</p>
-            : <ProjectForm/>}
+            : <ProjectForm callback={handleForm}/>}
         </div>
     );
 }

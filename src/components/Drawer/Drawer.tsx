@@ -27,7 +27,8 @@ export const DrawerMenu = ({children, height}: DrawerProps) => {
                     flexDirection: { xs: 'row', md: 'column' },
                     width: {xs: '100%', md:'160px'},
                     height: {md: `${height == undefined ? '70%': height}`},
-                    top: { xs: '235px', md: '250px', lg: '250px', xl: '100px' },
+                    position: 'absolute',
+                    top: { xs: '205px', sm: '205px', md: '220px', lg: '220px', xl: '100px' },
                     left: { md: '0', xl: '10rem', '2xl': '12rem' },
                     border: '',
                     maxWidth: {

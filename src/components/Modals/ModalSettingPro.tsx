@@ -1,12 +1,13 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Modal from 'react-modal';
 import { Grid, List, ListItem, Typography, Box,
     styled, Paper, Button, CircularProgress } from '@mui/material';
 
-import { useAppSelector } from "@/store";
+import { useAppSelector, useAppDispatch } from "@/store";
+import { thunkUpdateProjects } from "@/store/plan/thunks";
 
 import { SettingsBtn, LevelsSelect, CloseBtn } from "@/components";
-import { ModalProps, NodeInterface } from "@/interfaces";
+import { ModalProps, NodeInterface, Project } from "@/interfaces";
 import { doProjectToNodes, getNodesProject } from "@/services/api";
 import { notify } from "@/utils";
 
@@ -56,10 +57,26 @@ export const ModalSettingPro = ({index, id}: Props) => {
 }
 
 const SettingView = (props: ModalProps2) => {
+    const dispatch = useAppDispatch();
+
     const { id_plan } = useAppSelector(store => store.content);
-    const { projects } = useAppSelector(store => store.plan);
+    const { projects, secretaries, years } = useAppSelector(store => store.plan);
     const [selectedItems, setSelectedItems] = useState<NodeInterface[]>([]);
     const [loading, setLoading] = useState(false);
+    const [editProject, setEditProject] = useState(false);
+    const [editProject_, setEditProject_] = useState(false);
+
+    const [projectEdited, setProjectEdited] = useState<Project>(
+        projects ? projects[props.index] :
+        {
+            id_project: 0,
+            BPIM: 0,
+            name: '',
+            year: 0,
+            entity: '',
+            link: ''
+        }
+    );
 
     useEffect(() => {
         if (!props.modalIsOpen) return;
@@ -91,6 +108,29 @@ const SettingView = (props: ModalProps2) => {
 
     const deleteItem = (index: number) => setSelectedItems(items => items.filter((item, i) => i !== index));
 
+    const handleChangee = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+        const { name, value } = e.target;
+        const numericFields = ['year', 'BPIM'];
+        let parsedValue: string | number = value;
+        if (numericFields.includes(name)) {
+            parsedValue = parseFloat(value);
+        }
+        setEditProject_(true);
+        setProjectEdited({ ...projectEdited, [name]: parsedValue });
+    };
+
+    const handleUpdateProject = () => {
+        console.log('bien');
+        if (editProject) {
+            console.log('editando');
+            if (editProject_) {
+                console.log('disparando');
+                dispatch(thunkUpdateProjects({ id_project: projectEdited.id_project, project: projectEdited}))
+                setEditProject(!editProject);
+            } else setEditProject(!editProject);
+        } else setEditProject(!editProject);
+    };
+
     const handleSave = () => {
         if (selectedItems.length == 0) return notify('Para relacionar los proyectos debe seleccionar al menos una meta', 'warning');
         setLoading(true);
@@ -106,6 +146,8 @@ const SettingView = (props: ModalProps2) => {
                 setLoading(false)
             });
     };
+
+    if (secretaries == undefined) return;
 
     return (
         <Modal  isOpen={props.modalIsOpen}
@@ -127,33 +169,96 @@ const SettingView = (props: ModalProps2) => {
             <Box sx={{ flexGrow: 1, padding: 2, height: '100%' }}>
                 <Grid container spacing={{ xs: 2, md: 3 }} sx={{ height: '100%' }}>
                     <Grid item xs={4}>
-                        <Item style={{maxHeight: '80%', overflow: 'auto'}}>
+                        <Item style={{maxHeight: '100%', overflow: 'auto'}}>
                             <Typography variant="h6">Información del proyecto</Typography>
-                            <p className="">
-                                {projects![props.index].BPIM}
-                            </p>
-                            <p className="">
-                                {projects![props.index].name}
-                            </p>
-                            <p className="">
-                                {projects![props.index].entity}
-                            </p>
-                            <p className="">
-                                {projects![props.index].year}
-                            </p>
+                            <div className="tw-relative tw-h-5/6">
+                                {editProject ?
+                                    <div className='tw-flex tw-flex-col tw-m-auto tw-gap-2
+                                                    tw-justify-center tw-items-center'>
+                                        <div className='tw-grid tw-grid-cols-3 tw-gap-4 tw-items-center'>
+                                            <label className="tw-text-right tw-col-start-1">BPIM: </label>
+                                            <input type='number' placeholder='BPIM' name="BPIM"
+                                                className=" tw-m-2 tw-mr-3 tw-p-2 tw-rounded
+                                                            tw-border-2 tw-border-gray-400
+                                                            tw-col-span-2"
+                                                value={projectEdited.BPIM}
+                                                onChange={e => handleChangee(e)}
+                                            />
+                                        </div>
+                                        <div className='tw-grid tw-grid-cols-3 tw-gap-4 tw-items-center'>
+                                            <label className="tw-text-right tw-col-start-1">Nombre: </label>
+                                            <input type='text' placeholder='Nombre' name="name"
+                                                className=" tw-m-2 tw-mr-3 tw-p-2 tw-rounded
+                                                            tw-border-2 tw-border-gray-400
+                                                            tw-col-span-2"
+                                                value={projectEdited.name}
+                                                onChange={e => handleChangee(e)}
+                                            />
+                                        </div>
+                                        <div className='tw-grid tw-grid-cols-3 tw-gap-4 tw-items-center'>
+                                            <label className="tw-text-right tw-col-start-1">Entidad: </label>
+                                            <select 
+                                                className=" tw-m-2 tw-mr-3 tw-p-2 tw-rounded
+                                                            tw-border-2 tw-border-gray-400
+                                                            tw-col-span-2"
+                                                name="entity"
+                                                value={projectEdited.entity}
+                                                onChange={e => handleChangee(e)}>
+                                                {secretaries.map((s, i) => <option key={i}>{s.name}</option>)}
+                                            </select>
+                                        </div>
+                                        <div className='tw-grid tw-grid-cols-3 tw-gap-4 tw-items-center'>
+                                            <label className="tw-text-right tw-col-start-1">Año: </label>
+                                            <select
+                                                className=" tw-m-2 tw-mr-3 tw-p-2 tw-rounded
+                                                            tw-border-2 tw-border-gray-400
+                                                            tw-col-span-2"
+                                                name="year"
+                                                value={projectEdited.year}
+                                                onChange={e => handleChangee(e)}>
+                                                {years.map((y, i) => <option key={i}>{y}</option>)}
+                                            </select>
+                                        </div>
+                                    </div> :
+                                    <div className="tw-flex tw-flex-col tw-m-auto tw-gap-2
+                                                    tw-justify-center tw-items-center">
+                                        <p className="tw-my-2">
+                                            {projects![props.index].BPIM}
+                                        </p>
+                                        <p className="tw-my-2">
+                                            {projects![props.index].name}
+                                        </p>
+                                        <p className="tw-my-2">
+                                            {projects![props.index].entity}
+                                        </p>
+                                        <p className="tw-my-2">
+                                            {projects![props.index].year}
+                                        </p>
+                                    </div>
+                                }
+                                <button className=" tw-absolute tw-inset-x-0 tw-bottom-0
+                                                    tw-bg-blue-500
+                                                    hover:tw-bg-blue-300 
+                                                    tw-text-white tw-font-bold
+                                                    tw-rounded
+                                                    tw-p-2 tw-mt-2"
+                                        onClick={handleUpdateProject}>
+                                    {editProject ? 'Regresar' : 'Editar'}
+                                </button>
+                            </div>
                         </Item>
                     </Grid>
 
                     <Grid item xs={4}>
-                        <Item style={{maxHeight: '80%', overflow: 'auto'}}>
+                        <Item style={{maxHeight: '100%', overflow: 'auto'}}>
                             <Typography variant="h6">Escoger metas</Typography>
                             <LevelsSelect callback={handleSelectChange}/>
                         </Item>
                     </Grid>
 
                     <Grid item xs={4}>
-                        <Item style={{maxHeight: '80%', overflow: 'auto'}}>
-                            <Typography variant="h6">Elementos seleccionados</Typography>
+                        <Item style={{maxHeight: '100%', overflow: 'auto'}}>
+                            <Typography variant="h6">Metas seleccionadas</Typography>
                             <List>
                                 {selectedItems.map((item, index) =>
                                     <ListItem
