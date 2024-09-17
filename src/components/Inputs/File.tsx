@@ -64,9 +64,12 @@ export const FileInput = () => {
 
     const addNodess = async (data: ExcelPlan[]) => {
         const parts = dividirArreglo(data, 50);
+        const tam = 35/parts.length;
         for (let i = 0; i < parts.length; i++) {
             try {
                 await addNodes(parts[i], id_plan, levelsName);
+                setTextBar('Nodos añadidos');
+                setProgressBar(40 + (tam * (i + 1)));
             } catch (error) {
                 console.error(`Error al enviar la parte ${i + 1}:`, error);
             }
@@ -76,9 +79,12 @@ export const FileInput = () => {
 
     const addUnitss = async (data: ExcelPlan[], id_muni: string) => {
         const parts = dividirArreglo(data, 50);
+        const tam = 25/parts.length;
         for (let i = 0; i < parts.length; i++) {
             try {
                 await addUnits(id_plan, parts[i], years, id_muni);
+                setTextBar('Metas añadidas');
+                setProgressBar(75 + (tam * (i + 1)));
             } catch (error) {
                 console.error(`Error al enviar la parte ${i + 1}:`, error);
             }
@@ -120,8 +126,10 @@ export const FileInput = () => {
             })
             .catch(err => {
                 const { status } = err.response;
-                if (status == 409) notify('Este plan ya tiene niveles definidos', 'warning')
-                else notify('Ha ocurrido un error cargando los niveles', 'error')
+                if (status == 409) {
+                    notify('Este plan ya tiene niveles definidos', 'warning');
+                    setProgressBar(20);
+                } else notify('Ha ocurrido un error cargando los niveles', 'error');
             });
 
             await addSecretariess(data)
@@ -131,20 +139,22 @@ export const FileInput = () => {
             })
             .catch(err => {
                 const { status } = err.response;
-                if (status == 409) notify('Este plan ya tiene secretarías definidas', 'warning');
-                else notify('Ha ocurrido un error cargando las secretarías', 'error');
+                if (status == 409) {
+                    notify('Este plan ya tiene secretarías definidas', 'warning');
+                    setProgressBar(40);
+                } else notify('Ha ocurrido un error cargando las secretarías', 'error');
             });
 
             await addNodess(data)
             .then(() => {
-                setTextBar('Nodos añadidos')
+                setTextBar('Nodos añadidos');
                 setProgressBar(75);
             })
             .catch(() => notify('Ha ocurrido un error cargando los nodos', 'error'))
 
             await addUnitss(data, plan.id_municipality)
             .then(() => {
-                setTextBar('Metas añadidas')
+                setTextBar('Metas añadidas');
                 setProgressBar(100);
                 notify('Plan cargado con éxito', 'success');
                 dispatch(setLevels(levels_));
@@ -200,6 +210,8 @@ export const FileInput = () => {
 export const FileFinancialInput = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [data, setData] = useState<File>();
+    const [textBar, setTextBar] = useState('');
+    const [progressBar, setProgressBar] = useState(0);
 
     const { plan, years } = useAppSelector(store => store.plan);
     const { id_plan } = useAppSelector(store => store.content);
@@ -212,9 +224,12 @@ export const FileFinancialInput = () => {
 //        return await updateFinancial(id_plan, id_city, data, years);
 
         const parts = dividirArreglo(data, 50);
+        const tam = 100/parts.length;
         for (let i = 0; i < parts.length; i++) {
             try {
                 await updateFinancial(id_plan, id_city, parts[i], years);
+                setTextBar('Ejecuciones actualizadas');
+                setProgressBar(40 + (tam * (i + 1)));
             } catch (error) {
                 console.error(`Error al enviar la parte ${i + 1}:`, error);
             }
@@ -261,6 +276,7 @@ export const FileFinancialInput = () => {
         <form className='tw-p-4 tw-ml-4
                         tw-bg-white
                         tw-rounded'>
+            <ProgressBar completed={progressBar} customLabel={textBar} />
             <a  className="tw-text-[#222222]
                             tw-font-bold tw-text-lg
                             tw-font-montserrat"
@@ -289,7 +305,7 @@ export const FileFinancialInput = () => {
                     onClick={handleSubmit}>
                 Cargar ejecuciones
             </button>
-            <ModalSpinner isOpen={isOpen}/>
+            {/*<ModalSpinner isOpen={isOpen}/>*/}
         </form>
     );
 }
@@ -297,6 +313,8 @@ export const FileFinancialInput = () => {
 export const FilePhysicalInput = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [data, setData] = useState<File>();
+    const [textBar, setTextBar] = useState('');
+    const [progressBar, setProgressBar] = useState(0);
 
     const { plan, years } = useAppSelector(store => store.plan);
     const { id_plan } = useAppSelector(store => store.content);
@@ -309,9 +327,12 @@ export const FilePhysicalInput = () => {
 //        return await updatePhysicalExcel(id_plan, id_city, data, years);
 
         const parts = dividirArreglo(data, 50);
+        const tam = 100/parts.length;
         for (let i = 0; i < parts.length; i++) {
             try {
                 await updatePhysicalExcel(id_plan, id_city, parts[i], years);
+                setTextBar('Ejecuciones actualizadas');
+                setProgressBar(40 + (tam * (i + 1)));
             } catch (error) {
                 console.error(`Error al enviar la parte ${i + 1}:`, error);
             }
@@ -358,6 +379,7 @@ export const FilePhysicalInput = () => {
         <form className='tw-p-4 tw-ml-4
                         tw-bg-white
                         tw-rounded'>
+            <ProgressBar completed={progressBar} customLabel={textBar} />
             <a  className="tw-text-[#222222]
                             tw-font-bold tw-text-lg
                             tw-font-montserrat"
@@ -386,7 +408,7 @@ export const FilePhysicalInput = () => {
                     onClick={handleSubmit}>
                 Cargar ejecuciones
             </button>
-            <ModalSpinner isOpen={isOpen}/>
+            {/*<ModalSpinner isOpen={isOpen}/>*/}
         </form>
     );
 }

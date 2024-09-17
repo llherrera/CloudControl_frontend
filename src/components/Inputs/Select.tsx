@@ -123,22 +123,23 @@ export const SelectDept = ({callbackDept, callbackMuni }: SelectDetsOps) => {
     );
 }
 
-export const SelectStyled = ({opts, value, callback}: SelectOpts) => {
+export const SelectStyled = ({opts, value, callback, classname}: SelectOpts) => {
     const handleValueChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const { value } = e.target;
         callback(value);
     }
 
     return(
-        <select className=" tw-flex-shrink-0
+        <select className={`tw-flex-shrink-0
                             tw-inline-flex tw-items-center
-                            tw-py-2.5 tw-w-20 tw-z-10
+                            tw-py-2.5  tw-z-10
+                            ${classname}
                             tw-rounded-lg
                             tw-text-sm tw-font-medium tw-text-center tw-text-gray-500
                             tw-bg-gray-100 hover:tw-bg-gray-200 
                             tw-border tw-border-gray-300
                             focus:tw-ring-4 focus:tw-ring-gray-100
-                            focus:tw-outline-none"
+                            focus:tw-outline-none`}
                 value={value}
                 onChange={(e) => handleValueChange(e)}>
             <option value=''

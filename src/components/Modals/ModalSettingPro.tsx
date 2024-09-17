@@ -155,7 +155,7 @@ const SettingView = (props: ModalProps2) => {
                 contentLabel=''
                 style={{
                     content: {
-                        backgroundColor: 'black',
+                        backgroundColor: '#D9D9D9',
                     }
                 }}>
             <button className=" tw-absolute tw-cursor-pointer

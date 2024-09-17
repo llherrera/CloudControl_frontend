@@ -4,8 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { decrementLevelIndex, setParent,
     AddRootTree, setZeroLevelIndex } from "@/store/plan/planSlice";
-import { thunkGetNodes, thunkGetLocations,
-    thunkGetSecretaries } from '@/store/plan/thunks';
+import { thunkGetNodes } from '@/store/plan/thunks';
 import { setMode } from "@/store/content/contentSlice";
 
 import { IdProps } from "@/interfaces";
@@ -15,6 +14,7 @@ import { NodeForm, NodesList, TimeLine,
 import IconButton from "@mui/material/IconButton";
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 import { ModalBoard, ModalAi, ModalShare } from "../Modals";
+import { AiPopover } from "@/components";
 import { decode } from "@/utils";
 
 export const Content = ( props : IdProps ) => {
@@ -24,9 +24,8 @@ export const Content = ( props : IdProps ) => {
     const { token_info } = useAppSelector(store => store.auth);
     const { plan, years, indexLevel, levels, parent,
             progressNodes, financial, radioBtn, nodes,
-            colorimeter, rootTree, secretaries,
-            locations } = useAppSelector(store => store.plan);
-    const { mode, id_plan } = useAppSelector(store => store.content);
+            colorimeter, rootTree } = useAppSelector(store => store.plan);
+    const { mode } = useAppSelector(store => store.content);
 
     const [rol, setRol] = useState("");
     const [user, setUser] = useState("");

@@ -121,6 +121,7 @@ export interface SelectOpts {
     }[];
     value: string;
     callback: React.Dispatch<React.SetStateAction<string>>;
+    classname?: string;
 }
 
 export interface SelectDetsOps {
