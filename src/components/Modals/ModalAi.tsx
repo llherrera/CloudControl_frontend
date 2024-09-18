@@ -10,7 +10,7 @@ import { SelectStyled, Message } from "../Inputs";
 import { chatModel } from "@/services/chat.api";
 import { ModalProps } from "@/interfaces";
 
-import { FormControl, OutlinedInput, InputAdornment, Box, Theme, Divider,
+import { FormControl, OutlinedInput, InputAdornment, Box, Theme,
     IconButton, CircularProgress, List, useMediaQuery } from '@mui/material'
 import { Send } from '@mui/icons-material';
 
@@ -38,6 +38,10 @@ export const ModalAi = () => {
     )
 }
 
+interface PlotOpt {
+    [key:string]:{}
+}
+
 const ProntInput = (props: ModalProps) => {
     const chartComponentRef = useRef<HighchartsReact.RefObject>(null);
 
@@ -47,7 +51,7 @@ const ProntInput = (props: ModalProps) => {
     const { years } = useAppSelector(store => store.plan);
     const [text, setText] = useState("");
     const [conversations, setConversations] = useState<string[]>([]);
-    const [plotOpts, setPlotOpts] = useState<({} | null)[]>([]);
+    const [plotOpts, setPlotOpts] = useState<(PlotOpt | null)[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [select1, setSelect1] = useState("");
     const [select2, setSelect2] = useState("");
@@ -116,14 +120,16 @@ const ProntInput = (props: ModalProps) => {
     const replaceChartPlaceholder = (domNode: DOMNode, i: number) => {
         const option = plotOpts[i]
         if ('attribs' in domNode && domNode.attribs?.id === 'chart-replace') {
-            return (
-                <HighchartsReact
-                    highcharts={Highcharts}
-                    options={option}
-                    ref={chartComponentRef}
-                    containerProps={{ style: {width: '100%'} }}
-                />
-            );
+            if (option?.series && Array.isArray(option.series) && option.series.length > 0) {
+                return (
+                    <HighchartsReact
+                        highcharts={Highcharts}
+                        options={option}
+                        ref={chartComponentRef}
+                        containerProps={{ style: {width: '100%'} }}
+                    />
+                );
+            }
         }
     };
 
