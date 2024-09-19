@@ -8,7 +8,7 @@ import { useAppSelector } from "@/store";
 
 import { SelectStyled, Message } from "../Inputs";
 import { chatModel } from "@/services/chat.api";
-import { ModalProps } from "@/interfaces";
+import { ModalProps, PlotOpt } from "@/interfaces";
 
 import { FormControl, OutlinedInput, InputAdornment, Box, Theme,
     IconButton, CircularProgress, List, useMediaQuery } from '@mui/material'
@@ -36,10 +36,6 @@ export const ModalAi = () => {
             </button>
         </div>
     )
-}
-
-interface PlotOpt {
-    [key:string]:{}
 }
 
 const ProntInput = (props: ModalProps) => {
@@ -137,7 +133,12 @@ const ProntInput = (props: ModalProps) => {
         try {
             setText('');
             setLoading(true);
-            const response = await chatModel([...conversations, `${msg} \npara el plan con id: ${id_plan}.`]);
+            const response = await chatModel([
+                ...conversations,
+                `${msg}
+                para el plan con id: ${id_plan}.
+                Si te menciono meta o metas productos tienes que traer la información de dicha meta y mostrar obligatoriamente el código de la meta, tambien devuelve el responsablie del nodo unidad.
+                `]);
             let res = response['res'];
             let opt = response['options'];
             //console.log(response);
