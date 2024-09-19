@@ -3,7 +3,8 @@ import {
     EvidenceInterface,
     LocationInterface,
     PDTInterface,
-    ExecutionInterface } from "./formInterfaces";
+    ExecutionInterface,
+    NodeInterface } from "./formInterfaces";
 
 export interface IdProps {
     id: number;
@@ -177,10 +178,6 @@ export interface DropdownProps {
     textColor?: string;
 }
 
-export interface MemoryProps {
-    callback: ()=>void;
-}
-
 export interface EvidenceProps {
     evidence: EvidenceInterface;
 };
@@ -193,4 +190,23 @@ export interface PQRSBtnProps {
     title: string;
     desc: string;
     navigate: () => void;
+}
+
+export interface PropsModalSettingProy {
+    index: number;
+    id: number;
+}
+
+export interface PlotOpt {
+    [key:string]:{}
+}
+
+export interface PropsMessage {
+    children: string;
+    callback: (msg: string) => void;
+    className?: string;
+}
+
+export interface PropsCallback {
+    callback: (data: any) => void;
 }

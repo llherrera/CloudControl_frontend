@@ -35,3 +35,7 @@ export interface ModalProps {
     callback: React.Dispatch<React.SetStateAction<boolean>>,
 }
 
+export interface ModalProps2 extends ModalProps {
+    index: number;
+    id: number;
+}

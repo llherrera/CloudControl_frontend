@@ -7,14 +7,10 @@ import {
 
 import { Box, Button, CircularProgress } from '@mui/material';
 
-import { Project } from '@/interfaces';
+import { Project, PropsCallback } from '@/interfaces';
 import { notify } from "@/utils";
 
-interface Props {
-    callback: (see:boolean) => void;
-}
-
-export const ProjectForm = ({callback}: Props) => {
+export const ProjectForm = ({callback}: PropsCallback) => {
     const dispatch = useAppDispatch();
 
     const { years, secretaries, loadingProjects

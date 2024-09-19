@@ -1,10 +1,6 @@
-interface Props {
-    children: string;
-    callback: (msg: string) => void;
-    className?: string;
-}
+import { PropsMessage } from "@/interfaces";
 
-export const Message = ({callback, className, children}: Props) => {
+export const Message = ({callback, className, children}: PropsMessage) => {
     return (
         <button
             className={`

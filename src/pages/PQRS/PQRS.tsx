@@ -2,13 +2,6 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { Frame, PQRSButton } from '@/components';
-import {  } from '@/assets/icons';
-
-interface Props {
-    title: string;
-    desc: string;
-    navigate: () => void;
-}
 
 export const PQRSPage = () => {
     const navigate = useNavigate();

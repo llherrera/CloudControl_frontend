@@ -7,19 +7,10 @@ import { useAppSelector, useAppDispatch } from "@/store";
 import { thunkUpdateProjects } from "@/store/plan/thunks";
 
 import { SettingsBtn, LevelsSelect, CloseBtn } from "@/components";
-import { ModalProps, NodeInterface, Project } from "@/interfaces";
+import { NodeInterface, Project, PropsModalSettingProy,
+    ModalProps2 } from "@/interfaces";
 import { doProjectToNodes, getNodesProject } from "@/services/api";
 import { notify } from "@/utils";
-
-interface Props {
-    index: number;
-    id: number;
-}
-
-interface ModalProps2 extends ModalProps {
-    index: number;
-    id: number;
-}
 
 const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: '#fff',
@@ -38,7 +29,7 @@ const TruncatedText = styled(Typography)({
     textOverflow: 'ellipsis',
 });
 
-export const ModalSettingPro = ({index, id}: Props) => {
+export const ModalSettingPro = ({index, id}: PropsModalSettingProy) => {
     const [isOpen, setIsOpen] = useState(false);
 
     return (

@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from '@/store';
 import { setEvidences } from '@/store/evidence/evidenceSlice';
 import { setCode, setLocs } from "@/store/content/contentSlice";
 
-import { NodeInterface, EvidenceInterface, Codes } from '@/interfaces';
+import { NodeInterface, EvidenceInterface, Codes, PropsCallback } from '@/interfaces';
 import { getLevelNodes, getCodeEvidences, getLatLngs } from '@/services/api';
 
 export const LevelsFilters = () => {
@@ -143,11 +143,7 @@ export const LevelsFilters = () => {
     )
 }
 
-interface Props {
-    callback: (data: NodeInterface) => void;
-}
-
-export const LevelsSelect = ({callback}: Props) => {
+export const LevelsSelect = ({callback}: PropsCallback) => {
     const { levels } = useAppSelector(store => store.plan);
     const [programs, setPrograms] = useState<NodeInterface[][]>([]);
     const [index_, setIndex_] = useState<number[]>(levels.map(() => 0));

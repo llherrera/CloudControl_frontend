@@ -5,9 +5,9 @@ import { useAppDispatch, useAppSelector } from "@/store";
 import { thunkUpdateExecution } from "@/store/unit/thunks";
 
 import { decode, notify } from '@/utils';
-import { MemoryProps } from '@/interfaces';
+import { PropsCallback } from '@/interfaces';
 
-export const Memory = ({callback}: MemoryProps) => {
+export const Memory = ({callback}: PropsCallback) => {
     const dispatch = useAppDispatch();
     const { token_info } = useAppSelector(store => store.auth);
     const { unit } = useAppSelector(store => store.unit);
