@@ -14,6 +14,7 @@ export interface InitialStateChartInterface {
     categories: string[];
     subCategories: string[];
     yearSelect: number;
+    indexLocations: number;
     execSelect: string;
     cateSelect: string;
     subCateSelect: string;

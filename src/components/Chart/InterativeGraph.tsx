@@ -4,31 +4,18 @@ import HighchartsReact from 'highcharts-react-official';
 
 import { useAppDispatch, useAppSelector } from "@/store";
 
-import {
-    getDataDashboardSecretary,
-    getDataDashboardLocation,
+import { getDataDashboardSecretary, getDataDashboardLocation,
     getDataDashboardEvidence } from '@/services/api'
-import {
-    PropsChart,
-    ComponentProps,
-    ChartData,
-    ResponseChartSecre,
-    ResponseChartLocat,
-    ResponseChartEvide,
-    LocationInterface } from "@/interfaces";
+import { PropsChart, ComponentProps, ChartData,
+    ResponseChartSecre, ResponseChartLocat,
+    ResponseChartEvide, LocationInterface } from "@/interfaces";
 
 import { Close, Dataset } from '@mui/icons-material';
 import { fields, notify, convertLocations } from '@/utils';
-import {
-    removeItemBoard,
-    setIndexSelect,
-    setCategories,
-    setSubCategories,
-    setYearSelect,
-    setExecSelect,
-    setCateSelect,
-    setSubCateSelect,
-    setFieldSelect } from '@/store/chart/chartSlice';
+import { removeItemBoard, setIndexSelect, setCategories,
+    setSubCategories, setYearSelect, setExecSelect,
+    setCateSelect, setSubCateSelect, setFieldSelect
+    } from '@/store/chart/chartSlice';
 
 const Component = ({index, children, type, callDataX, callDataY, callTitle}: ComponentProps) => {
     const dispatch = useAppDispatch();
@@ -40,7 +27,8 @@ const Component = ({index, children, type, callDataX, callDataY, callTitle}: Com
         categories,
         subCategories,
         fieldSelect,
-        subCateSelect } = useAppSelector(store => store.chart);
+        subCateSelect,
+        indexLocations } = useAppSelector(store => store.chart);
     const { id_plan } = useAppSelector(store => store.content);
     const { years, secretaries, locations } = useAppSelector(store => store.plan);
 
@@ -56,7 +44,7 @@ const Component = ({index, children, type, callDataX, callDataY, callTitle}: Com
     const [locationsMap, setLocationsMap] = useState<Map<LocationInterface, LocationInterface[]>>();
     const [locations_, setLocations_] = useState<LocationInterface[]>([]);
     const [locations__, setLocations__] = useState<LocationInterface[]>([]);
-    const [indexLocations, setIndexLocations] = useState(0);
+    //const [indexLocations, setIndexLocations] = useState(0);
 
     const close = (index: number) => {
         dispatch(setExecSelect(''));

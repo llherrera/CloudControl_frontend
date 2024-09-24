@@ -532,7 +532,11 @@ export const addLocations = async (id_plan: number, locations: LocationInterface
 }
 
 export const getLocations = async (id_plan: number) => {
-    const response = await api.get(`/plan-territorial/${id_plan}/localidades`);
+    const response = await api.get(`/plan-territorial/localidades`, {
+        params: {
+            id_plan
+        }
+    });
     return response.data;
 }
 

@@ -1,9 +1,6 @@
 import { useAppDispatch, useAppSelector } from "@/store";
-import {
-    setYearSelect,
-    setExecSelect,
-    setCateSelect,
-    setSubCateSelect } from '@/store/chart/chartSlice';
+import { setYearSelect, setExecSelect, setCateSelect,
+    setSubCateSelect, setIndexLocations } from '@/store/chart/chartSlice';
 
 export const Filter = () => {
     const dispatch = useAppDispatch();
@@ -31,7 +28,8 @@ export const Filter = () => {
     };
 
     const handleCategorySelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const { value } = e.target;
+        const { value, selectedIndex } = e.target;
+        dispatch(setIndexLocations(selectedIndex));
         dispatch(setCateSelect(value));
     };
 
@@ -78,7 +76,7 @@ export const Filter = () => {
                     <option value="physical_programming">Programación</option>
                 </select>
             </div> : (fieldSelect === '4') ? <div>
-                <p>Barrios</p>
+                <p>Ejecutado</p>
                 <select className='tw-w-full'
                         onChange={handleExecutionSelect}
                         value={execSelect}>
