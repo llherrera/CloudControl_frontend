@@ -83,9 +83,9 @@ export const ModalProgram = () => {
 
         await Promise.all(pesos.map(async (peso: NodesWeight) => {
             const { id_node, percents } = peso;
-            const ids = id_node.split('.');
+            if (id_node.split('.').length !== levels.length + 1) return;
+            /*const ids = id_node.split('.');
             if (ids.length !== levels.length + 1) return;
-            const percentages = percents?.map((percentages: Percentages) => percentages.progress*100);
             let ids2 = ids.reduce((acumulator:string[], currentValue: string) => {
                 if (acumulator.length === 0) {
                     return [currentValue];
@@ -95,9 +95,10 @@ export const ModalProgram = () => {
                     return [...acumulator, concatenado];
                 }
             }, []);
-            ids2 = ids2.slice(1);
-            let root = await getLevelName(ids2);
-            root = root.map((item: any) => item[0]);
+            ids2 = ids2.slice(1);*/
+            const percentages = percents?.map((percentages: Percentages) => percentages.progress*100);
+            let root: {nodo:string, nivel:string}[] = await getLevelName(id_node);
+            let root_: string[] = root.map(item => item.nodo);
             const nodeYears = detalle.filter((item: YearDetail) => item.id_node === id_node) as YearDetail[];
 
             const executed = nodeYears.map((item: YearDetail) => item.physical_execution);
@@ -108,7 +109,7 @@ export const ModalProgram = () => {
                 goalCode: id_node,
                 goalDescription: nodeYears[0].description,
                 percentExecuted: percentages!,
-                planSpecific: root,
+                planSpecific: root_,
                 indicator: nodeYears[0].indicator,
                 base: nodeYears[0].base_line,
                 executed: executed,
@@ -143,7 +144,7 @@ export const ModalProgram = () => {
     );
 
     const tableBody = (item: ReportPDTInterface) => (
-        <tr key={item.responsible.length}>
+        <tr key={item.responsible}>
             <td className='tw-border tw-p-2'>{item.responsible}</td>
             <td className='tw-border tw-p-2'>{item.goalCode}</td>
             <td className='tw-border tw-p-2'>{item.goalDescription}</td>
@@ -155,7 +156,7 @@ export const ModalProgram = () => {
             ))}
             {levels.map((level, index) => (
                 <td className='tw-border tw-p-2' 
-                    key={level.name.length}>
+                    key={level.name}>
                     {item['planSpecific'][index]}
                 </td>
             ))}
@@ -223,7 +224,7 @@ export const ModalProgram = () => {
                             ))}
                             {levels.map((level) => (
                                 <th className='tw-border tw-bg-gray-400 tw-p-2' 
-                                    key={level.name.length}>
+                                    key={level.name}>
                                     {level.name}
                                 </th>
                             ))}

@@ -39,7 +39,7 @@ export interface InitialStatePlanInterface {
     parent: string | null;
     progressNodes: number[];
     financial: number[];
-    namesTree: [string[]];
+    namesTree: Root[];
     rootTree: string[][];
     radioBtn: string;
     secretaries?: Secretary[];
@@ -56,6 +56,11 @@ export interface InitialStatePlanInterface {
 export interface GetNodeProps {
     id_level: number;
     parent: (string | null);
+}
+
+export interface Root {
+    nodo:string,
+    nivel:string
 }
 
 export interface Node {

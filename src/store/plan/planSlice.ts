@@ -54,7 +54,10 @@ const getInitialState = (): InitialStatePlanInterface => {
         parent: null,
         progressNodes: [],
         financial: [],
-        namesTree: [['Dimension', 'Nivel']],
+        namesTree: [{
+            nodo: 'Social',
+            nivel: 'Dimension'
+        }],
         rootTree: [],
         radioBtn: 'fisica',
         secretaries: undefined,

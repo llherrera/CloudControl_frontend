@@ -244,10 +244,10 @@ export const deleteLevel = async (id: number) => {
     return response.data;
 }
 
-export const getLevelName = async (ids: string[]) => {
+export const getLevelName = async (id_node: string) => {
     const response = await api.get(`/nodo/nombres`, {
-        params: { 
-            id_nodes: ids 
+        params: {
+            id_node
         }
     });
     return response.data;

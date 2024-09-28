@@ -42,6 +42,7 @@ export const LevelsFilters = () => {
             }
             response[0].push({
                 id_node: '',
+                code: '',
                 name: 'Todas',
                 description: '',
                 parent: null,
@@ -163,6 +164,7 @@ export const LevelsSelect = ({callback}: PropsCallback) => {
             }
             response[levels.length - 1].splice(0, 0, {
                 id_node: '',
+                code: '',
                 name: '',
                 description: '',
                 parent: null,

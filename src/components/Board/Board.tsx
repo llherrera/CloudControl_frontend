@@ -50,7 +50,7 @@ export const Board = () => {
                 peso.percents.push(
                     { 
                         progress : progreso,
-                        year: item.year - 1,
+                        year: item.year ,
                         physical_programming: item.physical_programming,
                         financial_execution: progresoFinan
                     }

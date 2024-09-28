@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 
 import { useAppDispatch, useAppSelector } from "@/store";
-import { thunkGetPDTByUuid, thunkUpdateYears } from "@/store/plan/thunks";
+import { thunkGetPDTByUuid, thunkUpdateYears,
+    thunkGetLevelName } from "@/store/plan/thunks";
 import { thunkGetEvidence } from '@/store/evidence/thunks';
 import { thunkGetUnit } from "@/store/unit/thunks";
 import { setIdPlan } from "@/store/content/contentSlice";
@@ -63,7 +64,7 @@ export const SearchUnitPage = () => {
     const code = queryParams.get('code');
 
     const { unit, loadingUnit } = useAppSelector(store => store.unit);
-    const { plan, years } = useAppSelector(store => store.plan);
+    const { plan, years, namesTree } = useAppSelector(store => store.plan);
     const { evidences } = useAppSelector(store => store.evidence);
 
     const [find, setFind] = useState(false);
@@ -88,6 +89,7 @@ export const SearchUnitPage = () => {
         if (code == null) return;
         let years = getYears(plan.start_date);
         dispatch(thunkUpdateYears(years));
+        dispatch(thunkGetLevelName(code));
         dispatch(thunkGetUnit({
             id_plan: plan.id_plan.toString(),
             id_node: code
@@ -345,14 +347,14 @@ export const SearchUnitPage = () => {
     );
 
     return <UnitFrame>
-        {/*<ol className="tw-flex tw-justify-center tw-flex-wrap">
-            {rootTree.map((name) => (
-                <li className="tw-flex tw-mx-3" key={name[0]}>
-                    <p className="tw-text-green-600 tw-text-xl tw-font-bold">{name[1]}:</p> 
-                    <p className="tw-ml-1 tw-text-xl tw-font-bold">{name[0]}</p>
+        <ol className="tw-flex tw-justify-center tw-flex-wrap">
+            {namesTree.map(name =>
+                <li className="tw-flex tw-mx-3" key={name.nodo}>
+                    <p className="tw-text-green-600 tw-text-xl tw-font-bold">{name.nivel}:</p> 
+                    <p className="tw-ml-1 tw-text-xl tw-font-bold">{name.nodo}</p>
                 </li>
-            ))}
-        </ol>*/}
+            )}
+        </ol>
         <div className="tw-flex tw-justify-center">
             <UnidadForm/>
         </div>

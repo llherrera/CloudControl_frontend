@@ -38,6 +38,7 @@ export interface AddUnitProps {
 }
 
 export interface EvidencesLocs {
+    code: string;
     date: string;
     name: string;
     responsible: string;

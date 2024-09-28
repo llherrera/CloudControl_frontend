@@ -1,6 +1,6 @@
 import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
 
-import {PDTInterface, ErrorBasicInterface, GetNodeProps,
+import {PDTInterface, ErrorBasicInterface, GetNodeProps, Root,
         AddColorsProps, LevelInterface, Level, Secretary,
         PropsSecretary, PropsLocations, LocationInterface,
         UpdateWProps, AddLevelProps, AddNodeProps, NodeInterface,
@@ -208,9 +208,9 @@ export const thunkGetLevelsById = createAsyncThunk<LevelInterface[], number, { r
     }
 )
 
-export const thunkGetLevelName = createAsyncThunk<[[]], string[], { rejectValue: ErrorBasicInterface }>(
+export const thunkGetLevelName = createAsyncThunk<Root[], string, { rejectValue: ErrorBasicInterface }>(
     'pdt/getLevelName',
-    async (props: string[], { rejectWithValue }) => {
+    async (props: string, { rejectWithValue }) => {
         try {
             const res = await getLevelName(props);
             return res;
