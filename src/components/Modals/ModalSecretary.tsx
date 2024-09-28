@@ -10,25 +10,25 @@ import IconButton from "@mui/material/IconButton";
 import { Spinner } from "@/assets/icons";
 
 import { generateExcel } from "@/utils";
-import { 
-    ReportPDTInterface, 
-    YearDetail, 
-    ModalProps, 
+import {
+    ReportPDTInterface,
+    YearDetail,
+    ModalProps,
     NodesWeight } from "@/interfaces";
 
 export const ModalSecretary = () => {
     const [modalIsOpen, setModalIsOpen] = useState(false);
     return (
         <div>
-            <ModalPDT 
-                modalIsOpen={modalIsOpen} 
+            <ModalPDT
+                modalIsOpen={modalIsOpen}
                 callback={setModalIsOpen}/>
-            <IconButton aria-label="delete" 
-                        size="large" 
-                        color='secondary' 
+            <IconButton aria-label="delete"
+                        size="large"
+                        color='secondary'
                         title='Generar reporte por Secretarias'
-                        className=" tw-transition 
-                                    hover:tw--translate-y-1 
+                        className=" tw-transition
+                                    hover:tw--translate-y-1
                                     hover:tw-scale-[1.4]"
                         onClick={()=>setModalIsOpen(true)}>
                 <LibraryBooksIcon />
@@ -166,6 +166,14 @@ const ModalPDT = ( props: ModalProps ) => {
                 onRequestClose={()=>props.callback(false)}
                 contentLabel='Modal de secretarias'>
             {loadingReport ? <Spinner />: <div>
+            <div className="tw-absolute tw-top-0 tw-right-0">
+                <button className=" tw-px-2"
+                        onClick={() => props.callback(false)}>
+                    <p className="tw-text-xl tw-text-[#626d75] tw-font-bold">
+                        X
+                    </p>
+                </button>
+            </div>
             <div className='tw-flex tw-flex-col md:tw-flex-row'>
                 <div className="tw-mb-2">
                     <h1 className='tw-bg-slate-300 tw-rounded tw-p-1 tw-mr-3 tw-mb-2 tw-text-center'>Escoger Año</h1>
@@ -199,12 +207,6 @@ const ModalPDT = ( props: ModalProps ) => {
                         onClick={()=>generateExcel(data,'InformeSecretarias', levels, years[indexYear], colorimeter)}>
                     Exportar
                 </button>
-                <button className='tw-bg-red-300 hover:tw-bg-red-200
-                                    tw-rounded
-                                    tw-px-3 tw-py-1 tw-mt-3
-                                    tw-right-0 tw-absolute'
-                        onClick={() => props.callback(false)}>
-                X</button>
             </div>
             <table  className="tw-mt-3"
                     id="TablaSecretarias">

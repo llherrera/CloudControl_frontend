@@ -3,16 +3,16 @@ import { useNavigate } from "react-router-dom";
 
 import {useAppSelector, useAppDispatch } from "@/store";
 import {thunkGetNodes, thunkUpdateWeight } from '@/store/plan/thunks';
-import {incrementLevelIndex, 
-        setParent, 
-        setProgressNodes, 
+import {incrementLevelIndex,
+        setParent,
+        setProgressNodes,
         setFinancial,
         AddRootTree } from '@/store/plan/planSlice';
 import { setNode } from "@/store/content/contentSlice";
 
-import {NodeInterface, 
-        NodesWeight, 
-        Percentages, 
+import {NodeInterface,
+        NodesWeight,
+        Percentages,
         IdProps } from '@/interfaces';
 import { Spinner } from '@/assets/icons';
 import { decode } from "@/utils";
@@ -22,14 +22,9 @@ export const NodesList = ( props : IdProps ) => {
     const dispatch = useAppDispatch();
 
     const { token_info } = useAppSelector(store => store.auth);
-    const { nodes, 
-            yearSelect, 
-            levels, 
-            indexLevel, 
-            progressNodes, 
-            colorimeter,
-            loadingNodes,
-            rootTree } = useAppSelector(store => store.plan);
+    const { nodes, yearSelect, levels, indexLevel, progressNodes, 
+            colorimeter, loadingNodes, rootTree 
+        } = useAppSelector(store => store.plan);
     const { mode } = useAppSelector(store => store.content);
     const [ pesos, setPesos ] = useState<number[]>(
         nodes.map((item: NodeInterface) => item.weight)
@@ -161,7 +156,7 @@ export const NodesList = ( props : IdProps ) => {
                                         tw-w-12 tw-h-12
                                         tw-font-bold`}
                             onClick={ () => handleButton(index)}
-                            title={`${item.description} ${indexLevel !== levels.length-1 ? '' : `\n${item.id_node}\n${item.responsible}`}`}>
+                            title={`${item.description} ${indexLevel !== levels.length-1 ? '' : `\n${item.code}\n${item.responsible}`}`}>
                         { parseInt( ((progressNodes[index] === undefined || 
                             progressNodes[index] < 0 ? 0 : progressNodes[index])*100).toString())}%
                     </button>
@@ -182,7 +177,7 @@ export const NodesList = ( props : IdProps ) => {
                     {rol === 'admin' || (rol === 'funcionario' && id === props.id) ?
                         <input  className={`tw-px-2 tw-mx-2 
                                         tw-border tw-rounded
-                                        tw-w-12
+                                        tw-w-16
                                         ${mode ? '' : 'tw-hidden'}`}
                                         type='number'
                                         placeholder='peso'

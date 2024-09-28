@@ -15,7 +15,7 @@ export interface UserInterface {
 }
 
 export interface PDTInterface {
-    id_plan?: number;
+    readonly id_plan: number;
     name: string;
     department: string;
     municipality: string;
@@ -37,6 +37,7 @@ export interface LevelInterface {
 
 export interface NodeInterface {
     id_node: string;
+    code: string;
     name: string;
     description: string;
     parent: (string | null);
@@ -47,6 +48,7 @@ export interface NodeInterface {
 
 export interface UnitInterface {
     code: string,
+    id_node: string,
     description: string,
     indicator: string,
     base: number,
@@ -91,6 +93,7 @@ export interface EvidenceInterface {
 export interface ExecutionInterface {
     year: Date;
     code: string;
+    readonly id_node: string;
     physical_execution: number;
     modified_execution: number;
     modified_date: Date;

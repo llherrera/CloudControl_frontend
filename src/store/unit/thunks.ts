@@ -35,9 +35,10 @@ export const thunkGetUnit = createAsyncThunk<UnitInterface, GetUnitProps, { reje
                 }
             });
             res.years = years;
-            const {code, description, indicator, base_line, goal, responsible, link_hv_indicator} = res.Node;
+            const {code, id_node, description, indicator, base_line, goal, responsible, link_hv_indicator} = res.Node;
             const para = {
                 code: code,
+                id_node: id_node,
                 description: description,
                 indicator: indicator,
                 base: base_line,

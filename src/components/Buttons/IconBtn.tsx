@@ -62,7 +62,7 @@ export const ShareBtn = ({handle, id, className}: BackBtnProps) => {
                     size="small"
                     color="inherit"
                     onClick={handle}
-                    title="Regresar"
+                    title="Compartir"
                     key={id}>
             <Share className={className}/>
         </IconButton>
@@ -73,6 +73,7 @@ export const CloseBtn = ({handle, id}: BackBtnProps) => {
     return (
         <IconButton edge="end"
                     aria-label="delete"
+                    title="Cerrar"
                     onClick={() => handle(id)}>
             <Close />
         </IconButton>

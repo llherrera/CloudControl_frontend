@@ -16,15 +16,9 @@ export const SettingsPage = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
-    const {
-        id_plan,
-        node } = useAppSelector(store => store.content);
+    const { id_plan, node } = useAppSelector(store => store.content);
     const { unit, loadingUnit } = useAppSelector(store => store.unit);
-    const { 
-        plan, 
-        years, 
-        rootTree, 
-        secretaries } = useAppSelector(store => store.plan);
+    const { plan, years, rootTree, secretaries } = useAppSelector(store => store.plan);
 
     useEffect(() => {
         if (node === undefined) return;
@@ -194,7 +188,7 @@ export const SettingsPage = () => {
                     ))}
                 </form>
             </div>
-            <div className="tw-p-3">
+            {/*<div className="tw-p-3">
                 <p>Información de la ejecución financiera</p>
                 <form   className=' tw-shadow-2xl
                                     tw-border tw-border-slate-500 
@@ -214,7 +208,7 @@ export const SettingsPage = () => {
                         </div>
                     ))}
                 </form>
-            </div>
+            </div>*/}
             <div className='tw-p-3 tw-flex tw-justify-center'>
                 <button className=' tw-bg-blue-400 hover:tw-bg-blue-300
                                     tw-text-white hover:tw-text-gray-900

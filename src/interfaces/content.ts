@@ -21,6 +21,7 @@ export interface InitialStateContentInterface {
     location: string;
     node_code: string;
     locs: EvidencesLocs[];
+    isFullHeight: boolean;
 }
 
 export interface GetUnitProps {

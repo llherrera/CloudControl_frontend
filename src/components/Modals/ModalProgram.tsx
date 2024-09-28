@@ -8,12 +8,12 @@ import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 import IconButton from "@mui/material/IconButton";
 import { Spinner } from "@/assets/icons";
 
-import { 
-    NodesWeight, 
-    Percentages, 
-    ReportPDTInterface, 
-    YearDetail, 
-    NodeInterface, 
+import {
+    NodesWeight,
+    Percentages,
+    ReportPDTInterface,
+    YearDetail,
+    NodeInterface,
     Node } from "@/interfaces";
 import { getLevelName, getLevelNodes } from "@/services/api";
 import { generateExcelYears } from "@/utils";
@@ -21,11 +21,11 @@ import { generateExcelYears } from "@/utils";
 export const ModalProgram = () => {
     const dispatch = useAppDispatch();
     const tableRef = useRef(null);
-    
-    const { levels, 
-            nodesReport, 
-            years, 
-            loadingReport, 
+
+    const { levels,
+            nodesReport,
+            years,
+            loadingReport,
             colorimeter } = useAppSelector(store => store.plan);
     let levels_ = levels.slice(0, -1);
 
@@ -102,7 +102,7 @@ export const ModalProgram = () => {
 
             const executed = nodeYears.map((item: YearDetail) => item.physical_execution);
             const programed = nodeYears.map((item: YearDetail) => item.physical_programming);
-            
+
             const item: ReportPDTInterface = {
                 responsible: nodeYears[0].responsible??'',
                 goalCode: id_node,
@@ -182,7 +182,15 @@ export const ModalProgram = () => {
                     onRequestClose={()=>setModalIsOpen(true)}
                     contentLabel='Modal de programas'>
                 {loadingReport ? <Spinner/> : <div>
-                <div className='tw-flex tw-relative'>
+                <div className="tw-absolute tw-top-0 tw-right-0">
+                    <button className=" tw-px-2"
+                            onClick={() => setModalIsOpen(false)}>
+                        <p className="tw-text-xl tw-text-[#626d75] tw-font-bold">
+                            X
+                        </p>
+                    </button>
+                </div>
+                <div className='tw-flex tw-relative tw-mt-2'>
                     <h1 className='tw-bg-slate-300 tw-rounded tw-p-1 tw-mr-3'>Programas</h1>
                     {programs.map((program, index) => (
                         <select value={program[index_[index]].name}
@@ -192,19 +200,11 @@ export const ModalProgram = () => {
                             {program.map((node) => <option value={node.name} key={node.id_level}>{node.name}</option>)}
                         </select>
                     ))}
-                    <button className='tw-bg-gray-300 hover:tw-bg-gray-200 
-                                        tw-rounded tw-border tw-border-black 
+                    <button className='tw-bg-gray-300 hover:tw-bg-gray-200
+                                        tw-rounded tw-border tw-border-black
                                         tw-px-2 tw-py-1 tw-ml-3'
                             onClick={()=>generateExcelYears(data, 'InformeProgramas', levels, years, colorimeter)}>
                         Exportar
-                    </button>
-                    <button type="button" 
-                            className='tw-bg-red-300 hover:tw-bg-red-200 
-                                        tw-rounded 
-                                        tw-px-3 tw-py-1 tw-mt-3
-                                        tw-right-0 tw-absolute'
-                            onClick={() => setModalIsOpen(false)}>
-                        X
                     </button>
                 </div>
                 <table  className="tw-mt-3" 

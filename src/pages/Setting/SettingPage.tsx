@@ -1,26 +1,15 @@
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect, useRef } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 import {useAppSelector, useAppDispatch } from '@/store';
-import {
-    thunkGetLocations,
-    thunkGetSecretaries,
+import { thunkGetLocations, thunkGetSecretaries,
     thunkUpdateDeadline } from '@/store/plan/thunks';
+import { setIsFullHeight } from "@/store/content/contentSlice";
 
-import {
-    Frame,
-    BackBtn,
-    ColorForm,
-    SecretaryForm,
-    UploadLogoCity,
-    UploadLogoPlan,
-    LocationsFormPage,
-    FileInput,
-    FileFinancialInput,
-    FilePhysicalInput,
-    FileUnitInput,
-    InfoPopover,
-    DrawerMenu,
+import { Frame, BackBtn, ColorForm, SecretaryForm,
+    UploadLogoCity, UploadLogoPlan, LocationsFormPage,
+    FileInput, FileFinancialInput, FilePhysicalInput,
+    FileUnitInput, InfoPopover, DrawerMenu,
     ListItemComp } from '@/components';
 import { decode, notify } from "@/utils";
 
@@ -35,21 +24,37 @@ export const SettingPage = () => {
 const SettingPageWrapper = () => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
+    const location = useLocation();
+    const { pageN } = location.state || {};
 
     const { token_info } = useAppSelector(store => store.auth);
-    const {
-        plan,
-        loadingPlan,
-        secretaries,
+    const { plan, loadingPlan, secretaries,
         locations } = useAppSelector(store => store.plan);
     const { id_plan } = useAppSelector(store => store.content);
 
-    const [page, setPage] = useState(0);
+    const [page, setPage] = useState(pageN ?? 0);
     const [rol, setRol] = useState("");
     const [deadline, setDeadline] = useState<Date>(
         plan === undefined ? new Date() :
         plan.deadline === null ? new Date() : new Date(plan.deadline)
     );
+
+    const contentRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const checkHeight = () => {
+            if (contentRef.current) {
+                dispatch(setIsFullHeight(contentRef.current.scrollHeight <= window.innerHeight * 0.8));
+            }
+        };
+
+        checkHeight();
+        window.addEventListener('resize', checkHeight);
+
+        return () => {
+            window.removeEventListener('resize', checkHeight);
+        };
+    }, [page]);
 
     useEffect(() => {
         if (token_info?.token !== undefined) {

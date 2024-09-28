@@ -23,6 +23,7 @@ const getInitialState = (): InitialStateContentInterface => {
         location: '',
         node_code: '',
         locs: [],
+        isFullHeight: false,
     };
 };
 
@@ -76,7 +77,11 @@ export const contentSlice = createSlice({
         setProjectPage: (state, action: PayloadAction<number>) => {
             state.projectPage = action.payload;
             setGenericState('content', state);
-        }
+        },
+        setIsFullHeight: (state, action: PayloadAction<boolean>) => {
+            state.isFullHeight = action.payload;
+            setGenericState('content', state);
+        },
     }
 });
 
@@ -93,7 +98,8 @@ export const {
     setLocation,
     setCode,
     setLocs,
-    setProjectPage } = contentSlice.actions;
+    setProjectPage,
+    setIsFullHeight } = contentSlice.actions;
 export const selectContent = (state: RootState) => state.content.index;
 
 export default contentSlice.reducer;

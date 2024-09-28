@@ -21,6 +21,7 @@ export const SectorialistRouter = () => {
             <Route path='/PQRS/radicar' element={<pages.PQRSFiledPage/>} />
             <Route path='/PQRS/consultar' element={<pages.PQRSStatePage/>} />
             <Route path='/plan/:uuid' element={<pages.SearchPage/>} />
+            <Route path='/meta/:uuid' element={<pages.SearchUnitPage/>} />
             <Route path='*' element={<pages.NotFoundPage/>} />
         </Routes>
   )

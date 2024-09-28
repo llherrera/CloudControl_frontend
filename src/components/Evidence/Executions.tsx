@@ -29,17 +29,17 @@ export const Execution = ( {ex, index}: ExecutedProps ) => {
         dispatch(thunkUpdateExecution({
             date: newModDate,
             value: ex.modified_execution,
-            code: ex.code,
+            code: ex.id_node,
             user_id: ex.id_user,
             plan_id: id_plan,
             reason
         }))
         .unwrap()
         .then(() => {
-            notify('Ejecucion actualizada')}
-        )
+            notify('Ejecucion actualizada');
+        })
         .catch((error) => {
-            notify('Ha ocurrido un error, intentelo de nuevo más tarde')
+            notify('Ha ocurrido un error, intentelo de nuevo más tarde');
             console.log(error);
         });
         dispatch(removeEvidence(index));
@@ -52,17 +52,17 @@ export const Execution = ( {ex, index}: ExecutedProps ) => {
             dispatch(thunkUpdateExecution({
                 date: newModDate,
                 value: ex.modified_execution,
-                code: ex.code,
+                code: ex.id_node,
                 user_id: ex.id_user,
                 plan_id: id_plan,
                 reason
             }))
             .unwrap()
             .then(() => {
-                notify('Ejecucion actualizada')}
-            )
+                notify('Ejecucion actualizada');
+            })
             .catch((error) => {
-                notify('Ha ocurrido un error, intentelo de nuevo más tarde')
+                notify('Ha ocurrido un error, intentelo de nuevo más tarde');
                 console.log(error);
             });
         }

@@ -6,18 +6,13 @@ import IconButton from "@mui/material/IconButton";
 import { useAppSelector, useAppDispatch } from "@/store";
 import { thunkGetUnit, thunkUpdateIndicator } from "@/store/unit/thunks";
 import { resetUnit } from "@/store/unit/unitSlice";
-import { thunkGetEvidence } from '@/store/evidence/thunks'
+import { thunkGetEvidence } from '@/store/evidence/thunks';
 import { resetEvidence, setPoints } from "@/store/evidence/evidenceSlice";
 import { AddRootTree, setZeroLevelIndex } from "@/store/plan/planSlice";
 
 import { decode, notify } from "@/utils";
-import {
-    ShowEvidence,
-    BackBtn,
-    DoubleBackBtn,
-    SettingsBtn,
-    HvBtn,
-    UnitFrame } from "@/components";
+import { ShowEvidence, BackBtn, DoubleBackBtn, SettingsBtn,
+    HvBtn, UnitFrame, ModalShare } from "@/components";
 import { Spinner } from "@/assets/icons";
 
 export const UnitNodePage = () => {
@@ -28,9 +23,7 @@ export const UnitNodePage = () => {
     const { rootTree, years } = useAppSelector(store => store.plan);
     const { unit, loadingUnit } = useAppSelector(store => store.unit);
     const { evidences } = useAppSelector(store => store.evidence);
-    const {
-        id_plan,
-        node } = useAppSelector(store => store.content);
+    const { id_plan, node } = useAppSelector(store => store.content);
 
     const [acum, setAcum] = useState(0);
     const [acumFinan, setAcumFinan] = useState(0);
@@ -146,7 +139,7 @@ export const UnitNodePage = () => {
         && id === id_plan)) ? <UploadBtn/> : null
     );
 
-    const unidadForm = () => {
+    const UnidadForm = () => {
         if (unit === undefined || unit === null) return;
         return (
             <div className="tw-border tw-border-slate-500 
@@ -187,7 +180,7 @@ export const UnitNodePage = () => {
         );
     };
 
-    const yearsForm = () => {
+    const YearsForm = () => {
         if (unit === undefined || unit === null) return;
         return(
             <div className="tw-border tw-border-slate-500 
@@ -297,69 +290,77 @@ export const UnitNodePage = () => {
         );
     };
 
-    const ternary = evidences.length > 0 ?
-    <div className="tw-mb-4">
-        <p className="tw-text-2xl tw-font-bold tw-flex tw-justify-center">Evidencias</p>
-        <table>
-            <thead>
-                <tr>
-                    <th className={`tw-bg-black tw-border`}>
-                        <p className="tw-text-white">Fecha de seguimiento</p>
-                    </th>
-                    <th className={`tw-bg-black tw-border 
-                                    tw-hidden lg:tw-table-cell`}>
-                        <p className="tw-text-white">Descripción</p>
-                    </th>
-                    <th className={`tw-bg-black tw-border 
-                                    tw-hidden lg:tw-table-cell`}>
-                        <p className="tw-text-white">Comuna o Corregimiento</p>
-                    </th>
-                    <th className={`tw-bg-black tw-border 
-                                    tw-hidden md:tw-table-cell`}>
-                        <p className="tw-text-white">Barrio o Vereda</p>
-                    </th>
-                    <th className={`tw-bg-black tw-border 
-                                    tw-hidden md:tw-table-cell`}>
-                        <p className="tw-text-white">Unidad</p>
-                    </th>
-                    <th className={`tw-bg-black tw-border 
-                                    tw-hidden md:tw-table-cell`}>
-                        <p className="tw-text-white">Cantidad</p>
-                    </th>
-                    <th className={`tw-bg-black tw-border `}>
-                        <p className="tw-text-white">Grupo poblacional</p>
-                    </th>
-                    <th className={`tw-bg-black tw-border`}>
-                        <p className="tw-text-white">Población beneficiada</p>
-                    </th>
-                    <th className={`tw-bg-black tw-border 
-                                    tw-hidden md:tw-table-cell`}>
-                        <p className="tw-text-white">Fecha archivo</p>
-                    </th>
-                    <th className={`tw-bg-black tw-border`}>
-                        <p className="tw-text-white">Enlace</p>
-                    </th>
-                </tr>
-            </thead>
-            <tbody>
-                {evidences.map((evi, index) => (
-                    <ShowEvidence evi={evi} index={index} key={evi.id_evidence}/>
-                ))}
-            </tbody>
-        </table>
-    </div> : <p className="tw-text-2xl tw-font-bold tw-flex tw-justify-center">
-        No hay evidencias cargadas
-    </p>
+    const Ternary = () => (
+        evidences.length > 0 ?
+        <div className="tw-mb-4">
+            <p className="tw-text-2xl tw-font-bold tw-flex tw-justify-center">Evidencias</p>
+            <table>
+                <thead>
+                    <tr>
+                        <th className={`tw-bg-black tw-border`}>
+                            <p className="tw-text-white">Fecha de seguimiento</p>
+                        </th>
+                        <th className={`tw-bg-black tw-border 
+                                        tw-hidden lg:tw-table-cell`}>
+                            <p className="tw-text-white">Descripción</p>
+                        </th>
+                        <th className={`tw-bg-black tw-border 
+                                        tw-hidden lg:tw-table-cell`}>
+                            <p className="tw-text-white">Comuna o Corregimiento</p>
+                        </th>
+                        <th className={`tw-bg-black tw-border 
+                                        tw-hidden md:tw-table-cell`}>
+                            <p className="tw-text-white">Barrio o Vereda</p>
+                        </th>
+                        <th className={`tw-bg-black tw-border 
+                                        tw-hidden md:tw-table-cell`}>
+                            <p className="tw-text-white">Unidad</p>
+                        </th>
+                        <th className={`tw-bg-black tw-border 
+                                        tw-hidden md:tw-table-cell`}>
+                            <p className="tw-text-white">Cantidad</p>
+                        </th>
+                        <th className={`tw-bg-black tw-border `}>
+                            <p className="tw-text-white">Grupo poblacional</p>
+                        </th>
+                        <th className={`tw-bg-black tw-border`}>
+                            <p className="tw-text-white">Población beneficiada</p>
+                        </th>
+                        <th className={`tw-bg-black tw-border 
+                                        tw-hidden md:tw-table-cell`}>
+                            <p className="tw-text-white">Fecha archivo</p>
+                        </th>
+                        <th className={`tw-bg-black tw-border`}>
+                            <p className="tw-text-white">Enlace</p>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {evidences.map((evi, index) => (
+                        <ShowEvidence evi={evi} index={index} key={evi.id_evidence}/>
+                    ))}
+                </tbody>
+            </table>
+        </div> : <p className="tw-text-2xl tw-font-bold tw-flex tw-justify-center">
+            No hay evidencias cargadas
+        </p>
+    );
 
     return (
         loadingUnit ? <Spinner/>:
         <UnitFrame>
-            <DoubleBackBtn handle={handleStartReturn} id={id_plan}/>
-            <BackBtn handle={handleBack} id={id_plan}/>
-            {rol === 'admin' || (rol === 'funcionario' && id === id_plan) ?
-                <SettingsBtn handle={handleSettings} id={id_plan}/>
-                : null
-            }
+            <div className="tw-flex tw-items-center">
+                <DoubleBackBtn handle={handleStartReturn} id={id_plan}/>
+                <BackBtn handle={handleBack} id={id_plan}/>
+                {rol === 'admin' || (rol === 'funcionario' && id === id_plan) ?
+                    <SettingsBtn handle={handleSettings} id={id_plan}/>
+                    : null
+                }
+                {rol === 'admin' || ((rol === 'funcionario' || rol === 'planeacion') && id === id_plan) ? 
+                    <ModalShare meta/>
+                    : null
+                }
+            </div>
             <ol className="tw-flex tw-justify-center tw-flex-wrap">
             {rootTree.map((name) => (
                 <li className="tw-flex tw-mx-3" key={name[0]}>
@@ -369,10 +370,10 @@ export const UnitNodePage = () => {
             ))}
             </ol>
             <div className="tw-flex tw-justify-center">
-                {unidadForm()}
+                <UnidadForm/>
             </div>
             <div className="tw-flex tw-justify-center">
-                {yearsForm()}
+                <YearsForm/>
             </div>
 
             <div className="tw-flex tw-justify-center">
@@ -386,7 +387,7 @@ export const UnitNodePage = () => {
                     Mostrar <br /> evidencias
                 </button>
             </div>
-            {showEvidence ? ternary : null}
+            {showEvidence ? <Ternary/> : null}
         </UnitFrame>
     );
 }

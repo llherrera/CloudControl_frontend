@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IconButton } from '@mui/material';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -6,18 +6,12 @@ import cclogo from '@/assets/images/logo-cc.png';
 
 import { useAppDispatch, useAppSelector } from '@/store';
 import { thunkLogout } from '@/store/auth/thunks';
-import {
-    setLogo,
-    setLogoPlan,
-    setReload,
-    setProjectPage } from '@/store/content/contentSlice';
+import { setLogo, setLogoPlan, setReload,
+    setProjectPage, setIsFullHeight } from '@/store/content/contentSlice';
 
 import { NavBar } from '@/components';
-import {
-    BancoProyectoIcon,
-    PlanIndicativoIcon,
-    POAIIcon,
-    MapICon } from '@/assets/icons';
+import { BancoProyectoIcon, PlanIndicativoIcon,
+    POAIIcon, MapICon } from '@/assets/icons';
 import { FrameProps } from '@/interfaces';
 
 export const Frame = ({children}: FrameProps) => {
@@ -25,7 +19,8 @@ export const Frame = ({children}: FrameProps) => {
     const dispatch = useAppDispatch();
 
     const { plan } = useAppSelector(store => store.plan);
-    const { index, url_logo, url_logo_plan } = useAppSelector(store => store.content);
+    const { index, isFullHeight,
+        url_logo, url_logo_plan } = useAppSelector(store => store.content);
     
     const bgcolor='greenBtn';
     const logocolor='#008432';
@@ -77,6 +72,24 @@ export const Frame = ({children}: FrameProps) => {
         }
     ];
 
+//    const [isFullHeight, setIsFullHeight] = useState(false);
+    const contentRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const checkHeight = () => {
+            if (contentRef.current) {
+                dispatch(setIsFullHeight(contentRef.current.scrollHeight <= window.innerHeight * 0.8));
+            }
+        };
+
+        checkHeight();
+        window.addEventListener('resize', checkHeight);
+
+        return () => {
+            window.removeEventListener('resize', checkHeight);
+        };
+    }, []);
+
     useEffect(() => {
         if (plan !== undefined) {
             const { logo_link_plan, logo_link_city } = plan;
@@ -124,7 +137,9 @@ export const Frame = ({children}: FrameProps) => {
                                 tw-bg-[url('/src/assets/images/bg-pi-1.png')]
                                 tw-bg-cover
                                 tw-opacity-80">
-                    {children}
+                    <div ref={contentRef} className={isFullHeight ? 'tw-h-screen' : ''}>
+                        {children}
+                    </div>
                 </div>
             </div>
         </div>

@@ -1,17 +1,10 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 import { InitialStateUnitInterface, UnitInterface } from "@/interfaces";
-import {
-    setGenericState,
-    getGenericState,
-    removeGenericState,
+import { setGenericState, getGenericState, removeGenericState,
     notify } from "@/utils";
 
-import {
-    thunkGetUnit,
-    thunkAddUnit,
-    thunkUpdateUnit,
-    thunkUpdateIndicator,
+import { thunkGetUnit, thunkAddUnit, thunkUpdateUnit, thunkUpdateIndicator,
     thunkUpdateExecution } from "./thunks";
 
 const getInitialState = (): InitialStateUnitInterface => {
@@ -22,6 +15,7 @@ const getInitialState = (): InitialStateUnitInterface => {
         errorLoadingUnit: undefined,
         unit: {
             code: "",
+            id_node: '',
             description: "",
             indicator: "",
             base: 0,

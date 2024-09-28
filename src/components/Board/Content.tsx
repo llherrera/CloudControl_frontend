@@ -14,7 +14,6 @@ import { NodeForm, NodesList, TimeLine,
 import IconButton from "@mui/material/IconButton";
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 import { ModalBoard, ModalAi, ModalShare } from "../Modals";
-import { AiPopover } from "@/components";
 import { decode } from "@/utils";
 
 export const Content = ( props : IdProps ) => {
@@ -80,7 +79,11 @@ export const Content = ( props : IdProps ) => {
         }
     };
 
-    const handleSettings = () => navigate(`/pdt/PlanIndicativo/configuracion`);
+    const handleSettings = (page: number = 0) => navigate(`/pdt/PlanIndicativo/configuracion`, {
+        state: {
+            pageN: page
+        }
+    });
 
     const handleMode = () => dispatch(setMode(!mode));
 
@@ -95,7 +98,7 @@ export const Content = ( props : IdProps ) => {
 
     const HandleRol = () => (
         rol === 'admin' || (rol === 'funcionario' && id === props.id) ? 
-        <button onClick={()=>handleSettings()}>Definir colorimetria</button>
+        <button onClick={()=>handleSettings(1)}>Definir colorimetría</button>
         : <p>No se ha definido una colorimetría aún</p>
     );
 
@@ -103,20 +106,17 @@ export const Content = ( props : IdProps ) => {
         <div className="tw-h-full tw-border">
             <h1 className=" tw-mx-6 tw-mt-6 
                             tw-text-[#222222] 
-                            tw-font-bold
-                            tw-text-lg
-                            tw-font-montserrat
-                            tw-text-center
-                            md:tw-text-left
+                            tw-font-bold tw-font-montserrat
+                            tw-text-lg tw-text-center md:tw-text-left
                             tw-flex tw-justify-between">
                 <div className="tw-flex tw-items-center">
                     Plan indicativo
                     {rol === 'admin' || ((rol === 'funcionario' || rol === 'planeacion') && id === props.id) ? 
-                        <SettingsBtn handle={handleSettings} id={props.id}/>
+                        <SettingsBtn handle={() => handleSettings()} id={props.id}/>
                         : null
                     }
                     {rol === 'admin' || ((rol === 'funcionario' || rol === 'planeacion') && id === props.id) ? 
-                        <ModalShare/>
+                        <ModalShare plan/>
                         : null
                     }
                     {rol === 'admin' || (rol === 'funcionario' && id === props.id) ?

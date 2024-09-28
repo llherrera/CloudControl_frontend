@@ -3,14 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { ProjectList } from "./ProjectList";
 
 import { useAppDispatch, useAppSelector } from "@/store";
-import { setProjectPage } from "@/store/content/contentSlice";
+import { setProjectPage, setIsFullHeight } from "@/store/content/contentSlice";
 
 import { Check, Gavel, CloudDownload } from '@mui/icons-material';
 
-import {
-    DrawerMenu,
-    ListItemComp,
-    BackBtn,
+import { DrawerMenu, ListItemComp, BackBtn,
     DropdownC } from '@/components';
 import { getCountProjectsByPlan } from "@/services/api";
 import { getEnvironment } from "@/utils";
@@ -21,17 +18,17 @@ const { URL_FILES } = getEnvironment();
 export const Bank = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
-    const contentRef = useRef<HTMLDivElement>(null);
-
+    
     const { id_plan, projectPage } = useAppSelector(store => store.content);
 
-    const [isFullHeight, setIsFullHeight] = useState(false);
     const [title, setTitle] = useState("Proyectos");
+
+    const contentRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
         const checkHeight = () => {
             if (contentRef.current) {
-                setIsFullHeight(contentRef.current.scrollHeight <= window.innerHeight);
+                dispatch(setIsFullHeight(contentRef.current.scrollHeight <= window.innerHeight * 0.8));
             }
         };
 
@@ -48,7 +45,7 @@ export const Bank = () => {
     const handleTitle = (title: string) => setTitle(title);
 
     return(
-        <div ref={contentRef} className={isFullHeight ? 'tw-h-screen' : ''}>
+        <div ref={contentRef}>
             <div>
                 <DrawerMenu height={'80%'}>
                     <ListItemComp
