@@ -2,26 +2,15 @@ import React, { useState } from "react";
 import Modal from 'react-modal';
 
 import { useAppSelector, useAppDispatch } from "@/store";
-import { addBoard, setIndexSelect } from "@/store/chart/chartSlice";
+import { addBoard, setIndexSelect, setFieldSelect
+    } from "@/store/chart/chartSlice";
 
 import IconButton from "@mui/material/IconButton";
-import { 
-    OpenInFull, 
-    PieChart, 
-    BarChart, 
-    Timeline, 
-    ArrowUpward, 
-    ArrowDownward, 
-    Dataset } from '@mui/icons-material';
+import { OpenInFull, PieChart, BarChart, Timeline, ArrowUpward,
+    ArrowDownward, Dataset } from '@mui/icons-material';
 import { Visualization, ModalProps } from "@/interfaces";
-import { 
-    manageVisualization, 
-    notify, 
-    fields } from '@/utils';
-import { 
-    InterativeChart, 
-    InterativeCard, 
-    Filter } from "../Chart";
+import { manageVisualization, notify, fields } from '@/utils';
+import { InterativeChart, InterativeCard, Filter } from "../Chart";
 
 export const ModalBoard = () => {
     const [isOpen, setIsOpen] = useState(false);
@@ -76,6 +65,7 @@ const Dashboard = (props: ModalProps) => {
     const onClose = () => {
         dispatch(addBoard([]));
         dispatch(setIndexSelect(-1));
+        dispatch(setFieldSelect(''));
         props.callback(false);
     };
 

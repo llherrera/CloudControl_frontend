@@ -3,31 +3,25 @@ import * as Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 
 import { useAppDispatch, useAppSelector } from "@/store";
+import { removeItemBoard, setIndexSelect, setCategories,
+    setSubCategories, setYearSelect, setExecSelect,
+    setCateSelect, setSubCateSelect, setFieldSelect
+    } from '@/store/chart/chartSlice';
+import { thunkGetSecretaries } from '@/store/plan/thunks';
 
 import { getDataDashboardSecretary, getDataDashboardLocation,
-    getDataDashboardEvidence } from '@/services/api'
+    getDataDashboardEvidence } from '@/services/api';
 import { PropsChart, ComponentProps, ChartData,
     ResponseChartSecre, ResponseChartLocat,
     ResponseChartEvide, LocationInterface } from "@/interfaces";
 
 import { Close, Dataset } from '@mui/icons-material';
 import { fields, notify, convertLocations } from '@/utils';
-import { removeItemBoard, setIndexSelect, setCategories,
-    setSubCategories, setYearSelect, setExecSelect,
-    setCateSelect, setSubCateSelect, setFieldSelect
-    } from '@/store/chart/chartSlice';
 
 const Component = ({index, children, type, callDataX, callDataY, callTitle}: ComponentProps) => {
     const dispatch = useAppDispatch();
-    const {
-        indexSelect,
-        yearSelect,
-        execSelect,
-        cateSelect,
-        categories,
-        subCategories,
-        fieldSelect,
-        subCateSelect,
+    const { indexSelect, yearSelect, execSelect, cateSelect,
+        categories, subCategories, fieldSelect, subCateSelect,
         indexLocations } = useAppSelector(store => store.chart);
     const { id_plan } = useAppSelector(store => store.content);
     const { years, secretaries, locations } = useAppSelector(store => store.plan);
@@ -96,6 +90,11 @@ const Component = ({index, children, type, callDataX, callDataY, callTitle}: Com
             dispatch(setFieldSelect(fieldDefault));
         }
     };
+
+    useEffect(() => {
+        if (secretaries != undefined) return;
+        dispatch(thunkGetSecretaries(id_plan));
+    }, []);
 
     useEffect(() => {
         if (locations == undefined) return;
