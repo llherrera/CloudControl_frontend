@@ -290,6 +290,32 @@ export const arrayToMapNodesSecre = (array: NodesSecretary[]) => {
   return nestedArray;
 }
 
+export function calculateDepth(nodes: NodesSecretary[], nodeId: string | null = null): number {
+  let maxDepth = 0;
+
+  function dfs(currentNode: NodesSecretary, depth: number) {
+    maxDepth = Math.max(maxDepth, depth);
+
+    if (currentNode.children) {
+      for (const child of currentNode.children) {
+        dfs(child, depth + 1);
+      }
+    }
+  }
+
+  if (nodeId === null) {
+    for (const node of nodes) {
+      dfs(node, 1);
+    }
+  } else {
+    const node = nodes.find((n) => n.id_node === nodeId);
+    if (node) {
+      dfs(node, 1);
+    }
+  }
+  return maxDepth;
+}
+
 export function getEnumKeys<T extends string, TEnumValue extends string | number,>(
   enumVariable: { [key in T]: TEnumValue }) {
   return Object.keys(enumVariable) as Array<T>;

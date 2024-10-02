@@ -32,6 +32,7 @@ const Section = () => {
 
     const [markers, setMarkers] = useState<JSX.Element[]>([]);
 
+    /*
     //ubicaciones
     useEffect(() => {
         const fetch = async () => {
@@ -43,6 +44,7 @@ const Section = () => {
         }
         fetch();
     }, []);
+    */
 
     useEffect(() => {
         if (locs.length === 0) {

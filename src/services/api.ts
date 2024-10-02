@@ -1,7 +1,6 @@
 import axios from "axios";
 import jwtDecode from "jwt-decode";
 import { getEnvironment } from '../utils/environment';
-import { arrayToMapNodesSecre } from '../utils/functions';
 
 import {
     YearInterface,
@@ -624,8 +623,7 @@ export const getNodesSecretary = async (id_plan: number, secretary: string) => {
             secretary
         }
     });
-    const res = arrayToMapNodesSecre(response.data)
-    return res;
+    return response.data;
 }
 
 export const getDataDashboardSecretary = async (id_plan: number, secretary: string, year: string) => {
