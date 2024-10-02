@@ -8,6 +8,7 @@ import planRedurcer from './plan/planSlice';
 import chartReducer from './chart/chartSlice';
 import unitReducer from './unit/unitSlice';
 import evidenceReducer from './evidence/evidenceSlice';
+import pqrsReducer from './pqrs/pqrsSlice';
 
 export const reducers = {
   auth: authReducer,

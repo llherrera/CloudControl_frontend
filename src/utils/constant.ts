@@ -21,15 +21,15 @@ export enum Identificacion {
 	Registro_Civil = 'Registro_Civil'
 }
 
-export enum Peticion {
-    Consulta = 'Consulta',
-    De_interes_General = 'De_interes_General',
-    De_interes_Particular = 'De_interes_Particular',
-    Reclamo = 'Reclamo',
-    Reportes = 'Reportes',
-    Queja = 'Queja',
-    Solicitud_de_acceso_a_la_información = 'Solicitud_de_acceso_a_la_información',
-    Solicitud_de_Información_Entre_entidades = 'Solicitud_de_Información_Entre_entidades',
-    Solicitud_de_copia = 'Solicitud_de_copia',
-    Sugerencia = 'Sugerencia'
-}
+export const peticion = [
+    'Consulta',
+    'De interes General',
+    'De interes Particular',
+    'Reclamo',
+    'Reportes',
+    'Queja',
+    'Solicitud de acceso a la información',
+    'Solicitud de Información Entre entidades',
+    'Solicitud de copia',
+    'Sugerencia'
+]

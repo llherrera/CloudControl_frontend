@@ -14,3 +14,4 @@ export * from './report';
 export * from './secretary';
 export * from './ubication';
 export * from './responseGeoportal';
+export * from './pqrs';

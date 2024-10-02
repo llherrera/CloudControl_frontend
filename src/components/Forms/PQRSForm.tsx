@@ -5,7 +5,7 @@ import { ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { useAppSelector } from "@/store";
 
 import { PQRSInform } from '@/interfaces';
-import { Solicitante, Peticion, Identificacion, getEnumKeys } from '@/utils';
+import { Solicitante, peticion, Identificacion, getEnumKeys } from '@/utils';
 import { Input, Select, DropdownC } from '@/components';
 
 export const PQRSForm = () => {
@@ -40,7 +40,6 @@ export const PQRSForm = () => {
     const [dataSub, setDataSub] = useState<PQRSInform | null>(null);
 
     useEffect(() => {
-        console.log('a', anonimous);
         if (anonimous) {
             setData({
                 ...data,
@@ -64,7 +63,6 @@ export const PQRSForm = () => {
     }, [anonimous]);
 
     const handleAnonimous = (e: React.MouseEvent<HTMLElement>, newValue: boolean) => {
-        console.log(newValue);
         setAnonimous(newValue);
     }
 
@@ -291,7 +289,7 @@ export const PQRSForm = () => {
                         name='tipo_peticion'
                         value={data.tipo_peticion}
                         onChange={e => handleInputChange(e)}
-                        options={getEnumKeys(Peticion)}/>
+                        options={peticion}/>
                     <div className='tw-col-start-1 tw-col-end-13 tw-flex'>
                         <label htmlFor="peticion">Petición:</label>
                         <textarea

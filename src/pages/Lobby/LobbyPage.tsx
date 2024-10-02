@@ -6,7 +6,7 @@ import bankLogo from '@/assets/icons/Banco-proyectos.svg';
 import POAILogo from '@/assets/icons/Point.svg';
 
 import { Header, ButtonComponent } from '@/components';
-import { MapICon } from '@/assets/icons';
+import { MapICon, PQRSIcon } from '@/assets/icons';
 
 import { useAppDispatch, useAppSelector } from '@/store';
 import { selectOption, setProjectPage } from '@/store/content/contentSlice';
@@ -117,7 +117,7 @@ export const LobbyPage = () => {
                     navigate('/PQRS')
                 }}
                 bgColor="tw-bg-greenBtn"
-                icon={<MapICon color='white'/>}/>
+                icon={<PQRSIcon color='white'/>}/>
         </Header>
     );
 }

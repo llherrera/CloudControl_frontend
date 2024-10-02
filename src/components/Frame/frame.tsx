@@ -10,7 +10,7 @@ import { setLogo, setLogoPlan, setReload,
     setProjectPage, setIsFullHeight } from '@/store/content/contentSlice';
 
 import { NavBar } from '@/components';
-import { BancoProyectoIcon, PlanIndicativoIcon,
+import { BancoProyectoIcon, PlanIndicativoIcon, PQRSIcon,
     POAIIcon, MapICon } from '@/assets/icons';
 import { FrameProps } from '@/interfaces';
 
@@ -68,7 +68,7 @@ export const Frame = ({children}: FrameProps) => {
             text: 'PQRS',
             bgColor: bgcolor,
             textColor: textcolor,
-            icon: <MapICon color={ index === 4 ? logocolor : textcolor}/>
+            icon: <PQRSIcon color={ index === 4 ? logocolor : textcolor}/>
         }
     ];
 

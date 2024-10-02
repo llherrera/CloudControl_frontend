@@ -48,40 +48,65 @@ api.interceptors.request.use(
     }
 )
 
-export const getPQRSsByPlan = async () => {
-    const response = await api.get("/PQRS/peticiones");
+export const getPQRSsByPlan = async (id_plan: number) => {
+    const response = await api.get("/PQRS/peticiones", {
+        params: {
+            id_plan
+        }
+    });
     return response.data;
 }
 
-export const getPQRSByRadicado = async () => {
-    const response = await api.get("/PQRS/peticion");
+export const getPQRSByRadicado = async (radicado: string) => {
+    const response = await api.get("/PQRS/peticion", {
+        params: {
+            radicado
+        }
+    });
     return response.data;
 }
 
-export const getPQRSTypes = async () => {
-    const response = await api.get("/PQRS/tipo");
+export const getPQRSTypes = async (id_plan: number) => {
+    const response = await api.get("/PQRS/tipo", {
+        params: {
+            id_plan
+        }
+    });
     return response.data;
 }
 
-export const getPQRSHistoryByRadicado = async () => {
-    const response = await api.get("/PQRS/historial");
+export const getPQRSHistoryByRadicado = async (radicado: string) => {
+    const response = await api.get("/PQRS/historial", {
+        params: {
+            radicado
+        }
+    });
     return response.data;
 }
 
-export const addPQRS = async () => {
-    const response = await api.post("/PQRS/peticion");
+export const addPQRS = async (id_plan: number, pqrs: {}) => {
+    const response = await api.post("/PQRS/peticion", {
+        id_plan,
+        pqrs
+    });
     return response.data;
 }
 
-export const addPQRSType = async () => {
-    const response = await api.post("/PQRS/tipo");
+export const addPQRSType = async (id_plan: number, type: {}) => {
+    const response = await api.post("/PQRS/tipo", {
+        id_plan,
+        type
+    });
     return response.data;
 }
 
-export const addPQRSHistory = async () => {
-    const response = await api.post("/PQRS/historial");
+export const addPQRSHistory = async (radicado: string) => {
+    const response = await api.post("/PQRS/historial", {
+        radicado
+    });
     return response.data;
 }
+
 export const UpdatePQRS = async () => {
     const response = await api.put("/PQRS/peticion");
     return response.data;

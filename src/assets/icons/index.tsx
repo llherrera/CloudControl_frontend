@@ -1,6 +1,5 @@
 import { SvgIcon } from '@mui/material';
-import MapIcon from '@mui/icons-material/Map';
-import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
+import { Map, SupportAgent } from '@mui/icons-material';
 
 interface IconProps {
     color: string;
@@ -25,7 +24,7 @@ export const BancoProyectoIcon = ( {color}: IconProps ) => {
 
 export const MapICon = ( {color}: IconProps ) => {
     return (
-        <MapIcon style={{ fill: color }}/>
+        <Map style={{ fill: color }}/>
     )
 }
 
@@ -234,5 +233,11 @@ export const LocationIcon = ( {color}: IconProps ) => {
                 </g>
             </svg>
         </SvgIcon>
+    )
+}
+
+export const PQRSIcon = ( {color}: IconProps ) => {
+    return (
+        <SupportAgent style={{ fill: color }}/>
     )
 }
