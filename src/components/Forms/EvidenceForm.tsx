@@ -133,11 +133,11 @@ export const EvidenceForm = () => {
             .unwrap()
             .then(() => {
                 setLoading(false);
-                notify('Evidencia añadida con exito');
+                notify('Evidencia añadida con exito', 'success');
             })
             .catch(()=> {
                 setLoading(false);
-                notify('Error al añadir evidencia');
+                notify('Error al añadir evidencia', 'error');
             });
         } else { 
             dispatch(thunkUpdateEvidence({
@@ -149,27 +149,27 @@ export const EvidenceForm = () => {
             .unwrap()
             .then(()=> {
                 setLoading(false);
-                notify('Evidencia actualizada con exito');
+                notify('Evidencia actualizada con exito', 'success');
             })
             .catch(()=> {
                 setLoading(false);
-                notify('Error al actualizar evidencia');
+                notify('Error al actualizar evidencia', 'error');
             });
         }
     };
 
-    
+
     return (
         loading ? <ModalSpinner isOpen={loading}/> :
         <form
             id="formEvidencia"
             encType="multipart/form-data"
-            className=" tw-flex tw-flex-col 
+            className=" tw-flex tw-flex-col
                         tw-mt-3 tw-p-3
                         tw-border-4 tw-border-double
                         tw-border-gray-500 tw-bg-slate-200">
             <label className="tw-text-center md:tw-text-left">Fecha: {new Date().toLocaleDateString()} </label>
-                    
+
             <div className="tw-mt-2 tw-flex">
                 <p className="tw-mr-2">Código meta:</p>
                 <label className="  tw-p-2 tw-rounded
@@ -201,7 +201,7 @@ export const EvidenceForm = () => {
                 </button>
             </div>
             <p className="tw-mt-4">Descripcion Actividades:</p>
-            <textarea 
+            <textarea
                 name="activitiesDesc" 
                 id="activitiesDesc" 
                 required
@@ -225,14 +225,14 @@ export const EvidenceForm = () => {
                                     tw-bg-white"
                         onChange={(e) => handleInputChange(e)}
                         required>
-                        <option value="num">M</option>
-                        <option value="num">M2</option>
-                        <option value="num">M3</option>
-                        <option value="num">KM</option>
-                        <option value="num">HA</option>
-                        <option value="num">Otro</option>
-                        <option value="num">Num</option>
-                        <option value="num">%</option>
+                        <option value="M">M</option>
+                        <option value="M2">M2</option>
+                        <option value="M3">M3</option>
+                        <option value="KM">KM</option>
+                        <option value="HA">HA</option>
+                        <option value="other">Otro</option>
+                        <option value="Num">Num</option>
+                        <option value="%">%</option>
                     </select>
                 </div>
                 <div className="tw-flex tw-ml-3 tw-flex-col">
@@ -256,13 +256,16 @@ export const EvidenceForm = () => {
                             tw-border-2 tw-border-gray-400">
                 <div className="tw-flex tw-flex-col">
                     <p>Localidad/Comuna/Corregimiento</p>
-                    <select 
+                    <select
                         name="commune"
                         id="commune"
                         className=" tw-p-2 tw-rounded
                                     tw-border-2 tw-border-gray-400
                                     tw-bg-white"
-                        onChange={(e)=> {handleInputChange(e);handleLocationSelect(e);}}
+                        onChange={e => {
+                            handleInputChange(e);
+                            handleLocationSelect(e);
+                        }}
                         required>
                         {locations_.map(loc =>
                             <option value={loc.name} key={loc.name}>
@@ -274,7 +277,7 @@ export const EvidenceForm = () => {
                 </div>
                 <div className="tw-flex tw-flex-col tw-ml-3">
                     <p>Barrio/Vereda/Centro poblado</p>
-                    <select 
+                    <select
                         name="neighborhood"
                         id="neighborhood"
                         className=" tw-p-2 tw-rounded
@@ -368,22 +371,22 @@ export const EvidenceForm = () => {
                                     tw-bg-white"
                         onChange={(e)=> handleInputChange(e)}
                         required>
-                        <option value="Privado">Recursos Propios ICLD</option>
-                        <option value="Publico">Recursos Propios ICDE</option>
-                        <option value="Publico">SGP</option>
-                        <option value="Publico">Regalias</option>
-                        <option value="Publico">Credito</option>
-                        <option value="Publico">Estampillas</option>
-                        <option value="Publico">Otros</option>
-                        <option value="Publico">SGP Cultura</option>
-                        <option value="Publico">SGP Deporte</option>
-                        <option value="Publico">SGP Educacion</option>
-                        <option value="Publico">SGP Salud</option>
-                        <option value="Publico">SGP Libre inversion</option>
-                        <option value="Publico">Cofinanciacion Departamento</option>
-                        <option value="Publico">Cofinanciacion Nacion</option>
-                        <option value="Publico">Propios</option>
-                        <option value="Publico">Funcionamiento</option>
+                        <option value="RecursosPropiosICLD">Recursos Propios ICLD</option>
+                        <option value="RecursosPropiosICDE">Recursos Propios ICDE</option>
+                        <option value="SGP">SGP</option>
+                        <option value="Regalias">Regalias</option>
+                        <option value="Credito">Credito</option>
+                        <option value="Estampillas">Estampillas</option>
+                        <option value="Otros">Otros</option>
+                        <option value="SGP Cultura">SGP Cultura</option>
+                        <option value="SGP Deporte">SGP Deporte</option>
+                        <option value="SGP Educacion">SGP Educacion</option>
+                        <option value="SGP Salud">SGP Salud</option>
+                        <option value="SGP Libre inversion">SGP Libre inversion</option>
+                        <option value="Cofinanciacion Departamento">Cofinanciacion Departamento</option>
+                        <option value="Cofinanciacion Nacion">Cofinanciacion Nacion</option>
+                        <option value="Propios">Propios</option>
+                        <option value="Funcionamiento">Funcionamiento</option>
                     </select>
                 </div>
             </div>

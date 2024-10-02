@@ -39,3 +39,7 @@ export interface ModalProps2 extends ModalProps {
     index: number;
     id: number;
 }
+
+export interface ModalShareProps {
+    [key: string]: boolean;
+}

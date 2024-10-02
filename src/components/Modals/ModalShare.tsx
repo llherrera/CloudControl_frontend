@@ -7,14 +7,10 @@ import { Link } from '@mui/icons-material';
 import { useAppSelector } from "@/store";
 
 import { ShareBtn } from "@/components";
-import { ModalProps } from "@/interfaces";
+import { ModalProps, ModalShareProps } from "@/interfaces";
 import { notify } from "@/utils";
 
-interface Props {
-    [key: string]: boolean;
-}
-
-export const ModalShare = (props: Props) => {
+export const ModalShare = (props: ModalShareProps) => {
     const [isOpen, setIsOpen] = useState(false);
 
     return (
@@ -63,6 +59,8 @@ const SharePlanView = (props: ModalProps) => {
                         position: 'absolute',
                         top: '50%',
                         left: '50%',
+                        right: 'auto',
+                        bottom: 'auto',
                         transform: 'translate(-50%, -50%)',
                         width: 400,
                         padding: 4,
@@ -142,6 +140,8 @@ const ShareUnitView = (props: ModalProps) => {
                         position: 'absolute',
                         top: '50%',
                         left: '50%',
+                        right: 'auto',
+                        bottom: 'auto',
                         transform: 'translate(-50%, -50%)',
                         width: 400,
                         padding: 4,

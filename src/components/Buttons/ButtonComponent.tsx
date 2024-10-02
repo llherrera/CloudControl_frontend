@@ -24,22 +24,18 @@ export const ButtonComponent = ( props : BtnProps ) => {
                     props.icon
                     : null}
                 {props.inside ? 
-                <p className={` tw-ml-3 
-                                tw-flex tw-flex-wrap 
-                                tw-font-montserrat 
-                                tw-self-center
-                                md:tw-text-xs
-                                2xl:tw-text-lg
+                <p className={` tw-font-montserrat
+                                tw-text-center
+                                md:tw-text-xs 2xl:tw-text-lg
                                 ${props.textColor}
-                                tw-hidden lg:tw-block
-                                `}>
+                                tw-hidden lg:tw-block`}>
                     {props.text}</p>
                 : null
                 }
             </button>
             {props.inside ? null :
-            <p className="  tw-ml-3 
-                            tw-font-montserrat 
+            <p className="  tw-ml-3
+                            tw-font-montserrat
                             tw-self-center
                             tw-hidden md:tw-block">
                 {props.text}</p>

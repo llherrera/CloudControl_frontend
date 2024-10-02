@@ -11,7 +11,7 @@ import { chatModel } from "@/services/chat.api";
 import { ModalProps, PlotOpt } from "@/interfaces";
 
 import { FormControl, OutlinedInput, InputAdornment, Box, Theme,
-    IconButton, CircularProgress, List, useMediaQuery } from '@mui/material'
+    IconButton, CircularProgress, List, useMediaQuery } from '@mui/material';
 import { Send } from '@mui/icons-material';
 
 import './styles.css';

@@ -107,6 +107,7 @@ const MapContainer_ = (props: PopoverProps) => {
             <LocationMarker position={position} callback={setPosition}/>
             <Rectangle
                 bounds={[[bounding1, bounding3],[bounding2, bounding4]]}
+                pathOptions={{color:'blue', fillOpacity: 0}}
             />
         </MapContainer>
     );
@@ -212,6 +213,7 @@ const MapContainerUbi = () => {
             
             <Rectangle
                 bounds={[[bounding1, bounding3],[bounding2, bounding4]]}
+                pathOptions={{color:'blue', fillOpacity: 0}}
             />
         </MapContainer>
     );
