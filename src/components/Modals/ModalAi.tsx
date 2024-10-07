@@ -177,10 +177,11 @@ const ProntInput = (props: ModalProps) => {
                     <p className="tw-text-white">Hazme una pregunta...</p> :
                     <div className="tw-flex tw-flex-col tw-gap-2"
                         id="chat">
-                        {conversations.map((c, i) => (
+                        {conversations.map((c, i) =>
                             <li key={i}
                                 className={`tw-rounded tw-flex tw-text-white
-                                            ${i % 2 === 0 ? 'tw-justify-end tw-ml-4' : 'tw-justify-start tw-mr-4'}`}>
+                                            ${i % 2 === 0 ? 'tw-justify-end tw-ml-4' : 
+                                                            'tw-justify-start tw-mr-4'}`}>
                                 <div className={`tw-p-1 tw-rounded
                                     ${i % 2 === 0 ? 'tw-bg-white tw-text-black' : ''}`}>
                                     {i % 2 === 0 ? null : 
@@ -190,10 +191,10 @@ const ProntInput = (props: ModalProps) => {
                                             Cloud-i:
                                         </p>
                                     }
-                                    {parse(c, { replace: (doc) => replaceChartPlaceholder(doc, i) })}
+                                    {parse(c, { replace: doc => replaceChartPlaceholder(doc, i) })}
                                 </div>
                             </li>
-                        ))}
+                        )}
                         {loading ? 
                         <div className="tw-animate-pulse tw-flex tw-space-x-4">
                             <div className="tw-rounded-full tw-bg-slate-700 tw-h-10 tw-w-10"></div>
@@ -320,6 +321,27 @@ const ProntInput = (props: ModalProps) => {
                         </Message>
                         <Message callback={setNewText}>
                             {`Seleccionar la secretaría que tenga menos ejecutado financieramente en el año ${years[1]}`}
+                        </Message>
+                        <Message callback={setNewText}>
+                            {`Secretaría con menor ejecución financiera`}
+                        </Message>
+                        <Message callback={setNewText}>
+                            {`Secretaría con menor ejecución financiera mayor a cero`}
+                        </Message>
+                        <Message callback={setNewText}>
+                            {`Seleccionar las 5 primeras ejecuciones ordenadas de mayor a menor en el ${years[0]}`}
+                        </Message>
+                        <Message callback={setNewText}>
+                            {`Seleccionar las 10 primeras ejecuciones ordenadas de mayor a menor`}
+                        </Message>
+                        <Message callback={setNewText}>
+                            {`Seleccionar las 10 primeras ejecuciones ordenadas de menor a mayor`}
+                        </Message>
+                        <Message callback={setNewText}>
+                            {`Seleccionar las 10 primeras ejecuciones financieras ordenadas de mayor a menor en el ${years[1]}`}
+                        </Message>
+                        <Message callback={setNewText}>
+                            {`Seleccionar todas las ejecuciones de la secretaría de las TIC`}
                         </Message>
                     </List>
                 </div>
