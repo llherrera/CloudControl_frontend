@@ -133,11 +133,7 @@ const ProntInput = (props: ModalProps) => {
         try {
             setText('');
             setLoading(true);
-            const response = await chatModel([
-                `${msg}
-                para el plan con id: ${id_plan}.
-                Si te menciono meta o metas productos tienes que traer la información de dicha meta y mostrar obligatoriamente el código de la meta, tambien devuelve el responsablie del nodo unidad.
-                `]);
+            const response = await chatModel([`${msg}. Para el plan con id: ${id_plan}.`]);
             let res = response['res'];
             let opt = response['options'];
             //console.log(response);

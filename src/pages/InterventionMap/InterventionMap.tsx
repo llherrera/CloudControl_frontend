@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { notify } from '@/utils';
 import { MapContainer, TileLayer, Marker,
     Popup, Rectangle } from 'react-leaflet';
 import { Icon } from 'leaflet';
@@ -9,7 +8,6 @@ import { Icon } from 'leaflet';
 import { useAppSelector } from '@/store';
 
 import { BackBtn, Frame, SecretarySelect } from '@/components';
-import { getUbiEvidences } from '@/services/api';
 
 import MarkerIcon from '@/assets/icons/location.svg';
 import "react-toastify/dist/ReactToastify.css";
@@ -31,20 +29,6 @@ const Section = () => {
     const { id_plan, locs, secretary } = useAppSelector(store => store.content);
 
     const [markers, setMarkers] = useState<JSX.Element[]>([]);
-
-    /*
-    //ubicaciones
-    useEffect(() => {
-        const fetch = async () => {
-            await getUbiEvidences(id_plan)
-            .then(res => {
-                localStorage.setItem('evidences', JSON.stringify(res));
-                if (res.length === 0) notify("No hay evidencias para mostrar");
-            });
-        }
-        fetch();
-    }, []);
-    */
 
     useEffect(() => {
         if (locs.length === 0) {
@@ -166,27 +150,3 @@ const Section = () => {
         </div>
     );
 }
-
-/*
-<div className='tw-flex tw-justify-center'>
-                <SecretarySelect/>
-                <LevelsFilters/>
-                <LocationSelect/>
-            </div>
-            <div className='tw-flex tw-justify-center tw-pb-3'>
-                <MapContainer
-                    center={[planLocation.lat,planLocation.lng]}
-                    zoom={13}
-                    bounds={[[bounding1, bounding3],[bounding2, bounding4]]}
-                    scrollWheelZoom={false}>
-                    <TileLayer
-                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    />
-                    {markers}
-                    <Rectangle
-                        bounds={[[bounding1, bounding3],[bounding2, bounding4]]}
-                    />
-                </MapContainer>
-            </div>
-*/

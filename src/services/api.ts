@@ -350,6 +350,7 @@ export const getUbiEvidences = async (id_plan?: number, id_evidence?: number) =>
     return response.data;
 }
 
+// No se usa ya (la idea era obtener los codigos segun el nivel del nodo para hacer un filtrado en linea)
 export const getCodeEvidences = async (id_node: string, id_plan: number) => {
     const response = await api.get(`/nodo/evidencia-codigo`, {
         params: {
@@ -410,6 +411,7 @@ export const getEvidenceCount = async (id_plan: number) => {
     return response.data;
 }
 
+// No se usa ya
 export const getYearProgress = async (ids_nodes: string[], year: number) => {
     const response = await api.get(`/nodo/progreso`, {
         params: {

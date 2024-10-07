@@ -7,7 +7,7 @@ import { setCode, setLocs } from "@/store/content/contentSlice";
 
 import { NodeInterface, EvidenceInterface, Codes, PropsCallback } from '@/interfaces';
 import { getLevelNodes, getCodeEvidences, getLatLngs } from '@/services/api';
-
+/*
 export const LevelsFilters = () => {
     const dispatch = useAppDispatch();
 
@@ -81,7 +81,7 @@ export const LevelsFilters = () => {
     /**
      * la idea es cruzar los codigos de las metas con las evidencias
      * y asi obtener las evidencias de la meta
-     */
+    *
     useEffect(() => {
         if (codes.length === 0) {
             dispatch(setEvidences([]));
@@ -143,6 +143,7 @@ export const LevelsFilters = () => {
         </div>
     )
 }
+*/
 
 export const LevelsSelect = ({callback}: PropsCallback) => {
     const { levels } = useAppSelector(store => store.plan);
