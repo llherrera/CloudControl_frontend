@@ -150,7 +150,7 @@ export const SearchUnitPage = () => {
     );
 
     const UnidadForm = () => {
-        if (unit === undefined || unit === null) return;
+        if (unit === undefined || unit === null) return null;
         return (
             <div className="tw-border tw-border-slate-500 
                             tw-bg-white tw-mx-2 md:tw-mx-10">
@@ -190,7 +190,7 @@ export const SearchUnitPage = () => {
     };
 
     const YearsForm = () => {
-        if (unit === undefined || unit === null) return;
+        if (unit === undefined || unit === null) return null;
         return(
             <div className="tw-border tw-border-slate-500
                             tw-rounded tw-bg-white

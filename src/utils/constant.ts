@@ -3,6 +3,7 @@ import { Field } from "@/interfaces";
 export const fields: Field[] = [
     {id:'3', name:'Secretarias', title: 'Secretarias', value: 'secretary'},
     {id:'4', name:'Evidencias', title: 'Evidencias', value: 'evidences'},
+    {id:'5', name:'Ejecuciones', title: 'Ejecuciones', value: 'execution'},
 ];
 
 export enum Solicitante {

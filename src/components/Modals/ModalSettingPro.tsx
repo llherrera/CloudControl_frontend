@@ -6,11 +6,13 @@ import { Grid, List, ListItem, Typography, Box,
 import { useAppSelector, useAppDispatch } from "@/store";
 import { thunkUpdateProjects } from "@/store/plan/thunks";
 
-import { SettingsBtn, LevelsSelect, CloseBtn } from "@/components";
+import { SettingsBtn, LevelsSelect, SearchTerm, CloseBtn } from "@/components";
 import { NodeInterface, Project, PropsModalSettingProy,
-    ModalProps2 } from "@/interfaces";
-import { doProjectToNodes, getNodesProject } from "@/services/api";
+    ModalProps2, ListNode } from "@/interfaces";
+import { doProjectToNodes, getNodesProject, getListNodes } from "@/services/api";
 import { notify } from "@/utils";
+
+import './styles.css';
 
 const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: '#fff',
@@ -40,7 +42,7 @@ export const ModalSettingPro = ({index, id}: PropsModalSettingProy) => {
                 modalIsOpen={isOpen}
                 callback={setIsOpen}/>
             <SettingsBtn
-                id={-2}
+                id={-3}
                 handle={()=>setIsOpen(true)}
             />
         </div>
@@ -77,11 +79,11 @@ const SettingView = (props: ModalProps2) => {
         const fetch = async () => {
             getNodesProject(projects[props.index].id_project)
             .then((res: NodeInterface[]) => {
-                    setSelectedItems(res);
-                })
-                .catch(err => {
-                    console.log(err);
-                });
+                setSelectedItems(res);
+            })
+            .catch(err => {
+                console.log(err);
+            });
         }
         fetch();
     }, [props]);
@@ -89,7 +91,7 @@ const SettingView = (props: ModalProps2) => {
     const onClose = () => props.callback(false);
 
     const handleSelectChange = (data: NodeInterface) => {
-        const temp = selectedItems.map(item => item.id_node)
+        const temp = selectedItems.map(item => item.id_node);
         if (!temp.includes(data.id_node)) {
             setSelectedItems(prevItems => [...prevItems, data]);
         } else {
@@ -111,12 +113,9 @@ const SettingView = (props: ModalProps2) => {
     };
 
     const handleUpdateProject = () => {
-        console.log('bien');
         if (editProject) {
-            console.log('editando');
             if (editProject_) {
-                console.log('disparando');
-                dispatch(thunkUpdateProjects({ id_project: projectEdited.id_project, project: projectEdited}))
+                dispatch(thunkUpdateProjects({ id_project: projectEdited.id_project, project: projectEdited}));
                 setEditProject(!editProject);
             } else setEditProject(!editProject);
         } else setEditProject(!editProject);
@@ -138,7 +137,7 @@ const SettingView = (props: ModalProps2) => {
             });
     };
 
-    if (secretaries == undefined) return;
+    if (secretaries == undefined) return null;
 
     return (
         <Modal  isOpen={props.modalIsOpen}
@@ -244,6 +243,7 @@ const SettingView = (props: ModalProps2) => {
                         <Item style={{maxHeight: '100%', overflow: 'auto'}}>
                             <Typography variant="h6">Escoger metas</Typography>
                             <LevelsSelect callback={handleSelectChange}/>
+                            <SearchTerm callback={handleSelectChange}/>
                         </Item>
                     </Grid>
 

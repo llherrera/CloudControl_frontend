@@ -12,23 +12,26 @@ export const NodeForm = ( props : NodeFormProps ) => {
     let id_nodo_gen : number = 1;
     const [data, setData] = useState<NodeInterface[]>([
         {   id_node: `${parent ?? props.id}.${id_nodo_gen++}`,
-            name: "", 
-            description: "", 
-            id_level: props.id, 
+            code: '',
+            name: "",
+            description: "",
+            id_level: props.id,
             parent: parent,
             weight: 33.33
         },
-        {   id_node: `${parent ?? props.id}.${id_nodo_gen++}`, 
-            name: "", 
-            description: "", 
-            id_level: props.id, 
+        {   id_node: `${parent ?? props.id}.${id_nodo_gen++}`,
+            code: '',
+            name: "",
+            description: "",
+            id_level: props.id,
             parent: parent,
             weight: 33.33
         },
-        {   id_node: `${parent ?? props.id}.${id_nodo_gen++}`, 
-            name: "", 
-            description: "", 
-            id_level: props.id, 
+        {   id_node: `${parent ?? props.id}.${id_nodo_gen++}`,
+            code: '',
+            name: "",
+            description: "",
+            id_level: props.id,
             parent: parent,
             weight: 33.33
         }
@@ -36,6 +39,7 @@ export const NodeForm = ( props : NodeFormProps ) => {
 
     let nodo: NodeInterface = ({
         id_node: `${parent ?? props.id}.${data.length + 1}`,
+        code: '',
         name: "",
         description: "",
         id_level: props.id,
@@ -46,11 +50,12 @@ export const NodeForm = ( props : NodeFormProps ) => {
     const addNode = () => {
         const newData = [...data, nodo];
         setData(newData);
-        nodo = ({ 
-            id_node: `${parent ?? props.id}.${newData.length + 1}`, 
-            name: "", 
-            description: "", 
-            id_level: props.id, 
+        nodo = ({
+            id_node: `${parent ?? props.id}.${newData.length + 1}`,
+            code: '',
+            name: "",
+            description: "",
+            id_level: props.id,
             parent: parent,
             weight: 100/data.length
         });
@@ -61,10 +66,11 @@ export const NodeForm = ( props : NodeFormProps ) => {
             const newData = data.slice(0, data.length - 1);
             setData(newData);
             nodo = ({ 
-                id_node: `${parent ?? props.id}.${newData.length }`, 
-                name: "", 
-                description: "", 
-                id_level: props.id, 
+                id_node: `${parent ?? props.id}.${newData.length }`,
+                code: '',
+                name: "",
+                description: "",
+                id_level: props.id,
                 parent: parent,
                 weight: 100/data.length
             });

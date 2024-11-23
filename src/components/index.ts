@@ -14,3 +14,4 @@ export * from './MapFilters';
 export * from './Drawer';
 export * from './Dropdown';
 export * from './Modals';
+export * from './Copilot';

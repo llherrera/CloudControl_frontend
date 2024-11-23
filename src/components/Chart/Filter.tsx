@@ -1,18 +1,13 @@
 import { useAppDispatch, useAppSelector } from "@/store";
 import { setYearSelect, setExecSelect, setCateSelect,
     setSubCateSelect, setIndexLocations } from '@/store/chart/chartSlice';
+import { LevelsSelectFilter } from "../MapFilters";
 
 export const Filter = () => {
     const dispatch = useAppDispatch();
     const { years } = useAppSelector(store => store.plan);
-    const {
-        board,
-        yearSelect,
-        execSelect,
-        cateSelect,
-        subCateSelect,
-        categories,
-        subCategories,
+    const { board, yearSelect, execSelect, cateSelect,
+        subCateSelect, categories, subCategories,
         fieldSelect } = useAppSelector(store => store.chart);
 
     if (board.length === 0) return null;
@@ -40,15 +35,17 @@ export const Filter = () => {
 
     return (
         <div>
-            <p>{(fieldSelect === '1' || fieldSelect === '2' || fieldSelect === '3') ?
-            'Secretarias' : (fieldSelect === '4') ? 'Localidades' : 'Categorias'
+            <p>{(fieldSelect === '1' || fieldSelect === '2' || fieldSelect === '3') ? 'Secretarias' :
+            (fieldSelect === '4') ? 'Localidades' : (fieldSelect === '5') ? 'Metas' : 'Categorias'
             }</p>
+            {fieldSelect !== '5' ?
             <select className='tw-w-full'
                     onChange={handleCategorySelect}
                     value={cateSelect}>
                 <option value=""></option>
                 {categories && categories.map(cat => <option key={cat} className='tw-text-clip' value={cat}>{cat}</option>)}
             </select>
+            : <LevelsSelectFilter callback={handleCategorySelect}/>}
             {fieldSelect === '4' ? <div>
                 <p>Barrios</p>
                 <select className='tw-w-full'
@@ -83,6 +80,12 @@ export const Filter = () => {
                     <option value="done">Realizado</option>
                     <option value="benefited_population_number">Población beneficiada</option>
                     <option value="executed_resources">Recursos ejecutados</option>
+                </select>
+            </div> : (fieldSelect === '5') ? <div>
+                <p>Ejecutado</p>
+                <select name="" id="">
+                    <option value="financial_execution">Dinero ejecutado</option>
+                    <option value="physical_progress">Porcentaje ejecutado</option>
                 </select>
             </div> : null
             }

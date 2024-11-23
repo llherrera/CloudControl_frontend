@@ -165,11 +165,11 @@ export const NodesList = ( props : IdProps ) => {
                                         tw-h-8 tw-my-2
                                         tw-w-2/3
                                         tw-rounded-r-lg
-                                        tw-text-white tw-font-bold
+                                        tw-text-white tw-font-bold tw-text-center
                                         tw-font-montserrat`}
                             onClick={ () => handleButton(index)}
                             title={item.description}>
-                        <p className='tw-truncate hover:tw-w-full'>
+                        <p className='tw-truncate hover:tw-text-black'>
                             {item.name}
                         </p>
                     </button>

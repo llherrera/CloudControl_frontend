@@ -8,12 +8,12 @@ import { thunkGetNodes } from '@/store/plan/thunks';
 import { setMode } from "@/store/content/contentSlice";
 
 import { IdProps } from "@/interfaces";
-import { NodeForm, NodesList, TimeLine,
+import { NodeForm, NodesList, TimeLine, CopilotPopover,
     Graph, BackBtn, DoubleBackBtn, SettingsBtn } from "@/components";
 
 import IconButton from "@mui/material/IconButton";
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
-import { ModalBoard, ModalAi, ModalShare } from "../Modals";
+import { ModalBoard, ModalAi, ModalAi2, ModalShare } from "../Modals";
 import { decode } from "@/utils";
 
 export const Content = ( props : IdProps ) => {
@@ -162,6 +162,10 @@ export const Content = ( props : IdProps ) => {
                     }
                     {rol === 'admin' || ((rol === 'funcionario' || rol === 'planeacion' || rol === 'sectorialista') && id === props.id) ?
                         <ModalAi/>
+                        : null
+                    }
+                    {rol === 'admin' || ((rol === 'funcionario' || rol === 'planeacion' || rol === 'sectorialista') && id === props.id) ?
+                        <CopilotPopover/>
                         : null
                     }
                 </div>

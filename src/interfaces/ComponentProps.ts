@@ -62,7 +62,7 @@ export interface NodeFormProps {
 }
 
 export interface FrameProps {
-    children: JSX.Element;
+    children: JSX.Element | JSX.Element[];
 }
 
 export interface HeaderProps {
@@ -131,8 +131,7 @@ export interface SelectDetsOps {
 }
 
 export interface NavBarProps {
-    buttons: BtnProps[];
-    bgColor?: string;
+    children: JSX.Element | JSX.Element[];
 }
 
 export interface PDTPageProps {

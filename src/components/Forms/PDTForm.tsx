@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { Input, Select, SelectDept, BackBtn } from "@/components";
@@ -20,6 +20,7 @@ export const PDTForm = () => {
     }
 
     const [planData, setPlanData] = useState<PDTInterface>({
+        id_plan: 0,
         name: "",
         department: "",
         municipality: "",
@@ -31,7 +32,7 @@ export const PDTForm = () => {
         uuid: ''
     });
 
-    const registerCall = useCallback(() => {
+    useEffect(() => {
         if (plan === undefined) return;
         const { id_plan } = plan;
         if (id_plan === undefined) return;
@@ -83,18 +84,18 @@ export const PDTForm = () => {
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         dispatch(thunkAddPDT(planData))
-        .then(() => {
-            if (plan === undefined) return;
-            const { id_plan } = plan;
-            if (id_plan === undefined) return;
-            dispatch(setIdPlan(id_plan));
-            dispatch(setLogo(''));
-            dispatch(setLogoPlan(''));
-            navigate(`/register`, {replace: true});
-        })
-        .catch((err) => {
-            console.log(err);
-        });
+        //.then(() => {
+        //    if (plan === undefined) return;
+        //    const { id_plan } = plan;
+        //    if (id_plan === undefined) return;
+        //    dispatch(setIdPlan(id_plan));
+        //    dispatch(setLogo(''));
+        //    dispatch(setLogoPlan(''));
+        //    navigate(`/register`, {replace: true});
+        //})
+        //.catch((err) => {
+        //    console.log(err);
+        //});
     };
 
     return (

@@ -43,3 +43,9 @@ export interface ModalProps2 extends ModalProps {
 export interface ModalShareProps {
     [key: string]: boolean;
 }
+
+export interface ProntProps {
+    readonly id_input: number;
+    input: string;
+    id_user: number;
+}

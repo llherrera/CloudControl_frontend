@@ -46,6 +46,10 @@ export interface NodeInterface {
     responsible?: (string | null);
 }
 
+export interface ListNode extends NodeInterface {
+    tree: string;
+}
+
 export interface UnitInterface {
     code: string,
     id_node: string,

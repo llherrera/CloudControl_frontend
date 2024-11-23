@@ -10,9 +10,9 @@ import { removeItemBoard, setIndexSelect, setCategories,
 import { thunkGetSecretaries } from '@/store/plan/thunks';
 
 import { getDataDashboardSecretary, getDataDashboardLocation,
-    getDataDashboardEvidence } from '@/services/api';
+    getDataDashboardEvidence, getDataDashboardExecution } from '@/services/api';
 import { PropsChart, ComponentProps, ChartData,
-    ResponseChartSecre, ResponseChartLocat,
+    ResponseChartSecre, ResponseChartLocat, ResponseChartExecu,
     ResponseChartEvide, LocationInterface } from "@/interfaces";
 
 import { Close, Dataset } from '@mui/icons-material';
@@ -125,7 +125,7 @@ const Component = ({index, children, type, callDataX, callDataY, callTitle}: Com
     useEffect(() => {
         switch (field) {
             case 'secretary':
-                if (secretaries == undefined) return;
+                if (secretaries == undefined) return notify('Aun no se han defino secretarías para este plan', 'warning');
                 dispatch(setCategories(secretaries.map(l => l.name)));
                 dispatch(setSubCategories([]));
                 getDataDashboardSecretary(id_plan, cateDefault.replace('secretary', ''), yearsDefault === 0 ? '' : yearsDefault.toString())
@@ -147,13 +147,14 @@ const Component = ({index, children, type, callDataX, callDataY, callTitle}: Com
                     }
                     callTitle(
                         `Secretarias: ${type === undefined ?
-                        `Ejecución ${execDefault === 'financial_execution' ? 'financiera' : execDefault === 'physical_execution' ? `física` : `programada`} 
-                            ${cateDefault.replace('secretary', '') === `` ? `de todas las secretarías` : `de la secretaría ${cateDefault}`} 
+                        `Ejecución ${execDefault === 'financial_execution' ? 'financiera' : execDefault === 'physical_execution' ? `física` : `programada`}
+                            ${cateDefault.replace('secretary', '') === `` ? `de todas las secretarías` : `de la secretaría ${cateDefault}`}
                             ${yearsDefault === 0 ? 'total por año' : `para el año ${yearsDefault}`}`
                         : `para la ejecución ${execDefault === 'financial_execution' ? 'financiera' : execDefault === 'physical_execution' ? `física` : `programada`}
                             ${cateDefault.replace('secretary', '') === `` ? `de todas las secretarías` : `de la secretaría ${cateDefault}`}
                             ${label} el ${type === 'min' ? 'mínimo' : 'máximo'} es ${val} ${yearsDefault === 0 ? 'total por año' : `para el año ${yearsDefault}`}`
-                        }`);
+                        }`
+                    );
                 });
                 break;
             case 'evidences':
@@ -178,18 +179,49 @@ const Component = ({index, children, type, callDataX, callDataY, callTitle}: Com
                     }
                     callTitle(
                         `Evidencias: ${type === undefined ?
-                        `${execDefault === 'done' ? `cantidad realizada` : execDefault === 'benefited_population_number' ? `población beneficiada` : `recursos ejecutados`} 
+                        `${execDefault === 'done' ? `cantidad realizada` : execDefault === 'benefited_population_number' ? `población beneficiada` : `recursos ejecutados`}
                         ${subCateDefault === '' ? (
                             cateDefault.replace('evidences', '') === `` ? `en todas las ubicaciones` : `en la ubicación de ${cateDefault}`)
-                            : `en la ubicación de ${subCateDefault}`} 
+                            : `en la ubicación de ${subCateDefault}`}
                         ${yearsDefault === 0 ? 'total por año' : `para el año ${yearsDefault}`}`
-                    :   `${execDefault === 'done' ? `cantidad realizada` : execDefault === 'benefited_population_number' ? `población beneficiada` : `recursos ejecutados`} 
-                        para e
+                        : `${execDefault === 'done' ? `cantidad realizada` : execDefault === 'benefited_population_number' ? `población beneficiada` : `recursos ejecutados`}
                         ${subCateDefault === '' ? (
                             cateDefault.replace('evidences', '') === `` ? `en todas las ubicaciones` : `en la ubicación de ${cateDefault}`)
-                            : `en la ubicación de ${subCateDefault}`} 
-                        ${yearsDefault === 0 ? 'total por año' : `para el año ${yearsDefault}`}`}`);
-                })
+                            : `en la ubicación de ${subCateDefault}`}
+                        ${yearsDefault === 0 ? 'total por año' : `para el año ${yearsDefault}`}`}
+                    `);
+                });
+                break;
+            case 'execution':
+                dispatch(setCategories([]));
+                dispatch(setSubCategories([]));
+                getDataDashboardExecution(id_plan, cateDefault.replace('execution', ''), yearsDefault === 0 ? '' : yearsDefault.toString())
+                .then((res: ResponseChartExecu[]) => {
+                    const data = res.map(r => execDefault === 'financial_execution' ?
+                        parseFloat(r.financial_execution.toString()) : r.physical_progress
+                    );
+                    const labels: string[] | number[] = yearsDefault === 0 ? res.map(r => r.year) : cateDefault === '' ? res.map(r => r.code) : res.map(r => r.name === null ? '' : r.name);
+                    callDataX(labels);
+                    callDataY([data]);
+                    let val: number = 0, label: string = '';
+                    if (type === 'min') {
+                        val = Math.min(...data);
+                        label = labels[data.indexOf(val)].toString();
+                    } else if (type === 'max') {
+                        val = Math.max(...data);
+                        label = labels[data.indexOf(val)].toString();
+                    }
+                    callTitle(
+                        `Metas: ${type === undefined ?
+                        `Ejecución ${execDefault === 'financial_execution' ? 'financiera' : `física`}
+                            ${cateDefault.replace('secretary', '') === `` ? `de todas las metas` : `de la meta ${cateDefault}`}
+                            ${yearsDefault === 0 ? 'total por año' : `para el año ${yearsDefault}`}`
+                        : `para la ejecución ${execDefault === 'financial_execution' ? 'financiera' : `física`}
+                            ${cateDefault.replace('secretary', '') === `` ? `de todas las metas` : `de la meta ${cateDefault}`}
+                            ${label} el ${type === 'min' ? 'mínimo' : 'máximo'} es ${val} ${yearsDefault === 0 ? 'total por año' : `para el año ${yearsDefault}`}`
+                        }`
+                    );
+                });
                 break;
             default:
                 dispatch(setCategories([]));
@@ -212,7 +244,7 @@ const Component = ({index, children, type, callDataX, callDataY, callTitle}: Com
                     onClick={()=>close(index)}>
                 <Close/>
             </button>
-            {field === '' ? 
+            {field === '' ?
             <div className="tw-bg-white tw-h-full tw-flex tw-flex-col tw-items-center tw-justify-center">
                 <Dataset sx={{ fontSize: 80 }}/>
                 <p>Cargue un campo</p>

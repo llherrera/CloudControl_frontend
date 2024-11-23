@@ -134,6 +134,27 @@ export const changePermissions = async (id: number, rol: string) => {
     return response.data;
 }
 
+export const getMyPronts = async () => {
+    const response = await api.get('/usuarios/pront');
+    return response.data;
+}
+
+export const addPront = async (text: string) => {
+    const response = await api.post('/usuarios/pront', {
+        text
+    });
+    return response.data;
+}
+
+export const deleteProntById = async (id: number) => {
+    const response = await api.delete('/usuarios/pront', {
+        params: {
+            id_input: id
+        }
+    });
+    return response.data;
+}
+
 export const addPDT = async (pdt: PDTInterface) => {
     const response = await api.post("/plan-territorial", {
         PlanName:           pdt.name,
@@ -618,6 +639,15 @@ export const updateExecution = async (date: Date, value: number, code: string, u
     return response.data;
 }
 
+export const getListNodes = async (plan_id: number) => {
+    const response = await api.get('/nodo/listanodos', {
+        params: {
+            id_plan: plan_id
+        }
+    });
+    return response.data;
+}
+
 export const getNodesSecretary = async (id_plan: number, secretary: string) => {
     const response = await api.get('plan-territorial/nodos-secre', {
         params: {
@@ -656,6 +686,17 @@ export const getDataDashboardEvidence = async (id_plan: number, neighborhood: st
             id_plan,
             neighborhood,
             location,
+            year
+        }
+    });
+    return response.data;
+}
+
+export const getDataDashboardExecution = async (id_plan: number, id_node: string, year: string) => {
+    const response = await api.get('plan-territorial/dash-ejecu', {
+        params: {
+            id_plan,
+            id_node,
             year
         }
     });

@@ -6,19 +6,14 @@ export const ButtonComponent = ( props : BtnProps ) => {
             <button type="submit"
                     title={props.text}
                     onClick={props.onClick}
-                    className={`hover:tw-bg-navBar
-                                ${props.bgColor}
-                                tw-border
-                                tw-border-greenBtn
-                                tw-p-4 tw-rounded
-                                tw-w-16 tw-h-16
-                                md:tw-w-20 md:tw-h-20 md:tw-text-[10px]
-                                2xl:tw-w-28 2xl:tw-h-28 2xl:tw-text-base
+                    className={`hover:tw-bg-navBar ${props.bgColor}
+                                tw-border tw-border-greenBtn tw-rounded
+                                tw-w-16 tw-h-16 tw-p-4
+                                md:tw-w-24 md:tw-h-24 md:tw-text-sm
                                 tw-flex tw-flex-col
-                                tw-justify-center
-                                tw-items-center`}>
+                                tw-justify-center tw-items-center`}>
                     {props.src ? 
-                    <img src={props.src} alt="icon" className="tw-w-10 tw-h-10" />
+                    <img src={props.src} alt="icon" className="tw-w-24 tw-h-24" />
                     : null}
                     {props.icon ?
                     props.icon
@@ -28,7 +23,7 @@ export const ButtonComponent = ( props : BtnProps ) => {
                                 tw-text-center
                                 md:tw-text-xs 2xl:tw-text-lg
                                 ${props.textColor}
-                                tw-hidden lg:tw-block`}>
+                                tw-hidden md:tw-block`}>
                     {props.text}</p>
                 : null
                 }

@@ -11,6 +11,7 @@ export const PrivateRouter = () => {
             <Route path="/lobby" element={<pages.LobbyPage/>} />
             <Route path='/pdt' element={<pages.PDT/>} />
             <Route path='/pdt/PlanIndicativo' element={<pages.PDTid/>} />
+            <Route path='/pdt/PlanIndicativo/copilot' element={<pages.CopilotPage/>} />
             <Route path='/pdt/PlanIndicativo/configuracion' element={<pages.SettingPage/>} />
             <Route path="/pdt/PlanIndicativo/Meta" element={<pages.UnitNodePage/>} />
             <Route path='/pdt/PlanIndicativo/Meta/configuracion' element={<pages.SettingsPage/>} />
@@ -29,5 +30,5 @@ export const PrivateRouter = () => {
             <Route path='/meta/:uuid' element={<pages.SearchUnitPage/>} />
             <Route path='*' element={<pages.NotFoundPage/>} />
         </Routes>
-  )
+    )
 }

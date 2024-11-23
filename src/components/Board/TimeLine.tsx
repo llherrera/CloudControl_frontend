@@ -149,14 +149,12 @@ export const TimeLine = () => {
                          0 : yearProgress[index])*100).toString())}%
                 </button>
                 <div className="tw-flex tw-items-center tw-w-full tw-relative tw-row-start-2">
-                    <button className={`tw-w-full tw-h-2
-                                    tw-px-3
-                                    tw-z-10 tw-absolute 
-                                    tw-transition hover:tw-scale-110
-                                    ${index%2 === 1 ? 'hover:tw-translate-y-1' : 'hover:tw--translate-y-1'}
-                                    ${colorClass(index)}
-                                    ${colorYearCla(index)}
-                                    `}>
+                    <button className={`tw-w-full tw-h-2 tw-px-3
+                                        tw-absolute 
+                                        tw-transition hover:tw-scale-110
+                                        ${index%2 === 1 ? 'hover:tw-translate-y-1' : 'hover:tw--translate-y-1'}
+                                        ${colorClass(index)}
+                                        ${colorYearCla(index)}`}>
                     </button>
                     <div className={`tw-h-full
                                     tw-grow

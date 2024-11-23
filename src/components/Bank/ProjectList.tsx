@@ -37,7 +37,7 @@ export const ProjectList = () => {
 
     useEffect(() => {
         if (id_plan <= 0) return;
-        if (secretaries == undefined && seeForm)
+        if (secretaries == undefined)
             dispatch(thunkGetSecretaries(id_plan));
     }, [id_plan, seeForm]);
 

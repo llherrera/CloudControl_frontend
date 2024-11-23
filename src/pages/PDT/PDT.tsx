@@ -7,6 +7,7 @@ import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 import { useAppSelector, useAppDispatch } from "@/store";
 import { setIdPlan } from "@/store/content/contentSlice";
 import { thunkGetPDTid } from "@/store/plan/thunks";
+import { resetPlan } from "@/store/plan/planSlice";
 
 import { getPDTs } from "@/services/api";
 import { PDTInterface, PDTPageProps } from "@/interfaces";
@@ -45,7 +46,10 @@ const ListPDT = ( props: PDTPageProps ) => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
-    const handleAddPdt = () => navigate('/anadirPDT');
+    const handleAddPdt = () => {
+        dispatch(resetPlan());
+        navigate('/anadirPDT');
+    }
 
     const handlePdtid = (id: number) => {
         dispatch(setIdPlan(id));

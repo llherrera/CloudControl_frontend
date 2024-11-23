@@ -91,3 +91,11 @@ export interface ResponseChartEvide {
     benefited_population_number: number;
     executed_resources: number;
 }
+
+export interface ResponseChartExecu {
+    code: string;
+    name: string;
+    year: number;
+    financial_execution: number;
+    physical_progress: number;
+}

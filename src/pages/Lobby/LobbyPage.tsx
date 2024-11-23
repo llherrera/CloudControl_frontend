@@ -2,11 +2,12 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import planLogo from '@/assets/icons/plan-indicativo.svg';
-import bankLogo from '@/assets/icons/Banco-proyectos.svg';
-import POAILogo from '@/assets/icons/Point.svg';
+import bankLogo from '@/assets/icons/BancoProyectoLogo.svg';
+import POAILogo from '@/assets/icons/POAI.svg';
+import MapaLogo from '@/assets/icons/MapaIndicativoLogo.svg'
 
 import { Header, ButtonComponent } from '@/components';
-import { MapICon, PQRSIcon } from '@/assets/icons';
+import { MapICon, PQRSIcon, POAIIcon, CheckICon, MapaIcon } from '@/assets/icons';
 
 import { useAppDispatch, useAppSelector } from '@/store';
 import { selectOption, setProjectPage } from '@/store/content/contentSlice';
@@ -70,22 +71,22 @@ export const LobbyPage = () => {
                 key={0}
                 inside={false}
                 text='Plan indicativo'
-                src={planLogo}
                 onClick={() => {
                     dispatch(AddRootTree([]));
-                    dispatch(selectOption(0))
-                    navigate(`/pdt/PlanIndicativo`)
+                    dispatch(selectOption(0));
+                    navigate(`/pdt/PlanIndicativo`);
                 }}
-                bgColor="tw-bg-greenBtn" />
+                bgColor="tw-bg-greenBtn"
+                icon={<CheckICon color='white'/>}/>
             <ButtonComponent
                 key={1}
                 inside={false}
                 text='Banco de proyectos'
                 src={bankLogo}
                 onClick={() => {
-                    dispatch(selectOption(1))
+                    dispatch(selectOption(1));
                     dispatch(setProjectPage(5));
-                    navigate('/PlanIndicativo/Banco-proyectos')
+                    navigate('/PlanIndicativo/Banco-proyectos');
                 }}
                 bgColor="tw-bg-greenBtn" />
             <ButtonComponent
@@ -94,30 +95,30 @@ export const LobbyPage = () => {
                 text='POAI'
                 src={POAILogo}
                 onClick={() => {
-                    dispatch(selectOption(2))
-                    navigate('/PlanIndicativo/POAI')
+                    dispatch(selectOption(2));
+                    navigate('/PlanIndicativo/POAI');
                 }}
-                bgColor="tw-bg-greenBtn" />
+                bgColor="tw-bg-greenBtn"/>
             <ButtonComponent
                 key={3}
                 inside={false}
                 text='Mapa de intervención'
+                src={MapaLogo}
                 onClick={() => {
-                    dispatch(selectOption(3))
-                    navigate('/PlanIndicativo/Mapa')
+                    dispatch(selectOption(3));
+                    navigate('/PlanIndicativo/Mapa');
                 }}
-                bgColor="tw-bg-greenBtn"
-                icon={<MapICon color='white'/>}/>
-            <ButtonComponent
+                bgColor="tw-bg-greenBtn"/>
+            {/*<ButtonComponent
                 key={4}
                 inside={false}
                 text='PQRS'
                 onClick={() => {
-                    dispatch(selectOption(4))
-                    navigate('/PQRS')
+                    dispatch(selectOption(4));
+                    navigate('/PQRS');
                 }}
                 bgColor="tw-bg-greenBtn"
-                icon={<PQRSIcon color='white'/>}/>
+                icon={<PQRSIcon color='white'/>}/>*/}
         </Header>
     );
 }

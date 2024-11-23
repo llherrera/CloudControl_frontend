@@ -46,9 +46,9 @@ const Dashboard = (props: ModalProps) => {
         {id: '5', icon: <ArrowDownward/>, title:'Minimo', value: 'min', chart: false, count:true},
     ];
 
-    const startDrag = (e: React.DragEvent<HTMLLIElement>, item_id: string) => e.dataTransfer.setData('item_id', item_id);
+    const startDragFields = (e: React.DragEvent<HTMLLIElement>, item_id: string) => e.dataTransfer.setData('item_id', item_id);
 
-    const startDrag2 = (e: React.DragEvent<HTMLLIElement>, item_id: string) => e.dataTransfer.setData('chart_id', item_id);
+    const startDragViews = (e: React.DragEvent<HTMLLIElement>, item_id: string) => e.dataTransfer.setData('chart_id', item_id);
 
     const dragOver = (e: React.DragEvent<HTMLUListElement>) => e.preventDefault();
 
@@ -69,7 +69,7 @@ const Dashboard = (props: ModalProps) => {
         props.callback(false);
     };
 
-    
+
     return (
         <Modal  isOpen={props.modalIsOpen}
                 onRequestClose={()=>onClose()}
@@ -101,7 +101,7 @@ const Dashboard = (props: ModalProps) => {
                                 <li role="menuitem"
                                     className="tw-mx-2 tw-flex tw-cursor-grab"
                                     title={item.title}
-                                    draggable onDragStart={(e)=>startDrag(e, item.id)}
+                                    draggable onDragStart={e => startDragFields(e, item.id)}
                                     key={item.id}>
                                     <Dataset/>
                                     {item.name}
@@ -121,7 +121,7 @@ const Dashboard = (props: ModalProps) => {
                             <li role="menuitem"
                                 className="tw-cursor-grab"
                                 title={item.title}
-                                draggable onDragStart={(e)=>startDrag2(e, item.id)}
+                                draggable onDragStart={e => startDragViews(e, item.id)}
                                 key={item.id}>
                                 {item.icon}
                             </li>

@@ -1,4 +1,5 @@
-import cclogo from "@/assets/images/logo-cc.png";
+//import cclogo from "@/assets/images/logo-cc.png";
+import cclogo from "@/assets/images/AlTablero.png";
 import { HeaderProps } from "@/interfaces";
 
 export const Header = ( {children}: HeaderProps) => {
