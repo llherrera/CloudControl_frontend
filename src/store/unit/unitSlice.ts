@@ -134,11 +134,12 @@ export const unitSlice = createSlice({
         builder.addCase(thunkUpdateExecution.fulfilled, state => {
             //state.plan!.deadline = action.meta.arg.date
             state.loadingUnit = false;
+            notify('Ejecucion actualizada', 'success');
         });
         builder.addCase(thunkUpdateExecution.rejected, (state, action) => {
             state.loadingUnit = false;
             state.errorLoadingUnit = action.payload;
-            notify('Ha ocurrido un error, vuelva a intertarlo más tarde');
+            notify(action.payload?.error_description ?? 'Ha ocurrido un error, vuelva a intertarlo más tarde', 'error');
         });
     }
 })

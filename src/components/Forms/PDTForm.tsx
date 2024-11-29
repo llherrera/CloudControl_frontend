@@ -8,10 +8,12 @@ import { useAppDispatch, useAppSelector } from '@/store';
 import { thunkAddPDT } from "@/store/plan/thunks";
 import { setIdPlan, setLogo, setLogoPlan } from "@/store/content/contentSlice";
 
+import { Box, CircularProgress } from '@mui/material';
+
 export const PDTForm = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
-    const { plan } = useAppSelector(store => store.plan);
+    const { plan, loadingPlan } = useAppSelector(store => store.plan);
 
     const fechaInicio = new Date().getFullYear();
     const years = [];
@@ -139,15 +141,19 @@ export const PDTForm = () => {
                 />
                 </div>
                 <div className="tw-flex tw-justify-center">
+                    {loadingPlan ?
+                    <Box sx={{ display: 'flex' }}>
+                        <CircularProgress />
+                    </Box> :
                     <input  type="submit"
                             value="Registrar Plan"
                             title="Añadir plan"
                             className=" tw-bg-green-500 hover:tw-bg-green-300
-                                        tw-text-white tw-font-bold 
+                                        tw-text-white tw-font-bold
                                         hover:tw-text-black
-                                        tw-rounded
-                                        tw-p-2"
+                                        tw-rounded tw-p-2"
                     />
+                    }
                 </div>
             </form>
         </div>

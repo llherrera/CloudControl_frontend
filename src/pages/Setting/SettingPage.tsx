@@ -9,9 +9,11 @@ import { setIsFullHeight } from "@/store/content/contentSlice";
 import { Frame, BackBtn, ColorForm, SecretaryForm,
     UploadLogoCity, UploadLogoPlan, LocationsFormPage,
     FileInput, FileFinancialInput, FilePhysicalInput,
-    FileUnitInput, InfoPopover, DrawerMenu,
-    ListItemComp } from '@/components';
-import { decode, notify } from "@/utils";
+    FileUnitInput, DrawerMenu, ListItemComp } from '@/components';
+import { decode } from "@/utils";
+
+import { Button, Tooltip, Zoom } from '@mui/material';
+import InfoIcon from '@mui/icons-material/Info';
 
 export const SettingPage = () => {
     return (
@@ -80,43 +82,39 @@ const SettingPageWrapper = () => {
     const submitDate = () => {
         if (plan === undefined) return;
         const date = deadline.toISOString();
-        dispatch(thunkUpdateDeadline({id_plan: id_plan, date: date}))
-        .unwrap()
-        .then(() => notify('Fecha de corte actualizada'));
+        dispatch(thunkUpdateDeadline({id_plan: id_plan, date: date}));
     };
 
     const handleBack = () => navigate(-1);
 
     const handlePage = (page: number) => setPage(page);
-    
+
     return (
-        (plan === null || plan === undefined) ? 
+        (plan === null || plan === undefined) ?
         <div className='tw-text-center'>No hay un plan seleccionado</div> :
         <div className={``}>
-            <div>
-                <DrawerMenu>
-                    <ListItemComp
-                        page={page}
-                        index={0}
-                        setPage={() => handlePage(0)}
-                        title='Cargar plan'/>
-                    <ListItemComp
-                        page={page}
-                        index={1}
-                        setPage={() => handlePage(1)}
-                        title='Ajustes'/>
-                    <ListItemComp
-                        page={page}
-                        index={2}
-                        setPage={() => handlePage(2)}
-                        title='Secretarías'/>
-                    <ListItemComp
-                        page={page}
-                        index={3}
-                        setPage={() => handlePage(3)}
-                        title='Localidades'/>
-                </DrawerMenu>
-            </div>
+            <DrawerMenu>
+                <ListItemComp
+                    page={page}
+                    index={0}
+                    setPage={() => handlePage(0)}
+                    title='Cargar plan'/>
+                <ListItemComp
+                    page={page}
+                    index={1}
+                    setPage={() => handlePage(1)}
+                    title='Ajustes'/>
+                <ListItemComp
+                    page={page}
+                    index={2}
+                    setPage={() => handlePage(2)}
+                    title='Secretarías'/>
+                <ListItemComp
+                    page={page}
+                    index={3}
+                    setPage={() => handlePage(3)}
+                    title='Localidades'/>
+            </DrawerMenu>
             <div className='sm:tw-ml-2 md:tw-ml-40 tw-mr-2 xl:tw-ml-40
                     tw-mt-24 md:tw-mt-0'>
                 <div className="tw-flex tw-justify-between tw-mt-1">
@@ -127,7 +125,7 @@ const SettingPageWrapper = () => {
                 {page === 0 ?
                     <div>
                         <div>
-                            {rol === "admin" || ((rol === 'funcionario' || rol === 'planeacion') && id_plan === plan.id_plan! ) ? 
+                            {rol === "admin" || ((rol === 'funcionario' || rol === 'planeacion') && id_plan === plan.id_plan! ) ?
                                 <div>
                                     <FileInput/>
                                     <br />
@@ -143,11 +141,22 @@ const SettingPageWrapper = () => {
                 page === 1 ?
                     <div>
                         {rol === "admin" || (rol === 'funcionario' && id_plan === plan.id_plan! ) ?
-                            <div className='tw-flex tw-justify-center 
+                            <div className='tw-flex tw-justify-center
                                             tw-gap-6 tw-items-center
                                             tw-ml-4
                                             tw-bg-white
                                             tw-rounded'>
+                                <Tooltip
+                                    title={`Al seleccionar la fecha de corte será la misma en cada año, hasta que la cambie nuevamente.\n
+                                            Una vez pasado la fecha de corte se bloquearan las ejecuciones del año anterior`}
+                                    slots={{
+                                        transition: Zoom,
+                                    }}
+                                >
+                                    <Button>
+                                        <InfoIcon color="action"/>
+                                    </Button>
+                                </Tooltip>
                                 <p className='tw-text-[#222222] tw-font-bold tw-text-lg
                                                 tw-font-montserrat'>
                                     Fecha de corte
@@ -157,16 +166,15 @@ const SettingPageWrapper = () => {
                                     value={deadline.toISOString().substring(0,10)}
                                     className='tw-m-2 tw-p-2 tw-rounded tw-border-2 tw-border-gray-400'
                                     onChange={handleDate}/>
-                                <button 
+                                <button
                                     className=' tw-bg-greenColory hover:tw-bg-green-400
                                                 tw-text-white hover:tw-text-black
-                                                tw-font-bold 
+                                                tw-font-bold
                                                 tw-p-2 tw-rounded'
                                     type='button'
-                                    onClick={()=>submitDate()}>
+                                    onClick={() => submitDate()}>
                                     {loadingPlan ? 'Cargando...' : 'Establecer fecha'}
                                 </button>
-                                <InfoPopover content={'Al seleccionar la fecha de corte, será la misma en cada año.\nSe bloqueará la opción de subir o actualizar evidencias para el año anterior.'}/>
                             </div>
                             : null
                         }

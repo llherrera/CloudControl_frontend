@@ -35,9 +35,9 @@ const Component = ({index, children, type, callDataX, callDataY, callTitle}: Com
     const [field         , setField] = useState<string>('');
     const [fieldDefault  , setFieldDefault] = useState<string>('');
 
-    const [locationsMap, setLocationsMap] = useState<Map<LocationInterface, LocationInterface[]>>();
-    const [locations_, setLocations_] = useState<LocationInterface[]>([]);
-    const [locations__, setLocations__] = useState<LocationInterface[]>([]);
+    const [locationsMap  , setLocationsMap] = useState<Map<LocationInterface, LocationInterface[]>>();
+    const [locations_    , setLocations_] = useState<LocationInterface[]>([]);
+    const [locations__   , setLocations__] = useState<LocationInterface[]>([]);
     //const [indexLocations, setIndexLocations] = useState(0);
 
     const close = (index: number) => {
@@ -131,8 +131,7 @@ const Component = ({index, children, type, callDataX, callDataY, callTitle}: Com
                 getDataDashboardSecretary(id_plan, cateDefault.replace('secretary', ''), yearsDefault === 0 ? '' : yearsDefault.toString())
                 .then((res: ResponseChartSecre[]) => {
                     const data = res.map(r => execDefault === 'financial_execution' ?
-                        parseFloat(r.financial_execution.toString()) : execDefault === 'physical_execution' ?
-                        r.physical_execution : r.physical_programming
+                        parseFloat(r.financial_execution.toString()) : r.physical_progress
                     );
                     const labels: string[] | number[] = yearsDefault === 0 ? res.map(r => r.year) : cateDefault === '' ? res.map(r => r.responsible) : res.map(r => r.name === null ? '' : r.name);
                     callDataX(labels);
@@ -200,7 +199,7 @@ const Component = ({index, children, type, callDataX, callDataY, callTitle}: Com
                     const data = res.map(r => execDefault === 'financial_execution' ?
                         parseFloat(r.financial_execution.toString()) : r.physical_progress
                     );
-                    const labels: string[] | number[] = yearsDefault === 0 ? res.map(r => r.year) : cateDefault === '' ? res.map(r => r.code) : res.map(r => r.name === null ? '' : r.name);
+                    const labels: string[] | number[] = yearsDefault === 0 ? res.map(r => r.year) : res.map(r => r.name);
                     callDataX(labels);
                     callDataY([data]);
                     let val: number = 0, label: string = '';
@@ -260,8 +259,8 @@ const Component = ({index, children, type, callDataX, callDataY, callTitle}: Com
 export const InterativeChart = ({type, index}: PropsChart) => {
     const chartComponentRef = useRef<HighchartsReact.RefObject>(null);
 
-    const { yearSelect } = useAppSelector(store => store.chart);
-    const { years } = useAppSelector(store => store.plan);
+    const { yearSelect, execSelect } = useAppSelector(store => store.chart);
+    const { years, colorimeter } = useAppSelector(store => store.plan);
 
     const [dataX, setDataX] = useState<string[] | number[]>([]);
     const [dataY, setDataY] = useState<number[][]>([]);
@@ -337,7 +336,7 @@ export const InterativeChart = ({type, index}: PropsChart) => {
             },
             gridLineWidth: 0
         },
-        series: dataY.map((data) => {
+        series: dataY.map(data => {
             const dataUse = data.map((d, i) => {
                 return {
                     name: (yearSelect === 0 && years.length === data.length) ? years[i].toString() : dataX[i].toString(),
@@ -353,7 +352,24 @@ export const InterativeChart = ({type, index}: PropsChart) => {
                 dataLabels: {
                     enabled: false,
                     crop: false,
-                }
+                },
+                zones: execSelect === 'physical_progress' ? [
+                    {
+                        value: colorimeter[0]/100,
+                        color: '#FE1700',
+                    },
+                    {
+                        value: colorimeter[1]/100,
+                        color: '#FCC623',
+                    },
+                    {
+                        value: colorimeter[2]/100,
+                        color: '#119432',
+                    },
+                    {
+                        color: '#008DCC',
+                    },
+                ] : undefined
             }
         }),
     };

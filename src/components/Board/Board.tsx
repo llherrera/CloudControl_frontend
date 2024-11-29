@@ -14,15 +14,15 @@ export const Board = () => {
 
     useEffect(() => {
         dispatch(thunkGetPDTid(id_plan));
-        
+
         getTotalProgress(id_plan)
-        .then((res) => {
+        .then(res => {
             if (!res) return;
             localStorage.setItem('UnitNode', JSON.stringify(res[0]));
             localStorage.setItem('YearDeta', JSON.stringify(res[1]));
             calcProgress( res );
         })
-        .catch((err) => {
+        .catch(err => {
             console.log(err);
         })
     }, []);
@@ -30,15 +30,15 @@ export const Board = () => {
     const calcProgress = ( res: [NodesWeight[], YearDetail[]] ) => {
         let pesosNodo = res[0];
         let detalleAnno = res[1];
-        
+
         detalleAnno.forEach((item: YearDetail) => {
             let progreso = 0;
             let progresoFinan = 0;
-            if (item.physical_programming !== 0) 
+            if (item.physical_programming !== 0)
                 progreso = item.physical_execution / item.physical_programming;
             else
                 progreso = -1;
-            if (progreso > 1) 
+            if (progreso > 1)
                 progreso = 1;
             progreso = parseFloat(progreso.toFixed(2));
             progresoFinan = item.financial_execution /1000000;
@@ -48,9 +48,9 @@ export const Board = () => {
             if (peso) {
                 peso.percents = peso.percents ? peso.percents : [];
                 peso.percents.push(
-                    { 
+                    {
                         progress : progreso,
-                        year: item.year ,
+                        year: item.year,
                         physical_programming: item.physical_programming,
                         financial_execution: progresoFinan
                     }
@@ -67,7 +67,7 @@ export const Board = () => {
                             (e: NodesWeight) => e.id_node === parent
                         );
                         if (padre) {
-                            let progresoPeso = Percentages.progress > 0 ? 
+                            let progresoPeso = Percentages.progress > 0 ?
                                 Percentages.progress * (item.weight / 100) : 0;
                             progresoPeso = parseFloat(progresoPeso.toFixed(2));
                             let financiado = Percentages.financial_execution;
@@ -98,8 +98,8 @@ export const Board = () => {
     }
 
     return (
-        (plan ? 
-        <Content    
+        (plan ?
+        <Content
             id={ id_plan }
         /> : <p>Cargando</p>
         )

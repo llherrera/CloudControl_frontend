@@ -87,8 +87,18 @@ export const LevelsSelectFilter = ({callback}: PropsCallback) => {
                 const { id_level } = levels[i];
                 if (id_level) {
                     const res: NodeInterface[] = await getLevelNodes({id_level: id_level, parent: parent});
-                    parent = res[index_[i]].id_node;
-                    response.push(res);
+                    const emptyOption: NodeInterface = {
+                        id_node: res[0].id_node.split('.').slice(0, -1).join('.'),
+                        code: '',
+                        name: "Selecciona una opción",
+                        description: "",
+                        parent: null,
+                        id_level: id_level,
+                        weight: 0,
+                        responsible: null,
+                    };
+                    parent = res[index_[i] - 1 < 0 ? 0 : index_[i] - 1].id_node;
+                    response.push([emptyOption, ...res]);
                 }
             }
             setPrograms(response);
@@ -111,14 +121,6 @@ export const LevelsSelectFilter = ({callback}: PropsCallback) => {
         callback(event);
     };
 
-    function transformarString(input: string): string {
-        const parts = input.split('.');
-        if (parts.length > 1) {
-            parts.pop();
-        }
-        return parts.join('.');
-    }
-
     return (
         <div className=''>
             {programs.map((program, index) =>
@@ -126,9 +128,6 @@ export const LevelsSelectFilter = ({callback}: PropsCallback) => {
                     className='tw-mb-1'>
                     <select onChange={e => handleChangePrograms(index, e)}
                             className='tw-w-full'>
-                        <option
-                            value={transformarString(program[0].id_node)}>
-                        </option>
                         {program.map((node, index) =>
                             <option value={node.id_node}
                                 key={index}>

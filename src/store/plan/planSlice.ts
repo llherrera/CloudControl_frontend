@@ -1,8 +1,7 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 import {
-    InitialStatePlanInterface,
-    NodeInterface, Node,
+    InitialStatePlanInterface, Node,
     Coordinates, LevelInterface } from "@/interfaces";
 import {
     setGenericState, getGenericState,
@@ -71,6 +70,8 @@ const getInitialState = (): InitialStatePlanInterface => {
         proje_s: 0
     };
 };
+
+const errorMSGUpdate = 'ha ocurrido un error al actualizar, intente mas tarde';
 
 export const planSlice = createSlice({
     name: "plan",
@@ -178,13 +179,13 @@ export const planSlice = createSlice({
             state.colorimeter = [];
             setGenericState('plan', state);
             state.plan.toString() != '' ?
-                notify('Redirigiendo') :
-                notify('No se ha encontrado un Plan de Desarrollo en esta localidad');
+                notify('Redirigiendo', 'info') :
+                notify('No se ha encontrado un Plan de Desarrollo en esta localidad', 'error');
         });
         builder.addCase(thunkGetPDTByDept.rejected, (state, action) => {
             state.loadingPlan = false;
             state.errorLoadingPlan = action.payload;
-            notify('Ha ocurrido un error buscando el Plan Territorial');
+            notify('Ha ocurrido un error buscando el Plan Territorial', 'error');
         });
 
 
@@ -207,7 +208,7 @@ export const planSlice = createSlice({
             state.loadingPlan = false;
             state.errorLoadingPlan = action.payload;
             state.plan = undefined;
-            notify('Ha ocurrido un error buscando el Plan Territorial');
+            notify('Ha ocurrido un error buscando el Plan Territorial', 'error');
         });
 
 
@@ -253,21 +254,7 @@ export const planSlice = createSlice({
         builder.addCase(thunkAddPDT.rejected, (state, action) => {
             state.loadingPlan = false;
             state.errorLoadingPlan = action.payload;
-            if (action.payload) {
-                switch (action.payload.status) {
-                    case 401:
-                        alert("No está permitido acceder aquí.");
-                        break;
-                    case 404:
-                        alert("Usuario o contraseña incorrecto.");
-                        break;
-                    case 500:
-                        alert("Ha habido un error, pruebe más tarde.");
-                        break;
-                    default:
-                        break;
-                }
-            }
+            notify(action.payload?.error_description ?? 'Ha occurido un error', 'error');
         });
 
         
@@ -414,24 +401,7 @@ export const planSlice = createSlice({
         builder.addCase(thunkAddSecretaries.rejected, (state, action) => {
             state.loadingSecretaries = false;
             state.errorLoadingSecretaries = action.payload;
-            if (action.payload) {
-                switch (action.payload.status) {
-                    case 401:
-                        alert("No está permitido acceder aquí.");
-                        break;
-                    case 403:
-                        alert("No tienes permitido realizar esta acción.");
-                        break;
-                    case 404:
-                        alert("Usuario o contraseña incorrecto.");
-                        break;
-                    case 500:
-                        alert("Ha habido un error, pruebe más tarde.");
-                        break;
-                    default:
-                        break;
-                }
-            }
+            notify(action.payload?.error_description ?? 'Ha occurido un error', 'error');
         });
 
 
@@ -446,24 +416,7 @@ export const planSlice = createSlice({
         builder.addCase(thunkAddLocations.rejected, (state, action) => {
             state.loadingLocations = false;
             state.errorLoadingLocations = action.payload;
-            if (action.payload) {
-                switch (action.payload.status) {
-                    case 401:
-                        alert("No está permitido acceder aquí.");
-                        break;
-                    case 403:
-                        alert("No tienes permitido realizar esta acción.");
-                        break;
-                    case 404:
-                        alert("Plan no existe.");
-                        break;
-                    case 500:
-                        alert("Ha habido un error, pruebe más tarde.");
-                        break;
-                    default:
-                        break;
-                }
-            }
+            notify(action.payload?.error_description ?? 'Ha occurido un error', 'error');
         });
 
 
@@ -493,24 +446,7 @@ export const planSlice = createSlice({
         builder.addCase(thunkUpdateLocations.rejected, (state, action) => {
             state.loadingLocations = false;
             state.errorLoadingLocations = action.payload;
-            if (action.payload) {
-                switch (action.payload.status) {
-                    case 401:
-                        alert("No está permitido acceder aquí.");
-                        break;
-                    case 403:
-                        alert("No tienes permitido realizar esta acción.");
-                        break;    
-                    case 404:
-                        alert("Plan no existe.");
-                        break;
-                    case 500:
-                        alert("Ha habido un error, pruebe más tarde.");
-                        break;
-                    default:
-                        break;
-                }
-            }
+            notify(action.payload?.error_description ?? 'Ha occurido un error', 'error');
         });
 
 
@@ -535,41 +471,14 @@ export const planSlice = createSlice({
         });
         builder.addCase(thunkUpdateSecretaries.fulfilled, (state, action) => {
             state.loadingSecretaries = false;
-            if (state.secretaries) notify("Secretarias actualizadas");
-            else notify("Secretarias añadidas");
+            if (state.secretaries) notify("Secretarias actualizadas", 'success');
+            else notify("Secretarias añadidas", 'success');
             setGenericState('plan', state);
         });
         builder.addCase(thunkUpdateSecretaries.rejected, (state, action) => {
             state.loadingSecretaries = false;
-            let error_text = 'Ha occurido un error.';
-            if (action.payload) {
-                switch (action.payload.status) {
-                    case 401:
-                        alert("No está permitido acceder aquí.");
-                        break;
-                    case 403:
-                        alert("No tienes permitido realizar esta acción.");
-                        break;    
-                    case 404:
-                        alert("No se ha encontrado el recurso.");
-                        break;
-                    case 500:
-                        alert("Ha habido un error, pruebe más tarde.");
-                        break;
-                    default:
-                        break;
-                }
-                state.errorLoadingSecretaries = {
-                    status: action.payload.status,
-                    error_code: action.payload.error_code ?? action.payload.error,
-                    error_description: error_text
-                };
-            } else {
-                state.errorLoadingSecretaries = {
-                    error_code: action.error.code,
-                    error_description: error_text
-                };
-            }
+            state.errorLoadingSecretaries = action.payload;
+            notify(action.payload?.error_description ?? 'Ha occurido un error', 'error');
         });
 
 
@@ -599,10 +508,12 @@ export const planSlice = createSlice({
         builder.addCase(thunkUpdateDeadline.fulfilled, (state, action) => {
             state.plan!.deadline = action.meta.arg.date
             state.loadingPlan = false;
+            notify('Fecha de corte actualizada', 'success');
         });
         builder.addCase(thunkUpdateDeadline.rejected, (state, action) => {
             state.loadingPlan = false;
             state.errorLoadingPlan = action.payload;
+            notify(action.payload?.error_description ?? errorMSGUpdate, 'error');
         });
 
 
@@ -664,7 +575,7 @@ export const planSlice = createSlice({
         });
         builder.addCase(thunkUpdateProjects.rejected, (state, action) => {
             state.loadingPlan = false;
-            notify('ha ocurrido un error al actualizar, intente mas tarde', 'error');
+            notify(action.payload?.error_description ?? errorMSGUpdate, 'error');
             state.errorLoadingPlan = action.payload;
         });
     }

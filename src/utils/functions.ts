@@ -3,9 +3,9 @@ import ExcelJS from 'exceljs'
 import { useNavigate } from 'react-router-dom'
 
 import { doRefreshToken } from '@/services/api'
-import { 
-  AuthInterface, 
-  ErrorBasicInterface, 
+import {
+  AuthInterface,
+  ErrorBasicInterface,
   LevelInterface,
   ReportPDTInterface,
   LocationInterface,
@@ -30,8 +30,8 @@ export const parseErrorAxios = (err: unknown) => {
   if (!error.response) throw err
   else {
     const status = error.response?.status
-    const error_code = error.response?.data.error ?? error.response?.data.error_code
-    const error_description = error.response?.data.error_description
+    const error_code = error.response?.data.error ?? error.response?.data.error_code ?? error.response?.data.code
+    const error_description = error.response?.data.error_description ?? error.response?.data.msg
     return { status, error_code, error_description }
   }
 }
@@ -54,7 +54,7 @@ export const getYears = (fecha_inicio: string= '') => {
 }
 
 export const validateEmail = (email: string) => {
-  const regexp: RegExp = /\w+([.]\w+)*@\w+([.]\w+)*[.][a-zA-Z]{2,5}/
+  const regexp: RegExp = /\w+([.]\w+)*@[a-zA-Z0-9._-]+[.][a-zA-Z]{2,5}/
   return regexp.test(email)
 }
 

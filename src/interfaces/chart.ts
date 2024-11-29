@@ -73,8 +73,7 @@ export interface ResponseChartSecre {
     name: null | string;
     year: number;
     financial_execution: number;
-    physical_execution: number;
-    physical_programming: number;
+    physical_progress: number;
 }
 
 export interface ResponseChartLocat {

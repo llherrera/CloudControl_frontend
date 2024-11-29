@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import Modal from 'react-modal';
 
 import { useAppSelector, useAppDispatch } from "@/store";
-import { addBoard, setIndexSelect, setFieldSelect
-    } from "@/store/chart/chartSlice";
+import { addBoard, setIndexSelect, setFieldSelect } from "@/store/chart/chartSlice";
 
 import IconButton from "@mui/material/IconButton";
 import { OpenInFull, PieChart, BarChart, Timeline, ArrowUpward,
@@ -20,13 +19,13 @@ export const ModalBoard = () => {
             <Dashboard
                 modalIsOpen={isOpen}
                 callback={setIsOpen}/>
-            <IconButton aria-label="delete" 
-                        size="large" 
-                        color='inherit' 
+            <IconButton aria-label="delete"
+                        size="large"
+                        color='inherit'
                         title='Generar reporte del Plan Indicativo Total'
-                        className="tw-transition 
+                        className="tw-transition
                             hover:tw--translate-y-1 hover:tw-scale-[1.4]"
-                        onClick={()=>setIsOpen(true)}>
+                        onClick={() => setIsOpen(true)}>
                 <OpenInFull/>
             </IconButton>
         </div>
@@ -72,18 +71,18 @@ const Dashboard = (props: ModalProps) => {
 
     return (
         <Modal  isOpen={props.modalIsOpen}
-                onRequestClose={()=>onClose()}
+                onRequestClose={() => onClose()}
                 contentLabel=''>
             <div className="tw-h-full tw-flex tw-justify-between">
                 <ul role="menuitem"
                     className={`tw-w-full tw-h-full
-                                tw-bg-gray-300 
+                                tw-bg-gray-300
                                 tw-mr-2 tw-p-2
                                 tw-grid tw-gap-2
-                                ${board.length === 1 ? '' : 
+                                ${board.length === 1 ? '' :
                                 board.length === 2 ? 'tw-grid-cols-2' :
                                 'tw-grid-cols-2 tw-grid-rows-2'} `}
-                    onDragOver={(e)=>dragOver(e)}
+                    onDragOver={e =>dragOver(e)}
                     onDrop={(e)=>onDrop(e)}>
                     {board.map((bo, index) => {
                         if (bo.chart) return <InterativeChart key={index} type={bo.value} index={index}/>
@@ -109,7 +108,7 @@ const Dashboard = (props: ModalProps) => {
                             )}
                         </div>
                         <div className="tw-h-1/2 tw-border tw-bg-gray-200">
-                            {indexSelect === -1 ? null : 
+                            {indexSelect === -1 ? null :
                             <Filter/>}
                         </div>
                     </ul>

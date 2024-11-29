@@ -6,7 +6,6 @@ import { removeEvidence } from "@/store/evidence/evidenceSlice";
 import { thunkUpdateExecution } from "@/store/unit/thunks";
 
 import { ExecutedProps } from '@/interfaces';
-import { notify } from "@/utils";
 
 export const Execution = ( {ex, index}: ExecutedProps ) => {
     const dispatch = useAppDispatch();
@@ -33,15 +32,7 @@ export const Execution = ( {ex, index}: ExecutedProps ) => {
             user_id: ex.id_user,
             plan_id: id_plan,
             reason
-        }))
-        .unwrap()
-        .then(() => {
-            notify('Ejecucion actualizada');
-        })
-        .catch((error) => {
-            notify('Ha ocurrido un error, intentelo de nuevo más tarde');
-            console.log(error);
-        });
+        }));
         dispatch(removeEvidence(index));
     };
 
@@ -56,15 +47,7 @@ export const Execution = ( {ex, index}: ExecutedProps ) => {
                 user_id: ex.id_user,
                 plan_id: id_plan,
                 reason
-            }))
-            .unwrap()
-            .then(() => {
-                notify('Ejecucion actualizada');
-            })
-            .catch((error) => {
-                notify('Ha ocurrido un error, intentelo de nuevo más tarde');
-                console.log(error);
-            });
+            }));
         }
     };
 
@@ -89,32 +72,32 @@ export const Execution = ( {ex, index}: ExecutedProps ) => {
                 {ex.id_user}
             </th>
             <th  className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
-                <button className="tw-bg-greenBtn hover:tw-bg-green-400 
+                <button className="tw-bg-greenBtn hover:tw-bg-green-400
                                     tw-text-white hover:tw-text-black
-                                    tw-rounded 
+                                    tw-rounded
                                     tw-py-1 tw-px-2"
-                        onClick={()=>handleBtnApprove(1)}>
+                        onClick={() => handleBtnApprove(1)}>
                     Aprobar
                 </button>
-                <button className="tw-bg-redBtn hover:tw-bg-red-400 
+                <button className="tw-bg-redBtn hover:tw-bg-red-400
                                     tw-text-white hover:tw-text-black
-                                    tw-rounded 
+                                    tw-rounded
                                     tw-py-1 tw-px-2 tw-mt-1"
-                        onClick={()=>handleBtnApprove(2)}>
+                        onClick={() => handleBtnApprove(2)}>
                     Rechazar
                 </button>
                 <Modal  isOpen={modalIsOpen}
                         onRequestClose={()=>setModalIsOpen(false)}>
                     <div className="tw-flex tw-flex-col tw-items-center tw-justify-center tw-p-4">
                         <p className="tw-text-2xl tw-font-bold">Ingrese el motivo del rechazo</p>
-                        <textarea   className=" tw-border 
+                        <textarea   className=" tw-border
                                                 tw-rounded tw-shadow-lg
                                                 tw-mt-2
                                                 tw-w-full tw-h-32 tw-p-2"
-                                    onChange={(e)=>onChangeReason(e)}
-                                    value={reason} 
+                                    onChange={e => onChangeReason(e)}
+                                    value={reason}
                                     required/>
-                        <button className="tw-bg-blue-600 hover:tw-bg-blue-400 
+                        <button className="tw-bg-blue-600 hover:tw-bg-blue-400
                                         tw-text-white hover:tw-text-black
                                         tw-rounded
                                         tw-p-3 tw-mt-3"

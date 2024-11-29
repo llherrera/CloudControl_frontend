@@ -69,8 +69,7 @@ export const Filter = () => {
                         onChange={handleExecutionSelect}
                         value={execSelect}>
                     <option value="financial_execution">Financiera</option>
-                    <option value="physical_execution">Fisica</option>
-                    <option value="physical_programming">Programación</option>
+                    <option value="physical_progress">Porcentaje</option>
                 </select>
             </div> : (fieldSelect === '4') ? <div>
                 <p>Ejecutado</p>
@@ -83,7 +82,9 @@ export const Filter = () => {
                 </select>
             </div> : (fieldSelect === '5') ? <div>
                 <p>Ejecutado</p>
-                <select name="" id="">
+                <select className="tw-w-full"
+                        onChange={handleExecutionSelect}
+                        value={execSelect}>
                     <option value="financial_execution">Dinero ejecutado</option>
                     <option value="physical_progress">Porcentaje ejecutado</option>
                 </select>

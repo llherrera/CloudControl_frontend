@@ -1,13 +1,7 @@
 import { useEffect } from "react";
 
-import {
-    Drawer,
-    Box,
-    List,
-    useMediaQuery,
-    ListItem,
-    ListItemButton,
-    ListItemText } from '@mui/material';
+import { Drawer, Box, List, useMediaQuery, ListItem,
+    ListItemButton, ListItemText } from '@mui/material';
 
 import { DrawerProps, ListItemProps } from "@/interfaces";
 
@@ -15,7 +9,7 @@ export const DrawerMenu = ({children, height}: DrawerProps) => {
 
     useEffect(() => {
         const bar = document.getElementById('bar');
-        bar?.scrollIntoView({ behavior: 'smooth', block: 'end' })
+        bar?.scrollIntoView({ behavior: 'smooth', block: 'end' });
     }, []);
 
     return (
@@ -28,7 +22,7 @@ export const DrawerMenu = ({children, height}: DrawerProps) => {
                     width: {xs: '100%', md:'160px'},
                     height: {md: `${height == undefined ? '70%': height}`},
                     position: 'absolute',
-                    top: { xs: '205px', sm: '205px', md: '220px', lg: '220px', xl: '100px' },
+                    top: { xs: '205px', sm: '205px', md: '220px', lg: '220px', xl: '102px', '2xl': '102px' },
                     left: { md: '0', xl: '10rem', '2xl': '12rem' },
                     border: '',
                     maxWidth: {
@@ -37,7 +31,7 @@ export const DrawerMenu = ({children, height}: DrawerProps) => {
                         md: '60%',
                         lg: '50%',
                         xl: '40%',
-                        '2xl': '30%',
+                        '2xl': '40%',
                     },
                     minWidth: {
                         xs: '100%',
@@ -45,19 +39,19 @@ export const DrawerMenu = ({children, height}: DrawerProps) => {
                         md: '10%',
                         lg: '10%',
                         xl: '10%',
-                        '2xl': '10%'
+                        '2xl': '8%'
                     },
                     maxHeight: {
-                        xs: '15%',
-                        sm: '15%',
+                        xs: '80px',
+                        sm: '80px',
                         md: `${height == undefined ? '70%': height}`,
                         lg: `${height == undefined ? '70%': height}`,
                         xl: `${height == undefined ? '70%': height}`,
                         '2xl': `${height == undefined ? '70%': height}`,
                     },
                     minHeight: {
-                        xs: '15%',
-                        sm: '15%',
+                        xs: '80px',
+                        sm: '80px',
                         md: `${height == undefined ? '70%': height}`,
                         lg: `${height == undefined ? '70%': height}`,
                         xl: `${height == undefined ? '70%': height}`,

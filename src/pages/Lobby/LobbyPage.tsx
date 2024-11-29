@@ -1,13 +1,13 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import planLogo from '@/assets/icons/plan-indicativo.svg';
+import planLogo from '@/assets/icons/plan_indicativo_logo.svg';
 import bankLogo from '@/assets/icons/BancoProyectoLogo.svg';
 import POAILogo from '@/assets/icons/POAI.svg';
-import MapaLogo from '@/assets/icons/MapaIndicativoLogo.svg'
+import MapaLogo from '@/assets/icons/MapaIndicativoLogo.svg';
 
 import { Header, ButtonComponent } from '@/components';
-import { MapICon, PQRSIcon, POAIIcon, CheckICon, MapaIcon } from '@/assets/icons';
+//import { MapICon, PQRSIcon, POAIIcon, CheckICon, MapaIcon } from '@/assets/icons';
 
 import { useAppDispatch, useAppSelector } from '@/store';
 import { selectOption, setProjectPage } from '@/store/content/contentSlice';
@@ -48,19 +48,18 @@ export const LobbyPage = () => {
     useEffect(() => {
         const fetchLocation = async () => {
             if (plan === undefined) return;
-            await getCoords(
+            const res = await getCoords(
                 plan.municipality.toLowerCase().normalize('NFD'), 
                 plan.department.toLowerCase().normalize('NFD'), 
-                'Colombia')
-            .then(res => {
-                dispatch(setPlanLocation({
-                    lat: parseFloat(res.lat),
-                    lng: parseFloat(res.lon)
-                }));
-                dispatch(setBoundingbox(
-                    res.boundingbox.map(b => parseFloat(b))
-                ));
-            })
+                'Colombia'
+            );
+            dispatch(setPlanLocation({
+                lat: parseFloat(res.lat),
+                lng: parseFloat(res.lon)
+            }));
+            dispatch(setBoundingbox(
+                res.boundingbox.map(b => parseFloat(b))
+            ));
         }
         fetchLocation();
     }, [plan]);
@@ -68,18 +67,16 @@ export const LobbyPage = () => {
     return (
         <Header>
             <ButtonComponent
-                key={0}
                 inside={false}
                 text='Plan indicativo'
+                src={planLogo}
                 onClick={() => {
                     dispatch(AddRootTree([]));
                     dispatch(selectOption(0));
                     navigate(`/pdt/PlanIndicativo`);
                 }}
-                bgColor="tw-bg-greenBtn"
-                icon={<CheckICon color='white'/>}/>
+                bgColor="tw-bg-greenBtn"/>
             <ButtonComponent
-                key={1}
                 inside={false}
                 text='Banco de proyectos'
                 src={bankLogo}
@@ -90,7 +87,6 @@ export const LobbyPage = () => {
                 }}
                 bgColor="tw-bg-greenBtn" />
             <ButtonComponent
-                key={2}
                 inside={false}
                 text='POAI'
                 src={POAILogo}
@@ -100,7 +96,6 @@ export const LobbyPage = () => {
                 }}
                 bgColor="tw-bg-greenBtn"/>
             <ButtonComponent
-                key={3}
                 inside={false}
                 text='Mapa de intervención'
                 src={MapaLogo}
@@ -110,7 +105,6 @@ export const LobbyPage = () => {
                 }}
                 bgColor="tw-bg-greenBtn"/>
             {/*<ButtonComponent
-                key={4}
                 inside={false}
                 text='PQRS'
                 onClick={() => {

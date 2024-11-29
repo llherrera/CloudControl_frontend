@@ -5,7 +5,7 @@ import { getEnvironment } from '@/utils';
 const { BASE_URL, GEOCODER_API } = getEnvironment();
 const api = axios.create({
     baseURL: BASE_URL,
-})
+});
 
 export const getCoords = async (city: string, deparment: string, country: string): Promise<ResponseGeocoder> => {
     const res = await axios({
@@ -17,7 +17,7 @@ export const getCoords = async (city: string, deparment: string, country: string
             format: 'json'
         }
     });
-    const resultCity = res.data.filter((i: ResponseGeocoder) => i.addresstype === 'city')
+    const resultCity = res.data.filter((i: ResponseGeocoder) => i.addresstype === 'city' || i.addresstype === 'town');
     return resultCity[0];
 }
 

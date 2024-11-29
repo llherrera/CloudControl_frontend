@@ -4,7 +4,7 @@ import SaveAsIcon from '@mui/icons-material/SaveAs';
 import { useAppDispatch, useAppSelector } from "@/store";
 import { thunkUpdateExecution } from "@/store/unit/thunks";
 
-import { decode, notify } from '@/utils';
+import { decode } from '@/utils';
 import { PropsCallback } from '@/interfaces';
 
 export const Memory = ({callback}: PropsCallback) => {
@@ -23,18 +23,14 @@ export const Memory = ({callback}: PropsCallback) => {
             setId(decoded.id);
         }
     }, [token_info]);
-    
+
     const handleChangeValue = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { value } = e.target;
         const newData = parseInt(value);
         setValue(newData);
     };
 
-    const handleSave = () => {
-        dispatch(thunkUpdateExecution({date: today, value, code: unit.code, user_id: id, plan_id: id_plan}))
-        .unwrap()
-        .then(() => notify('Ejecucion actualizada'));
-    };
+    const handleSave = () => dispatch(thunkUpdateExecution({date: today, value, code: unit.id_node, user_id: id, plan_id: id_plan}));
 
     if (plan === undefined) return <div>No hay un plan seleccionado</div>;
     const deadline = plan.deadline !== null ? plan.deadline.split('-').slice(1).reverse().join('/') : 'No hay fecha de corte';
@@ -44,7 +40,7 @@ export const Memory = ({callback}: PropsCallback) => {
         today.getDate() <= temp.getDate() + 1 && today.getMonth() < temp.getMonth() ? today.getFullYear() :
         today.getFullYear() + 1;
     temp = new Date(year, temp.getMonth(), temp.getDate() + 1);
-    
+
     if (unit === undefined) return <div>No hay una meta seleccionada</div>;
 
     return (
@@ -55,38 +51,39 @@ export const Memory = ({callback}: PropsCallback) => {
             <p className="tw-mt-3">
                 Fecha: { new Date().toLocaleDateString()} &nbsp;&nbsp;&nbsp;&nbsp;
                 Hora: { new Date().toLocaleTimeString()} &nbsp;&nbsp;&nbsp;&nbsp;
-                Fecha de Corte: { deadline }
+                Fecha de Corte: { deadline } &nbsp;&nbsp;&nbsp;&nbsp;
+                Fecha hoy : {today.toISOString()}
             </p>
             <div className="tw-flex tw-flex-col md:tw-flex-row">
                 <p className="tw-font-bold tw-mt-4">
                     Lugar:
                 </p>
                 <input  className=" tw-py-4 tw-px-2 tw-mt-4
-                                    tw-grow 
+                                    tw-grow
                                     tw-border-4 tw-border-gray-400
                                     tw-rounded
                                     md:tw-ml-2"
-                        type="text" 
+                        type="text"
                         value={unit.indicator??""}
                         readOnly
-                        name="" 
+                        name=""
                         id=""/>
             </div>
             <div className="tw-flex">
-                <p className="  tw-font-bold tw-mt-4 
+                <p className="  tw-font-bold tw-mt-4
                                 tw-justify-self-start
-                                tw-break-words ">
+                                tw-break-words">
                     Responsable del cargo:
                 </p>
                 <input  className=" tw-py-4 tw-px-2 tw-mt-4
-                                    tw-grow 
+                                    tw-grow
                                     tw-border-4 tw-border-gray-400
                                     tw-rounded
-                                    md:tw-ml-2" 
+                                    md:tw-ml-2"
                         type="text"
                         value={unit.responsible??"Por asignar"}
                         readOnly
-                        name="" 
+                        name=""
                         id="" />
             </div>
             <div className="tw-flex">
@@ -96,14 +93,14 @@ export const Memory = ({callback}: PropsCallback) => {
                     Descripción:
                 </p>
                 <input  className=" tw-py-4 tw-px-2 tw-mt-4
-                                    tw-grow 
+                                    tw-grow
                                     tw-border-4 tw-border-gray-400
                                     tw-rounded
-                                    md:tw-ml-2" 
+                                    md:tw-ml-2"
                         type="text"
                         value={unit.description??"Por asignar"}
                         readOnly
-                        name="" 
+                        name=""
                         id=""/>
             </div>
             <ul className=" tw-flex tw-flex-row
@@ -113,7 +110,7 @@ export const Memory = ({callback}: PropsCallback) => {
                     <p className="tw-text-center">Programado</p>
                     <p className="tw-text-center tw-font-bold tw-border-t tw-border-black">Ejecutado</p>
                 </li>
-                {unit.years.map((item, index) => (
+                {unit.years.map((item, index) =>
                     <li className="tw-basis-1/5" key={item.year}>
                         <p className="tw-bg-gray-400 tw-text-center tw-rounded
                                         tw-text-blue-800 tw-font-bold">{item.year}</p>
@@ -133,7 +130,7 @@ export const Memory = ({callback}: PropsCallback) => {
                         </div>
                         : null}
                     </li>
-                    ))}
+                    )}
             </ul>
             <div className="tw-flex tw-justify-center tw-my-4">
                 <button className=" tw-bg-blue-500
