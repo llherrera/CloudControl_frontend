@@ -1,29 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 
-import {useAppSelector, useAppDispatch } from "@/store";
-import {thunkGetNodes, thunkUpdateWeight } from '@/store/plan/thunks';
-import {incrementLevelIndex,
-        setParent,
-        setProgressNodes,
-        setFinancial,
-        AddRootTree } from '@/store/plan/planSlice';
+import { useAppSelector, useAppDispatch } from "@/store";
+import { thunkGetNodes, thunkUpdateWeight } from '@/store/plan/thunks';
+import { incrementLevelIndex, setParent, setProgressNodes,
+        setFinancial, AddRootTree } from '@/store/plan/planSlice';
 import { setNode } from "@/store/content/contentSlice";
 
-import {NodeInterface,
-        NodesWeight,
-        Percentages,
+import { NodeInterface, NodesWeight, Percentages,
         IdProps } from '@/interfaces';
 import { Spinner } from '@/assets/icons';
-import { decode } from "@/utils";
+import { decode, notify } from "@/utils";
 
 export const NodesList = ( props : IdProps ) => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
 
     const { token_info } = useAppSelector(store => store.auth);
-    const { nodes, yearSelect, levels, indexLevel, progressNodes, 
-            colorimeter, loadingNodes, rootTree 
+    const { nodes, yearSelect, levels, indexLevel, progressNodes,
+            colorimeter, loadingNodes, rootTree
         } = useAppSelector(store => store.plan);
     const { mode } = useAppSelector(store => store.content);
     const [ pesos, setPesos ] = useState<number[]>(
@@ -47,22 +42,21 @@ export const NodesList = ( props : IdProps ) => {
 
     const getProgress = () => {
         const pesosStr = localStorage.getItem('UnitNode');
-        if (pesosStr == undefined) 
-            return 0;
+        if (pesosStr == undefined) return 0;
         let pesosNodo = [];
         try {
-            pesosNodo = JSON.parse(pesosStr);            
+            pesosNodo = JSON.parse(pesosStr);
         } catch (error) {
             pesosNodo = [];
         }
         let progreso = [] as number[];
         let programacion = [] as number[];
         let financiacion = [] as number[];
-        let nodes_s: NodesWeight[] = pesosNodo.filter((itemFull: NodesWeight) => 
+        let nodes_s: NodesWeight[] = pesosNodo.filter((itemFull: NodesWeight) =>
             nodes.some(itemFilter => itemFilter.id_node === itemFull.id_node));
 
-        nodes_s.sort((a,b) => a.id_node < b.id_node ? -1 : 1)
-        nodes_s.sort((a,b)=>a.id_node.length - b.id_node.length)
+        nodes_s.sort((a,b) => a.id_node < b.id_node ? -1 : 1);
+        nodes_s.sort((a,b) => a.id_node.length - b.id_node.length);
 
         nodes_s.forEach((item: NodesWeight) => {
             const { percents } = item;
@@ -110,54 +104,54 @@ export const NodesList = ( props : IdProps ) => {
 
     const hangleSubmitUpdateWeight = () => {
         const acmu = pesos.reduce((a, b) => a + b, 0);
-        if (acmu !== 100) 
-            return alert('La suma de los pesos debe ser 100');
+        if (acmu !== 100) return notify('La suma de los pesos debe ser 100', 'warning');
         const ids = nodes.map((item) => item.id_node);
         dispatch(thunkUpdateWeight({ids: ids, weights: pesos}));
     };
 
     const colorClass = (index: number) => (
-        parseInt( ((progressNodes[index]??0)*100).toString()) < 0 ? 
+        parseInt( ((progressNodes[index]??0)*100).toString()) < 0 ?
         'tw-border-gray-400 hover:tw-border-gray-200' :
-        parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[0] ? 
+        parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[0] ?
         'tw-border-redColory hover:tw-border-red-200' :
         parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[1] ?
         'tw-border-yellowColory hover:tw-border-yellow-200':
-        parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[2] ? 
+        parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[2] ?
         'tw-border-greenColory hover:tw-border-green-200':
         'tw-border-blueColory hover:tw-border-blue-200'
     );
 
     const colorClass_ = (index: number) => (
-        parseInt( ((progressNodes[index]??0)*100).toString()) < 0 ? 
+        parseInt( ((progressNodes[index]??0)*100).toString()) < 0 ?
         'tw-bg-gray-400 hover:tw-bg-gray-200' :
-        parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[0] ? 
-        'tw-bg-redColory hover:tw-bg-red-200'      :
-        parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[1] ? 
-        'tw-bg-yellowColory hover:tw-bg-yellow-200':
-        parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[2] ? 
-        'tw-bg-greenColory hover:tw-bg-green-200'  : 
+        parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[0] ?
+        'tw-bg-redColory hover:tw-bg-red-200' :
+        parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[1] ?
+        'tw-bg-yellowColory hover:tw-bg-yellow-200' :
+        parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[2] ?
+        'tw-bg-greenColory hover:tw-bg-green-200' :
         'tw-bg-blueColory hover:tw-ring-blue-200'
     );
 
     const HandleShowList = () => loadingNodes ?
         <Spinner />
-        :<ul className={`${indexLevel === levels.length-1 ? 
+        :<ul className={`${indexLevel === levels.length-1 ?
                         'tw-flex tw-flex-row tw-flex-wrap':
                         'tw-flex-col tw-flex-wrap'} `} >
-            {nodes.map((item: NodeInterface, index: number) => (
+            {nodes.map((item: NodeInterface, index: number) =>
                 <div className="tw-my-2 tw-flex tw-transition hover:tw-scale-110"
                     key={item.id_node}>
                     <button className={`tw-rounded
                                         tw-flex tw-justify-center tw-items-center
                                         tw-border-4
+                                        tw-bg-white
                                         ${colorClass(index)}
-                                        tw-ml-3
+                                        tw-ml-3 tw-z-10
                                         tw-w-12 tw-h-12
                                         tw-font-bold`}
                             onClick={ () => handleButton(index)}
                             title={`${item.description} ${indexLevel !== levels.length-1 ? '' : `\n${item.code}\n${item.responsible}`}`}>
-                        { parseInt( ((progressNodes[index] === undefined || 
+                        { parseInt( ((progressNodes[index] === undefined ||
                             progressNodes[index] < 0 ? 0 : progressNodes[index])*100).toString())}%
                     </button>
                     {indexLevel !== levels.length-1 ?
@@ -175,27 +169,28 @@ export const NodesList = ( props : IdProps ) => {
                     </button>
                     :null}
                     {rol === 'admin' || (rol === 'funcionario' && id === props.id) ?
-                        <input  className={`tw-px-2 tw-mx-2 
+                        <input  className={`tw-px-2 tw-mx-2
                                         tw-border tw-rounded
                                         tw-w-16
                                         ${mode ? '' : 'tw-hidden'}`}
-                                        type='number'
-                                        placeholder='peso'
-                                        value={ isNaN(pesos[index]) ? 0 : pesos[index]}
-                                        onChange={(e)=>handleUpdateWeight(index, e)}/> 
+                                type='number'
+                                placeholder='peso'
+                                value={ isNaN(pesos[index]) ? 0 : pesos[index]}
+                                onChange={(e)=>handleUpdateWeight(index, e)}/>
                     :null}
                 </div>
-            ))}
-            {mode && (rol === 'admin' || (rol === 'funcionario' && id === props.id))?
+            )}
+            {mode && (rol === 'admin' || (rol === 'funcionario' && id === props.id)) ?
             <div className='tw-flex tw-justify-center'>
-                <button className='tw-px-2 tw-mx-2 
+                <button className='tw-px-2 tw-mx-2
                                     tw-bg-greenBtn tw-text-white
                                     tw-font-bold
                                     tw-border tw-rounded'
                         onClick={hangleSubmitUpdateWeight}>
                     Guardar
                 </button>
-            </div>:null}
+            </div>
+            : null}
         </ul>
     ;
 

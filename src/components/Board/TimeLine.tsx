@@ -12,12 +12,8 @@ export const TimeLine = () => {
     const navigate = useNavigate();
 
     const { token_info } = useAppSelector(store => store.auth);
-    const { years,
-            yearSelect,
-            plan,
-            colorimeter,
-            parent,
-            nodes } = useAppSelector(store => store.plan);
+    const { years, yearSelect, plan, colorimeter,
+            parent, nodes } = useAppSelector(store => store.plan);
 
     const [yearProgress, setYearProgress] = useState<number[]>([]);
     const [yearsProgress, setYearsProgress] = useState(0);
@@ -32,8 +28,7 @@ export const TimeLine = () => {
     }, []);
 
     useEffect(() => {
-        if (years.length !== 0)
-            dispatch(selectYear(years[0]));
+        if (years.length !== 0) dispatch(selectYear(years[0]));
     }, [years]);
 
     useEffect(() => {
@@ -42,14 +37,11 @@ export const TimeLine = () => {
 
     const getYearProgress = () => {
         let pesosStr = localStorage.getItem('UnitNode');
-        if (pesosStr == undefined) 
-            pesosStr = '[]';
-        
+        if (pesosStr == undefined) pesosStr = '[]';
+
         let pesosNodo = JSON.parse(pesosStr);
         let progreso = [] as number[];
-        const nodoss = pesosNodo.filter(
-            (item: NodesWeight) => item.parent === parent
-        );
+        const nodoss = pesosNodo.filter((item: NodesWeight) => item.parent === parent);
 
         if (nodoss.length === 0) {
             setYearsProgress(-1);
@@ -61,7 +53,7 @@ export const TimeLine = () => {
             nodoss.forEach((item: NodesWeight) => {
                 const { percents } = item;
                 if (percents) {
-                    percents.sort((a,b)=>a.year - b.year)
+                    percents.sort((a,b)=>a.year - b.year);
                     temp += (percents[i].progress > 0 ? percents[i].progress : 0)*(item.weight/100);
                 }
             });
@@ -82,119 +74,114 @@ export const TimeLine = () => {
     const handleBtnEvidence = ( event: React.MouseEvent<HTMLButtonElement> ) => {
         event.preventDefault();
         if (rol === '') return;
-        if (plan) {
-            navigate(`/PlanIndicativo/evidencias`);
-        }
+        if (plan) navigate(`/PlanIndicativo/evidencias`);
     };
 
     const colorClass = (index: number) => (
         parseInt( ((yearProgress[index]??0)*100).toString()) < 0 ?
         'tw-border-gray-400 hover:tw-ring-4 hover:tw-ring-gray-200' :
-        parseInt( ((yearProgress[index]??0)*100).toString()) < colorimeter[0] ? 
-        'tw-border-redColory hover:tw-ring-4 hover:tw-ring-red-200'      : 
-        parseInt( ((yearProgress[index]??0)*100).toString()) < colorimeter[1] ? 
-        'tw-border-yellowColory hover:tw-ring-4 hover:tw-ring-yellow-200':
-        parseInt( ((yearProgress[index]??0)*100).toString()) < colorimeter[2] ? 
-        'tw-border-greenColory hover:tw-ring-4 hover:tw-ring-green-200'  :
+        parseInt( ((yearProgress[index]??0)*100).toString()) < colorimeter[0] ?
+        'tw-border-redColory hover:tw-ring-4 hover:tw-ring-red-200' :
+        parseInt( ((yearProgress[index]??0)*100).toString()) < colorimeter[1] ?
+        'tw-border-yellowColory hover:tw-ring-4 hover:tw-ring-yellow-200' :
+        parseInt( ((yearProgress[index]??0)*100).toString()) < colorimeter[2] ?
+        'tw-border-greenColory hover:tw-ring-4 hover:tw-ring-green-200' :
         'tw-border-blueColory hover:tw-ring-4 hover:tw-ring-blue-200'
     );
 
     const colorYearCla = (index: number) => (
         (yearProgress[index]??0)*100 < 0 ? 'tw-bg-gray-400' :
-        (yearProgress[index]??0)*100 < colorimeter[0] ? 'tw-bg-redColory' : 
-        (yearProgress[index]??0)*100 < colorimeter[1] ? 'tw-bg-yellowColory':
+        (yearProgress[index]??0)*100 < colorimeter[0] ? 'tw-bg-redColory' :
+        (yearProgress[index]??0)*100 < colorimeter[1] ? 'tw-bg-yellowColory' :
         (yearProgress[index]??0)*100 < colorimeter[2] ? 'tw-bg-greenColory' :
         'tw-bg-blueColory'
     );
 
     const colorTextCla = (index: number) => (
         (yearProgress[index]??0)*100 < 0 ? 'tw-text-gray-400' :
-        (yearProgress[index]??0)*100 < colorimeter[0] ? 'tw-text-redColory' : 
+        (yearProgress[index]??0)*100 < colorimeter[0] ? 'tw-text-redColory' :
         (yearProgress[index]??0)*100 < colorimeter[1] ? 'tw-text-yellowColory' :
         (yearProgress[index]??0)*100 < colorimeter[2] ? 'tw-text-greenColory' :
         'tw-text-blueColory'
     );
 
     const colorYearsCla = () => (
-        yearsProgress < 0 ? 
-        'tw-border-gray-400 hover:tw-ring-4 hover:tw-ring-gray-200':
-        yearsProgress < colorimeter[0] ? 
-        'tw-border-redColory hover:tw-ring-4 hover:tw-ring-red-200': 
-        yearsProgress < colorimeter[1] ? 
-        'tw-border-yellowColory hover:tw-ring-4 hover:tw-ring-yellow-200':
-        yearsProgress < colorimeter[2] ? 
-        'tw-border-greenColory hover:tw-ring-4 hover:tw-ring-green-200':
+        yearsProgress < 0 ?
+        'tw-border-gray-400 hover:tw-ring-4 hover:tw-ring-gray-200' :
+        yearsProgress < colorimeter[0] ?
+        'tw-border-redColory hover:tw-ring-4 hover:tw-ring-red-200' :
+        yearsProgress < colorimeter[1] ?
+        'tw-border-yellowColory hover:tw-ring-4 hover:tw-ring-yellow-200' :
+        yearsProgress < colorimeter[2] ?
+        'tw-border-greenColory hover:tw-ring-4 hover:tw-ring-green-200' :
         'tw-border-blueColory hover:tw-ring-4 hover:tw-ring-blue-200'
     );
 
     return (
         <ol className="tw-flex tw-justify-center tw-items-center tw-mx-4">
-        {years.map((year: number, index: number) => (
+        {years.map((year: number, index: number) =>
             <li className="tw-grid tw-grid-rows-3 tw-w-full tw-justify-items-center"
                 key={year}>
-                <button className={`tw-rounded 
+                <button className={`tw-rounded tw-border-4
                                     tw-flex tw-justify-center tw-items-center
                                     tw-transition hover:tw-scale-110
                                     ${colorClass(index)}
                                     ${yearSelect === year ? 'tw-ring-8' : null}
-                                    ${index%2 === 0 ? 
-                                        'tw-row-start-1 hover:tw--translate-y-1' : 
+                                    ${index%2 === 0 ?
+                                        'tw-row-start-1 hover:tw--translate-y-1' :
                                         'tw-row-start-3 hover:tw-translate-y-1'}
-                                    tw-border-4
                                     tw-w-12 tw-h-12
                                     tw-font-bold`}
-                        onClick={ (event) => handleYears(event, year)}
+                        onClick={event => handleYears(event, year)}
                         title={`Dar click para ver los porcentajes de ejecucion del año ${year}`}>
                     { parseInt ( ((yearProgress[index] === undefined || yearProgress[index] < 0 ?
                          0 : yearProgress[index])*100).toString())}%
                 </button>
                 <div className="tw-flex tw-items-center tw-w-full tw-relative tw-row-start-2">
                     <button className={`tw-w-full tw-h-2 tw-px-3
-                                        tw-absolute 
+                                        tw-absolute
                                         tw-transition hover:tw-scale-110
                                         ${index%2 === 1 ? 'hover:tw-translate-y-1' : 'hover:tw--translate-y-1'}
                                         ${colorClass(index)}
                                         ${colorYearCla(index)}`}>
                     </button>
-                    <div className={`tw-h-full
-                                    tw-grow
+                    <div className={`tw-h-full tw-grow
                                     tw-flex tw-flex-col`}>
-                        {index%2 === 0 ? 
+                        {index%2 === 0 ?
                             <button className={`tw-grow tw-self-center
                                                 tw-h-1/4 tw-w-2
                                                 ${colorYearCla(index)}`}
-                                    onClick={ (event) => handleYears(event, year)}>
+                                    onClick={event => handleYears(event, year)}>
                             </button>
                         : null}
-                        <button className={`tw-self-center 
-                                            tw-font-bold tw-font-montserrat 
+                        <button className={`tw-self-center
+                                            tw-font-bold tw-font-montserrat
                                             tw-text-[#222222]
-                                            tw-transition 
-                                            ${index%2 === 0 ? 
-                                                'hover:tw-translate-y-1' : 
-                                                'hover:tw--translate-y-1'} 
+                                            tw-transition
+                                            ${index%2 === 0 ?
+                                                'hover:tw-translate-y-1' :
+                                                'hover:tw--translate-y-1'}
                                             hover:tw-scale-110
                                             ${colorTextCla(index)}`}
-                                onClick={ (event) => handleYears(event, year)}>
+                                onClick={event => handleYears(event, year)}>
                             {year}
                         </button>
-                        {index%2 === 1 ? 
+                        {index%2 === 1 ?
                             <button className={`tw-grow tw-self-center
                                                 tw-h-1/4 tw-w-2
                                                 ${colorYearCla(index)}`}
-                                    onClick={ (event) => handleYears(event, year)}>
+                                    onClick={event => handleYears(event, year)}>
                             </button>
                         : null}
                     </div>
                 </div>
             </li>
-        ))}
-        <button className={`tw-rounded 
+        )}
+        <button className={`tw-rounded tw-border-4
                             tw-flex tw-justify-center tw-items-center
-                            tw-border-4
                             tw-self-center
                             tw-w-12 tw-h-12
-                            tw-transition 
+                            tw-transition
                             hover:tw--translate-y-1 hover:tw-scale-110
                             ${colorYearsCla()}
                             tw-ml-3 tw-px-2`}

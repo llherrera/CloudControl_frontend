@@ -164,10 +164,10 @@ export const Content = ( props : IdProps ) => {
                         <ModalAi/>
                         : null
                     }
-                    {rol === 'admin' || ((rol === 'funcionario' || rol === 'planeacion' || rol === 'sectorialista') && id === props.id) ?
+                    {/*rol === 'admin' || ((rol === 'funcionario' || rol === 'planeacion' || rol === 'sectorialista') && id === props.id) ?
                         <CopilotPopover/>
                         : null
-                    }
+                    */}
                 </div>
             </h1>
             <div className="tw-grid tw-grid-cols-1 md:tw-grid-cols-3 tw-mb-2">
