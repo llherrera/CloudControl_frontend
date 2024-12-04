@@ -1,22 +1,16 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import planLogo from '@/assets/icons/plan_indicativo_logo.svg';
-import bankLogo from '@/assets/icons/BancoProyectoLogo.svg';
-import POAILogo from '@/assets/icons/POAI.svg';
-import MapaLogo from '@/assets/icons/MapaIndicativoLogo.svg';
+import { ProjectBankIcon, PlanIndicativoIcon, ChartIcon,
+    MapICon } from '@/assets/icons';
 
 import { Header, ButtonComponent } from '@/components';
-//import { MapICon, PQRSIcon, POAIIcon, CheckICon, MapaIcon } from '@/assets/icons';
 
 import { useAppDispatch, useAppSelector } from '@/store';
 import { selectOption, setProjectPage } from '@/store/content/contentSlice';
-import { thunkGetLevelsById, thunkGetPDTid,
-    thunkGetLocations, thunkGetSecretaries } from '@/store/plan/thunks';
-import {
-    setPlanLocation,
-    setZeroLevelIndex,
-    AddRootTree,
+import { thunkGetLevelsById, thunkGetPDTid, thunkGetLocations,
+    thunkGetSecretaries } from '@/store/plan/thunks';
+import { setPlanLocation, setZeroLevelIndex, AddRootTree,
     setBoundingbox } from '@/store/plan/planSlice';
 
 import { getCoords } from '@/services/map_api';
@@ -39,18 +33,16 @@ export const LobbyPage = () => {
 
     useEffect(() => {
         if (id_plan <= 0) return;
-        if (secretaries == undefined)
-            dispatch(thunkGetSecretaries(id_plan));
-        if (locations == undefined)
-            dispatch(thunkGetLocations(id_plan));
+        if (secretaries == undefined) dispatch(thunkGetSecretaries(id_plan));
+        if (locations == undefined) dispatch(thunkGetLocations(id_plan));
     }, [id_plan]);
 
     useEffect(() => {
         const fetchLocation = async () => {
             if (plan === undefined) return;
             const res = await getCoords(
-                plan.municipality.toLowerCase().normalize('NFD'), 
-                plan.department.toLowerCase().normalize('NFD'), 
+                plan.municipality.toLowerCase().normalize('NFD'),
+                plan.department.toLowerCase().normalize('NFD'),
                 'Colombia'
             );
             dispatch(setPlanLocation({
@@ -69,7 +61,7 @@ export const LobbyPage = () => {
             <ButtonComponent
                 inside={false}
                 text='Plan indicativo'
-                src={planLogo}
+                icon={<PlanIndicativoIcon color='white'/>}
                 onClick={() => {
                     dispatch(AddRootTree([]));
                     dispatch(selectOption(0));
@@ -79,7 +71,7 @@ export const LobbyPage = () => {
             <ButtonComponent
                 inside={false}
                 text='Banco de proyectos'
-                src={bankLogo}
+                icon={<ProjectBankIcon color='white'/>}
                 onClick={() => {
                     dispatch(selectOption(1));
                     dispatch(setProjectPage(5));
@@ -89,7 +81,7 @@ export const LobbyPage = () => {
             <ButtonComponent
                 inside={false}
                 text='POAI'
-                src={POAILogo}
+                icon={<ChartIcon color='white'/>}
                 onClick={() => {
                     dispatch(selectOption(2));
                     navigate('/PlanIndicativo/POAI');
@@ -98,7 +90,7 @@ export const LobbyPage = () => {
             <ButtonComponent
                 inside={false}
                 text='Mapa de intervención'
-                src={MapaLogo}
+                icon={<MapICon color='white'/>}
                 onClick={() => {
                     dispatch(selectOption(3));
                     navigate('/PlanIndicativo/Mapa');

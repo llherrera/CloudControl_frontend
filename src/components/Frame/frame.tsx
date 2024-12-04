@@ -2,7 +2,8 @@ import { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { IconButton } from '@mui/material';
 import LogoutIcon from '@mui/icons-material/Logout';
-import cclogo from '@/assets/images/logo-cc.png';
+//import cclogo from '@/assets/images/logo-cc.png';
+import cclogo from "@/assets/images/ControlLand.png";
 
 import { useAppDispatch, useAppSelector } from '@/store';
 import { thunkLogout } from '@/store/auth/thunks';
@@ -10,8 +11,8 @@ import { setLogo, setLogoPlan, setReload, selectOption,
     setProjectPage, setIsFullHeight } from '@/store/content/contentSlice';
 
 import { NavBar, ButtonComponent } from '@/components';
-import { BancoProyectoIcon, PlanIndicativoLogo,
-    POAIIcon, MapaIcon } from '@/assets/icons';
+import { ProjectBankIcon, PlanIndicativoIcon,
+    ChartIcon, MapICon } from '@/assets/icons';
 import { FrameProps } from '@/interfaces';
 
 export const Frame = ({children}: FrameProps) => {
@@ -47,15 +48,11 @@ export const Frame = ({children}: FrameProps) => {
     useEffect(() => {
         if (plan !== undefined) {
             const { logo_link_plan, logo_link_city } = plan;
-            if (logo_link_plan)
-                dispatch(setLogoPlan(logo_link_plan));
-            else
-                dispatch(setLogoPlan(''));
+            if (logo_link_plan) dispatch(setLogoPlan(logo_link_plan));
+            else dispatch(setLogoPlan(''));
 
-            if (logo_link_city)
-                dispatch(setLogo(logo_link_city));
-            else
-                dispatch(setLogo(''));
+            if (logo_link_city) dispatch(setLogo(logo_link_city));
+            else dispatch(setLogo(''));
         } else {
             dispatch(setLogo(''));
             dispatch(setLogoPlan(''));
@@ -94,7 +91,7 @@ export const Frame = ({children}: FrameProps) => {
                             dispatch(selectOption(0));
                             navigate('/pdt/PlanIndicativo', {replace: true});
                         }}
-                        icon={<PlanIndicativoLogo color={ index === 0 ? logocolor : textcolor}/>}
+                        icon={<PlanIndicativoIcon color={ index === 0 ? logocolor : textcolor}/>}
                         bgColor={0 === index ? `tw-bg-${textcolor}` : `tw-bg-${bgcolor}`}
                         textColor={0 === index ? `tw-text-${bgcolor}` : `tw-text-${textcolor}`}
                     />
@@ -106,7 +103,7 @@ export const Frame = ({children}: FrameProps) => {
                             dispatch(setProjectPage(5));
                             navigate('/PlanIndicativo/Banco-proyectos', {replace: true});
                         }}
-                        icon={<BancoProyectoIcon color={ index === 1 ? logocolor : textcolor}/>}
+                        icon={<ProjectBankIcon color={ index === 1 ? logocolor : textcolor}/>}
                         bgColor={1 === index ? `tw-bg-${textcolor}` : `tw-bg-${bgcolor}`}
                         textColor={1 === index ? `tw-text-${bgcolor}` : `tw-text-${textcolor}`}
                     />
@@ -117,7 +114,7 @@ export const Frame = ({children}: FrameProps) => {
                             dispatch(selectOption(2));
                             navigate('/PlanIndicativo/POAI', {replace: true});
                         }}
-                        icon={<POAIIcon color={ index === 2 ? logocolor : textcolor}/>}
+                        icon={<ChartIcon color={ index === 2 ? logocolor : textcolor}/>}
                         bgColor={2 === index ? `tw-bg-${textcolor}` : `tw-bg-${bgcolor}`}
                         textColor={2 === index ? `tw-text-${bgcolor}` : `tw-text-${textcolor}`}
                     />
@@ -128,7 +125,7 @@ export const Frame = ({children}: FrameProps) => {
                             dispatch(selectOption(3));
                             navigate('/PlanIndicativo/Mapa', {replace: true});
                         }}
-                        icon={<MapaIcon color={ index === 3 ? logocolor : textcolor}/>}
+                        icon={<MapICon color={ index === 3 ? logocolor : textcolor}/>}
                         bgColor={3 === index ? `tw-bg-${textcolor}` : `tw-bg-${bgcolor}`}
                         textColor={3 === index ? `tw-text-${bgcolor}` : `tw-text-${textcolor}`}
                     />
