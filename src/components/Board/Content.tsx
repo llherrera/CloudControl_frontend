@@ -103,9 +103,9 @@ export const Content = ( props : IdProps ) => {
     );
 
     return (
-        <div className="tw-h-full tw-border">
-            <h1 className=" tw-mx-6 tw-mt-6 
-                            tw-text-[#222222] 
+        <div className="tw-h-full">
+            <h1 className=" tw-mx-6 tw-mt-6
+                            tw-text-[#222222]
                             tw-font-bold tw-font-montserrat
                             tw-text-lg tw-text-center md:tw-text-left
                             tw-flex tw-justify-between">

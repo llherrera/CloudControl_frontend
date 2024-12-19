@@ -92,7 +92,7 @@ export const EvidenceForm = () => {
         const file = e.target.files;
         if (file) {
             if (file[0].type !== 'application/pdf') {
-                alert('El archivo debe ser pdf');
+                notify('El archivo debe ser pdf', 'warning');
                 e.target.value = '';
                 return;
             }
@@ -102,24 +102,24 @@ export const EvidenceForm = () => {
 
     const handleSubmitEvidence = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault();
-        if (unit === undefined) return alert('No se ha seleccionado una meta');
-        if (documento === null) return alert('No se ha seleccionado un documento');
-        if (data.neighborhood === "") return alert('No se ha seleccionado un barrio');
-        if (data.amount <= 0) return alert('No se ha seleccionado una cantidad');
-        if (data.commune === "") return alert('No se ha seleccionado una comuna');
-        if (data.corregimiento === "") return alert('No se ha seleccionado un correguimiento');
-        if (data.activitiesDesc === "") return alert('No se ha seleccionado una descripcion de actividades');
-        if (data.date === "") return alert('No se ha seleccionado una fecha');
-        if (data.date_file === "") return alert('No se ha seleccionado una fecha de archivo');
-        if (data.resources_font === "") return alert('No se ha seleccionado una fuente de recursos');
-        if (data.place === "") return alert('No se ha seleccionado un lugar');
-        if (data.name_file === "") return alert('No se ha seleccionado un nombre de documento');
-        if (data.benefited_population_number === 0) return alert('No se ha seleccionado un numero de poblacion beneficiada');
-        if (data.benefited_population === "") return alert('No se ha seleccionado una poblacion beneficiada');
-        if (data.executed_resources <= 0) return alert('No se ha seleccionado un recurso ejecutado');
-        if (data.unit === "") return alert('No se ha seleccionado una unidad');
-        if (data.vereda === "") return alert('No se ha seleccionado una vereda');
-        if (list_points.length === 0) return alert('No se ha seleccionado una ubicacion');
+        if (unit === undefined) return notify('No se ha seleccionado una meta', 'warning');
+        if (documento === null) return notify('No se ha seleccionado un documento', 'warning');
+        if (data.neighborhood === "") return notify('No se ha seleccionado un barrio', 'warning');
+        if (data.amount <= 0) return notify('No se ha seleccionado una cantidad', 'warning');
+        if (data.commune === "") return notify('No se ha seleccionado una comuna', 'warning');
+        if (data.corregimiento === "") return notify('No se ha seleccionado un correguimiento', 'warning');
+        if (data.activitiesDesc === "") return notify('No se ha seleccionado una descripcion de actividades', 'warning');
+        if (data.date === "") return notify('No se ha seleccionado una fecha', 'warning');
+        if (data.date_file === "") return notify('No se ha seleccionado una fecha de archivo', 'warning');
+        if (data.resources_font === "") return notify('No se ha seleccionado una fuente de recursos', 'warning');
+        if (data.place === "") return notify('No se ha seleccionado un lugar', 'warning');
+        if (data.name_file === "") return notify('No se ha seleccionado un nombre de documento', 'warning');
+        if (data.benefited_population_number === 0) return notify('No se ha seleccionado un numero de poblacion beneficiada', 'warning');
+        if (data.benefited_population === "") return notify('No se ha seleccionado una poblacion beneficiada', 'warning');
+        if (data.executed_resources <= 0) return notify('No se ha seleccionado un recurso ejecutado', 'warning');
+        if (data.unit === "") return notify('No se ha seleccionado una unidad', 'warning');
+        if (data.vereda === "") return notify('No se ha seleccionado una vereda', 'warning');
+        if (list_points.length === 0) return notify('No se ha seleccionado una ubicacion', 'warning');
         setLoading(true);
 
         if (evi_selected === undefined) {
@@ -180,10 +180,10 @@ export const EvidenceForm = () => {
             </div>
 
             <div className="tw-mt-3 tw-flex tw-gap-2">
-                {todayDate < deadLine ? 
-                    <button className={`${yearRegister === todayDate.getUTCFullYear() - 1 ? 
+                {todayDate < deadLine ?
+                    <button className={`${yearRegister === todayDate.getUTCFullYear() - 1 ?
                         'tw-bg-blue-400' : 'tw-bg-red-400'}
-                        tw-rounded tw-p-2 
+                        tw-rounded tw-p-2
                         tw-border tw-border-black`}
                         onClick={()=>setYearRegister(todayDate.getUTCFullYear() - 1)}
                         type="button">
@@ -191,9 +191,9 @@ export const EvidenceForm = () => {
                     </button>
                     :null
                 }
-                <button className={`${yearRegister === todayDate.getUTCFullYear() ? 
+                <button className={`${yearRegister === todayDate.getUTCFullYear() ?
                                     'tw-bg-blue-400' : 'tw-bg-red-400'}
-                                    tw-rounded tw-p-2 
+                                    tw-rounded tw-p-2
                                     tw-border tw-border-black`}
                         onClick={()=>setYearRegister(todayDate.getUTCFullYear())}
                         type="button">
@@ -202,14 +202,14 @@ export const EvidenceForm = () => {
             </div>
             <p className="tw-mt-4">Descripcion Actividades:</p>
             <textarea
-                name="activitiesDesc" 
-                id="activitiesDesc" 
+                name="activitiesDesc"
+                id="activitiesDesc"
                 required
                 value={data.activitiesDesc}
                 className=" tw-p-2 tw-rounded
                             tw-border-2 tw-border-gray-400
                             tw-bg-white tw-resize-none"
-                onChange={(e) => handleInputChange(e)}/>
+                onChange={e => handleInputChange(e)}/>
 
             <p className="tw-mt-4">Numero de actividades:</p>
             <div className="tw-flex tw-flex-wrap
@@ -223,7 +223,7 @@ export const EvidenceForm = () => {
                         className=" tw-p-2 tw-rounded
                                     tw-border-2 tw-border-gray-400
                                     tw-bg-white"
-                        onChange={(e) => handleInputChange(e)}
+                        onChange={e => handleInputChange(e)}
                         required>
                         <option value="M">M</option>
                         <option value="M2">M2</option>
@@ -238,15 +238,15 @@ export const EvidenceForm = () => {
                 <div className="tw-flex tw-ml-3 tw-flex-col">
                     <p>Cantidad</p>
                     <input
-                        type="number" 
-                        name="amount" 
+                        type="number"
+                        name="amount"
                         id="amount"
                         value={data.amount}
                         className=" tw-p-2 tw-rounded
                                     tw-border-2 tw-border-gray-400
                                     tw-bg-white"
                         required
-                        onChange={(e)=> handleInputChange(e)}/>
+                        onChange={e=> handleInputChange(e)}/>
                 </div>
             </div>
 
@@ -283,7 +283,7 @@ export const EvidenceForm = () => {
                         className=" tw-p-2 tw-rounded
                                     tw-border-2 tw-border-gray-400
                                     tw-bg-white"
-                        onChange={(e)=> handleInputChange(e)}
+                        onChange={e=> handleInputChange(e)}
                         required>
                         {locations__.map(loc =>
                             <option value={loc.name} key={loc.name}>
@@ -303,14 +303,14 @@ export const EvidenceForm = () => {
                             tw-border-2 tw-border-gray-400">
                 <div className="tw-flex tw-flex-col">
                     <p>Poblacion beneficiada</p>
-                    <select 
-                        name="benefited_population" 
+                    <select
+                        name="benefited_population"
                         id="benefited_population"
                         value={data.benefited_population}
                         className=" tw-p-2 tw-rounded
                                     tw-border-2 tw-border-gray-400
                                     tw-bg-white"
-                        onChange={(e)=> handleInputChange(e)}
+                        onChange={e=> handleInputChange(e)}
                         required>
                         <option value="AdultoMayor">Adulto Mayor</option>
                         <option value="Afrodescendientes">Afrodescendientes</option>
@@ -334,7 +334,7 @@ export const EvidenceForm = () => {
                 </div>
                 <div className="tw-flex tw-flex-col tw-ml-3">
                     <p>Numero de poblacion beneficiada</p>
-                    <input  
+                    <input
                         type="number"
                         name="benefited_population_number"
                         id="benefited_population_number"
@@ -344,7 +344,7 @@ export const EvidenceForm = () => {
                                     tw-border-2 tw-border-gray-400
                                     tw-bg-white"
                         required
-                        onChange={(e)=> handleInputChange(e)}/>
+                        onChange={e=> handleInputChange(e)}/>
                 </div>
                 <div className="tw-flex tw-flex-col tw-ml-3">
                     <p>Recursos ejecutados</p>
@@ -358,18 +358,18 @@ export const EvidenceForm = () => {
                                     tw-border-2 tw-border-gray-400
                                     tw-bg-white"
                         required
-                        onChange={(e)=> handleInputChange(e)}/>
+                        onChange={e=> handleInputChange(e)}/>
                 </div>
                 <div className="tw-flex tw-flex-col tw-ml-3">
                     <p>Fuente de recursos</p>
-                    <select 
+                    <select
                         name="resources_font"
                         id="resources_font"
                         value={data.resources_font}
                         className=" tw-p-2 tw-rounded
                                     tw-border-2 tw-border-gray-400
                                     tw-bg-white"
-                        onChange={(e)=> handleInputChange(e)}
+                        onChange={e=> handleInputChange(e)}
                         required>
                         <option value="RecursosPropiosICLD">Recursos Propios ICLD</option>
                         <option value="RecursosPropiosICDE">Recursos Propios ICDE</option>
@@ -397,14 +397,14 @@ export const EvidenceForm = () => {
                 <div className="tw-flex tw-flex-col">
                     <p>Archivo de meta</p>
                     <input  
-                        type="file" 
-                        name="documento" 
+                        type="file"
+                        name="documento"
                         id="documento"
                         className=" tw-p-2 tw-rounded
                                     tw-border-2 tw-border-gray-400
                                     tw-bg-white"
                         required
-                        onChange={(e) => handleInputChangeFile(e)}/><br />
+                        onChange={e => handleInputChangeFile(e)}/><br />
                 </div>
                 <div className="tw-flex tw-flex-col tw-ml-3">
                     <p>Nombre documento</p>
@@ -418,7 +418,7 @@ export const EvidenceForm = () => {
                                     tw-border-2 tw-border-gray-400
                                     tw-bg-white"
                         required
-                        onChange={(e) => handleInputChange(e)}/><br />
+                        onChange={e => handleInputChange(e)}/><br />
                 </div>
                 <div className="tw-flex tw-flex-col tw-ml-3">
                     <p>Lugar</p>
@@ -432,7 +432,7 @@ export const EvidenceForm = () => {
                                     tw-border-2 tw-border-gray-400
                                     tw-bg-white"
                         required
-                        onChange={(e) => handleInputChange(e)}/><br />
+                        onChange={e => handleInputChange(e)}/><br />
                 </div>
                 <div className="tw-flex tw-flex-col tw-ml-3">
                     <p>Fecha del archivo</p>
@@ -444,7 +444,7 @@ export const EvidenceForm = () => {
                                     tw-border-2 tw-border-gray-400
                                     tw-bg-white"
                         required
-                        onChange={(e) => handleInputChange(e)}/><hr />
+                        onChange={e => handleInputChange(e)}/><hr />
                 </div>
             </div>
 
@@ -457,7 +457,7 @@ export const EvidenceForm = () => {
                                     tw-font-bold"
                         onClick={handleSubmitEvidence}>
                     {evi_selected === undefined ?
-                        "Añadir evidencia" : 
+                        "Añadir evidencia" :
                         "Actualizar evidencia"
                     }
                 </button>

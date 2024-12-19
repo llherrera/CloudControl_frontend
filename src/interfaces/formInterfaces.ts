@@ -62,6 +62,19 @@ export interface UnitInterface {
     hv_indicator: string
 }
 
+export interface UnitNodeInterface {
+    readonly id_node: string;
+    name: string;
+    id_plan: number;
+    code: string;
+    description: string;
+    indicator: string;
+    base_line: number;
+    goal: number;
+    responsible: string;
+    link_hv_indicator: string;
+}
+
 export interface YearInterface {
     year: number;
     physical_programming: number;
