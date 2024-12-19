@@ -19,7 +19,10 @@ import {
     ExcelPhysical,
     ExcelUnitNode,
     LocationInterface,
-    Project } from "../interfaces";
+    Project,
+    ActionPlan,
+    Activity,
+    Rubro } from "../interfaces";
 
 import { getToken, refreshToken } from "@/utils";
 
@@ -639,11 +642,10 @@ export const updateExecution = async (date: Date, value: number, code: string, u
     return response.data;
 }
 
-export const getListNodes = async (plan_id: number) => {
+export const getListNodes = async (plan_id: (number | string)) => {
+    const params = typeof plan_id === 'number' ? { id_plan: plan_id } : { id_node: plan_id };
     const response = await api.get('/nodo/listanodos', {
-        params: {
-            id_plan: plan_id
-        }
+        params: params
     });
     return response.data;
 }
@@ -776,5 +778,40 @@ export const doProjectToNodes = async (id_plan: number, id_project: number, node
     return response.data;
 }
 
+export const getActionPlans = async (id_plan: number) => {
+    const response = await api.get(`/plan-territorial/plan-accion`, {
+        params: {
+            id_plan
+        }
+    });
+    return response.data;
+}
+
+export const getActivityActionPlan = async (id_plan: number) => {
+    const response = await api.get(`/plan-territorial/plan-accion/actividad`, {
+        params: {
+            id_plan
+        }
+    });
+    return response.data;
+}
+
+export const addActionPlan = async (id_plan: number, plan: ActionPlan, rubros: Rubro[]) => {
+    const response = await api.post(`/plan-territorial/plan-accion`, {
+        id_plan,
+        plan,
+        rubros
+    });
+    return response.data;
+}
+
+export const addActivityActionPlans = async (id_plan: number, activities: Activity[], node: string) => {
+    const response = await api.post(`/plan-territorial/plan-accion/actividad`, {
+        id_plan,
+        activities,
+        node
+    });
+    return response.data;
+}
 
 export default api;

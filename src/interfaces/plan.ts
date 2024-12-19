@@ -1,8 +1,8 @@
 import { ErrorTypeInterface } from "./common";
-import { 
-    PDTInterface, 
-    LevelInterface, 
-    NodeInterface, 
+import {
+    PDTInterface,
+    LevelInterface,
+    NodeInterface,
     LocationInterface } from "./formInterfaces";
 import { Coordinates } from "./ubication";
 import { Secretary } from "./secretary";
@@ -18,6 +18,8 @@ export interface InitialStatePlanInterface {
     loadingReport: boolean;
     loadingLocations: boolean;
     loadingProjects: boolean;
+    loadingActionPlan: boolean;
+    loadingActivityActionPlan: boolean;
     errorLoadingPlan: ErrorTypeInterface;
     errorLoadingColors: ErrorTypeInterface;
     errorLoadingNodes: ErrorTypeInterface;
@@ -27,6 +29,8 @@ export interface InitialStatePlanInterface {
     errorLoadingSecretaries: ErrorTypeInterface;
     errorLoadingLocations: ErrorTypeInterface;
     errorLoadingProjects: ErrorTypeInterface;
+    errorLoadingActionPlan: ErrorTypeInterface;
+    errorLoadingActivityActionPlan: ErrorTypeInterface;
     plan?: PDTInterface;
     colorimeter: number[];
     color?: boolean;
@@ -51,6 +55,8 @@ export interface InitialStatePlanInterface {
     bounding4: number;
     projects?: Project[];
     proje_s: number;
+    actionPlan?: ActionPlan[];
+    selectedPlan?: ActionPlan;
 }
 
 export interface GetNodeProps {
@@ -188,4 +194,78 @@ export interface PropsAddProjects {
 export interface PropsUpdateProjects {
     id_project: number;
     project: Project;
+}
+
+export type levelsPlan = Record<`level${1 | 2 | 3}`, string>;
+export interface ActionPlan {
+    readonly id_actionPlan: number;
+    readonly id_plan: number;
+    planCode: string;
+    office: string;
+    programedDate: Date | null;
+    followDate: Date | null;
+    POAINameProject: string;
+    BPIMCode: string;
+    Objetives: string;
+    level1: string;
+    level2: string;
+    level3: string;
+    actions: Activity[];
+    rubros: Rubro[];
+    nodes: NodeActivityPlan[];
+}
+
+export interface Activity {
+    readonly id_activity: number;
+    readonly id_actionPlan: number;
+    activityDesc: string;
+    unitMeter: string;
+    amountP: number;
+    totalCostP: number;
+    municipioP: number;
+    sgpP: number;
+    regaliasP: number;
+    otrosP: number;
+    amountE: number;
+    totalCostE: number;
+    municipioE: number;
+    sgpE: number;
+    regaliasE: number;
+    otrosE: number;
+    start_date: Date | null;
+    end_date: Date | null;
+    phisicalIndicator: number;
+    invertionIndicator: number;
+    efficiencyIndicator: number;
+}
+
+export interface Rubro {
+    readonly id_actionPlan: number;
+    presupuestalCode: string;
+    rubro: string;
+}
+
+export interface NodeActivityPlan {
+    id_activity: number;
+    id_node: string;
+    name: string
+}
+
+export interface LevelActionPlan {
+    id_plan: number;
+    id_actionPlan: number;
+    level: string;
+    name: string;
+}
+
+export interface PropsAddActionPlan {
+    id_plan: number;
+    plan: ActionPlan;
+    rubros: Rubro[];
+}
+
+export interface PropsAddActivity {
+    id_plan: number;
+    activities: Activity[];
+    node: string;
 }

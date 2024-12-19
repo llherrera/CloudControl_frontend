@@ -1,7 +1,7 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 import {
-    InitialStatePlanInterface, Node,
+    InitialStatePlanInterface, Node, levelsPlan,
     Coordinates, LevelInterface } from "@/interfaces";
 import {
     setGenericState, getGenericState,
@@ -16,7 +16,9 @@ import {
     thunkAddLocations, thunkGetLocations, thunkAddLevel,
     thunkAddNodes, removePDT, thunkUpdateLocations, thunkUpdateDeadline,
     thunkGetProjects, thunkAddProjects, thunkUpdateProjects,
-    thunkGetCountProjects, thunkGetPDTByUuid } from "./thunks";
+    thunkGetCountProjects, thunkGetPDTByUuid, thunkAddActionPlan,
+    thunkGetActionPlans, thunkGetActivityActionPlan, thunkAddActivityActionPlan
+    } from "./thunks";
 
 const getInitialState = (): InitialStatePlanInterface => {
     const planState = getGenericState('plan');
@@ -32,6 +34,8 @@ const getInitialState = (): InitialStatePlanInterface => {
         loadingLocations: false,
         loadingReport: false,
         loadingProjects: false,
+        loadingActionPlan: false,
+        loadingActivityActionPlan: false,
         errorLoadingPlan: undefined,
         errorLoadingColors: undefined,
         errorLoadingNodes: undefined,
@@ -41,6 +45,8 @@ const getInitialState = (): InitialStatePlanInterface => {
         errorLoadingSecretaries: undefined,
         errorLoadingLocations: undefined,
         errorLoadingProjects: undefined,
+        errorLoadingActionPlan: undefined,
+        errorLoadingActivityActionPlan: undefined,
         plan: undefined,
         colorimeter: [],
         color: undefined,
@@ -67,7 +73,9 @@ const getInitialState = (): InitialStatePlanInterface => {
         bounding3: 0,
         bounding4: 0,
         projects: undefined,
-        proje_s: 0
+        proje_s: 0,
+        actionPlan: undefined,
+        selectedPlan: undefined
     };
 };
 
@@ -135,6 +143,14 @@ export const planSlice = createSlice({
         },
         AddRootTree: (state, action: PayloadAction<string[][]>) => {
             state.rootTree = action.payload;
+            setGenericState('plan', state);
+        },
+        setSelectedActionPlan: (state, action: PayloadAction<number>) => {
+            let val = action.payload;
+            if (val < 0)
+                state.selectedPlan = undefined;
+            else
+                state.selectedPlan = state.actionPlan![action.payload];
             setGenericState('plan', state);
         },
         resetPlan: () => {
@@ -578,24 +594,97 @@ export const planSlice = createSlice({
             notify(action.payload?.error_description ?? errorMSGUpdate, 'error');
             state.errorLoadingPlan = action.payload;
         });
+
+
+        builder.addCase(thunkGetActionPlans.pending, state => {
+            if (!state.loadingActionPlan) state.loadingActionPlan = true;
+            state.errorLoadingActionPlan = undefined;
+        });
+        builder.addCase(thunkGetActionPlans.fulfilled, (state, action) => {
+            state.loadingActionPlan = false;
+            state.actionPlan = action.payload;
+            setGenericState('plan', state);
+        });
+        builder.addCase(thunkGetActionPlans.rejected, (state, action) => {
+            state.loadingActionPlan = false;
+            notify(action.payload?.error_description ?? errorMSGUpdate, 'error');
+            state.errorLoadingActionPlan = action.payload;
+        });
+
+
+        builder.addCase(thunkGetActivityActionPlan.pending, state => {
+            if (!state.loadingActivityActionPlan) state.loadingActivityActionPlan = true;
+            state.errorLoadingActivityActionPlan = undefined;
+        });
+        builder.addCase(thunkGetActivityActionPlan.fulfilled, (state, action) => {
+            state.loadingActivityActionPlan = false;
+            state.selectedPlan!.actions = action.payload[0];
+            state.selectedPlan!.rubros = action.payload[1];
+            state.selectedPlan!.nodes = action.payload[2];
+            for (let i = 0; i < action.payload[3].length; i++) {
+                const str = `level${i + 1}` as keyof levelsPlan;
+                state.selectedPlan![str] = action.payload[3][i].name;
+            }
+            setGenericState('plan', state);
+        });
+        builder.addCase(thunkGetActivityActionPlan.rejected, (state, action) => {
+            state.loadingActivityActionPlan = false;
+            notify(action.payload?.error_description ?? errorMSGUpdate, 'error');
+            state.errorLoadingActivityActionPlan = action.payload;
+        });
+
+
+        builder.addCase(thunkAddActionPlan.pending, state => {
+            if (!state.loadingActionPlan) state.loadingActionPlan = true;
+            state.errorLoadingActionPlan = undefined;
+        });
+        builder.addCase(thunkAddActionPlan.fulfilled, (state, action) => {
+            state.loadingActionPlan = false;
+            state.actionPlan = action.payload;
+            notify('Ficha registrada', 'success');
+            setGenericState('plan', state);
+        });
+        builder.addCase(thunkAddActionPlan.rejected, (state, action) => {
+            state.loadingActionPlan = false;
+            state.errorLoadingActionPlan = action.payload;
+            notify(action.payload?.error_description ?? errorMSGUpdate, 'error');
+        });
+
+
+        builder.addCase(thunkAddActivityActionPlan.pending, state => {
+            if (!state.loadingActivityActionPlan) state.loadingActivityActionPlan = true;
+            state.errorLoadingActivityActionPlan = undefined;
+        });
+        builder.addCase(thunkAddActivityActionPlan.fulfilled, (state, action) => {
+            state.loadingActivityActionPlan = false;
+            state.selectedPlan!.actions = action.payload;
+            notify('Actividad registrada', 'success');
+            setGenericState('plan', state);
+        });
+        builder.addCase(thunkAddActivityActionPlan.rejected, (state, action) => {
+            state.loadingActivityActionPlan = false;
+            state.errorLoadingActivityActionPlan = action.payload;
+            notify(action.payload?.error_description ?? errorMSGUpdate, 'error');
+        });
     }
 });
 
 
-export const { 
-    selectYear, 
-    incrementLevelIndex, 
+export const {
+    selectYear,
+    incrementLevelIndex,
     decrementLevelIndex,
-    setZeroLevelIndex, 
-    setParent, 
-    setRadioBtn, 
-    setProgressNodes, 
-    setFinancial, 
-    setLoadingReport, 
-    setNodesReport, 
+    setZeroLevelIndex,
+    setParent,
+    setRadioBtn,
+    setProgressNodes,
+    setFinancial,
+    setLoadingReport,
+    setNodesReport,
     setPlanLocation,
     setBoundingbox,
     setLevels,
     AddRootTree,
+    setSelectedActionPlan,
     resetPlan } = planSlice.actions;
 export default planSlice.reducer;

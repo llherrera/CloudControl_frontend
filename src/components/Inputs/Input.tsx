@@ -1,4 +1,5 @@
-import { InputProps, InputPropChild, SelectInputProps } from "@/interfaces";
+import { InputProps, InputPropChild, SelectInputProps,
+    PropsInputLabel, PropsInputTable } from "@/interfaces";
 
 const Component = ({children, classname, id, center, label}: InputPropChild) => {
     return (
@@ -52,5 +53,45 @@ export const SelectInput = (props: SelectInputProps) => {
                 )}
             </select>
         </Component>
+    );
+}
+
+export const InputLabel = ({name, label, id, onChange, errors, className, value}: PropsInputLabel) => {
+    return (
+        <div className={`tw-my-2 ${className}`}>
+            <label
+                className="tw-col-start-1 tw-justify-self-end tw-self-center"
+                htmlFor={id}>
+                {label}:
+            </label>
+            <input
+                value={value}
+                onChange={onChange}
+                type="text"
+                name={name}
+                id={id}
+                className={`tw-col-start-2
+                            tw-w-48 tw-p-2 tw-rounded
+                            tw-border-2
+                            ${errors[name] ? 'tw-border-red-400' : 'tw-border-gray-400' }
+                            tw-bg-white`}
+            />
+        </div>
+    );
+}
+
+export const InputTable = ({name, type, onChange, errors, className}: PropsInputTable) => {
+    return (
+        <input
+            onChange={e => onChange(e)}
+            type={type}
+            name={name}
+            id={name}
+            className={`${className}
+                        tw-w-full tw-rounded
+                        tw-border-2 tw-my-2
+                        ${errors[name] ? 'tw-border-red-400' : 'tw-border-gray-400' }
+                        `}
+        />
     );
 }

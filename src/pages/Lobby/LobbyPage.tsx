@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { ProjectBankIcon, PlanIndicativoIcon, ChartIcon,
-    MapICon } from '@/assets/icons';
+    MapICon, PlanAccionIcon } from '@/assets/icons';
 
 import { Header, ButtonComponent } from '@/components';
 
@@ -96,11 +96,20 @@ export const LobbyPage = () => {
                     navigate('/PlanIndicativo/Mapa');
                 }}
                 bgColor="tw-bg-greenBtn"/>
+            <ButtonComponent
+                inside={false}
+                text='PLan de acción'
+                icon={<PlanAccionIcon color='white'/>}
+                onClick={() => {
+                    dispatch(selectOption(4));
+                    navigate('/PlanIndicativo/Plan-accion');
+                }}
+                bgColor="tw-bg-greenBtn"/>
             {/*<ButtonComponent
                 inside={false}
                 text='PQRS'
                 onClick={() => {
-                    dispatch(selectOption(4));
+                    dispatch(selectOption(5));
                     navigate('/PQRS');
                 }}
                 bgColor="tw-bg-greenBtn"

@@ -5,7 +5,9 @@ import {PDTInterface, ErrorBasicInterface, GetNodeProps, Root,
         PropsSecretary, PropsLocations, LocationInterface,
         UpdateWProps, AddLevelProps, AddNodeProps, NodeInterface,
         PropsDeadline, PDTDepartment, Project, PropsGetProjects,
-        PropsGetProjectsCount, PropsAddProjects, PropsUpdateProjects
+        PropsGetProjectsCount, PropsAddProjects, PropsUpdateProjects,
+        ActionPlan, Activity, PropsAddActionPlan, PropsAddActivity,
+        Rubro, NodeActivityPlan, LevelActionPlan
     } from '@/interfaces';
 import { parseErrorAxios } from '@/utils';
 
@@ -15,7 +17,8 @@ import {getPDTid, addPDT, getLastPDT, getColors, getLevelNodes,
         updateSecretaries, updateWeights, addLevel, addLevelNode,
         updateLocations, updateDeadline, getPDTByDept, getProjectsByPlan,
         addProjectsAtPlan, updateProjectById, getCountProjectsByPlan,
-        getPlanByUuid } from '@/services/api';
+        getPlanByUuid, getActionPlans, getActivityActionPlan,
+        addActionPlan, addActivityActionPlans } from '@/services/api';
 
 export const thunkGetPDTid = createAsyncThunk<PDTInterface, number, { rejectValue: ErrorBasicInterface }>(
     'pdt/getPDTid',
@@ -150,7 +153,7 @@ export const thunkAddNodes = createAsyncThunk<NodeInterface[], AddNodeProps, { r
             return rejectWithValue(result);
         }
     }
-);
+)
 
 export const thunkAddLevel = createAsyncThunk<LevelInterface[], AddLevelProps, { rejectValue: ErrorBasicInterface }>(
     'pdt/addLevel',
@@ -357,6 +360,81 @@ export const thunkUpdateProjects = createAsyncThunk<Project, PropsUpdateProjects
     async (props: PropsUpdateProjects, { rejectWithValue }) => {
         try {
             const res = await updateProjectById(props.id_project, props.project);
+            return res;
+        } catch (err) {
+            const result = parseErrorAxios(err);
+            return rejectWithValue(result);
+        }
+    }
+)
+
+export const thunkGetActionPlans = createAsyncThunk<ActionPlan[], number, { rejectValue: ErrorBasicInterface }>(
+    'pdt/getActionPlans',
+    async (props: number, { rejectWithValue }) => {
+        try {
+            const res = await getActionPlans(props);
+            return res;
+        } catch (err) {
+            const result = parseErrorAxios(err);
+            return rejectWithValue(result);
+        }
+    }
+)
+
+export const thunkGetActivityActionPlan = createAsyncThunk<
+    [
+        Activity[],
+        Rubro[],
+        NodeActivityPlan[],
+        LevelActionPlan[]
+    ],
+    number,
+    {
+        rejectValue: ErrorBasicInterface
+    }>(
+    'pdt/getActivityActionPlan',
+    async (props: number, { rejectWithValue }) => {
+        try {
+            const res = await getActivityActionPlan(props);
+            return res;
+        } catch (err) {
+            const result = parseErrorAxios(err);
+            return rejectWithValue(result);
+        }
+    }
+)
+/*
+export const thunkGetNodesByActivity = createAsyncThunk<Activity[], number, { rejectValue: ErrorBasicInterface }>(
+    'pdt/getNodesActivity',
+    async (props: number, { rejectWithValue }) => {
+        try {
+            const res = await getNodesActivity(props);
+            return res;
+        } catch (err) {
+            const result = parseErrorAxios(err);
+            return rejectWithValue(result);
+        }
+    }
+)
+*/
+export const thunkAddActionPlan = createAsyncThunk<ActionPlan[], PropsAddActionPlan, { rejectValue: ErrorBasicInterface }>(
+    'pdt/addActionPlan',
+    async (props: PropsAddActionPlan, { rejectWithValue }) => {
+        try {
+            const res = await addActionPlan(props.id_plan, props.plan, props.rubros);
+            return res;
+        } catch (err) {
+            const result = parseErrorAxios(err);
+            return rejectWithValue(result);
+        }
+    }
+)
+
+export const thunkAddActivityActionPlan = createAsyncThunk<Activity[], PropsAddActivity, { rejectValue: ErrorBasicInterface }>(
+    'pdt/addActivityActionPlan',
+    async (props: PropsAddActivity, { rejectWithValue }) => {
+        try {
+            const res = await addActivityActionPlans(props.id_plan, props.activities, props.node);
             return res;
         } catch (err) {
             const result = parseErrorAxios(err);

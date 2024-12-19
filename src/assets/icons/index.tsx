@@ -133,7 +133,9 @@ export const MapaIcon = ( {color}: IconProps ) => {
 
 export const PlanAccionIcon = ( {color}: IconProps ) => {
     return (
-        <SvgIcon>
+        <SvgIcon sx={{
+            fontSize: '60px'
+        }}>
         <svg 
             width="46" 
             height="48" 

@@ -209,3 +209,27 @@ export interface PropsMessage {
 export interface PropsCallback {
     callback: (data: any) => void;
 }
+
+export interface PropsModalActionPlan {
+    i: number;
+    className?: string;
+    bclassName?: string;
+}
+
+export interface PropsInputLabel {
+    name: string;
+    label: string;
+    id: string;
+    value?: string | number;
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    errors: {[key: string]: string};
+    className?: string;
+}
+
+export interface PropsInputTable {
+    name: string;
+    type: string;
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    errors: {[key: string]: string};
+    className?: string;
+}

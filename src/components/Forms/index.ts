@@ -9,3 +9,4 @@ export * from './LocationsForm';
 export * from './EvidenceForm';
 export * from './PQRSForm';
 export * from './ProjectForm';
+export * from './ActionPlan';

@@ -11,7 +11,7 @@ import { setLogo, setLogoPlan, setReload, selectOption,
     setProjectPage, setIsFullHeight } from '@/store/content/contentSlice';
 
 import { NavBar, ButtonComponent } from '@/components';
-import { ProjectBankIcon, PlanIndicativoIcon,
+import { ProjectBankIcon, PlanIndicativoIcon, PlanAccionIcon,
     ChartIcon, MapICon } from '@/assets/icons';
 import { FrameProps } from '@/interfaces';
 
@@ -20,8 +20,8 @@ export const Frame = ({children}: FrameProps) => {
     const dispatch = useAppDispatch();
 
     const { plan } = useAppSelector(store => store.plan);
-    const { index, isFullHeight,
-        url_logo, url_logo_plan } = useAppSelector(store => store.content);
+    const { index, isFullHeight, url_logo,
+        url_logo_plan } = useAppSelector(store => store.content);
 
     const bgcolor='greenBtn';
     const logocolor='#008432';
@@ -129,12 +129,34 @@ export const Frame = ({children}: FrameProps) => {
                         bgColor={3 === index ? `tw-bg-${textcolor}` : `tw-bg-${bgcolor}`}
                         textColor={3 === index ? `tw-text-${bgcolor}` : `tw-text-${textcolor}`}
                     />
+                    <ButtonComponent
+                        text='PLan de acción'
+                        inside={true}
+                        onClick={() => {
+                            dispatch(selectOption(4));
+                            navigate('/PlanIndicativo/Plan-accion', {replace: true});
+                        }}
+                        icon={<PlanAccionIcon color={ index === 4 ? logocolor : textcolor}/>}
+                        bgColor={4 === index ? `tw-bg-${textcolor}` : `tw-bg-${bgcolor}`}
+                        textColor={4 === index ? `tw-text-${bgcolor}` : `tw-text-${textcolor}`}
+                    />
+                    {/*<ButtonComponent
+                        inside={false}
+                        text='PQRS'
+                        onClick={() => {
+                            dispatch(selectOption(5));
+                            navigate('/PQRS', {replace: true});
+                        }}
+                        bgColor="tw-bg-greenBtn"
+                        icon={<PQRSIcon color='white'/>}/>*/}
                 </NavBar>
-                <div className="tw-h-full tw-w-full tw-border
+                <div ref={contentRef} 
+                    className={`${isFullHeight ? 'tw-h-[calc(100vh-100px)]' : ''} 
+                                tw-w-full tw-border
                                 tw-bg-[url('/src/assets/images/bg-pi-1.png')]
                                 tw-bg-cover
-                                tw-opacity-80">
-                    <div ref={contentRef} className={isFullHeight ? 'tw-h-screen' : ''}>
+                                tw-opacity-80`}>
+                    <div>
                         {children}
                     </div>
                 </div>
