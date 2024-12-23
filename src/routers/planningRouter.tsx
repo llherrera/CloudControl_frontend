@@ -11,12 +11,14 @@ export const PlanningRouter = () => {
             <Route path='/pdt/PlanIndicativo' element={<pages.PDTid/>} />
             <Route path='/pdt/PlanIndicativo/configuracion' element={<pages.SettingPage/>} />
             <Route path="/pdt/PlanIndicativo/Meta" element={<pages.UnitNodePage/>} />
+            <Route path="/pdt/PlanIndicativo/MetaResultado" element={<pages.UnitNodeResultPage/>} />
             <Route path="/pdt/PlanIndicativo/Meta/evidencia" element={<pages.EvidencePage/>} />
             <Route path="/PlanIndicativo/evidencias" element={<pages.ListEvidence/>} />
             <Route path="/PlanIndicativo/evidencia" element={<pages.UpdateEvidence/>} />
             <Route path="/PlanIndicativo/Mapa" element={<pages.InterventionMap/>} />
             <Route path='/PlanIndicativo/POAI' element={<pages.POAI/>} />
             <Route path='/PlanIndicativo/Banco-proyectos' element={<pages.ProjectBank/>} />
+            <Route path='/PlanIndicativo/Plan-accion' element={<pages.ActionPlanPage/>} />
             <Route path='/PQRS' element={<pages.PQRSPage/>} />
             <Route path='/PQRS/radicar' element={<pages.PQRSFiledPage/>} />
             <Route path='/PQRS/consultar' element={<pages.PQRSStatePage/>} />

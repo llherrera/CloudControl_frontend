@@ -4,7 +4,8 @@ import {
     LocationInterface,
     PDTInterface,
     ExecutionInterface,
-    NodeInterface } from "./formInterfaces";
+    NodeInterface, 
+    UnitNodeResultInterface} from "./formInterfaces";
 
 export interface IdProps {
     id: number;
@@ -232,4 +233,8 @@ export interface PropsInputTable {
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     errors: {[key: string]: string};
     className?: string;
+}
+
+export interface UnitInfoProps {
+    unit: UnitNodeResultInterface
 }

@@ -14,6 +14,7 @@ export const PublicRouter = () => {
             <Route path="/PlanIndicativo/Mapa" element={<pages.InterventionMap/>} />
             <Route path='/PlanIndicativo/POAI' element={<pages.POAI/>} />
             <Route path='/PlanIndicativo/Banco-proyectos' element={<pages.ProjectBank/>} />
+            <Route path='/PlanIndicativo/Plan-accion' element={<pages.ActionPlanPage/>} />
             <Route path='/PQRS' element={<pages.PQRSPage/>} />
             <Route path='/PQRS/radicar' element={<pages.PQRSFiledPage/>} />
             <Route path='/PQRS/consultar' element={<pages.PQRSStatePage/>} />

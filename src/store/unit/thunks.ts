@@ -1,20 +1,23 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
-import { 
-    UnitInterface, 
-    ErrorBasicInterface, 
-    GetUnitProps, 
-    AddUnitProps, 
+import {
+    UnitInterface,
+    ErrorBasicInterface,
+    GetUnitProps,
+    AddUnitProps,
     propsIndicator,
-    PropsExecution } from "@/interfaces";
+    PropsExecution,
+    UnitNodeResultInterface,
+    PropsAddUnitResult } from "@/interfaces";
 import { parseErrorAxios } from "@/utils";
 
-import { 
-    getUnitNodeAndYears, 
-    addUnitNodeAndYears, 
-    updateUnitNodeAndYears, 
+import {
+    getUnitNodeAndYears,
+    addUnitNodeAndYears,
+    updateUnitNodeAndYears,
     updateIndicator,
-    updateExecution } from "@/services/api";
+    updateExecution,
+    addUnitNodeResult } from "@/services/api";
 
 export const thunkGetUnit = createAsyncThunk<UnitInterface, GetUnitProps, { rejectValue: ErrorBasicInterface}>(
     "unit/getUnit", 
@@ -106,4 +109,17 @@ export const thunkUpdateExecution = createAsyncThunk<void, PropsExecution, { rej
             return rejectWithValue(result);
         }
     }
-)
+);
+
+export const thunkAddUnitNodeResult = createAsyncThunk<void, PropsAddUnitResult, { rejectValue: ErrorBasicInterface }>(
+    'unit/addUnitNodeResult',
+    async (props: PropsAddUnitResult, { rejectWithValue }) => {
+        try {
+            const res = await addUnitNodeResult(props.id_plan, props.id_node, props.node, props.nodes);
+            return res;
+        } catch (err) {
+            const result = parseErrorAxios(err);
+            return rejectWithValue(result);
+        }
+    }
+);

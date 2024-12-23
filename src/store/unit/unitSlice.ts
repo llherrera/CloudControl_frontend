@@ -5,14 +5,16 @@ import { setGenericState, getGenericState, removeGenericState,
     notify } from "@/utils";
 
 import { thunkGetUnit, thunkAddUnit, thunkUpdateUnit, thunkUpdateIndicator,
-    thunkUpdateExecution } from "./thunks";
+    thunkUpdateExecution, thunkAddUnitNodeResult } from "./thunks";
 
 const getInitialState = (): InitialStateUnitInterface => {
     const unitState = getGenericState("unit");
     if (unitState) return unitState;
     return {
         loadingUnit: false,
+        loadingUnitResult: false,
         errorLoadingUnit: undefined,
+        errorLoadingUnitResult: undefined,
         unit: {
             code: "",
             id_node: '',
@@ -139,6 +141,21 @@ export const unitSlice = createSlice({
         builder.addCase(thunkUpdateExecution.rejected, (state, action) => {
             state.loadingUnit = false;
             state.errorLoadingUnit = action.payload;
+            notify(action.payload?.error_description ?? 'Ha ocurrido un error, vuelva a intertarlo más tarde', 'error');
+        });
+
+
+        builder.addCase(thunkAddUnitNodeResult.pending, state => {
+            if (!state.loadingUnitResult) state.loadingUnitResult = true;
+            state.errorLoadingUnitResult = undefined;
+        });
+        builder.addCase(thunkAddUnitNodeResult.fulfilled, state => {
+            state.loadingUnitResult = false;
+            notify('Meta añadida', 'success');
+        });
+        builder.addCase(thunkAddUnitNodeResult.rejected, (state, action) => {
+            state.loadingUnitResult = false;
+            state.errorLoadingUnitResult = action.payload;
             notify(action.payload?.error_description ?? 'Ha ocurrido un error, vuelva a intertarlo más tarde', 'error');
         });
     }

@@ -22,7 +22,8 @@ import {
     Project,
     ActionPlan,
     Activity,
-    Rubro } from "../interfaces";
+    Rubro,
+    UnitNodeResultInterface } from "../interfaces";
 
 import { getToken, refreshToken } from "@/utils";
 
@@ -810,6 +811,25 @@ export const addActivityActionPlans = async (id_plan: number, activities: Activi
         id_plan,
         activities,
         node
+    });
+    return response.data;
+}
+
+export const addUnitNodeResult = async (id_plan: number, id_node: string, node: UnitNodeResultInterface, nodes: string[]) => {
+    const response = await api.post(`/nodo/resultado`, {
+        id_plan,
+        id_node,
+        node,
+        nodes
+    });
+    return response.data;
+}
+
+export const getUnitNodeResult = async (id_node: string) => {
+    const response = await api.get(`/nodo/resultado`, {
+        params: {
+            id_node
+        }
     });
     return response.data;
 }

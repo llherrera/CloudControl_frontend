@@ -165,3 +165,17 @@ export interface PQRSInform {
     asunto: string;
     peticion: string;
 }
+
+export interface UnitNodeResultInterface {
+    readonly id_node: string;
+    readonly code: string;
+    readonly id_plan: number;
+    description: string;
+    indicator: string;
+    base_line: number;
+    goal: number;
+    executed: number;
+    responsible: string;
+    unitMeter: string;
+    unitNodes: string[]
+}

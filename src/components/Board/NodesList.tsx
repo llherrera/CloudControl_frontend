@@ -18,8 +18,7 @@ export const NodesList = ( props : IdProps ) => {
 
     const { token_info } = useAppSelector(store => store.auth);
     const { nodes, yearSelect, levels, indexLevel, progressNodes,
-            colorimeter, loadingNodes, rootTree
-        } = useAppSelector(store => store.plan);
+        colorimeter, loadingNodes, rootTree } = useAppSelector(store => store.plan);
     const { mode } = useAppSelector(store => store.content);
     const [ pesos, setPesos ] = useState<number[]>(
         nodes.map((item: NodeInterface) => item.weight)
@@ -133,9 +132,14 @@ export const NodesList = ( props : IdProps ) => {
         'tw-bg-blueColory hover:tw-ring-blue-200'
     );
 
+    const handleClickResult = () => {
+        navigate('/pdt/PlanIndicativo/MetaResultado');
+    };
+
     const HandleShowList = () => loadingNodes ?
         <Spinner />
-        :<ul className={`${indexLevel === levels.length-1 ?
+        : <>
+        <ul className={`${indexLevel === levels.length-1 ?
                         'tw-flex tw-flex-row tw-flex-wrap':
                         'tw-flex-col tw-flex-wrap'} `} >
             {nodes.map((item: NodeInterface, index: number) =>
@@ -192,6 +196,21 @@ export const NodesList = ( props : IdProps ) => {
             </div>
             : null}
         </ul>
+        {indexLevel === levels.length-1 ?
+        <div className='tw-flex tw-justify-center tw-ml-3
+                        tw-border-t tw-border-slate-500'>
+            <button
+                title="Metas de resultado"
+                className=' tw-mx-2 tw-p-2 tw-mt-2
+                            tw-bg-redBtn hover:tw-bg-red-200
+                            tw-rounded-full
+                            tw-font-bold tw-text-white'
+                onClick={() => handleClickResult()}>
+                Metas de resultado
+            </button>
+        </div>
+        :null}
+        </>
     ;
 
     return <div>

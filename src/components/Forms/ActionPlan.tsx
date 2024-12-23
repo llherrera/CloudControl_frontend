@@ -5,10 +5,8 @@ import { InputLabel, InputTable, CloseBtn } from "@/components";
 import { useAppSelector, useAppDispatch } from '@/store';
 import { thunkAddActionPlan, thunkAddActivityActionPlan } from '@/store/plan/thunks';
 
-import {
-    NodeInterface, UnitNodeInterface,
-    ActionPlan, Activity, Rubro, levelsPlan
-} from "@/interfaces";
+import { NodeInterface, UnitNodeInterface, ActionPlan, Activity,
+    Rubro, levelsPlan } from "@/interfaces";
 import { getLevelNodes, getListNodes } from '@/services/api';
 import { notify } from "@/utils";
 
@@ -460,14 +458,14 @@ export const ActivityForm = ({ plan }: { plan: ActionPlan }) => {
             invertionIndicator: -1,
             efficiencyIndicator: -1
         });
-    }
+    };
 
     const deleteActivity = () => {
         if (activities.length > 0) {
             const newData = activities.slice(0, activities.length - 1);
             setActivities(newData);
         }
-    }
+    };
 
     const handleInputFormChange = ( event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
                                     index: number) => {
@@ -477,7 +475,7 @@ export const ActivityForm = ({ plan }: { plan: ActionPlan }) => {
         console.log(nameO);
         newData[index] = { ...newData[index], [nameO]: value };
         setActivities(newData);
-    }
+    };
 
     const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const index = e.target.selectedIndex - 1;
