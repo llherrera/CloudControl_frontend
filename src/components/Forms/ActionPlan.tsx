@@ -30,7 +30,8 @@ export const ActionPlanFrom = () => {
         level3: '',
         actions: [],
         rubros: [],
-        nodes: []
+        nodes: [],
+        nodesResult: []
     });
     const [rubros, setRubros] = useState<Rubro[]>([
         {
@@ -99,7 +100,8 @@ export const ActionPlanFrom = () => {
                 level3: '',
                 actions: [],
                 rubros: [],
-                nodes: []
+                nodes: [],
+                nodesResult: []
             });
     }, [count]);
 
@@ -472,7 +474,6 @@ export const ActivityForm = ({ plan }: { plan: ActionPlan }) => {
         const { name, value } = event.target;
         const newData = [...activities];
         const nameO = name.replace(/_\d+$/, '');
-        console.log(nameO);
         newData[index] = { ...newData[index], [nameO]: value };
         setActivities(newData);
     };
@@ -503,9 +504,9 @@ export const ActivityForm = ({ plan }: { plan: ActionPlan }) => {
             if (!activity.end_date) newErrors[`end_date_${i + 1}`] = 'La fecha de finalización es obligatoria.';
             if (activity.start_date && activity.end_date && activity.start_date > activity.end_date)
                 newErrors[`end_date_${i + 1}`] = 'La fecha de finalización debe ser posterior a la de inicio.';
-            if (activity.phisicalIndicator <= 0) newErrors[`phisicalIndicator_${i + 1}`] = 'El indicador físico es obligatorio.';
-            if (activity.invertionIndicator <= 0) newErrors[`invertionIndicator_${i + 1}`] = 'El indicador de inversión es obligatorio.';
-            if (activity.efficiencyIndicator <= 0) newErrors[`efficiencyIndicator_${i + 1}`] = 'El indicador de eficiencia es obligatorio.';
+            if (activity.phisicalIndicator < 0) newErrors[`phisicalIndicator_${i + 1}`] = 'El indicador físico es obligatorio.';
+            if (activity.invertionIndicator < 0) newErrors[`invertionIndicator_${i + 1}`] = 'El indicador de inversión es obligatorio.';
+            if (activity.efficiencyIndicator < 0) newErrors[`efficiencyIndicator_${i + 1}`] = 'El indicador de eficiencia es obligatorio.';
         }
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;

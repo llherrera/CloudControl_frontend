@@ -3,7 +3,8 @@ import {
     PDTInterface,
     LevelInterface,
     NodeInterface,
-    LocationInterface } from "./formInterfaces";
+    LocationInterface,
+    UnitNodeResultInterface } from "./formInterfaces";
 import { Coordinates } from "./ubication";
 import { Secretary } from "./secretary";
 
@@ -213,6 +214,7 @@ export interface ActionPlan {
     actions: Activity[];
     rubros: Rubro[];
     nodes: NodeActivityPlan[];
+    nodesResult: UnitNodeResultInterface[];
 }
 
 export interface Activity {

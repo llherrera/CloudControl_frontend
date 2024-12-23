@@ -625,6 +625,7 @@ export const planSlice = createSlice({
                 const str = `level${i + 1}` as keyof levelsPlan;
                 state.selectedPlan![str] = action.payload[3][i].name;
             }
+            state.selectedPlan!.nodesResult = action.payload[4];
             setGenericState('plan', state);
         });
         builder.addCase(thunkGetActivityActionPlan.rejected, (state, action) => {

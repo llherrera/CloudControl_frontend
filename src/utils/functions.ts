@@ -797,6 +797,59 @@ export const generateActionPlanExcel = (actionPlan: ActionPlan) => {
   sheet.getCell(`J${cell}`).style = { font: { bold: true, size: 12 }, alignment: { wrapText: true, vertical: 'middle', horizontal: 'center' }, border: { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } } };
   sheet.getCell(`L${cell}`).style = { font: { bold: true, size: 12 }, alignment: { wrapText: true, vertical: 'middle', horizontal: 'center' }, border: { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } } };
 
+  actionPlan.nodesResult.forEach((nr, index) => {
+    sheet.addRow([
+      nr.indicator,
+      '',
+      `META DE RESULTADO No. ${nr.description}`,
+      '',
+      '',
+      '',
+      '',
+      '',
+      nr.unitMeter,
+      'P',
+      nr.base_line,
+      `NOMBRE: ${nr.responsible}`,
+      '',
+      ``,
+      ``,
+      ''
+    ]);
+    sheet.addRow([
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      '',
+      'E',
+      nr.executed == null ? '' : nr.executed,
+      '',
+      '',
+      ``,
+      ``,
+      ''
+    ]);
+    const cell = 14 + rubros.length + 3 + (actionPlan.actions.length * 2) + 4 + (index * 2);
+    sheet.mergeCells(`A${cell + index}:B${cell + index + 1}`);
+    sheet.mergeCells(`C${cell + index}:H${cell + index + 1}`);
+    sheet.mergeCells(`I${cell + index}:I${cell + index + 1}`);
+    sheet.mergeCells(`L${cell + index}:P${cell + index + 1}`);
+
+    sheet.getCell(`A${cell + index}`).style = { font: { bold: true, size: 12 }, alignment: { wrapText: true, vertical: 'middle', horizontal: 'left' }, border: { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } } };
+    sheet.getCell(`C${cell + index}`).style = { font: { bold: true, size: 12 }, alignment: { wrapText: true, vertical: 'middle', horizontal: 'center' }, border: { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } } };
+    sheet.getCell(`I${cell + index}`).style = { font: { bold: true, size: 12 }, alignment: { wrapText: true, vertical: 'middle', horizontal: 'center' }, border: { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } } };
+    sheet.getCell(`J${cell + index}`).style = { font: { bold: true, size: 12 }, alignment: { wrapText: true, vertical: 'middle', horizontal: 'center' }, border: { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } } };
+    sheet.getCell(`K${cell + index}`).style = { font: { bold: true, size: 12 }, alignment: { wrapText: true, vertical: 'middle', horizontal: 'center' }, border: { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } } };
+    sheet.getCell(`J${cell + index + 1}`).style = { font: { bold: true, size: 12 }, alignment: { wrapText: true, vertical: 'middle', horizontal: 'center' }, border: { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } } };
+    sheet.getCell(`K${cell + index + 1}`).style = { font: { bold: true, size: 12 }, alignment: { wrapText: true, vertical: 'middle', horizontal: 'center' }, border: { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } } };
+    sheet.getCell(`L${cell + index}`).style = { font: { bold: true, size: 12 }, alignment: { wrapText: true, vertical: 'middle', horizontal: 'center' }, border: { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } } };
+  });
+  cell = 14 + rubros.length + 3 + (actionPlan.actions.length * 2) + 4 + (actionPlan.nodesResult.length * 2);
   sheet.addRow([
     'OBSERVACIONES:',
     '',
@@ -816,61 +869,8 @@ export const generateActionPlanExcel = (actionPlan: ActionPlan) => {
     ''
   ]);
   sheet.addRow([]);
-  
-  // Agregar las metas de resultado
-  /*
-  actionPlan.nodesResult.forEach((nr, index) => {
-    sheet.addRow([
-      'nr.indicator',
-      '',
-      `META DE RESULTADO No. ${nr.name}`,
-      '',
-      '',
-      '',
-      '',
-      '',
-      nr.unitMeter,
-      'P',
-      nr.programed,
-      `NOMBRE: ${nr.asigned}`,
-      '',
-      ``,
-      ``,
-      ''
-    ]);
-    sheet.addRow([
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      '',
-      'E',
-      '',
-      '',
-      '',
-      ``,
-      ``,
-      ''
-    ]);
-
-    sheet.mergeCells(`A${cell}:B${cell + 1}`);
-    sheet.mergeCells(`C${cell}:H${cell + 1}`);
-    sheet.mergeCells(`I${cell}:I${cell + 1}`);
-    sheet.mergeCells(`L${cell}:P${cell + 1}`);
-
-    sheet.getCell(`A${cell}`).style = { font: { bold: true, size: 12 }, alignment: { wrapText: true, vertical: 'middle', horizontal: 'left' }, border: { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } } };
-    sheet.getCell(`C${cell}`).style = { font: { bold: true, size: 12 }, alignment: { wrapText: true, vertical: 'middle', horizontal: 'center' }, border: { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } } };
-    sheet.getCell(`I${cell}`).style = { font: { bold: true, size: 12 }, alignment: { wrapText: true, vertical: 'middle', horizontal: 'center' }, border: { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } } };
-    sheet.getCell(`J${cell}`).style = { font: { bold: true, size: 12 }, alignment: { wrapText: true, vertical: 'middle', horizontal: 'center' }, border: { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } } };
-    sheet.getCell(`L${cell}`).style = { font: { bold: true, size: 12 }, alignment: { wrapText: true, vertical: 'middle', horizontal: 'center' }, border: { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } } };
-  });
   sheet.mergeCells(`A${cell}:K${cell + 1}`);
   sheet.mergeCells(`L${cell}:P${cell + 1}`);
-  */
 
   // Ajustar tamaños de columnas
   sheet.columns.forEach(column => {

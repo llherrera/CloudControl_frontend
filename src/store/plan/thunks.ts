@@ -7,7 +7,8 @@ import {PDTInterface, ErrorBasicInterface, GetNodeProps, Root,
         PropsDeadline, PDTDepartment, Project, PropsGetProjects,
         PropsGetProjectsCount, PropsAddProjects, PropsUpdateProjects,
         ActionPlan, Activity, PropsAddActionPlan, PropsAddActivity,
-        Rubro, NodeActivityPlan, LevelActionPlan
+        Rubro, NodeActivityPlan, LevelActionPlan,
+        UnitNodeResultInterface
     } from '@/interfaces';
 import { parseErrorAxios } from '@/utils';
 
@@ -386,7 +387,8 @@ export const thunkGetActivityActionPlan = createAsyncThunk<
         Activity[],
         Rubro[],
         NodeActivityPlan[],
-        LevelActionPlan[]
+        LevelActionPlan[],
+        UnitNodeResultInterface[]
     ],
     number,
     {
