@@ -8,12 +8,12 @@ import { thunkGetNodes } from '@/store/plan/thunks';
 import { setMode } from "@/store/content/contentSlice";
 
 import { IdProps } from "@/interfaces";
-import { NodeForm, NodesList, TimeLine, CopilotPopover,
-    Graph, BackBtn, DoubleBackBtn, SettingsBtn } from "@/components";
+import { NodeForm, NodesList, TimeLine, Graph, BackBtn,
+    DoubleBackBtn, SettingsBtn } from "@/components";
 
 import IconButton from "@mui/material/IconButton";
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
-import { ModalBoard, ModalAi, ModalAi2, ModalShare } from "../Modals";
+import { ModalBoard, ModalAi, ModalShare } from "../Modals";
 import { decode } from "@/utils";
 
 export const Content = ( props : IdProps ) => {
@@ -21,9 +21,9 @@ export const Content = ( props : IdProps ) => {
     const dispatch = useAppDispatch();
 
     const { token_info } = useAppSelector(store => store.auth);
-    const { plan, years, indexLevel, levels, parent,
-            progressNodes, financial, radioBtn, nodes,
-            colorimeter, rootTree } = useAppSelector(store => store.plan);
+    const { plan, years, indexLevel, levels, parent, progressNodes,
+        financial, radioBtn, nodes, colorimeter, rootTree
+    } = useAppSelector(store => store.plan);
     const { mode } = useAppSelector(store => store.content);
 
     const [rol, setRol] = useState("");
@@ -39,18 +39,8 @@ export const Content = ( props : IdProps ) => {
         }
     }, []);
 
-    //useEffect(() => {
-    //    if (id_plan <= 0) return;
-    //    if (secretaries == undefined)
-    //        dispatch(thunkGetSecretaries(id_plan));
-    //    if (locations == undefined)
-    //        dispatch(thunkGetLocations(id_plan));
-    //}, [id_plan]);
-
     useEffect(() => {
-        dispatch(thunkGetNodes({id_level: levels[indexLevel].id_level!, parent: parent}))
-        .unwrap()
-        .catch((err) => {console.log(err)});
+        dispatch(thunkGetNodes({id_level: levels[indexLevel].id_level!, parent: parent}));
     }, [years, indexLevel]);
 
     const handleStartReturn = () => {
@@ -69,7 +59,7 @@ export const Content = ( props : IdProps ) => {
             dispatch(AddRootTree(newRoot));
             let temp = parent!.split('.');
             let temp_ = temp.slice(0, temp.length-1);
-            temp.length === 2 ? 
+            temp.length === 2 ?
                 dispatch(setParent(null))
             : dispatch(setParent(temp_.join('.')));
 
@@ -97,7 +87,7 @@ export const Content = ( props : IdProps ) => {
     );
 
     const HandleRol = () => (
-        rol === 'admin' || (rol === 'funcionario' && id === props.id) ? 
+        rol === 'admin' || (rol === 'funcionario' && id === props.id) ?
         <button onClick={()=>handleSettings(1)}>Definir colorimetría</button>
         : <p>No se ha definido una colorimetría aún</p>
     );
@@ -197,24 +187,21 @@ export const Content = ( props : IdProps ) => {
                 </div>
 
                 <div className="tw-rounded tw-shadow-lg tw-border
-                                tw-bg-white
-                                tw-mx-6 tw-mt-6 
+                                tw-bg-white tw-overflow-scroll
+                                tw-mx-6 tw-mt-6
                                 md:tw-ml-6 md:tw-mr-3 md:tw-mt-0
-                                tw-overflow-scroll
-                                md:tw-order-first
-                                md:tw-w-[290px]
-                                md:tw-h-[270px]
+                                md:tw-order-first md:tw-w-[290px] md:tw-h-[270px]
                                 lg:tw-w-4/5 lg:tw-h-full lg:tw-row-span-2
                                 xl:tw-row-span-2">
                     <p className="tw-ml-4 tw-mt-3 tw-font-montserrat tw-font-bold">
                         {indexLevel < 2 ? null : <DoubleBackBtn handle={handleStartReturn} id={props.id} />}
-                        <BackBtn 
+                        <BackBtn
                             handle={handleBack}
                             id={props.id}
                             className={`${indexLevel < 2 ? '' : 'tw--translate-x-6'}`}/>
                         {levels[indexLevel].name}
                         {rol === 'admin' || (rol === 'funcionario' && id === props.id) ?
-                        <button className={`tw-ml-4 tw-p-2 
+                        <button className={`tw-ml-4 tw-p-2
                                             tw-rounded
                                             ${mode? 'tw-bg-red-300 hover:tw-bg-red-500' :
                                             'tw-bg-green-300 hover:tw-bg-green-500'}`}
@@ -227,14 +214,13 @@ export const Content = ( props : IdProps ) => {
                         {nodes.length === 0 ?
                         <div>
                             {(rol === "admin") || (rol === 'funcionario' && id === props.id) ?
-                            <NodeForm   index={indexLevel}
-                                        id={levels[indexLevel].id_level!}/>
+                            <NodeForm index={indexLevel} id={levels[indexLevel].id_level!}/>
                             : <div>
                                 <p className="tw-mx-4 tw-text-center">De momemnto no hay contenido en este Plan</p>
                             </div>
                             }
                         </div>
-                        :<NodesList id={props.id}/>
+                        : <NodesList id={props.id}/>
                         }
                     </div>
                 </div>
@@ -257,7 +243,6 @@ export const Content = ( props : IdProps ) => {
                 </div>
 
             </div>
-            
         </div>
     );
 }
