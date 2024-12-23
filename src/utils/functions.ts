@@ -738,6 +738,7 @@ export const generateActionPlanExcel = (actionPlan: ActionPlan) => {
   sheet.mergeCells(`O${cell}:O${cell+1}`);
   sheet.mergeCells(`P${cell}:P${cell+1}`);
 
+  sheet.getCell(`A${cell}`).style = { border: { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } } };
   sheet.getCell(`B${cell}`).style = { font: { bold: true, size: 11 }, alignment: { wrapText: true, vertical: 'top', horizontal: 'left' }, border: { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } } };
   sheet.getCell(`C${cell}`).style = { font: { bold: true, size: 11 }, alignment: { wrapText: true, vertical: 'middle', horizontal: 'center' }, border: { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } } };
   sheet.getCell(`D${cell}`).style = { font: { bold: true, size: 11 }, alignment: { wrapText: true, vertical: 'middle', horizontal: 'center' }, border: { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } } };

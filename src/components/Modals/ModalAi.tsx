@@ -74,25 +74,6 @@ export const ModalAi = () => {
     )
 }
 
-export const ModalAi2 = () => {
-    const navigate = useNavigate();
-
-    return (
-        <div>
-            <button
-                title='Chat con copilot'
-                className={`tw-transition
-                            hover:tw--translate-y-1 hover:tw-scale-[1.4]
-                            tw-rounded-full tw-bg-white
-                            tw-w-8 tw-h-8 tw-ml-2
-                            tw-border-2 tw-border-logoBorder`}
-                onClick={()=>navigate('/pdt/PlanIndicativo/copilot')}>
-                AI
-            </button>
-        </div>
-    )
-}
-
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 const MenuProps = {

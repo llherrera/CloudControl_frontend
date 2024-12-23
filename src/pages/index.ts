@@ -13,6 +13,5 @@ export * from './ProjectBank';
 export * from './ChooseCity';
 export * from './Search';
 export * from './PQRS';
-export * from './Copilot';
 export * from './NotFound';
 export * from './ActionPlan';

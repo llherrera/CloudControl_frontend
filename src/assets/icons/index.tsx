@@ -352,7 +352,8 @@ export const ChartIcon = ( {color}: IconProps ) => {
 export const ProjectBankIcon = ( {color}: IconProps ) => {
     return (
         <SvgIcon sx={{
-            fontSize: '80px'
+            fontSize: '80px',
+            transform: 'translateX(7px)'
         }}>
             <svg
                 version="1.0"
