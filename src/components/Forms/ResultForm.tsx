@@ -1,34 +1,37 @@
 import React, { useState, useEffect } from 'react';
-import { Box, CircularProgress, List, ListItemText,
-    ListItemButton, ListItemIcon } from '@mui/material';
+import { Box, CircularProgress, List, ListItemText, ListItemButton,
+    ListItemIcon } from '@mui/material';
 
 import { useAppSelector, useAppDispatch } from '@/store';
-import { thunkAddUnitNodeResult } from '@/store/unit/thunks';
+import { thunkAddUnitNodeResult, thunkUpdateUnitNodeResult } from '@/store/unit/thunks';
 
-import { NodeInterface, UnitNodeResultInterface } from '@/interfaces';
+import { NodeInterface, UnitInfoProps, UnitNodeResultInterface } from '@/interfaces';
 import { Input, CloseBtn } from '@/components';
 import { notify } from "@/utils";
 
-export const NodeResultForm = () => {
+export const NodeResultForm = ({unit}: UnitInfoProps) => {
     const dispatch = useAppDispatch();
     const { nodes } = useAppSelector(store => store.plan);
     const { loadingUnitResult } = useAppSelector(store => store.unit);
     const { id_plan } = useAppSelector(store => store.content);
 
     const [selectNodes, setSelectNodes] = useState<NodeInterface[]>([]);
-    const [data, setData] = useState<UnitNodeResultInterface>({
-        id_node: '',
-        code: '',
-        id_plan: id_plan,
-        description: '',
-        indicator: '',
-        base_line: 0,
-        goal: 0,
-        executed: 0,
-        responsible: '',
-        unitMeter: '',
-        unitNodes: [],
-    });
+    const [data, setData] = useState<UnitNodeResultInterface>(
+        unit == undefined ?
+        {
+            id_node: '',
+            code: '',
+            id_plan: id_plan,
+            description: '',
+            indicator: '',
+            base_line: 0,
+            goal: 0,
+            executed: 0,
+            responsible: '',
+            unitMeter: '',
+            unitNodes: [],
+        } : unit
+    );
 
     const handleChangeUnit = (event: React.ChangeEvent<
                                         HTMLInputElement |
@@ -51,7 +54,10 @@ export const NodeResultForm = () => {
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         let temp = selectNodes.map(s => s.id_node);
-        dispatch(thunkAddUnitNodeResult({id_plan, id_node: temp[0].split('.').slice(0, -1).join('.'), node: data, nodes: temp}))
+        if (unit == undefined)
+            dispatch(thunkAddUnitNodeResult({id_plan, id_node: temp[0].split('.').slice(0, -1).join('.'), node: data, nodes: temp}))
+        else
+            dispatch(thunkUpdateUnitNodeResult({id_plan: -1, id_node: '', node: data, nodes: temp}))
     };
 
     return (

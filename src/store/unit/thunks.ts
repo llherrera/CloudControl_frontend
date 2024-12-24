@@ -17,7 +17,8 @@ import {
     updateUnitNodeAndYears,
     updateIndicator,
     updateExecution,
-    addUnitNodeResult } from "@/services/api";
+    addUnitNodeResult,
+    updateUnitNodeResult } from "@/services/api";
 
 export const thunkGetUnit = createAsyncThunk<UnitInterface, GetUnitProps, { rejectValue: ErrorBasicInterface}>(
     "unit/getUnit", 
@@ -116,6 +117,19 @@ export const thunkAddUnitNodeResult = createAsyncThunk<void, PropsAddUnitResult,
     async (props: PropsAddUnitResult, { rejectWithValue }) => {
         try {
             const res = await addUnitNodeResult(props.id_plan, props.id_node, props.node, props.nodes);
+            return res;
+        } catch (err) {
+            const result = parseErrorAxios(err);
+            return rejectWithValue(result);
+        }
+    }
+);
+
+export const thunkUpdateUnitNodeResult = createAsyncThunk<void, PropsAddUnitResult, { rejectValue: ErrorBasicInterface }>(
+    'unit/updateUnitNodeResult',
+    async (props: PropsAddUnitResult, { rejectWithValue }) => {
+        try {
+            const res = await updateUnitNodeResult(props.node, props.nodes);
             return res;
         } catch (err) {
             const result = parseErrorAxios(err);

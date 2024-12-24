@@ -825,6 +825,14 @@ export const addUnitNodeResult = async (id_plan: number, id_node: string, node: 
     return response.data;
 }
 
+export const updateUnitNodeResult = async (node: UnitNodeResultInterface, nodes: string[]) => {
+    const response = await api.put(`/nodo/resultado`, {
+        node,
+        nodes
+    });
+    return response.data;
+}
+
 export const getUnitNodeResult = async (id_node: string) => {
     const response = await api.get(`/nodo/resultado`, {
         params: {

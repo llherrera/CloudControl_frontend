@@ -12,7 +12,7 @@ export const Options = ({ callback }: PropsCallback) => {
                             tw-bg-white tw-rounded
                             tw-col-span-2'>
                 <BackBtn handle={callback} id={18}/>
-                PLAN DE ACCIÓN
+                PLANES DE ACCIÓN
             </h1>
             <ModalOption
                 className='tw-bg-[#F1C19A] tw-rounded'

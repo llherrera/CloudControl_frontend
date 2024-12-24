@@ -46,35 +46,35 @@ export const ModalOption = ({ i, className, bclassName }: PropsModalActionPlan) 
                 title="Listar planes"
                 className={`${bclassName} tw-rounded tw-h-24 tw-w-full`}
                 onClick={() => setIsOpen1(!isOpen1)}>
-                Lista de planes
+                Lista
             </button> :
             i === 1 ?
             <button
                 title="Agregar plan"
                 className={`${bclassName} tw-rounded tw-h-24 tw-w-full`}
                 onClick={() => setIsOpen2(!isOpen2)}>
-                Adicionar plan
+                Adicionar
             </button> :
             i === 2 ?
             <button
                 title="Actualizar plan"
                 className={`${bclassName} tw-rounded tw-h-24 tw-w-full`}
                 onClick={() => setIsOpen3(!isOpen3)}>
-                Modificar plan
+                Modificar
             </button> :
             i === 3 ?
             <button
                 title="Eliminar planes"
                 className={`${bclassName} tw-rounded tw-h-24 tw-w-full`}
                 onClick={() => setIsOpen4(!isOpen4)}>
-                Eliminar plan
+                Eliminar
             </button> :
             i === 4 ?
             <button
                 title="Importar planes"
                 className={`${bclassName} tw-rounded tw-h-24 tw-w-full`}
                 onClick={() => setIsOpen4(!isOpen5)}>
-                Importar plan
+                Importar
             </button> :
             <></>
             }

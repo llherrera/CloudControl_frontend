@@ -8,8 +8,10 @@ import { thunkGetEvidence } from '@/store/evidence/thunks';
 import { thunkGetUnit } from "@/store/unit/thunks";
 import { setIdPlan } from "@/store/content/contentSlice";
 
-import { Header, UnitFrame, HvBtn, ShowEvidence } from "@/components";
+import { Header, UnitFrame, HvBtn, ShowEvidence, UnitResultInfo } from "@/components";
 import { validateUUID, notify, getYears } from "@/utils";
+import { UnitNodeResultInterface } from "@/interfaces";
+import { getUnitNodeResult } from "@/services/api";
 
 import { Box, CircularProgress } from '@mui/material';
 
@@ -82,7 +84,6 @@ export const SearchUnitPage = () => {
         .catch(() => setFind(false));
     }, []);
 
-    
     if (plan == undefined) return <UnitFrame><div>No se ha encontrado un plan de desarrollo</div></UnitFrame>;
     
     useEffect(() => {
@@ -374,5 +375,104 @@ export const SearchUnitPage = () => {
             </button>
         </div>
         {showEvidence ? <Ternary/> : null}
+    </UnitFrame>;
+}
+//http://localhost:5173/meta/4B09F602-7130-4813-9A77-9805F217C8DA?code=9284.1.1.1.1.1
+export const SearchUnitResultPage = () => {
+    const { uuid } = useParams();
+    const location = useLocation();
+    const navigate = useNavigate();
+    const dispatch = useAppDispatch();
+
+    const queryParams = new URLSearchParams(location.search);
+    const code = queryParams.get('code');
+
+    const { loadingUnitResult, errorLoadingUnitResult } = useAppSelector(store => store.unit);
+    const { plan, namesTree } = useAppSelector(store => store.plan);
+
+    const [find, setFind] = useState(false);
+    const [listNodes, setListNodes] = useState<UnitNodeResultInterface[]>([]);
+    const [data, setData] = useState<UnitNodeResultInterface | undefined>(undefined);
+
+    if (uuid == undefined) return <UnitFrame><div>No se ha enviado un id</div></UnitFrame>;
+
+    if (!validateUUID(uuid)) return <UnitFrame><div>El id enviado no es válido</div></UnitFrame>;
+
+    useEffect(() => {
+        dispatch(thunkGetPDTByUuid(uuid))
+        .then(() => setFind(true))
+        .catch(() => setFind(false));
+    }, []);
+
+    if (plan == undefined) return <UnitFrame><div>No se ha encontrado un plan de desarrollo</div></UnitFrame>;
+
+    useEffect(() => {
+        if (code == null) return;
+        //let years = getYears(plan.start_date);
+        //dispatch(thunkUpdateYears(years));
+        //dispatch(thunkGetLevelName(code));
+        //dispatch(thunkGetUnit({
+        //    id_plan: plan.id_plan.toString(),
+        //    id_node: code
+        //}));
+    }, [plan]);
+
+    useEffect(() => {
+        if (!find) return;
+        //if (unit.code == '') {
+        //    notify('No se ha encontrado la meta de producto');
+        //    navigate(`/`);
+        //} else {
+        //    //dispatch(setIdPlan(plan!.id_plan!));
+        //    //navigate(`/lobby`);
+        //}
+    }, [find]);
+
+    if (loadingUnitResult) return <UnitFrame>
+        <Box sx={{ display: 'flex' }}>
+            <CircularProgress />
+            <div className="tw-animate-pulse tw-mx-auto">Cargando...</div>
+        </Box>
+    </UnitFrame>;
+
+    if (errorLoadingUnitResult == undefined) return <UnitFrame><div>No se ha encontrado la meta de resultado</div></UnitFrame>;
+
+    useEffect(() => {
+        getUnitNodeResult(code!.split('.').slice(0, -1).join('.'))
+        .then((res: UnitNodeResultInterface[]) => setListNodes(res))
+        .catch(error => console.log(error))
+        .finally();
+    }, []);
+
+    const handleNodeBtn = (i: number) => setData(listNodes[i]);
+
+    return <UnitFrame>
+        <ol className="tw-flex tw-justify-center tw-flex-wrap">
+        {namesTree.map(name =>
+            <li className="tw-flex tw-mx-3" key={name.nodo}>
+                <p className="tw-text-green-600 tw-text-xl tw-font-bold">{name.nivel}:</p>
+                <p className="tw-ml-1 tw-text-xl tw-font-bold">{name.nodo}</p>
+            </li>
+        )}
+        </ol>
+        <div className={`tw-flex tw-gap-2 tw-my-4 tw-mx-2`}>
+            <div className="tw-basis-1/3">
+                <ul className={`tw-flex tw-flex-col tw-items-start tw-gap-1 tw-mt-4`}>
+                {listNodes.map((n, i) =>
+                <li key={i} className="tw-flex tw-w-full">
+                    <button className={`tw-flex tw-justify-between tw-w-full
+                                        tw-mb-4 tw-p-2 tw-rounded tw-text-justify
+                                        tw-border-4 tw-border-gray-400 hover:tw-border-gray-100`}
+                            onClick={() => handleNodeBtn(i)}>
+                        {n.indicator}
+                    </button>
+                </li>
+                )}
+                </ul>
+            </div>
+            <div className="tw-basis-2/3">
+            {!!data ? <UnitResultInfo unit={data}/> : null}
+            </div>
+        </div>
     </UnitFrame>;
 }

@@ -236,5 +236,5 @@ export interface PropsInputTable {
 }
 
 export interface UnitInfoProps {
-    unit: UnitNodeResultInterface
+    unit?: UnitNodeResultInterface
 }

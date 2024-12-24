@@ -7,6 +7,7 @@ export interface InitialStateUnitInterface {
     errorLoadingUnit: ErrorTypeInterface;
     errorLoadingUnitResult: ErrorTypeInterface;
     unit: UnitInterface;
+    unitResult?: UnitNodeResultInterface;
 }
 
 export interface propsIndicator {

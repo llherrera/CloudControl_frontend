@@ -6,6 +6,10 @@ import { useAppSelector, useAppDispatch } from "@/store";
 import { UnitInfoProps } from "@/interfaces";
 
 export const UnitResultInfo = ({unit}: UnitInfoProps) => {
+    if (unit == undefined) return <div>
+        No hay una meta seleccionada
+    </div>;
+
     return (
         <div className='tw-ml-4 tw-mb-4 tw-p-2
                         tw-border tw-border-slate-500

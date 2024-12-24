@@ -40,6 +40,7 @@ export interface ModalProps2 extends ModalProps {
     id: number;
 }
 
+type Keys = 'plan' | 'meta' | 'result';
 export interface ModalShareProps {
     [key: string]: boolean;
 }

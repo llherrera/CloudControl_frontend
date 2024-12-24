@@ -51,6 +51,7 @@ const getInitialState = (): InitialStateUnitInterface => {
             ],
             hv_indicator: ''
         },
+        unitResult: undefined
     };
 };
 

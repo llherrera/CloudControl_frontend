@@ -9,6 +9,7 @@ import { useAppDispatch, useAppSelector } from '@/store';
 import { thunkLogout } from '@/store/auth/thunks';
 import { setLogo, setLogoPlan, setReload, selectOption,
     setProjectPage, setIsFullHeight } from '@/store/content/contentSlice';
+import { AddRootTree, setZeroLevelIndex } from "@/store/plan/planSlice";
 
 import { NavBar, ButtonComponent } from '@/components';
 import { ProjectBankIcon, PlanIndicativoIcon, PlanAccionIcon,
@@ -89,6 +90,8 @@ export const Frame = ({children}: FrameProps) => {
                         inside={true}
                         onClick={ () => {
                             dispatch(selectOption(0));
+                            dispatch(AddRootTree([]));
+                            dispatch(setZeroLevelIndex());
                             navigate('/pdt/PlanIndicativo', {replace: true});
                         }}
                         icon={<PlanIndicativoIcon color={ index === 0 ? logocolor : textcolor}/>}
@@ -101,6 +104,8 @@ export const Frame = ({children}: FrameProps) => {
                         onClick={ () => {
                             dispatch(selectOption(1));
                             dispatch(setProjectPage(5));
+                            dispatch(AddRootTree([]));
+                            dispatch(setZeroLevelIndex());
                             navigate('/PlanIndicativo/Banco-proyectos', {replace: true});
                         }}
                         icon={<ProjectBankIcon color={ index === 1 ? logocolor : textcolor}/>}
@@ -112,6 +117,8 @@ export const Frame = ({children}: FrameProps) => {
                         inside={true}
                         onClick={ () => {
                             dispatch(selectOption(2));
+                            dispatch(AddRootTree([]));
+                            dispatch(setZeroLevelIndex());
                             navigate('/PlanIndicativo/POAI', {replace: true});
                         }}
                         icon={<ChartIcon color={ index === 2 ? logocolor : textcolor}/>}
@@ -123,6 +130,8 @@ export const Frame = ({children}: FrameProps) => {
                         inside={true}
                         onClick={ () => {
                             dispatch(selectOption(3));
+                            dispatch(AddRootTree([]));
+                            dispatch(setZeroLevelIndex());
                             navigate('/PlanIndicativo/Mapa', {replace: true});
                         }}
                         icon={<MapICon color={ index === 3 ? logocolor : textcolor}/>}
@@ -134,6 +143,8 @@ export const Frame = ({children}: FrameProps) => {
                         inside={true}
                         onClick={() => {
                             dispatch(selectOption(4));
+                            dispatch(AddRootTree([]));
+                            dispatch(setZeroLevelIndex());
                             navigate('/PlanIndicativo/Plan-accion', {replace: true});
                         }}
                         icon={<PlanAccionIcon color={ index === 4 ? logocolor : textcolor}/>}

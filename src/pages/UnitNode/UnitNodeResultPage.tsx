@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
+import { IconButton } from "@mui/material";
+import { Settings } from '@mui/icons-material';
+
 import { useAppSelector, useAppDispatch } from "@/store";
-import { resetUnit } from "@/store/unit/unitSlice";
-import { resetEvidence } from "@/store/evidence/evidenceSlice";
 import { AddRootTree, setZeroLevelIndex } from "@/store/plan/planSlice";
 
 import { decode } from "@/utils";
@@ -23,6 +24,7 @@ export const UnitNodeResultPage = () => {
     const [listNodes, setListNodes] = useState<UnitNodeResultInterface[]>([]);
     const [data, setData] = useState<UnitNodeResultInterface | undefined>(undefined);
     const [showForm, setShowForm] = useState(false);
+    const [num, setNm] = useState(0);
 
     const [rol, setRol] = useState("");
     const [id, setId] = useState(0);
@@ -38,8 +40,7 @@ export const UnitNodeResultPage = () => {
     useEffect(() => {
         getUnitNodeResult(nodes[0].id_node.split('.').slice(0, -1).join('.'))
         .then((res: UnitNodeResultInterface[]) => setListNodes(res))
-        .catch(error => console.log(error))
-        .finally();
+        .catch(error => console.log(error));
     }, []);
 
     const handleStartReturn = () => {
@@ -52,12 +53,17 @@ export const UnitNodeResultPage = () => {
 
     const handleShowForm = () => {
         setData(undefined);
-        setShowForm(!showForm);
+        setShowForm(prevShow => !showForm);
     };
 
     const handleNodeBtn = (i: number) => {
-        setData(listNodes[i]);
-        setShowForm(false);
+        setData(prevData => prevData === undefined ? listNodes[i] : undefined);
+        setShowForm(prevShow => false);
+    };
+
+    const handleUpdateNode = (i: number) => {
+        setData(prevData => prevData === undefined ? listNodes[i] : undefined);
+        setShowForm(prevShow => true);
     };
 
     return (
@@ -87,19 +93,33 @@ export const UnitNodeResultPage = () => {
                     </button>
                     <ul className={`tw-flex tw-flex-col tw-items-start tw-gap-1 tw-mt-4`}>
                     {listNodes.map((n, i) =>
-                    <button
-                        key={i}
-                        className={`tw-border-4 tw-border-gray-400 hover:tw-border-gray-100
-                                    tw-rounded tw-w-full tw-text-justify
-                                    tw-p-2`}
-                        onClick={() => handleNodeBtn(i)}>
-                        {n.indicator}
-                    </button>
+                    <li key={i} className="tw-flex tw-w-full">
+                        <button className={`tw-flex tw-justify-between tw-w-full
+                                            tw-mb-4 tw-p-2 tw-rounded tw-text-justify
+                                            tw-border-4
+                                            ${(!!data && n.code === data.code) ? 'tw-border-green-400 hover:tw-border-green-100' : 'tw-border-gray-400 hover:tw-border-gray-100'}
+                                            `}
+                                onClick={() => handleNodeBtn(i)}>
+                            {n.indicator}
+                        </button>
+                        <IconButton
+                            aria-label="delete"
+                            type="button"
+                            onClick={() => handleUpdateNode(i)}
+                            title="Actualizar meta de resultado"
+                            sx={{
+                                display: 'flex',
+                                alignItems: 'baseline',
+                            }}
+                        >
+                            <Settings/>
+                        </IconButton>
+                    </li>
                     )}
                     </ul>
                 </div>
                 <div className="tw-basis-2/3">
-                {showForm ? <NodeResultForm/> : !!data ? <UnitResultInfo unit={data}/> : null}
+                {showForm ? <NodeResultForm unit={data}/> : !!data ? <UnitResultInfo unit={data}/> : null}
                 </div>
             </div>
         </UnitFrame>
