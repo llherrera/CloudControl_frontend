@@ -230,6 +230,7 @@ export interface PropsInputLabel {
 export interface PropsInputTable {
     name: string;
     type: string;
+    value?: string | number;
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     errors: {[key: string]: string};
     className?: string;

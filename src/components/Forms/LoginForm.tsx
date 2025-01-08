@@ -48,7 +48,7 @@ export const LoginForm = () => {
         dispatch(thunkLogin(user))
         .unwrap()
         .then(res => {
-            if (res === undefined) return alert("Usuario o contraseña incorrectos");
+            if (res === undefined) return notify("Usuario o contraseña incorrectos", 'error');
             const info = decode(res.token);
             signInWithEmailAndPassword(auth, info.email, user.password)
             .then(() => {
@@ -60,7 +60,7 @@ export const LoginForm = () => {
             })
         })
         .catch(() => {
-            notify("Error, usuario o contraseña erronea");
+            notify("Usuario o contraseña erronea", 'error');
         });
     };
 

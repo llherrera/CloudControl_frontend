@@ -11,8 +11,9 @@ export const Memory = ({callback}: PropsCallback) => {
     const dispatch = useAppDispatch();
     const { token_info } = useAppSelector(store => store.auth);
     const { unit } = useAppSelector(store => store.unit);
-    const { plan } = useAppSelector(store => store.plan);
+    const { plan, years } = useAppSelector(store => store.plan);
     const { id_plan } = useAppSelector(store => store.content);
+
     const [value, setValue] = useState(0);
     const [id, setId] = useState(0);
     const today = new Date();
@@ -33,7 +34,9 @@ export const Memory = ({callback}: PropsCallback) => {
     const handleSave = () => dispatch(thunkUpdateExecution({date: today, value, code: unit.id_node, user_id: id, plan_id: id_plan}));
 
     if (plan === undefined) return <div>No hay un plan seleccionado</div>;
-    const deadline = plan.deadline !== null ? plan.deadline.split('-').slice(1).reverse().join('/') : 'No hay fecha de corte';
+
+    const [yearSelect, setYearSelect] = useState<number>(new Date(plan.deadline == null ? `${years[0]-1}-02-1` : plan.deadline).getFullYear());
+    const deadline = yearSelect >= years[0] ? yearSelect : 'No hay fecha de corte';
     let temp = new Date(plan.deadline!);
 
     const year = today.getMonth() < temp.getMonth() ? today.getFullYear() :
@@ -51,8 +54,9 @@ export const Memory = ({callback}: PropsCallback) => {
             <p className="tw-mt-3">
                 Fecha: { new Date().toLocaleDateString()} &nbsp;&nbsp;&nbsp;&nbsp;
                 Hora: { new Date().toLocaleTimeString()} &nbsp;&nbsp;&nbsp;&nbsp;
-                Fecha de Corte: { deadline } &nbsp;&nbsp;&nbsp;&nbsp;
-                Fecha hoy : {today.toISOString()}
+                <p className={`${typeof deadline === 'number' ? '' : 'tw-text-black tw-font-bold'}`}>
+                    Año activo: { deadline }
+                </p>
             </p>
             <div className="tw-flex tw-flex-col md:tw-flex-row">
                 <p className="tw-font-bold tw-mt-4">
@@ -110,13 +114,13 @@ export const Memory = ({callback}: PropsCallback) => {
                     <p className="tw-text-center">Programado</p>
                     <p className="tw-text-center tw-font-bold tw-border-t tw-border-black">Ejecutado</p>
                 </li>
-                {unit.years.map((item, index) =>
+                {unit.years.map(item =>
                     <li className="tw-basis-1/5" key={item.year}>
                         <p className="tw-bg-gray-400 tw-text-center tw-rounded
                                         tw-text-blue-800 tw-font-bold">{item.year}</p>
                         <p className="tw-text-center">{item.physical_programming}</p>
                         <p className="tw-text-center tw-border-t tw-border-black">{item.physical_execution}</p>
-                        {today >= (index === 0 ? new Date(item.year, 0, 1) : new Date(item.year, temp.getMonth(), temp.getDate() + 1) ) && today < new Date(item.year+ 1, temp.getMonth(), temp.getDate() + 1) ?
+                        {item.year === yearSelect ?
                         <div>
                             <input  type="number"
                                     className=" tw-bg-green-300 tw-border tw-border-black

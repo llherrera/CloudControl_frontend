@@ -1,4 +1,4 @@
-import cclogo from '@/assets/images/logo-cc.png';
+import cclogo from '@/assets/images/ControlLand.png';
 import { useAppSelector } from '@/store';
 import { UnitFrameProps } from '@/interfaces';
 

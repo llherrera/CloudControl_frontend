@@ -80,11 +80,12 @@ export const InputLabel = ({name, label, id, onChange, errors, className, value}
     );
 }
 
-export const InputTable = ({name, type, onChange, errors, className}: PropsInputTable) => {
+export const InputTable = ({name, type, value, onChange, errors, className}: PropsInputTable) => {
     return (
         <input
             onChange={e => onChange(e)}
             type={type}
+            value={value}
             name={name}
             id={name}
             className={`${className}

@@ -46,10 +46,10 @@ const SharePlanView = (props: ModalProps) => {
         try {
             const host = window.location.origin;
             await navigator.clipboard.writeText(`${host}/plan/${plan?.uuid}`);
-            notify('Texto copiado al portapapeles');
+            notify('Texto copiado al portapapeles', 'success');
         } catch (error) {
             console.log('Error al copiar el enlace', error);
-            notify('Error al copiar el enlace');
+            notify('Error al copiar el enlace', 'error');
         }
     };
 
@@ -127,10 +127,10 @@ const ShareUnitView = (props: ModalProps) => {
         try {
             const host = window.location.origin;
             await navigator.clipboard.writeText(`${host}/meta/${plan?.uuid}?code=${unit.id_node}`);
-            notify('Texto copiado al portapapeles');
+            notify('Texto copiado al portapapeles', 'success');
         } catch (error) {
             console.log('Error al copiar el enlace', error);
-            notify('Error al copiar el enlace');
+            notify('Error al copiar el enlace', 'error');
         }
     };
 
@@ -208,10 +208,10 @@ const ShareUnitResultView = (props: ModalProps) => {
         try {
             const host = window.location.origin;
             await navigator.clipboard.writeText(`${host}/meta/${plan?.uuid}?code=${unit.id_node}`);
-            notify('Texto copiado al portapapeles');
+            notify('Texto copiado al portapapeles', 'success');
         } catch (error) {
             console.log('Error al copiar el enlace', error);
-            notify('Error al copiar el enlace');
+            notify('Error al copiar el enlace', 'error');
         }
     };
 

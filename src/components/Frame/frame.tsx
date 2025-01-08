@@ -72,7 +72,7 @@ export const Frame = ({children}: FrameProps) => {
     return (
         <div className='tw-min-h-screen tw-flex tw-flex-col'>
             <header className='tw-flex tw-justify-between tw-bg-header tw-drop-shadow-xl'>
-                <img src={cclogo} title='ControlLand' className='tw-h-[100px]'/>
+                <img src={cclogo} title='ControlLand' width={100}/>
                 <div className='tw-flex tw-gap-3'>
                     {url_logo && <img src={url_logo} title='Municipio' className='tw-h-[100px]' /> }
                     {url_logo_plan && <img src={url_logo_plan} title='Plan' className='tw-h-[100px]' /> }

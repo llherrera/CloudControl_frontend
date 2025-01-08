@@ -77,7 +77,7 @@ const Evidence = () => {
                             <p className="tw-text-white">Codigo de Meta</p>
                         </th>
                         <th className="tw-bg-black tw-border">
-                            <p className="tw-text-white">Fecha</p>
+                            <p className="tw-text-white">Año de ejecucion</p>
                         </th>
                         <th className="tw-bg-black tw-border">
                             <p className="tw-text-white">Ejecución física</p>

@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import Modal from 'react-modal';
 
 import {useAppSelector, useAppDispatch } from '@/store';
 import { thunkGetLocations, thunkGetSecretaries,
@@ -10,7 +11,7 @@ import { Frame, BackBtn, ColorForm, SecretaryForm,
     UploadLogoCity, UploadLogoPlan, LocationsFormPage,
     FileInput, FileFinancialInput, FilePhysicalInput,
     FileUnitInput, DrawerMenu, ListItemComp } from '@/components';
-import { decode } from "@/utils";
+import { decode, notify } from "@/utils";
 
 import { Button, Tooltip, Zoom } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
@@ -30,16 +31,13 @@ const SettingPageWrapper = () => {
     const { pageN } = location.state || {};
 
     const { token_info } = useAppSelector(store => store.auth);
-    const { plan, loadingPlan, secretaries,
-        locations } = useAppSelector(store => store.plan);
+    const { plan, secretaries, years, locations } = useAppSelector(store => store.plan);
     const { id_plan } = useAppSelector(store => store.content);
 
+    const [modalIsOpen, setModalIsOpen] = useState(false);
+    const [yearSelect, setYearSelect] = useState<number | undefined>(plan ? plan.deadline ? parseInt(plan.deadline.split('-')[0]) : undefined : undefined);
     const [page, setPage] = useState(pageN ?? 0);
     const [rol, setRol] = useState("");
-    const [deadline, setDeadline] = useState<Date>(
-        plan === undefined ? new Date() :
-        plan.deadline === null ? new Date() : new Date(plan.deadline)
-    );
 
     const contentRef = useRef<HTMLDivElement>(null);
 
@@ -73,15 +71,17 @@ const SettingPageWrapper = () => {
             dispatch(thunkGetLocations(id_plan));
     }, []);
 
-    const handleDate = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value;
-        const newDate = new Date(value);
-        setDeadline(newDate);
+    const submitActiveYear = () => {
+        if (plan === undefined) return;
+        if (yearSelect === undefined) return setModalIsOpen(true);
+        if (yearSelect > new Date().getFullYear()) return notify('No se puede asignar año activo a los años venideros', 'warning');
+        const date = new Date(yearSelect, 1, 1).toISOString();
+        dispatch(thunkUpdateDeadline({id_plan: id_plan, date: date}));
     };
 
-    const submitDate = () => {
-        if (plan === undefined) return;
-        const date = deadline.toISOString();
+    const handleInputModal = async () => {
+        setModalIsOpen(false);
+        const date = new Date(years[0]-1, 1, 1).toISOString();
         dispatch(thunkUpdateDeadline({id_plan: id_plan, date: date}));
     };
 
@@ -116,7 +116,7 @@ const SettingPageWrapper = () => {
                     title='Localidades'/>
             </DrawerMenu>
             <div className='sm:tw-ml-2 md:tw-ml-40 tw-mr-2 xl:tw-ml-40
-                    tw-mt-24 md:tw-mt-0'>
+                            tw-mt-24 md:tw-mt-0'>
                 <div className="tw-flex tw-justify-between tw-mt-1">
                     <BackBtn handle={handleBack} id={id_plan}/>
                     <p className="tw-bg-white tw-mb-1 tw-rounded tw-p-1 tw-font-bold">Ajustes</p>
@@ -147,8 +147,7 @@ const SettingPageWrapper = () => {
                                             tw-bg-white
                                             tw-rounded'>
                                 <Tooltip
-                                    title={`Al seleccionar la fecha de corte será la misma en cada año, hasta que la cambie nuevamente.\n
-                                            Una vez pasado la fecha de corte se bloquearan las ejecuciones del año anterior`}
+                                    title={`El año activo marca el año del cual se podrá actualizar las ejecuciones`}
                                     slots={{
                                         transition: Zoom,
                                     }}
@@ -159,22 +158,48 @@ const SettingPageWrapper = () => {
                                 </Tooltip>
                                 <p className='tw-text-[#222222] tw-font-bold tw-text-lg
                                                 tw-font-montserrat'>
-                                    Fecha de corte
+                                    Año activo
                                 </p>
-                                <input
-                                    type="date"
-                                    value={deadline.toISOString().substring(0,10)}
-                                    className='tw-m-2 tw-p-2 tw-rounded tw-border-2 tw-border-gray-400'
-                                    onChange={handleDate}/>
-                                <button
-                                    className=' tw-bg-greenColory hover:tw-bg-green-400
-                                                tw-text-white hover:tw-text-black
-                                                tw-font-bold
-                                                tw-p-2 tw-rounded'
-                                    type='button'
-                                    onClick={() => submitDate()}>
-                                    {loadingPlan ? 'Cargando...' : 'Establecer fecha'}
+                                <>
+                                {years.map(y =>
+                                    <button key={y}
+                                        className={`${yearSelect ?
+                                                        (yearSelect === y ?
+                                                            'tw-bg-greenColory hover:tw-bg-green-400 tw-text-white'
+                                                            : 'tw-bg-gray-200 hover:tw-bg-gray-400')
+                                                        : 'tw-bg-gray-200 hover:tw-bg-gray-400'}
+                                                    tw-p-2 tw-rounded`}
+                                        onClick={() => setYearSelect(prev => prev === y ? undefined : y)}>
+                                        {y}
+                                    </button>)}
+                                </>
+                                <button className=' tw-bg-greenColory hover:tw-bg-green-400
+                                                    tw-p-2 tw-my-2 tw-text-white
+                                                    tw-font-bold tw-rounded'
+                                        onClick={submitActiveYear}>
+                                    Guardar
                                 </button>
+                                <Modal  isOpen={modalIsOpen}
+                                        onRequestClose={()=>setModalIsOpen(false)}>
+                                    <div className="tw-flex tw-flex-col tw-items-center tw-justify-center tw-p-4">
+                                        <p className="tw-text-xl tw-font-bold">
+                                            Si no selecciona un año para marcar como activo no podrá actualizar las ejecuciones
+                                        </p>
+                                        <button className="tw-bg-blue-600 hover:tw-bg-blue-400
+                                                        tw-text-white hover:tw-text-black
+                                                        tw-rounded
+                                                        tw-p-3 tw-mt-3"
+                                                onClick={handleInputModal}>
+                                            Enviar
+                                        </button>
+                                        <button className=" tw-bg-red-600 hover:tw-bg-red-400
+                                                            tw-text-white hover:tw-text-black
+                                                            tw-rounded tw-p-3 tw-mt-3"
+                                                onClick={() => setModalIsOpen(false)}>
+                                            Cerrar
+                                        </button>
+                                    </div>
+                                </Modal>
                             </div>
                             : null
                         }

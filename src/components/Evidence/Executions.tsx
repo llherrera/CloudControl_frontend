@@ -57,7 +57,7 @@ export const Execution = ( {ex, index}: ExecutedProps ) => {
                 {ex.code}
             </th>
             <th  className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
-                {newModYear.getDate()}/{newModYear.getMonth()+1}/{newModYear.getFullYear()}
+                {newModYear.getFullYear()}
             </th>
             <th  className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
                 {ex.physical_execution}

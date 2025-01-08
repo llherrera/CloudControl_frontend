@@ -113,14 +113,14 @@ export const ActionPlanFrom = () => {
         const newData = [...rubros, rubro];
         setRubros(newData);
         setRubro({ id_actionPlan: 0, presupuestalCode: '', rubro: '' });
-    }
+    };
 
     const deleteRubro = () => {
         if (rubros.length > 0) {
             const newData = rubros.slice(0, rubros.length - 1);
             setRubros(newData);
         }
-    }
+    };
 
     const handleInputFormChange = (event: React.ChangeEvent<HTMLInputElement>, index: number) => {
         const { name, value } = event.target;
@@ -128,7 +128,7 @@ export const ActionPlanFrom = () => {
         const nameO = name.split('_')[0];
         newData[index] = { ...newData[index], [nameO]: value };
         setRubros(newData);
-    }
+    };
 
     const handleChangePrograms = (index: number, event: React.ChangeEvent<HTMLSelectElement>) => {
         const newIndex = event.target.selectedIndex;
@@ -188,7 +188,7 @@ export const ActionPlanFrom = () => {
             notify('Errores de validación de ficha: ' + errorJoin, 'error');
         } else dispatch(thunkAddActionPlan({ id_plan, plan: actionPlan, rubros }));
         setSend(false);
-    }
+    };
 
     return (
         <form   onSubmit={handleSubmit}
@@ -370,10 +370,11 @@ export const ActionPlanFrom = () => {
 export const ActivityForm = ({ plan }: { plan: ActionPlan }) => {
     const dispatch = useAppDispatch();
 
-    const { loadingActivityActionPlan } = useAppSelector(store => store.plan);
+    const { loadingActivityActionPlan, selectedPlan } = useAppSelector(store => store.plan);
 
     const [listNodes, setListNodes] = useState<UnitNodeInterface[]>([]);
     const [selectNodes, setSelectNodes] = useState<UnitNodeInterface[]>([]);
+    const [selectNodesFinan, setSelectNodesFinan] = useState<number[]>([]);
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
     const [activity, setactivity] = useState<Activity>({
         id_activity: 0,
@@ -381,13 +382,13 @@ export const ActivityForm = ({ plan }: { plan: ActionPlan }) => {
         activityDesc: '',
         unitMeter: '',
         amountP: -1,
-        totalCostP: -1,
+        totalCostP: 0,
         municipioP: -1,
         sgpP: -1,
         regaliasP: -1,
         otrosP: -1,
         amountE: -1,
-        totalCostE: -1,
+        totalCostE: 0,
         municipioE: -1,
         sgpE: -1,
         regaliasE: -1,
@@ -398,31 +399,34 @@ export const ActivityForm = ({ plan }: { plan: ActionPlan }) => {
         invertionIndicator: -1,
         efficiencyIndicator: -1
     });
-    const [activities, setActivities] = useState<Activity[]>([
-        {
-            id_activity: 0,
-            id_actionPlan: 0,
-            activityDesc: '',
-            unitMeter: '',
-            amountP: -1,
-            totalCostP: -1,
-            municipioP: -1,
-            sgpP: -1,
-            regaliasP: -1,
-            otrosP: -1,
-            amountE: -1,
-            totalCostE: -1,
-            municipioE: -1,
-            sgpE: -1,
-            regaliasE: -1,
-            otrosE: -1,
-            start_date: null,
-            end_date: null,
-            phisicalIndicator: -1,
-            invertionIndicator: -1,
-            efficiencyIndicator: -1
-        }
-    ]);
+    const [activities, setActivities] = useState<Activity[]>(
+        selectedPlan && selectedPlan.actions && selectedPlan.actions.length > 0 ? selectedPlan.actions :
+        [
+            {
+                id_activity: 0,
+                id_actionPlan: 0,
+                activityDesc: '',
+                unitMeter: '',
+                amountP: -1,
+                totalCostP: 0,
+                municipioP: -1,
+                sgpP: -1,
+                regaliasP: -1,
+                otrosP: -1,
+                amountE: -1,
+                totalCostE: 0,
+                municipioE: -1,
+                sgpE: -1,
+                regaliasE: -1,
+                otrosE: -1,
+                start_date: null,
+                end_date: null,
+                phisicalIndicator: -1,
+                invertionIndicator: -1,
+                efficiencyIndicator: -1
+            }
+        ]
+    );
 
     useEffect(() => {
         getListNodes(plan.level3)
@@ -475,6 +479,23 @@ export const ActivityForm = ({ plan }: { plan: ActionPlan }) => {
         const newData = [...activities];
         const nameO = name.replace(/_\d+$/, '');
         newData[index] = { ...newData[index], [nameO]: value };
+
+        const municipioP = parseFloat(newData[index].municipioP.toString()) > -1 ? parseFloat(newData[index].municipioP.toString()) : 0;
+        const sgpP = parseFloat(newData[index].sgpP.toString()) > -1 ? parseFloat(newData[index].sgpP.toString()) : 0;
+        const regaliasP = parseFloat(newData[index].regaliasP.toString()) > -1 ? parseFloat(newData[index].regaliasP.toString()) : 0;
+        const otrosP = parseFloat(newData[index].otrosP.toString()) > -1 ? parseFloat(newData[index].otrosP.toString()) : 0;
+        newData[index].totalCostP = municipioP + sgpP + regaliasP + otrosP;
+
+        const municipioE = parseFloat(newData[index].municipioE.toString()) > -1 ? parseFloat(newData[index].municipioE.toString()) : 0;
+        const sgpE = parseFloat(newData[index].sgpE.toString()) > -1 ? parseFloat(newData[index].sgpE.toString()) : 0;
+        const regaliasE = parseFloat(newData[index].regaliasE.toString()) > -1 ? parseFloat(newData[index].regaliasE.toString()) : 0;
+        const otrosE = parseFloat(newData[index].otrosE.toString()) > -1 ? parseFloat(newData[index].otrosE.toString()) : 0;
+        newData[index].totalCostE = municipioE + sgpE + regaliasE + otrosE;
+
+        const newErrors: { [key: string]: string } = {...errors};
+        newErrors[name] = '';
+        setErrors(newErrors);
+
         setActivities(newData);
     };
 
@@ -482,24 +503,36 @@ export const ActivityForm = ({ plan }: { plan: ActionPlan }) => {
         const index = e.target.selectedIndex - 1;
         const temp = selectNodes.map(item => item.id_node);
         if (index < 0) return;
-        if (!temp.includes(listNodes[index].id_node)) setSelectNodes(prevItems => [...prevItems, listNodes[index]]);
+        if (!temp.includes(listNodes[index].id_node)) {
+            setSelectNodes(prevItems => [...prevItems, listNodes[index]]);
+            setSelectNodesFinan(prevItems => [...prevItems, 0]);
+        }
         else notify('No puede relacionar la misma meta mas de una vez', 'warning');
+    };
+
+    const handleInputFinalcial = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+        const { value, name } = e.target;
+        const temp = selectNodesFinan;
+        temp[index] = parseFloat(value);
+
+        const newErrors: { [key: string]: string } = {...errors};
+        newErrors[name] = '';
+
+        setErrors(newErrors);
+        setSelectNodesFinan(temp);
     };
 
     const validateActionFields = (): boolean => {
         const newErrors: { [key: string]: string } = {};
+        let totalP = 0, totalE = 0, totalNodes = 0;
         for (let i = 0; i < activities.length; i++) {
             const activity = activities[i];
             if (!activity.activityDesc.trim()) newErrors[`activityDesc_${i + 1}`] = 'La descripción de la actividad es obligatoria.';
             if (!activity.unitMeter.trim()) newErrors[`unitMeter_${i + 1}`] = 'La unidad de medida es obligatoria.';
             if (activity.amountP <= 0) newErrors[`amountP_${i + 1}`] = 'La cantidad programada debe ser mayor a 0.';
             if (activity.totalCostP <= 0) newErrors[`totalCostP_${i + 1}`] = 'El costo total programado debe ser mayor a 0.';
-            if (activity.municipioP < 0 && activity.sgpP < 0 && activity.regaliasP < 0 && activity.otrosP < 0)
-                newErrors[`municipioP_${i + 1}`] = 'El valor de municipio programado no puede ser negativo.';
             if (activity.amountE < 0) newErrors[`amountE_${i + 1}`] = 'La cantidad ejecutada no puede ser negativa.';
-            if (activity.totalCostE < 0) newErrors[`totalCostE_${i + 1}`] = 'El costo total ejecutado no puede ser negativo.';
-            if (activity.municipioE < 0 && activity.sgpE < 0 && activity.regaliasE < 0 && activity.otrosE < 0)
-                newErrors[`municipioE_${i + 1}`] = 'El valor de municipio ejecutado no puede ser negativo.';
+            if (activity.totalCostE <= 0) newErrors[`totalCostE_${i + 1}`] = 'El costo total ejecutado no puede ser negativo.';
             if (!activity.start_date) newErrors[`start_date_${i + 1}`] = 'La fecha de inicio es obligatoria.';
             if (!activity.end_date) newErrors[`end_date_${i + 1}`] = 'La fecha de finalización es obligatoria.';
             if (activity.start_date && activity.end_date && activity.start_date > activity.end_date)
@@ -507,19 +540,30 @@ export const ActivityForm = ({ plan }: { plan: ActionPlan }) => {
             if (activity.phisicalIndicator < 0) newErrors[`phisicalIndicator_${i + 1}`] = 'El indicador físico es obligatorio.';
             if (activity.invertionIndicator < 0) newErrors[`invertionIndicator_${i + 1}`] = 'El indicador de inversión es obligatorio.';
             if (activity.efficiencyIndicator < 0) newErrors[`efficiencyIndicator_${i + 1}`] = 'El indicador de eficiencia es obligatorio.';
+            totalP += activity.totalCostP;
+            totalE += activity.totalCostE;
         }
+        for (let i = 0; i < selectNodesFinan.length; i++) {
+            if (selectNodesFinan[i] === 0) newErrors[`peso_${i + 1}`] = 'Este valor tiene que ser superior a 0';
+            totalNodes += selectNodesFinan[i];
+        }
+        if (totalNodes <= 0) newErrors['Total'] = 'El valor sumado de las metas tiene que ser mayor que 0';
+        if (totalNodes !== totalP) newErrors['Total'] = 'Los valores de las metas de producto no suman a las actividades programadas';
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
 
-    const deleteItem = (index: number) => setSelectNodes(items => items.filter((item, i) => i !== index));
+    const deleteItem = (index: number) => {
+        setSelectNodes(items => items.filter((item, i) => i !== index));
+        setSelectNodesFinan(items => items.filter((item, i) => i !== index));
+    };
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         let errorJoin = '';
         if (!validateActionFields()) {
             for (const key in errors) errorJoin += '\n' + errors[key];
-            notify('Errores de validación de tareas: ' + errorJoin, 'error');
+            notify('Errores de validación de tareas: ', 'error');
         } else {
             let temp = selectNodes.map(s => s.id_node)[0];
             dispatch(thunkAddActivityActionPlan(
@@ -634,7 +678,7 @@ export const ActivityForm = ({ plan }: { plan: ActionPlan }) => {
                                     name={`activityDesc_${i + 1}`}
                                     id="activityDesc"
                                     className={`tw-border-2 tw-rounded
-                                                ${errors['activityDesc'] ? 'tw-border-red-400' : 'tw-border-gray-400'}
+                                                ${errors[`activityDesc_${i + 1}`] ? 'tw-border-red-400' : 'tw-border-gray-400'}
                                                 `}>
                                 </textarea>
                             </td>
@@ -660,12 +704,12 @@ export const ActivityForm = ({ plan }: { plan: ActionPlan }) => {
                                 />
                             </td>
                             <td className="tw-border-r-4 tw-border-double tw-border-gray-500">
-                                <InputTable
-                                    name={`totalCostP_${i + 1}`}
-                                    type={'number'}
-                                    onChange={e => handleInputFormChange(e, i)}
-                                    errors={errors}
-                                />
+                                <p className={` tw-w-full tw-rounded
+                                                tw-border-2 tw-my-2 tw-text-center
+                                                ${errors[`totalCostP_${i + 1}`] ? 'tw-border-red-400' : 'tw-border-gray-400' }
+                                            `}>
+                                    {a.totalCostP}
+                                </p>
                             </td>
                             <td className="tw-border-r-4 tw-border-double tw-border-gray-500">
                                 <InputTable
@@ -758,12 +802,12 @@ export const ActivityForm = ({ plan }: { plan: ActionPlan }) => {
                                 />
                             </td>
                             <td className="tw-border-t-4 tw-border-r-4 tw-border-double tw-border-gray-500">
-                                <InputTable
-                                    name={`totalCostE_${i + 1}`}
-                                    type={'number'}
-                                    onChange={e => handleInputFormChange(e, i)}
-                                    errors={errors}
-                                />
+                                <p className={` tw-w-full tw-rounded
+                                                tw-border-2 tw-my-2 tw-text-center
+                                                ${errors[`totalCostE_${i + 1}`] ? 'tw-border-red-400' : 'tw-border-gray-400' }
+                                            `}>
+                                    {a.totalCostE}
+                                </p>
                             </td>
                             <td className="tw-border-t-4 tw-border-r-4 tw-border-double tw-border-gray-500">
                                 <InputTable
@@ -826,7 +870,7 @@ export const ActivityForm = ({ plan }: { plan: ActionPlan }) => {
                     Metas de producto
                 </p>
                 <div className="tw-flex tw-gap-2 tw-mt-4">
-                    <div className="tw-basis-1/2">
+                    <div className="tw-basis-1/3">
                         <select className=" tw-p-2 tw-w-48 tw-rounded
                                             tw-border-2 tw-border-gray-400"
                             onChange={e => handleSelectChange(e)}>
@@ -838,14 +882,24 @@ export const ActivityForm = ({ plan }: { plan: ActionPlan }) => {
                             )}
                         </select>
                     </div>
-                    <List className="tw-basis-1/2 tw-bg-white">
-                        {selectNodes.map((node, index) =>
+                    <List className="tw-basis-2/3 tw-bg-white">
+                        {selectNodes.map((node, i) =>
                             <ListItem
-                                key={index}
+                                key={i}
                                 title={`${node.name}\n${node.responsible}`}
-                                secondaryAction={<CloseBtn handle={deleteItem} id={index} />}
-                                className="tw-border-2 tw-rounded tw-my-1">
-                                {node.name}
+                                secondaryAction={<CloseBtn handle={deleteItem} id={i} />}
+                                className="tw-border-2 tw-rounded tw-my-1 tw-mx-2">
+                                <input
+                                    type="number"
+                                    name={`peso_${i + 1}`}
+                                    onChange={e => handleInputFinalcial(e, i)}
+                                    placeholder="financiera adjunta"
+                                    className={`tw-w-36 tw-mr-2 tw-text-center
+                                                tw-rounded tw-border
+                                                ${errors[`peso_${i + 1}`] ? 'tw-border-red-400' : 'tw-border-black' }
+                                              `}
+                                />
+                                <p>{node.name}</p>
                             </ListItem>
                         )}
                     </List>
@@ -859,6 +913,483 @@ export const ActivityForm = ({ plan }: { plan: ActionPlan }) => {
                         <CircularProgress />
                     </Box>
                     : <p>Cargar actividad</p>
+                }
+            </button>
+        </form>
+    );
+}
+
+export const UpdateActivityForm = () => {
+    const dispatch = useAppDispatch();
+
+    const { loadingActivityActionPlan, selectedPlan } = useAppSelector(store => store.plan);
+
+    if (!selectedPlan) return <p>Cargando plan</p>
+
+    const [listNodes, setListNodes] = useState<UnitNodeInterface[]>([]);
+    const [selectNodes, setSelectNodes] = useState<UnitNodeInterface[]>([]);
+    const [selectNodesFinan, setSelectNodesFinan] = useState<number[]>([]);
+    const [errors, setErrors] = useState<{ [key: string]: string }>({});
+    const [activities, setActivities] = useState<Activity[]>([]);
+
+    useEffect(() => {
+        if (selectedPlan)
+            setActivities(selectedPlan.actions ?? []);
+    }, [selectedPlan]);
+
+    useEffect(() => {
+        getListNodes(selectedPlan.level3)
+            .then((res: UnitNodeInterface[]) => {
+                setListNodes(res);
+            })
+            .catch(err => {
+                console.log(err);
+            });
+    }, []);
+
+    useEffect(() => {
+        if (selectedPlan)
+            setSelectNodes(listNodes.filter(ln => selectedPlan.nodes.map(n => n.id_node).includes(ln.id_node)));
+    }, [selectedPlan]);
+
+    const handleInputFormChange = ( event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>,
+                                    index: number) => {
+        const { name, value } = event.target;
+        const newData = [...activities];
+        const nameO = name.replace(/_\d+$/, '');
+        newData[index] = { ...newData[index], [nameO]: value };
+
+        const municipioP = parseFloat(newData[index].municipioP.toString()) > -1 ? parseFloat(newData[index].municipioP.toString()) : 0;
+        const sgpP = parseFloat(newData[index].sgpP.toString()) > -1 ? parseFloat(newData[index].sgpP.toString()) : 0;
+        const regaliasP = parseFloat(newData[index].regaliasP.toString()) > -1 ? parseFloat(newData[index].regaliasP.toString()) : 0;
+        const otrosP = parseFloat(newData[index].otrosP.toString()) > -1 ? parseFloat(newData[index].otrosP.toString()) : 0;
+        newData[index].totalCostP = municipioP + sgpP + regaliasP + otrosP;
+
+        const municipioE = parseFloat(newData[index].municipioE.toString()) > -1 ? parseFloat(newData[index].municipioE.toString()) : 0;
+        const sgpE = parseFloat(newData[index].sgpE.toString()) > -1 ? parseFloat(newData[index].sgpE.toString()) : 0;
+        const regaliasE = parseFloat(newData[index].regaliasE.toString()) > -1 ? parseFloat(newData[index].regaliasE.toString()) : 0;
+        const otrosE = parseFloat(newData[index].otrosE.toString()) > -1 ? parseFloat(newData[index].otrosE.toString()) : 0;
+        newData[index].totalCostE = municipioE + sgpE + regaliasE + otrosE;
+
+        const newErrors: { [key: string]: string } = {...errors};
+        newErrors[name] = '';
+        setErrors(newErrors);
+
+        setActivities(newData);
+    };
+
+    //const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    //    const index = e.target.selectedIndex - 1;
+    //    const temp = selectNodes.map(item => item.id_node);
+    //    if (index < 0) return;
+    //    if (!temp.includes(listNodes[index].id_node)) {
+    //        setSelectNodes(prevItems => [...prevItems, listNodes[index]]);
+    //        setSelectNodesFinan(prevItems => [...prevItems, 0]);
+    //    }
+    //    else notify('No puede relacionar la misma meta mas de una vez', 'warning');
+    //};
+
+    const handleInputFinalcial = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+        const { value, name } = e.target;
+        const temp = selectNodesFinan;
+        temp[index] = parseFloat(value);
+
+        const newErrors: { [key: string]: string } = {...errors};
+        newErrors[name] = '';
+
+        setErrors(newErrors);
+        setSelectNodesFinan(temp);
+    };
+
+    const validateActionFields = (): boolean => {
+        const newErrors: { [key: string]: string } = {};
+        let totalP = 0, totalE = 0, totalNodes = 0;
+        for (let i = 0; i < activities.length; i++) {
+            const activity = activities[i];
+            if (!activity.activityDesc.trim()) newErrors[`activityDesc_${i + 1}`] = 'La descripción de la actividad es obligatoria.';
+            if (!activity.unitMeter.trim()) newErrors[`unitMeter_${i + 1}`] = 'La unidad de medida es obligatoria.';
+            if (activity.amountP <= 0) newErrors[`amountP_${i + 1}`] = 'La cantidad programada debe ser mayor a 0.';
+            if (activity.totalCostP <= 0) newErrors[`totalCostP_${i + 1}`] = 'El costo total programado debe ser mayor a 0.';
+            if (activity.amountE < 0) newErrors[`amountE_${i + 1}`] = 'La cantidad ejecutada no puede ser negativa.';
+            if (activity.totalCostE <= 0) newErrors[`totalCostE_${i + 1}`] = 'El costo total ejecutado no puede ser negativo.';
+            if (!activity.start_date) newErrors[`start_date_${i + 1}`] = 'La fecha de inicio es obligatoria.';
+            if (!activity.end_date) newErrors[`end_date_${i + 1}`] = 'La fecha de finalización es obligatoria.';
+            if (activity.start_date && activity.end_date && activity.start_date > activity.end_date)
+                newErrors[`end_date_${i + 1}`] = 'La fecha de finalización debe ser posterior a la de inicio.';
+            if (activity.phisicalIndicator < 0) newErrors[`phisicalIndicator_${i + 1}`] = 'El indicador físico es obligatorio.';
+            if (activity.invertionIndicator < 0) newErrors[`invertionIndicator_${i + 1}`] = 'El indicador de inversión es obligatorio.';
+            if (activity.efficiencyIndicator < 0) newErrors[`efficiencyIndicator_${i + 1}`] = 'El indicador de eficiencia es obligatorio.';
+            totalP += activity.totalCostP;
+            totalE += activity.totalCostE;
+        }
+        for (let i = 0; i < selectNodesFinan.length; i++) {
+            if (selectNodesFinan[i] === 0) newErrors[`peso_${i + 1}`] = 'Este valor tiene que ser superior a 0';
+            totalNodes += selectNodesFinan[i];
+        }
+        if (totalNodes <= 0) newErrors['Total'] = 'El valor sumado de las metas tiene que ser mayor que 0';
+        if (totalNodes !== totalP) newErrors['Total'] = 'Los valores de las metas de producto no suman a las actividades programadas';
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    const deleteItem = (index: number) => {
+        setSelectNodes(items => items.filter((item, i) => i !== index));
+        setSelectNodesFinan(items => items.filter((item, i) => i !== index));
+    };
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        let errorJoin = '';
+        if (!validateActionFields()) {
+            for (const key in errors) errorJoin += '\n' + errors[key];
+            notify('Errores de validación de tareas: ', 'error');
+        } else {
+            let temp = selectNodes.map(s => s.id_node)[0];
+            dispatch(thunkAddActivityActionPlan(
+                {
+                    id_plan: selectedPlan.id_actionPlan,
+                    activities,
+                    node: temp
+                }
+            ));
+        }
+    };
+
+    return (
+        <form   onSubmit={handleSubmit}
+                className=" tw-flex tw-flex-col tw-mt-3
+                            tw-border-4 tw-border-double
+                            tw-border-gray-500 tw-bg-slate-200">
+            <table className="  tw-table-auto
+                                tw-border-collapse
+                                tw-w-full tw-text-sm">
+                <thead>
+                    <tr>
+                        <th rowSpan={2}
+                            className=" tw-border-r-4 tw-border-b-4 tw-border-double
+                                        tw-border-gray-500 tw-bg-slate-200">
+                            Principales Actividades
+                        </th>
+                        <th rowSpan={2}
+                            className=" tw-border-r-4 tw-border-b-4 tw-border-double
+                                        tw-border-gray-500 tw-bg-slate-200">
+                            Prog/Ejec
+                        </th>
+                        <th rowSpan={2}
+                            className=" tw-border-r-4 tw-border-b-4 tw-border-double
+                                        tw-border-gray-500 tw-bg-slate-200">
+                            Unidad de Medida
+                        </th>
+                        <th rowSpan={2}
+                            className=" tw-border-r-4 tw-border-b-4 tw-border-double
+                                        tw-border-gray-500 tw-bg-slate-200">
+                            Cantidad
+                        </th>
+                        <th rowSpan={2}
+                            className=" tw-border-r-4 tw-border-b-4 tw-border-double
+                                        tw-border-gray-500 tw-bg-slate-200">
+                            Costo Total (Miles)
+                        </th>
+                        <th colSpan={4}
+                            className=" tw-border-r-4 tw-border-b-4 tw-border-double
+                                        tw-border-gray-500 tw-bg-slate-200">
+                            Fuentes Financiación
+                        </th>
+                        <th colSpan={2}
+                            className=" tw-border-r-4 tw-border-b-4 tw-border-double
+                                        tw-border-gray-500 tw-bg-slate-200">
+                            Programación (dd/mm/aa)
+                        </th>
+                        <th colSpan={3}
+                            className=" tw-border-b-4 tw-border-double
+                                        tw-border-gray-500 tw-bg-slate-200">
+                            Indicadores
+                        </th>
+                    </tr>
+                    <tr>
+                        <th className=" tw-border-r-4 tw-border-b-4 tw-border-double
+                                        tw-border-gray-500 tw-bg-slate-200">
+                            MPIO
+                        </th>
+                        <th className=" tw-border-r-4 tw-border-b-4 tw-border-double
+                                        tw-border-gray-500 tw-bg-slate-200">
+                            SGP
+                        </th>
+                        <th className=" tw-border-r-4 tw-border-b-4 tw-border-double
+                                        tw-border-gray-500 tw-bg-slate-200">
+                            REGALÍAS
+                        </th>
+                        <th className=" tw-border-r-4 tw-border-b-4 tw-border-double
+                                        tw-border-gray-500 tw-bg-slate-200">
+                            OTROS
+                        </th>
+                        <th className=" tw-border-r-4 tw-border-b-4 tw-border-double
+                                        tw-border-gray-500 tw-bg-slate-200">
+                            INICIO
+                        </th>
+                        <th className=" tw-border-r-4 tw-border-b-4 tw-border-double
+                                        tw-border-gray-500 tw-bg-slate-200">
+                            TERMINA
+                        </th>
+                        <th className=" tw-border-r-4 tw-border-b-4 tw-border-double
+                                        tw-border-gray-500 tw-bg-slate-200">
+                            FÍSICO
+                        </th>
+                        <th className=" tw-border-r-4 tw-border-b-4 tw-border-double
+                                        tw-border-gray-500 tw-bg-slate-200">
+                            INVERSIÓN
+                        </th>
+                        <th className=" tw-border-b-4 tw-border-double
+                                        tw-border-gray-500 tw-bg-slate-200">
+                            EFICIENCIA
+                        </th>
+                    </tr>
+                </thead>
+                <tbody className="tw-bg-white tw-border-b-4 tw-border-double
+                            tw-border-gray-500 ">
+                    {activities.map((a, i) =>
+                    <Fragment key={i}>
+                        <tr>
+                            <td rowSpan={2}
+                                className="tw-border-r-4 tw-border-double tw-border-gray-500">
+                                <textarea
+                                    onChange={e => handleInputFormChange(e, i)}
+                                    name={`activityDesc_${i + 1}`}
+                                    id="activityDesc"
+                                    value={a.activityDesc}
+                                    className={`tw-border-2 tw-rounded
+                                                ${errors[`activityDesc_${i + 1}`] ? 'tw-border-red-400' : 'tw-border-gray-400'}
+                                                `}>
+                                </textarea>
+                            </td>
+                            <td className=" tw-border-double tw-border-gray-500
+                                            tw-font-bold tw-text-center">
+                                P
+                            </td>
+                            <td rowSpan={2}
+                                className="tw-border-x-4 tw-border-double tw-border-gray-500">
+                                <InputTable
+                                    name={`unitMeter_${i + 1}`}
+                                    type={'text'}
+                                    value={a.unitMeter}
+                                    onChange={e => handleInputFormChange(e, i)}
+                                    errors={errors}
+                                />
+                            </td>
+                            <td className="tw-border-r-4 tw-border-double tw-border-gray-500">
+                                <InputTable
+                                    name={`amountP_${i + 1}`}
+                                    type={'number'}
+                                    value={a.amountP}
+                                    onChange={e => handleInputFormChange(e, i)}
+                                    errors={errors}
+                                />
+                            </td>
+                            <td className="tw-border-r-4 tw-border-double tw-border-gray-500">
+                                <p className={` tw-w-full tw-rounded
+                                                tw-border-2 tw-my-2 tw-text-center
+                                                ${errors[`totalCostP_${i + 1}`] ? 'tw-border-red-400' : 'tw-border-gray-400' }
+                                            `}>
+                                    {a.totalCostP}
+                                </p>
+                            </td>
+                            <td className="tw-border-r-4 tw-border-double tw-border-gray-500">
+                                <InputTable
+                                    name={`municipioP_${i + 1}`}
+                                    type={'number'}
+                                    value={a.municipioP}
+                                    onChange={e => handleInputFormChange(e, i)}
+                                    errors={errors}
+                                />
+                            </td>
+                            <td className="tw-border-r-4 tw-border-double tw-border-gray-500">
+                                <InputTable
+                                    name={`sgpP_${i + 1}`}
+                                    type={'number'}
+                                    value={a.sgpP}
+                                    onChange={e => handleInputFormChange(e, i)}
+                                    errors={errors}
+                                />
+                            </td>
+                            <td className="tw-border-r-4 tw-border-double tw-border-gray-500">
+                                <InputTable
+                                    name={`regaliasP_${i + 1}`}
+                                    type={'number'}
+                                    value={a.regaliasP}
+                                    onChange={e => handleInputFormChange(e, i)}
+                                    errors={errors}
+                                />
+                            </td>
+                            <td className="tw-border-double tw-border-gray-500">
+                                <InputTable
+                                    name={`otrosP_${i + 1}`}
+                                    type={'number'}
+                                    value={a.otrosP}
+                                    onChange={e => handleInputFormChange(e, i)}
+                                    errors={errors}
+                                />
+                            </td>
+                            <td rowSpan={2}
+                                className="tw-border-x-4 tw-border-double tw-border-gray-500">
+                                <InputTable
+                                    name={`start_date_${i + 1}`}
+                                    type={'date'}
+                                    value={a.start_date === null ? undefined : (new Date(a.start_date)).toISOString().split('T')[0]}
+                                    onChange={e => handleInputFormChange(e, i)}
+                                    errors={errors}
+                                />
+                            </td>
+                            <td rowSpan={2}
+                                className="tw-border-r-4 tw-border-double tw-border-gray-500">
+                                <InputTable
+                                    name={`end_date_${i + 1}`}
+                                    type={'date'}
+                                    value={a.end_date === null ? undefined : (new Date(a.end_date)).toISOString().split('T')[0]}
+                                    onChange={e => handleInputFormChange(e, i)}
+                                    errors={errors}
+                                />
+                            </td>
+                            <td rowSpan={2}
+                                className="tw-border-r-4 tw-border-double tw-border-gray-500">
+                                <InputTable
+                                    name={`phisicalIndicator_${i + 1}`}
+                                    type={'number'}
+                                    value={a.phisicalIndicator}
+                                    onChange={e => handleInputFormChange(e, i)}
+                                    errors={errors}
+                                />
+                            </td>
+                            <td rowSpan={2}
+                                className="tw-border-r-4 tw-border-double tw-border-gray-500">
+                                <InputTable
+                                    name={`invertionIndicator_${i + 1}`}
+                                    type={'number'}
+                                    value={a.invertionIndicator}
+                                    onChange={e => handleInputFormChange(e, i)}
+                                    errors={errors}
+                                />
+                            </td>
+                            <td rowSpan={2}>
+                                <InputTable
+                                    name={`efficiencyIndicator_${i + 1}`}
+                                    type={'number'}
+                                    value={a.efficiencyIndicator}
+                                    onChange={e => handleInputFormChange(e, i)}
+                                    errors={errors}
+                                />
+                            </td>
+                        </tr>
+                        <tr className="tw-border-b-8 tw-border-double tw-border-gray-500">
+                            <td className=" tw-border-t-4 tw-border-double tw-border-gray-500
+                                            tw-font-bold tw-text-center">
+                                E
+                            </td>
+                            <td className="tw-border-t-4 tw-border-r-4 tw-border-double tw-border-gray-500">
+                                <InputTable
+                                    name={`amountE_${i + 1}`}
+                                    type={'number'}
+                                    value={a.amountE}
+                                    onChange={e => handleInputFormChange(e, i)}
+                                    errors={errors}
+                                />
+                            </td>
+                            <td className="tw-border-t-4 tw-border-r-4 tw-border-double tw-border-gray-500">
+                                <p className={` tw-w-full tw-rounded
+                                                tw-border-2 tw-my-2 tw-text-center
+                                                ${errors[`totalCostE_${i + 1}`] ? 'tw-border-red-400' : 'tw-border-gray-400' }
+                                            `}>
+                                    {a.totalCostE}
+                                </p>
+                            </td>
+                            <td className="tw-border-t-4 tw-border-r-4 tw-border-double tw-border-gray-500">
+                                <InputTable
+                                    name={`municipioE_${i + 1}`}
+                                    type={'number'}
+                                    value={a.municipioE}
+                                    onChange={e => handleInputFormChange(e, i)}
+                                    errors={errors}
+                                />
+                            </td>
+                            <td className="tw-border-t-4 tw-border-r-4 tw-border-double tw-border-gray-500">
+                                <InputTable
+                                    name={`sgpE_${i + 1}`}
+                                    type={'number'}
+                                    value={a.sgpE}
+                                    onChange={e => handleInputFormChange(e, i)}
+                                    errors={errors}
+                                />
+                            </td>
+                            <td className="tw-border-t-4 tw-border-r-4 tw-border-double tw-border-gray-500">
+                                <InputTable
+                                    name={`regaliasE_${i + 1}`}
+                                    type={'number'}
+                                    value={a.regaliasE}
+                                    onChange={e => handleInputFormChange(e, i)}
+                                    errors={errors}
+                                />
+                            </td>
+                            <td className="tw-border-t-4 tw-border-double tw-border-gray-500">
+                                <InputTable
+                                    name={`otrosE_${i + 1}`}
+                                    type={'number'}
+                                    value={a.otrosE}
+                                    onChange={e => handleInputFormChange(e, i)}
+                                    errors={errors}
+                                />
+                            </td>
+                        </tr>
+                    </Fragment>
+                    )}
+                </tbody>
+            </table>
+            <div className="tw-mx-3">
+                <p className="tw-mt-6">
+                    Metas de producto
+                </p>
+                <div className="tw-flex tw-gap-2 tw-mt-4">
+                    <div className="tw-basis-1/3">
+                        <select className=" tw-p-2 tw-w-48 tw-rounded
+                                            tw-border-2 tw-border-gray-400">
+                            <option value=""></option>
+                            {listNodes.map((l, i) =>
+                                <option value={l.id_node} key={i}>
+                                    {l.name}
+                                </option>
+                            )}
+                        </select>
+                    </div>
+                    <List className="tw-basis-2/3 tw-bg-white">
+                        {selectNodes.map((node, i) =>
+                            <ListItem
+                                key={i}
+                                title={`${node.name}\n${node.responsible}`}
+                                secondaryAction={<CloseBtn handle={deleteItem} id={i} />}
+                                className="tw-border-2 tw-rounded tw-my-1 tw-mx-2">
+                                <input
+                                    type="number"
+                                    name={`peso_${i + 1}`}
+                                    onChange={e => handleInputFinalcial(e, i)}
+                                    placeholder="financiera adjunta"
+                                    className={`tw-w-36 tw-mr-2 tw-text-center
+                                                tw-rounded tw-border
+                                                ${errors[`peso_${i + 1}`] ? 'tw-border-red-400' : 'tw-border-black' }
+                                              `}
+                                />
+                                <p className="tw-line-clamp-2">{node.name}</p>
+                            </ListItem>
+                        )}
+                    </List>
+                </div>
+            </div>
+            <button
+                type="submit"
+                className=' tw-bg-green-300 hover:tw-bg-green-400
+                            tw-py-2 tw-mt-5 tw-mb-2 tw-mx-3 tw-rounded'>
+                {loadingActivityActionPlan ?
+                    <Box sx={{ display: 'flex' }}>
+                        <CircularProgress />
+                    </Box>
+                    : <p>Actualizar actividades</p>
                 }
             </button>
         </form>

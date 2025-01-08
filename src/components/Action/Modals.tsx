@@ -2,7 +2,8 @@ import { useEffect, useState, useRef } from "react";
 import Modal from 'react-modal';
 import { Box } from '@mui/material';
 
-import { ActionPlanFrom, ActivityForm, BackBtn } from "@/components";
+import { ActionPlanFrom, ActivityForm, BackBtn,
+    UpdateActivityForm } from "@/components";
 import { ModalProps, PropsModalActionPlan } from "@/interfaces";
 import { generateActionPlanExcel } from "@/utils";
 
@@ -245,7 +246,7 @@ const AddPlanModal = (props: ModalProps) => {
         handleReturn();
         dispatch(setSelectedActionPlan(-1));
         props.callback(false);
-    }
+    };
 
     useEffect(() => {
         dispatch(thunkGetActionPlans(id_plan));
@@ -266,7 +267,7 @@ const AddPlanModal = (props: ModalProps) => {
         setAddPlan(false);
         setAddAction(false);
         setIndex(-1);
-    }
+    };
 
     return (
         <Modal isOpen={props.modalIsOpen}
@@ -335,9 +336,41 @@ const AddPlanModal = (props: ModalProps) => {
 const UpdatePlanModal = (props: ModalProps) => {
     const dispatch = useAppDispatch();
 
+    const { id_plan } = useAppSelector(store => store.content);
+    const { actionPlan, selectedPlan } = useAppSelector(store => store.plan);
+
+    const [updAction, setUpdAction] = useState<boolean>(false);
+    const [index, setIndex] = useState(-1);
+
     const onClose = () => {
+        handleReturn();
         dispatch(setSelectedActionPlan(-1));
         props.callback(false);
+    };
+
+    useEffect(() => {
+        dispatch(thunkGetActionPlans(id_plan));
+    }, []);
+
+    useEffect(() => {
+        if (index > -1) {
+            dispatch(setSelectedActionPlan(index));
+            setUpdAction(true);
+        }
+    }, [index]);
+
+    useEffect(() => {
+        if (selectedPlan && updAction) {
+            dispatch(thunkGetActivityActionPlan(selectedPlan.id_actionPlan));
+        }
+    }, [updAction]);
+
+    const handleClick = (i: number) => setIndex(i);
+
+    const handleReturn = () => {
+        setUpdAction(false);
+        setIndex(-1);
+        //dispatch(setSelectedActionPlan(-1));
     }
 
     return (
@@ -358,6 +391,49 @@ const UpdatePlanModal = (props: ModalProps) => {
                         </p>
                     </button>
                 </div>
+                {updAction ?
+                    <div className="tw-absolute tw-top-0 tw-left-0">
+                        <BackBtn handle={() => handleReturn()} id={19}/>
+                    </div>
+                    : null
+                }
+                {!updAction ?
+                <ul className="tw-shadow-2xl tw-p-4 tw-border-2 tw-rounded">
+                    {actionPlan === undefined || actionPlan.length == 0 ?
+                        <li>
+                            <p className='tw-basis-full tw-p-1'>
+                                Aún no se han definido los proyectos
+                            </p>
+                        </li>
+                    : actionPlan.map((item, i) => <li className="tw-flex" key={i}>
+                        <button
+                            className=" tw-flex tw-justify-between tw-w-full
+                                        tw-mb-4 tw-p-2 tw-rounded
+                                        tw-bg-gray-200 hover:tw-bg-gray-300
+                                        tw-border-4 tw-border-gray-400"
+                            type="button"
+                            title={`${item.BPIMCode}\n${item.office}`}
+                            onClick={() => handleClick(i)}>
+                            <p>{item.POAINameProject}</p>
+                            <p>Actualizar plan</p>
+                        </button>
+                    </li>)}
+                </ul>
+                : updAction ?
+                    <>
+                        <button
+                            className=' tw-bg-cyan-300 hover:tw-bg-cyan-400
+                                        tw-border-2 tw-border-gray-200
+                                        tw-p-2 tw-mt-2 tw-mx-3
+                                        tw-rounded tw-shadow'>
+                            Actualizar información del plan
+                        </button>
+                        {selectedPlan ?
+                            <UpdateActivityForm/> :
+                            <p>Cargando plan</p>
+                        }
+                    </>
+                : null}
             </Box>
         </Modal>
     );
