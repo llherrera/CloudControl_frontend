@@ -17,8 +17,7 @@ export const NodeResultForm = ({unit}: UnitInfoProps) => {
 
     const [selectNodes, setSelectNodes] = useState<NodeInterface[]>([]);
     const [data, setData] = useState<UnitNodeResultInterface>(
-        unit == undefined ?
-        {
+        unit ?? {
             id_node: '',
             code: '',
             id_plan: id_plan,
@@ -30,7 +29,7 @@ export const NodeResultForm = ({unit}: UnitInfoProps) => {
             responsible: '',
             unitMeter: '',
             unitNodes: [],
-        } : unit
+        }
     );
 
     const handleChangeUnit = (event: React.ChangeEvent<

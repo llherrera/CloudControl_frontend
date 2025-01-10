@@ -106,7 +106,7 @@ export const ModalProgram = () => {
 
             const item: ReportPDTInterface = {
                 responsible: nodeYears[0].responsible??'',
-                goalCode: id_node,
+                goalCode: nodeYears[0].code,
                 goalDescription: nodeYears[0].description,
                 percentExecuted: percentages!,
                 planSpecific: root_,
@@ -143,39 +143,39 @@ export const ModalProgram = () => {
         'tw-bg-blueColory hover:tw-ring-blue-200'
     );
 
-    const tableBody = (item: ReportPDTInterface) => (
+    const tableBody = (item: ReportPDTInterface) =>
         <tr key={item.responsible}>
             <td className='tw-border tw-p-2'>{item.responsible}</td>
-            <td className='tw-border tw-p-2'>{item.goalCode}</td>
+            <td className='tw-border tw-p-2'>{item.goalCode.replace(/(\.\d+)(?=\.)/, '')}</td>
             <td className='tw-border tw-p-2'>{item.goalDescription}</td>
-            {years.map((year, index) => (
+            {years.map((year, index) =>
                 <td key={year}
                     className={`tw-border tw-p-2 tw-text-center ${coloClass(item, index)} `}>
                     {item['percentExecuted'][index] < 0 ? 0 : item['percentExecuted'][index]}
                 </td>
-            ))}
-            {levels.map((level, index) => (
-                <td className='tw-border tw-p-2' 
+            )}
+            {levels.map((level, index) =>
+                <td className='tw-border tw-p-2'
                     key={level.name}>
                     {item['planSpecific'][index]}
                 </td>
-            ))}
+            )}
             <td className='tw-border tw-p-2'>{item.indicator}</td>
             <td className='tw-border tw-p-2'>{item.base}</td>
-            {years.map((year, index) => (
-                <td className='tw-border tw-p-2' 
+            {years.map((year, index) =>
+                <td className='tw-border tw-p-2'
                     key={year}>
                     {item['programed'][index]}
                 </td>
-            ))}
-            {years.map((year, index) => (
-                <td className='tw-border tw-p-2' 
+            )}
+            {years.map((year, index) =>
+                <td className='tw-border tw-p-2'
                     key={year}>
                     {item['executed'][index]}
                 </td>
-            ))}
+            )}
         </tr>
-    );
+    ;
 
     const ModalPDT = () => {
         return (
@@ -245,7 +245,7 @@ export const ModalProgram = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {data.map((item) => tableBody(item))}
+                        {data.map(item => tableBody(item))}
                     </tbody>
                 </table>
                 </div>}

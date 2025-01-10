@@ -75,7 +75,8 @@ const getInitialState = (): InitialStatePlanInterface => {
         projects: undefined,
         proje_s: 0,
         actionPlan: undefined,
-        selectedPlan: undefined
+        selectedPlan: undefined,
+        done: false
     };
 };
 
@@ -151,6 +152,10 @@ export const planSlice = createSlice({
                 state.selectedPlan = undefined;
             else
                 state.selectedPlan = state.actionPlan![action.payload];
+            setGenericState('plan', state);
+        },
+        setDone: (state, action: PayloadAction<boolean>) => {
+            state.done = action.payload;
             setGenericState('plan', state);
         },
         resetPlan: () => {
@@ -626,6 +631,7 @@ export const planSlice = createSlice({
                 state.selectedPlan![str] = action.payload[3][i].name;
             }
             state.selectedPlan!.nodesResult = action.payload[4];
+            state.done = true;
             setGenericState('plan', state);
         });
         builder.addCase(thunkGetActivityActionPlan.rejected, (state, action) => {
@@ -687,5 +693,6 @@ export const {
     setLevels,
     AddRootTree,
     setSelectedActionPlan,
-    resetPlan } = planSlice.actions;
+    resetPlan,
+    setDone } = planSlice.actions;
 export default planSlice.reducer;

@@ -906,8 +906,8 @@ export const ActivityForm = ({ plan }: { plan: ActionPlan }) => {
                 </div>
             </div>
             <button type="submit"
-                className=' tw-bg-green-300 hover:tw-bg-green-400
-                                tw-py-2 tw-mt-5 tw-mb-2 tw-mx-3 tw-rounded'>
+                className={`${loadingActivityActionPlan ? 'tw-bg-green-300' : 'tw-bg-green-500 hover:tw-bg-green-400'}
+                            tw-py-2 tw-mt-5 tw-mb-2 tw-mx-3 tw-rounded`}>
                 {loadingActivityActionPlan ?
                     <Box sx={{ display: 'flex' }}>
                         <CircularProgress />

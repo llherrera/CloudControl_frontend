@@ -58,6 +58,7 @@ export interface InitialStatePlanInterface {
     proje_s: number;
     actionPlan?: ActionPlan[];
     selectedPlan?: ActionPlan;
+    done: boolean;
 }
 
 export interface GetNodeProps {

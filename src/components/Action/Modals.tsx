@@ -9,7 +9,7 @@ import { generateActionPlanExcel } from "@/utils";
 
 import { useAppSelector, useAppDispatch } from '@/store';
 import { thunkGetActionPlans, thunkGetActivityActionPlan } from '@/store/plan/thunks';
-import { setSelectedActionPlan } from '@/store/plan/planSlice';
+import { setSelectedActionPlan, setDone } from '@/store/plan/planSlice';
 
 export const ModalOption = ({ i, className, bclassName }: PropsModalActionPlan) => {
     const [isOpen1, setIsOpen1] = useState(false);
@@ -46,35 +46,35 @@ export const ModalOption = ({ i, className, bclassName }: PropsModalActionPlan) 
             <button
                 title="Listar planes"
                 className={`${bclassName} tw-rounded tw-h-24 tw-w-full`}
-                onClick={() => setIsOpen1(!isOpen1)}>
+                onClick={() => setIsOpen1(true)}>
                 Lista
             </button> :
             i === 1 ?
             <button
                 title="Agregar plan"
                 className={`${bclassName} tw-rounded tw-h-24 tw-w-full`}
-                onClick={() => setIsOpen2(!isOpen2)}>
+                onClick={() => setIsOpen2(true)}>
                 Adicionar
             </button> :
             i === 2 ?
             <button
                 title="Actualizar plan"
                 className={`${bclassName} tw-rounded tw-h-24 tw-w-full`}
-                onClick={() => setIsOpen3(!isOpen3)}>
+                onClick={() => setIsOpen3(true)}>
                 Modificar
             </button> :
             i === 3 ?
             <button
                 title="Eliminar planes"
                 className={`${bclassName} tw-rounded tw-h-24 tw-w-full`}
-                onClick={() => setIsOpen4(!isOpen4)}>
+                onClick={() => setIsOpen4(true)}>
                 Eliminar
             </button> :
             i === 4 ?
             <button
                 title="Importar planes"
                 className={`${bclassName} tw-rounded tw-h-24 tw-w-full`}
-                onClick={() => setIsOpen4(!isOpen5)}>
+                onClick={() => setIsOpen4(true)}>
                 Importar
             </button> :
             <></>
@@ -87,15 +87,9 @@ const ListPlanModal = (props: ModalProps) => {
     const dispatch = useAppDispatch();
 
     const { id_plan } = useAppSelector(store => store.content);
-    const { actionPlan, selectedPlan,
-        loadingActivityActionPlan } = useAppSelector(store => store.plan);
+    const { actionPlan, selectedPlan, done } = useAppSelector(store => store.plan);
 
-    const [count, setCount] = useState(-1);
-    const [index, setIndex] = useState(-1);
-    const [send, setSend] = useState(false);
-    const isFirstRenderC = useRef(true);
     const isFirstRenderG = useRef(true);
-    const isFirstRenderS = useRef(true);
 
     const onClose = () => {
         props.callback(false);
@@ -103,45 +97,32 @@ const ListPlanModal = (props: ModalProps) => {
     }
 
     useEffect(() => {
+        if (!props.modalIsOpen) return;
         dispatch(thunkGetActionPlans(id_plan));
-    }, []);
+    }, [props.modalIsOpen]);
 
     useEffect(() => {
-        if (isFirstRenderS.current) {
-            isFirstRenderS.current = false;
-            return;
-        }
-        dispatch(setSelectedActionPlan(index));
-        if (index > -1) setSend(true);
-        else setSend(false);
-    }, [index]);
-
-    useEffect(() => {
-        if (isFirstRenderC.current) {
-            isFirstRenderC.current = false;
-            return;
-        }
-        setCount(prevCount => prevCount + 1);
-    }, [loadingActivityActionPlan]);
-
-    useEffect(() => {
-        if (selectedPlan != undefined && send)
+        if (!props.modalIsOpen) return;
+        if (selectedPlan) {
             dispatch(thunkGetActivityActionPlan(selectedPlan.id_actionPlan));
-    }, [send]);
+        }
+    }, [selectedPlan]);
 
     useEffect(() => {
+        if (!props.modalIsOpen) return;
         if (isFirstRenderG.current) {
             isFirstRenderG.current = false;
             return;
         }
-        if (count > 0 && count % 2 === 0 && selectedPlan != undefined && send) {
+        if (selectedPlan != undefined && done) {
             generateActionPlanExcel(selectedPlan);
             dispatch(setSelectedActionPlan(-1));
+            dispatch(setDone(false));
         }
-        if (count > 0 && count % 2 === 0) setSend(false);
-    }, [count]);
+//        if (count > 0 && count % 2 === 0) setSend(false);
+    }, [done]);
 
-    const handleClick = (index: number) => setIndex(index);
+    const handleClick = async (index: number) => dispatch(setSelectedActionPlan(index));
 
     return (
         <Modal isOpen={props.modalIsOpen}
@@ -183,7 +164,7 @@ const ListPlanModal = (props: ModalProps) => {
                                 <p>Objetivos</p>
                             </th>
                             <th>
-                                <p>Columna</p>
+                                <p>Oficina</p>
                             </th>
                         </tr>
                     </thead>
@@ -200,28 +181,28 @@ const ListPlanModal = (props: ModalProps) => {
                                 <tr key={i} className='tw-border'>
                                     <th>
                                         <button
-                                            className=""
+                                            className="tw-bg-green-200 tw-rounded tw-p-1"
                                             onClick={() => handleClick(i)}>
                                             Seleccionar
                                         </button>
                                     </th>
                                     <th>
-                                        <p>{p.planCode}</p>
+                                        <p>{p.planCode.slice(0, 20)}</p>
                                     </th>
                                     <th>
                                         <p>{p.programedDate ? new Date(p.programedDate).toISOString().split('T').slice(0, 1) : 'No definido'}</p>
                                     </th>
                                     <th>
-                                        <p>{p.POAINameProject}</p>
+                                        <p>{p.POAINameProject.slice(0, 20)}</p>
                                     </th>
                                     <th>
-                                        <p>{p.BPIMCode}</p>
+                                        <p>{p.BPIMCode.slice(0, 20)}</p>
+                                    </th>
+                                    <th title={p.Objetives}>
+                                        <p>{p.Objetives.slice(0, 20)}</p>
                                     </th>
                                     <th>
-                                        <p>{p.Objetives}</p>
-                                    </th>
-                                    <th>
-                                        <p>Columna</p>
+                                        <p title={p.office}>{p.office.replace('Secretaría ','').replace('de ','')}</p>
                                     </th>
                                 </tr>
                             )}
@@ -236,7 +217,7 @@ const AddPlanModal = (props: ModalProps) => {
     const dispatch = useAppDispatch();
 
     const { id_plan } = useAppSelector(store => store.content);
-    const { actionPlan } = useAppSelector(store => store.plan);
+    const { actionPlan, selectedPlan } = useAppSelector(store => store.plan);
 
     const [addPlan, setAddPlan] = useState<boolean>(false);
     const [addAction, setAddAction] = useState<boolean>(false);
@@ -249,10 +230,12 @@ const AddPlanModal = (props: ModalProps) => {
     };
 
     useEffect(() => {
+        if (!props.modalIsOpen) return;
         dispatch(thunkGetActionPlans(id_plan));
     }, []);
 
     useEffect(() => {
+        if (!props.modalIsOpen) return;
         if (index > -1) {
             dispatch(setSelectedActionPlan(index));
             setAddAction(true);
@@ -261,7 +244,10 @@ const AddPlanModal = (props: ModalProps) => {
 
     const handleAddActionPlan = () => setAddPlan(true);
 
-    const handleAddActivity = (i: number) => setIndex(i);
+    const handleAddActivity = (i: number) => {
+        dispatch(setSelectedActionPlan(i));
+        setAddAction(true);
+    }
 
     const handleReturn = () => {
         setAddPlan(false);
@@ -326,7 +312,9 @@ const AddPlanModal = (props: ModalProps) => {
                     </li>)}
                 </ul>
                 : addPlan ? <ActionPlanFrom/>
-                : addAction ? <ActivityForm plan={actionPlan![index]}/>
+                : addAction ?
+                    selectedPlan ? <ActivityForm plan={selectedPlan}/>
+                    : <p>Cargando plan</p>
                 : null}
             </Box>
         </Modal>
@@ -349,10 +337,12 @@ const UpdatePlanModal = (props: ModalProps) => {
     };
 
     useEffect(() => {
+        if (!props.modalIsOpen) return;
         dispatch(thunkGetActionPlans(id_plan));
     }, []);
 
     useEffect(() => {
+        if (!props.modalIsOpen) return;
         if (index > -1) {
             dispatch(setSelectedActionPlan(index));
             setUpdAction(true);
@@ -360,6 +350,7 @@ const UpdatePlanModal = (props: ModalProps) => {
     }, [index]);
 
     useEffect(() => {
+        if (!props.modalIsOpen) return;
         if (selectedPlan && updAction) {
             dispatch(thunkGetActivityActionPlan(selectedPlan.id_actionPlan));
         }

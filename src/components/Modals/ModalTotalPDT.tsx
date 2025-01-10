@@ -8,14 +8,10 @@ import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 import IconButton from "@mui/material/IconButton";
 import { Spinner } from "@/assets/icons";
 
-import {
-    ReportPDTInterface,
-    NodesWeight,
-    Percentages,
-    YearDetail,
-    ModalPDTProps } from "@/interfaces";
+import { ReportPDTInterface, NodesWeight, Percentages,
+    YearDetail, ModalPDTProps } from "@/interfaces";
 import { getLevelName } from "@/services/api";
-import { generateExcelYears } from "@/utils";
+import { generateExcelYears, sortData } from "@/utils";
 
 export const ModalTotalPDT = () => {
     const dispatch = useAppDispatch();
@@ -29,7 +25,7 @@ export const ModalTotalPDT = () => {
         e.preventDefault();
         setModalIsOpen(true);
         dispatch(setLoadingReport(true));
-        genReport().then((data) => setData(data));
+        genReport().then(data => setData(data));
     };
 
     const genReport = async () => {
@@ -64,7 +60,7 @@ export const ModalTotalPDT = () => {
 
             const item: ReportPDTInterface = {
                 responsible: nodeYears[0].responsible??'',
-                goalCode: id_node,
+                goalCode: nodeYears[0].code,
                 goalDescription: nodeYears[0].description,
                 percentExecuted: percentages!,
                 planSpecific: root_,
@@ -91,7 +87,7 @@ export const ModalTotalPDT = () => {
                         title='Generar reporte del Plan Indicativo Total'
                         className="tw-transition
                             hover:tw--translate-y-1 hover:tw-scale-[1.4]"
-                        onClick={(e)=>handleBtn(e)}>
+                        onClick={e => handleBtn(e)}>
                 <LibraryBooksIcon />
             </IconButton>
         </div>
@@ -104,6 +100,7 @@ const ModalPDT = ( props: ModalPDTProps ) => {
             loadingReport,
             colorimeter } = useAppSelector(store => store.plan);
 
+    const data = sortData(props.data);
     const colorClass = (item: ReportPDTInterface, index: number) => (
         item['percentExecuted'][index] < 0 ? 'tw-bg-gray-400' :
         item['percentExecuted'][index] < colorimeter[0] ? 'tw-bg-redColory'   :
@@ -116,12 +113,12 @@ const ModalPDT = ( props: ModalPDTProps ) => {
         return (
             <tr key={item.goalCode}>
                 <td className='tw-border tw-p-2'>{item.responsible}</td>
-                <td className='tw-border tw-p-2'>{item.goalCode}</td>
+                <td className='tw-border tw-p-2'>{item.goalCode.replace(/(\.\d+)(?=\.)/, '')}</td>
                 <td className='tw-border tw-p-2'>{item.goalDescription}</td>
                 {years.map((year, index) => (
                     <td key={year}
                         className={`tw-border tw-p-2 tw-text-center 
-                        ${colorClass(item, index)}
+                            ${colorClass(item, index)}
                         `}>
                         {item['percentExecuted'][index] < 0 ? 0 : item['percentExecuted'][index]}
                     </td>
@@ -173,13 +170,12 @@ const ModalPDT = ( props: ModalPDTProps ) => {
                         <th className='tw-border tw-bg-gray-400 tw-p-2'>Responsable</th>
                         <th className='tw-border tw-bg-gray-400 tw-p-2'>Codigo de la meta producto</th>
                         <th className='tw-border tw-bg-gray-400 tw-p-2'>Descripción Meta producto</th>
-                        {years.map((year) => (
-                            <th className=' tw-border tw-bg-gray-400
-                                            tw-p-2'
+                        {years.map(year =>
+                            <th className=' tw-border tw-bg-gray-400 tw-p-2'
                                 key={year}>
                                 % ejecución {year}
                             </th>
-                        ))}
+                        )}
                         {levels.map((level) => (
                             <th className=' tw-border tw-bg-gray-400
                                             tw-p-2'
@@ -189,22 +185,22 @@ const ModalPDT = ( props: ModalPDTProps ) => {
                         ))}
                         <th className='tw-border tw-bg-gray-400 tw-p-2'>Indicador</th>
                         <th className='tw-border tw-bg-gray-400 tw-p-2'>Línea base</th>
-                        {years.map((year) => (
+                        {years.map(year =>
                             <th className='tw-border tw-bg-gray-400 tw-p-2'
                                 key={year}>
                                 Programado {year}
                             </th>
-                        ))}
-                        {years.map((year) => (
+                        )}
+                        {years.map(year =>
                             <th className='tw-border tw-bg-gray-400 tw-p-2'
                                 key={year}>
                                 Ejecutado {year}
                             </th>
-                        ))}
+                        )}
                     </tr>
                 </thead>
                 <tbody>
-                    {props.data.map((item) => tableBody(item))}
+                    {data.map(item => tableBody(item))}
                 </tbody>
             </table>
             </div>}

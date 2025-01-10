@@ -9,7 +9,7 @@ import LibraryBooksIcon from '@mui/icons-material/LibraryBooks';
 import IconButton from "@mui/material/IconButton";
 import { Spinner } from "@/assets/icons";
 
-import { generateExcel } from "@/utils";
+import { generateExcel, sortData } from "@/utils";
 import {
     ReportPDTInterface,
     YearDetail,
@@ -40,10 +40,7 @@ export const ModalSecretary = () => {
 const ModalPDT = ( props: ModalProps ) => {
     const dispatch = useAppDispatch();
 
-    const { years,
-            levels,
-            secretaries,
-            loadingReport,
+    const { years, levels, secretaries, loadingReport,
             colorimeter } = useAppSelector(store => store.plan);
     const { id_plan } = useAppSelector(store => store.content);
 
@@ -65,7 +62,7 @@ const ModalPDT = ( props: ModalProps ) => {
 
     useEffect(() => {
         genReport();
-    }, [secretary, indexYear, props.modalIsOpen]);
+    }, [secretary, indexYear]);
 
     const findRoot = (id: string) => {
         let root = [] as string[];
@@ -95,9 +92,9 @@ const ModalPDT = ( props: ModalProps ) => {
     const genReport = () => {
         const detalleStr = localStorage.getItem('YearDeta');
         const detalle = detalleStr ? JSON.parse(detalleStr) : [];
-        const nodes = detalle.filter((item: YearDetail) => 
-            (item.responsible === secretary && item.year === years[indexYear]));
-        const data: ReportPDTInterface[] = [];
+        const nodes = detalle.filter((item: YearDetail) =>
+            item.responsible === secretary && item.year === years[indexYear]);
+        let data: ReportPDTInterface[] = [];
 
         nodes.forEach( async (item: YearDetail) => {
             let percent = (item.physical_execution/item.physical_programming)*100;
@@ -106,7 +103,7 @@ const ModalPDT = ( props: ModalProps ) => {
             const root = findRoot(item.id_node);
             const item_: ReportPDTInterface = {
                 responsible: item.responsible??'',
-                goalCode: item.id_node,
+                goalCode: item.code,
                 goalDescription: item.description,
                 percentExecuted: [percent],
                 planSpecific: root,
@@ -117,6 +114,8 @@ const ModalPDT = ( props: ModalProps ) => {
             };
             data.push(item_);
         });
+        //data = data.filter((item: ReportPDTInterface) => item.responsible !== secretary);
+        data = sortData(data);
         dispatch(setLoadingReport(false));
         setData(data);
     };
@@ -140,30 +139,30 @@ const ModalPDT = ( props: ModalProps ) => {
         'tw-bg-blueColory hover:tw-ring-blue-200'
     );
 
-    const tableBody = (item: ReportPDTInterface) => (
-        <tr key={item.responsible.length}>
+    const tableBody = (item: ReportPDTInterface, index: number) =>
+        <tr key={index}>
             <td className='tw-border tw-p-2'>{item.responsible}</td>
-            <td className='tw-border tw-p-2'>{item.goalCode}</td>
+            <td className='tw-border tw-p-2'>{item.goalCode.replace(/(\.\d+)(?=\.)/, '')}</td>
             <td className='tw-border tw-p-2'>{item.goalDescription}</td>
             <td className={`tw-border tw-p-2 tw-text-center ${colorClass(item)}`} >
                 {item['percentExecuted'][0] < 0 ? 0 : item['percentExecuted'][0]}
             </td>
-            {levels.map((level, index) => (
-                <td className='tw-border tw-p-2' 
-                    key={level.name.length}>
+            {levels.map((level, index) =>
+                <td className='tw-border tw-p-2'
+                    key={level.name}>
                     {item['planSpecific'][index]}
                 </td>
-            ))}
+            )}
             <td className='tw-border tw-p-2'>{item.indicator}</td>
             <td className='tw-border tw-p-2 tw-text-center'>{item.base}</td>
             <td className='tw-border tw-p-2 tw-text-center'>{item['programed'][0]}</td>
             <td className='tw-border tw-p-2 tw-text-center'>{item['executed'][0]}</td>
         </tr>
-    );
+    ;
 
     return (
         <Modal  isOpen={props.modalIsOpen}
-                onRequestClose={()=>props.callback(false)}
+                onRequestClose={() => props.callback(false)}
                 contentLabel='Modal de secretarias'>
             {loadingReport ? <Spinner />: <div>
             <div className="tw-absolute tw-top-0 tw-right-0">
@@ -177,34 +176,36 @@ const ModalPDT = ( props: ModalProps ) => {
             <div className='tw-flex tw-flex-col md:tw-flex-row'>
                 <div className="tw-mb-2">
                     <h1 className='tw-bg-slate-300 tw-rounded tw-p-1 tw-mr-3 tw-mb-2 tw-text-center'>Escoger Año</h1>
-                    {years.map((year, index) => (
+                    {years.map((year, index) =>
                         <button className={`
-                                            ${indexYear === index ? 
-                                                'tw-bg-gray-500 tw-text-white hover:tw-bg-gray-300 hover:tw-text-black' : 
+                                            ${indexYear === index ?
+                                                'tw-bg-gray-500 tw-text-white hover:tw-bg-gray-300 hover:tw-text-black' :
                                                 'tw-bg-gray-300 hover:tw-bg-gray-500 hover:tw-text-white'}
                                             tw-border-black
                                             tw-rounded tw-border
                                             tw-p-1 tw-mx-1`}
-                                onClick={(event) => handleBtn(event, index)}
+                                onClick={e => handleBtn(e, index)}
                                 key={year}>
                             {year}
                         </button>
-                    ))}
+                    )}
                 </div>
                 <div className='md:tw-ml-6'>
                     <h1 className='tw-bg-slate-300 tw-rounded tw-p-1 tw-mr-3 tw-mb-2 tw-text-center'>Secretarias</h1>
-                    <select name="" 
-                            value={secretary} 
-                            onChange={(e)=>handleChangeSecretary(e)}
+                    <select name=""
+                            value={secretary}
+                            onChange={e => handleChangeSecretary(e)}
                             className="tw-border-2 tw-p-1 tw-mb-2 tw-rounded">
-                        {secretaries && secretaries.map((sec) => (<option value={sec.name} key={sec.name.length}>{sec.name}</option>))}
+                        {secretaries && secretaries.map(s =>
+                            <option value={s.name} key={s.name}>{s.name}</option>
+                        )}
                     </select>
                 </div>
                 <button className=' tw-bg-gray-300 hover:tw-bg-gray-500
                                     hover:tw-text-white
-                                    tw-rounded tw-border tw-border-black 
+                                    tw-rounded tw-border tw-border-black
                                     tw-px-2 tw-py-1 md:tw-ml-3 tw-mr-3'
-                        onClick={()=>generateExcel(data,'InformeSecretarias', levels, years[indexYear], colorimeter)}>
+                        onClick={() => generateExcel(data,'InformeSecretarias', levels, years[indexYear], colorimeter)}>
                     Exportar
                 </button>
             </div>
@@ -215,28 +216,25 @@ const ModalPDT = ( props: ModalProps ) => {
                         <th className='tw-border tw-bg-gray-400 tw-p-2'>Responsable</th>
                         <th className='tw-border tw-bg-gray-400 tw-p-2'>Codigo de la meta producto</th>
                         <th className='tw-border tw-bg-gray-400 tw-p-2'>Descripción Meta producto</th>
-                        <th className=' tw-border tw-bg-gray-400 tw-p-2'>% ejecución {years[indexYear]}</th>
-                        {levels.map((level) => (
-                            <th className=' tw-border tw-bg-gray-400
-                                            tw-p-2' 
+                        <th className='tw-border tw-bg-gray-400 tw-p-2'>% ejecución {years[indexYear]}</th>
+                        {levels.map(level =>
+                            <th className='tw-border tw-bg-gray-400 tw-p-2'
                                 key={level.name.length}>
                                 {level.name}
                             </th>
-                        ))}
+                        )}
                         <th className='tw-border tw-bg-gray-400 tw-p-2'>Indicador</th>
                         <th className='tw-border tw-bg-gray-400 tw-p-2'>Línea base</th>
-                        <th className=' tw-border tw-bg-gray-400 
-                                        tw-p-2'>
+                        <th className='tw-border tw-bg-gray-400 tw-p-2'>
                             Programado {years[indexYear]}
                         </th>
-                        <th className=' tw-border tw-bg-gray-400 
-                                        tw-p-2'>
+                        <th className='tw-border tw-bg-gray-400 tw-p-2'>
                             Ejecutado {years[indexYear]}
                         </th>
                     </tr>
                 </thead>
                 <tbody>
-                    {data.map((item) => tableBody(item))}
+                    {data.map((item, index) => tableBody(item, index))}
                 </tbody>
             </table>
             </div>}

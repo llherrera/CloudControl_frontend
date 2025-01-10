@@ -24,6 +24,7 @@ export const UnitNodeResultPage = () => {
     const [listNodes, setListNodes] = useState<UnitNodeResultInterface[]>([]);
     const [data, setData] = useState<UnitNodeResultInterface | undefined>(undefined);
     const [showForm, setShowForm] = useState(false);
+    const [uplForm, setUplForm] = useState(false);
     const [num, setNm] = useState(0);
 
     const [rol, setRol] = useState("");
@@ -52,8 +53,9 @@ export const UnitNodeResultPage = () => {
     const handleBack = () => navigate(-1);
 
     const handleShowForm = () => {
-        setData(undefined);
-        setShowForm(prevShow => !showForm);
+        setData(prev => undefined);
+        setShowForm(!showForm);
+        setUplForm(false);
     };
 
     const handleNodeBtn = (i: number) => {
@@ -62,8 +64,10 @@ export const UnitNodeResultPage = () => {
     };
 
     const handleUpdateNode = (i: number) => {
-        setData(prevData => prevData === undefined ? listNodes[i] : undefined);
-        setShowForm(prevShow => true);
+        //setData(prevData => prevData == listNodes[i] ? undefined : listNodes[i]);
+        setData(prev => prev == listNodes[i] ? undefined : listNodes[i]);
+        setShowForm(false);
+        setUplForm(!uplForm);
     };
 
     return (
@@ -97,7 +101,9 @@ export const UnitNodeResultPage = () => {
                         <button className={`tw-flex tw-justify-between tw-w-full
                                             tw-mb-4 tw-p-2 tw-rounded tw-text-justify
                                             tw-border-4
-                                            ${(!!data && n.code === data.code) ? 'tw-border-green-400 hover:tw-border-green-100' : 'tw-border-gray-400 hover:tw-border-gray-100'}
+                                            ${(!!data && n.code === data.code) ?
+                                                'tw-border-green-400 hover:tw-border-green-100'
+                                                : 'tw-border-gray-400 hover:tw-border-gray-100'}
                                             `}
                                 onClick={() => handleNodeBtn(i)}>
                             {n.indicator}
@@ -119,7 +125,10 @@ export const UnitNodeResultPage = () => {
                     </ul>
                 </div>
                 <div className="tw-basis-2/3">
-                {showForm ? <NodeResultForm unit={data}/> : !!data ? <UnitResultInfo unit={data}/> : null}
+                {showForm ? <NodeResultForm/>
+                : uplForm ? <NodeResultForm unit={data}/>
+                : !!data ? <UnitResultInfo unit={data}/>
+                : null}
                 </div>
             </div>
         </UnitFrame>

@@ -1,8 +1,10 @@
 import { useEffect } from 'react';
 
 import { Content } from './Content';
+import { Spinner } from "@/assets/icons";
 import { NodesWeight, Percentages, YearDetail } from '@/interfaces';
 import { getTotalProgress } from '@/services/api';
+import { notify } from '@/utils';
 
 import { useAppDispatch, useAppSelector } from '@/store';
 import { thunkGetPDTid } from '@/store/plan/thunks';
@@ -10,11 +12,14 @@ import { thunkGetPDTid } from '@/store/plan/thunks';
 export const Board = () => {
     const dispatch = useAppDispatch();
     const { id_plan } = useAppSelector(store => store.content);
-    const { plan } = useAppSelector(store => store.plan);
+    const { plan, loadingPlan } = useAppSelector(store => store.plan);
 
     useEffect(() => {
+        if (plan) return;
         dispatch(thunkGetPDTid(id_plan));
+    }, []);
 
+    useEffect(() => {
         getTotalProgress(id_plan)
         .then(res => {
             if (!res) return;
@@ -23,6 +28,7 @@ export const Board = () => {
             calcProgress( res );
         })
         .catch(err => {
+            notify('Ha ocurrido un error, vuelva a intertarlo mas tarde', 'error');
             console.log(err);
         })
     }, []);
@@ -98,10 +104,11 @@ export const Board = () => {
     }
 
     return (
-        (plan ?
+        (loadingPlan ? <Spinner/> :
+        plan ?
         <Content
-            id={ id_plan }
-        /> : <p>Cargando</p>
+            id={id_plan}
+        /> : <p>No hay plan cargado</p>
         )
     );
 }

@@ -989,3 +989,17 @@ export const validateUUID = (uuid: string): boolean => {
   const uuidPat: RegExp = /[A-F0-9]{8}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{4}-[A-F0-9]{12}/;
   return uuidPat.test(uuid);
 }
+
+export const sortData = (data: ReportPDTInterface[]): ReportPDTInterface[] => {
+  return data.sort((a, b) => {
+    const partsA = a.goalCode.slice(2).split('.').map(Number);
+    const partsB = b.goalCode.slice(2).split('.').map(Number);
+    for (let i = 0; i < Math.max(partsA.length, partsB.length); i++) {
+      const diff = (partsA[i] || 0) - (partsB[i] || 0);
+      if (diff !== 0) {
+        return diff;
+      }
+    }
+    return 0;
+  })
+}
