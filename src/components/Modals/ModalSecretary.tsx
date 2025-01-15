@@ -219,7 +219,7 @@ const ModalPDT = ( props: ModalProps ) => {
                         <th className='tw-border tw-bg-gray-400 tw-p-2'>% ejecución {years[indexYear]}</th>
                         {levels.map(level =>
                             <th className='tw-border tw-bg-gray-400 tw-p-2'
-                                key={level.name.length}>
+                                key={level.name}>
                                 {level.name}
                             </th>
                         )}

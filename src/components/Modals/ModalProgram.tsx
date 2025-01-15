@@ -16,7 +16,7 @@ import {
     NodeInterface,
     Node } from "@/interfaces";
 import { getLevelName, getLevelNodes } from "@/services/api";
-import { generateExcelYears } from "@/utils";
+import { generateExcelYears, sortData } from "@/utils";
 
 export const ModalProgram = () => {
     const dispatch = useAppDispatch();
@@ -79,7 +79,7 @@ export const ModalProgram = () => {
         const nodesReport_ = nodesReport.map((item: Node) => item.id_node);
         pesos = pesos.filter((item:NodesWeight)=> nodesReport_.includes(item.id_node) );
         const detalle = detalleStr ? JSON.parse(detalleStr) : [];
-        const data: ReportPDTInterface[] = [];
+        let data: ReportPDTInterface[] = [];
 
         await Promise.all(pesos.map(async (peso: NodesWeight) => {
             const { id_node, percents } = peso;
@@ -117,6 +117,7 @@ export const ModalProgram = () => {
             };
             data.push(item);
         }))
+        data = sortData(data);
         dispatch(setLoadingReport(false));
         setData(data);
     };
@@ -170,7 +171,7 @@ export const ModalProgram = () => {
             )}
             {years.map((year, index) =>
                 <td className='tw-border tw-p-2'
-                    key={year}>
+                    key={year+index+1}>
                     {item['executed'][index]}
                 </td>
             )}
@@ -192,19 +193,21 @@ export const ModalProgram = () => {
                     </button>
                 </div>
                 <div className='tw-flex tw-relative tw-mt-2'>
-                    <h1 className='tw-bg-slate-300 tw-rounded tw-p-1 tw-mr-3'>Programas</h1>
-                    {programs.map((program, index) => (
-                        <select value={program[index_[index]].name}
-                                onChange={(e)=>handleChangePrograms(index, e)}
-                                className='tw-border tw-border-gray-300 tw-rounded tw-mr-3'
-                                key={program.length}>
-                            {program.map((node) => <option value={node.name} key={node.id_level}>{node.name}</option>)}
-                        </select>
-                    ))}
+                    {programs.map((program, index) =>
+                        <div key={index}>
+                            <h1 className='tw-bg-slate-300 tw-text-center tw-rounded tw-p-1 tw-mr-3'>{levels[index].name}</h1>
+                            <select value={program[index_[index]].name}
+                                    onChange={e => handleChangePrograms(index, e)}
+                                    className='tw-border tw-border-gray-300 tw-rounded tw-mr-3'
+                                    key={program.length}>
+                                {program.map(node => <option value={node.name} key={node.id_level}>{node.name}</option>)}
+                            </select>
+                        </div>
+                    )}
                     <button className='tw-bg-gray-300 hover:tw-bg-gray-200
                                         tw-rounded tw-border tw-border-black
                                         tw-px-2 tw-py-1 tw-ml-3'
-                            onClick={()=>generateExcelYears(data, 'InformeProgramas', levels, years, colorimeter)}>
+                            onClick={() => generateExcelYears(data, 'InformeProgramas', levels, years, colorimeter)}>
                         Exportar
                     </button>
                 </div>
@@ -219,7 +222,7 @@ export const ModalProgram = () => {
                             {years.map((year) => (
                                 <th className='tw-border tw-bg-gray-400 tw-p-2' 
                                     key={year}>
-                                    % ejecución{year}
+                                    % ejecución {year}
                                 </th>
                             ))}
                             {levels.map((level) => (
@@ -230,18 +233,18 @@ export const ModalProgram = () => {
                             ))}
                             <th className='tw-border tw-bg-gray-400 tw-p-2'>Indicador</th>
                             <th className='tw-border tw-bg-gray-400 tw-p-2'>Línea base</th>
-                            {years.map((year) => (
+                            {years.map((year) =>
                                 <th className='tw-border tw-bg-gray-400 tw-p-2' 
                                     key={year}>
                                     Programado {year}
                                 </th>
-                            ))}
-                            {years.map((year) => (
+                            )}
+                            {years.map((year, index) =>
                                 <th className='tw-border tw-bg-gray-400 tw-p-2' 
-                                    key={year}>
+                                    key={year+index+1}>
                                     Ejecutado {year}
                                 </th>
-                            ))}
+                            )}
                         </tr>
                     </thead>
                     <tbody>

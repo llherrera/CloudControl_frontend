@@ -8,6 +8,7 @@ import { notify } from '@/utils';
 
 import { useAppDispatch, useAppSelector } from '@/store';
 import { thunkGetPDTid } from '@/store/plan/thunks';
+import { setCalcDone } from '@/store/plan/planSlice';
 
 export const Board = () => {
     const dispatch = useAppDispatch();
@@ -101,6 +102,7 @@ export const Board = () => {
             }
         })
         localStorage.setItem('UnitNode', JSON.stringify(pesosNodo));
+        dispatch(setCalcDone(true));
     }
 
     return (

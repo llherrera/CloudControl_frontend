@@ -76,7 +76,8 @@ const getInitialState = (): InitialStatePlanInterface => {
         proje_s: 0,
         actionPlan: undefined,
         selectedPlan: undefined,
-        done: false
+        done: false,
+        calcDone: false
     };
 };
 
@@ -158,6 +159,10 @@ export const planSlice = createSlice({
         },
         setDone: (state, action: PayloadAction<boolean>) => {
             state.done = action.payload;
+            setGenericState('plan', state);
+        },
+        setCalcDone: (state, action: PayloadAction<boolean>) => {
+            state.calcDone = action.payload;
             setGenericState('plan', state);
         },
         resetPlan: () => {
@@ -698,5 +703,6 @@ export const {
     AddRootTree,
     setSelectedActionPlan,
     resetPlan,
-    setDone } = planSlice.actions;
+    setDone,
+    setCalcDone } = planSlice.actions;
 export default planSlice.reducer;

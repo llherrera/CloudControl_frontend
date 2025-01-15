@@ -16,7 +16,7 @@ export const NodesList = ( props : IdProps ) => {
     const dispatch = useAppDispatch();
 
     const { token_info } = useAppSelector(store => store.auth);
-    const { nodes, yearSelect, levels, indexLevel, progressNodes,
+    const { nodes, yearSelect, levels, indexLevel, progressNodes, calcDone,
         colorimeter, loadingNodes, rootTree } = useAppSelector(store => store.plan);
     const { mode } = useAppSelector(store => store.content);
     const [ pesos, setPesos ] = useState<number[]>(nodes.map((item: NodeInterface) => item.weight));
@@ -33,8 +33,10 @@ export const NodesList = ( props : IdProps ) => {
     }, []);
 
     useEffect(() => {
+        if (!calcDone) return;
+        console.log('lista de nodos lanza funcion');
         getProgress();
-    }, [yearSelect, nodes]);
+    }, [yearSelect, nodes, calcDone]);
 
     const getProgress = () => {
         const pesosStr = localStorage.getItem('UnitNode');

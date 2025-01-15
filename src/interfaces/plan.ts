@@ -59,6 +59,7 @@ export interface InitialStatePlanInterface {
     actionPlan?: ActionPlan[];
     selectedPlan?: ActionPlan;
     done: boolean;
+    calcDone: boolean;
 }
 
 export interface GetNodeProps {
@@ -224,6 +225,7 @@ export interface ActionPlan {
 export interface Activity {
     readonly id_activity: number;
     readonly id_actionPlan: number;
+    id_node: string;
     activityDesc: string;
     unitMeter: string;
     amountP: number;

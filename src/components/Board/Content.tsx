@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useAppDispatch, useAppSelector } from "@/store";
-import { decrementLevelIndex, setParent,
+import { decrementLevelIndex, setParent, setCalcDone,
     AddRootTree, setZeroLevelIndex } from "@/store/plan/planSlice";
 import { thunkGetNodes } from '@/store/plan/thunks';
 import { setMode } from "@/store/content/contentSlice";
@@ -50,6 +50,7 @@ export const Content = ( props : IdProps ) => {
 
     const handleBack = () => {
         if (indexLevel === 0) {
+            dispatch(setCalcDone(false));
             navigate(-1);
             return;
         }

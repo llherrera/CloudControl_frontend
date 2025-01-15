@@ -403,8 +403,8 @@ const UpdatePlanModal = (props: ModalProps) => {
 
     useEffect(() => {
         if (!props.modalIsOpen) return;
+        dispatch(setSelectedActionPlan(index));
         if (index > -1) {
-            dispatch(setSelectedActionPlan(index));
             setUpdAction(true);
         }
     }, [index]);
@@ -422,7 +422,7 @@ const UpdatePlanModal = (props: ModalProps) => {
         setUpdAction(false);
         setIndex(-1);
         //dispatch(setSelectedActionPlan(-1));
-    }
+    };
 
     return (
         <Modal isOpen={props.modalIsOpen}
@@ -472,13 +472,6 @@ const UpdatePlanModal = (props: ModalProps) => {
                 </ul>
                 : updAction ?
                     <>
-                        <button
-                            className=' tw-bg-cyan-300 hover:tw-bg-cyan-400
-                                        tw-border-2 tw-border-gray-200
-                                        tw-p-2 tw-mt-2 tw-mx-3
-                                        tw-rounded tw-shadow'>
-                            Actualizar información del plan
-                        </button>
                         {selectedPlan ?
                             <UpdateActivityForm/> :
                             <p>Cargando plan</p>

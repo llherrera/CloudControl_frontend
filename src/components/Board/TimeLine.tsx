@@ -12,7 +12,7 @@ export const TimeLine = () => {
     const navigate = useNavigate();
 
     const { token_info } = useAppSelector(store => store.auth);
-    const { years, yearSelect, plan, colorimeter,
+    const { years, yearSelect, plan, colorimeter, calcDone,
             parent, nodes } = useAppSelector(store => store.plan);
 
     const [yearProgress, setYearProgress] = useState<number[]>([]);
@@ -32,8 +32,10 @@ export const TimeLine = () => {
     }, [years]);
 
     useEffect(() => {
+        if (!calcDone) return;
+        console.log('Timeline lanza funcion');
         getYearProgress();
-    }, [yearSelect, nodes]);
+    }, [yearSelect, nodes, calcDone]);
 
     const getYearProgress = () => {
         let pesosStr = localStorage.getItem('UnitNode');
