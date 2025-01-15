@@ -148,10 +148,12 @@ export const planSlice = createSlice({
         },
         setSelectedActionPlan: (state, action: PayloadAction<number>) => {
             let val = action.payload;
-            if (val < 0)
+            if (val < 0) {
                 state.selectedPlan = undefined;
-            else
+                state.done = false;
+            } else {
                 state.selectedPlan = state.actionPlan![action.payload];
+            }
             setGenericState('plan', state);
         },
         setDone: (state, action: PayloadAction<boolean>) => {
@@ -575,9 +577,11 @@ export const planSlice = createSlice({
         builder.addCase(thunkAddProjects.fulfilled, (state, action) => {
             state.loadingProjects = false;
             setGenericState('plan', state);
+            notify('Se ha agregado correctamente', 'success');
         });
         builder.addCase(thunkAddProjects.rejected, (state, action) => {
             state.loadingProjects = false;
+            notify(action.payload?.error_description ?? errorMSGUpdate, 'error');
             state.errorLoadingProjects = action.payload;
         });
 
@@ -627,7 +631,7 @@ export const planSlice = createSlice({
             state.selectedPlan!.rubros = action.payload[1];
             state.selectedPlan!.nodes = action.payload[2];
             for (let i = 0; i < action.payload[3].length; i++) {
-                const str = `level${i + 1}` as keyof levelsPlan;
+                const str = `level_${i + 1}` as keyof levelsPlan;
                 state.selectedPlan![str] = action.payload[3][i].name;
             }
             state.selectedPlan!.nodesResult = action.payload[4];

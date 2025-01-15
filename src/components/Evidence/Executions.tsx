@@ -3,7 +3,7 @@ import Modal from 'react-modal';
 
 import { useAppDispatch, useAppSelector } from "@/store";
 import { removeEvidence } from "@/store/evidence/evidenceSlice";
-import { thunkUpdateExecution } from "@/store/unit/thunks";
+import { thunkUpdateExecution, thunkDenegateExecution } from "@/store/unit/thunks";
 
 import { ExecutedProps } from '@/interfaces';
 
@@ -25,7 +25,7 @@ export const Execution = ( {ex, index}: ExecutedProps ) => {
 
     const handleInputModal = async () => {
         setModalIsOpen(false);
-        dispatch(thunkUpdateExecution({
+        dispatch(thunkDenegateExecution({
             date: newModDate,
             value: ex.modified_execution,
             code: ex.id_node,

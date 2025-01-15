@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { notify, convertLocations } from '@/utils';
 import { EvidenceInterface, LocationInterface } from "@/interfaces";
-import { UbicationsPopover, ModalSpinner } from "@/components";
+import { UbicationsPopover, ModalSpinner, BackBtn } from "@/components";
 
 import { useAppSelector, useAppDispatch } from "@/store";
 import {
@@ -12,20 +13,26 @@ import { thunkGetLocations } from "@/store/plan/thunks";
 
 export const EvidenceForm = () => {
     const dispatch = useAppDispatch();
-    const todayDate = new Date();
-    const deadLine = new Date(todayDate.getUTCFullYear(), 1, 1);
+    const navigate = useNavigate();
 
     const { unit } = useAppSelector(store => store.unit);
     const { list_points, evi_selected } = useAppSelector(store => store.evidence);
     const { id_plan } = useAppSelector(store => store.content);
-    const { locations } = useAppSelector(store => store.plan);
+    const { locations, plan, years } = useAppSelector(store => store.plan);
+
+    const todayDate = new Date();
+    //const deadLine = new Date(todayDate.getUTCFullYear(), 1, 1);
+    const [yearSelect, setYearSelect] = useState<number>(plan ? new Date(plan.deadline == null ? `${years[0]-1}-02-1` : plan.deadline).getFullYear() : new Date().getFullYear());
+    const deadline = yearSelect >= years[0] ? yearSelect : 'No hay fecha de corte';
+    const [yearRegister, setYearRegister] = useState(todayDate.getUTCFullYear());
 
     const [loading, setLoading] = useState(false);
+    const [showOther, setShowOther] = useState(false);
     const [data, setData] = useState<EvidenceInterface>(evi_selected??
         {
         id_evidence: 0,
         code: unit.code,
-        date: new Date().toISOString(),
+        date: plan ? new Date(`${yearRegister-1}-02-1`).toISOString() : new Date().toISOString(),
         activitiesDesc: "",
         unit: "num",
         amount: 0,
@@ -45,7 +52,6 @@ export const EvidenceForm = () => {
         state: 0,
     });
     const [documento, setDocumento] = useState<FileList | null>(null);
-    const [yearRegister, setYearRegister] = useState(todayDate.getUTCFullYear());
 
     const [locationsMap, setLocationsMap] = useState<Map<LocationInterface, LocationInterface[]>>();
     const [locations_, setLocations_] = useState<LocationInterface[]>([]);
@@ -80,6 +86,27 @@ export const EvidenceForm = () => {
                                         HTMLSelectElement | 
                                         HTMLTextAreaElement>) => {
         const { name, value } = event.target;
+        if (name === 'resources_font' && value === 'Otros') {
+            setShowOther(true);
+        } else if (name === 'resources_font' &&
+            (value === 'RecursosPropiosICLD' ||
+             value === 'RecursosPropiosICDE' ||
+             value === 'SGP' ||
+             value === 'Regalias' ||
+             value === 'Credito' ||
+             value === 'Estampillas' ||
+             value === 'SGP Cultura' ||
+             value === 'SGP Deporte' ||
+             value === 'SGP Educacion' ||
+             value === 'SGP Salud' ||
+             value === 'SGP Libre inversion' ||
+             value === 'Cofinanciacion Departamento' ||
+             value === 'Cofinanciacion Nacion' ||
+             value === 'Propios' ||
+             value === 'Funcionamiento'
+            )) {
+            setShowOther(false);
+        }
         setData({ ...data, [name]: value });
     };
 
@@ -116,7 +143,7 @@ export const EvidenceForm = () => {
         if (data.name_file === "") return notify('No se ha seleccionado un nombre de documento', 'warning');
         if (data.benefited_population_number === 0) return notify('No se ha seleccionado un numero de poblacion beneficiada', 'warning');
         if (data.benefited_population === "") return notify('No se ha seleccionado una poblacion beneficiada', 'warning');
-        if (data.executed_resources <= 0) return notify('No se ha seleccionado un recurso ejecutado', 'warning');
+        //if (data.executed_resources <= 0) return notify('No se ha seleccionado un recurso ejecutado', 'warning');
         if (data.unit === "") return notify('No se ha seleccionado una unidad', 'warning');
         if (data.vereda === "") return notify('No se ha seleccionado una vereda', 'warning');
         if (list_points.length === 0) return notify('No se ha seleccionado una ubicacion', 'warning');
@@ -158,8 +185,15 @@ export const EvidenceForm = () => {
         }
     };
 
+    const handleBack = () => navigate(-1);
+
 
     return (
+        <>{plan == undefined ? <div key={0}>
+            <h1>404</h1>
+            <h2>No se ha seleccionado un plan</h2>
+            <BackBtn handle={handleBack} id={1}/>
+        </div> :
         loading ? <ModalSpinner isOpen={loading}/> :
         <form
             id="formEvidencia"
@@ -179,25 +213,24 @@ export const EvidenceForm = () => {
                 </label>
             </div>
 
-            <div className="tw-mt-3 tw-flex tw-gap-2">
-                {todayDate < deadLine ?
-                    <button className={`${yearRegister === todayDate.getUTCFullYear() - 1 ?
-                        'tw-bg-blue-400' : 'tw-bg-red-400'}
-                        tw-rounded tw-p-2
-                        tw-border tw-border-black`}
-                        onClick={()=>setYearRegister(todayDate.getUTCFullYear() - 1)}
-                        type="button">
-                        Adicionar registros {todayDate.getUTCFullYear() - 1}
+            <div>
+                {typeof deadline == 'number' ? years[0] === deadline ? null :
+                    <button className={`${yearRegister === todayDate.getUTCFullYear()- 1 ?
+                                        'tw-bg-blue-400' : 'tw-bg-red-400'}
+                                        tw-rounded tw-p-2 tw-mr-3 tw-mt-3
+                                        tw-border tw-border-black`}
+                            onClick={()=>setYearRegister(todayDate.getUTCFullYear() - 1)}
+                            type="button">
+                        Adicionar registros {deadline - 1}
                     </button>
-                    :null
-                }
+                : null}
                 <button className={`${yearRegister === todayDate.getUTCFullYear() ?
                                     'tw-bg-blue-400' : 'tw-bg-red-400'}
                                     tw-rounded tw-p-2
                                     tw-border tw-border-black`}
                         onClick={()=>setYearRegister(todayDate.getUTCFullYear())}
                         type="button">
-                    Adicionar registros {todayDate.getUTCFullYear()}
+                    Adicionar registros {deadline}
                 </button>
             </div>
             <p className="tw-mt-4">Descripcion Actividades:</p>
@@ -360,34 +393,48 @@ export const EvidenceForm = () => {
                         required
                         onChange={e=> handleInputChange(e)}/>
                 </div>
-                <div className="tw-flex tw-flex-col tw-ml-3">
-                    <p>Fuente de recursos</p>
-                    <select
-                        name="resources_font"
-                        id="resources_font"
-                        value={data.resources_font}
-                        className=" tw-p-2 tw-rounded
-                                    tw-border-2 tw-border-gray-400
-                                    tw-bg-white"
-                        onChange={e=> handleInputChange(e)}
-                        required>
-                        <option value="RecursosPropiosICLD">Recursos Propios ICLD</option>
-                        <option value="RecursosPropiosICDE">Recursos Propios ICDE</option>
-                        <option value="SGP">SGP</option>
-                        <option value="Regalias">Regalias</option>
-                        <option value="Credito">Credito</option>
-                        <option value="Estampillas">Estampillas</option>
-                        <option value="Otros">Otros</option>
-                        <option value="SGP Cultura">SGP Cultura</option>
-                        <option value="SGP Deporte">SGP Deporte</option>
-                        <option value="SGP Educacion">SGP Educacion</option>
-                        <option value="SGP Salud">SGP Salud</option>
-                        <option value="SGP Libre inversion">SGP Libre inversion</option>
-                        <option value="Cofinanciacion Departamento">Cofinanciacion Departamento</option>
-                        <option value="Cofinanciacion Nacion">Cofinanciacion Nacion</option>
-                        <option value="Propios">Propios</option>
-                        <option value="Funcionamiento">Funcionamiento</option>
-                    </select>
+                <div className="tw-flex">
+                    <div className="tw-flex tw-flex-col tw-ml-3">
+                        <p>Fuente de recursos</p>
+                        <select
+                            name="resources_font"
+                            id="resources_font"
+                            value={data.resources_font}
+                            className=" tw-p-2 tw-rounded
+                                        tw-border-2 tw-border-gray-400
+                                        tw-bg-white"
+                            onChange={e => handleInputChange(e)}
+                            required>
+                            <option value="Otros">Otros</option>
+                            <option value="RecursosPropiosICLD">Recursos Propios ICLD</option>
+                            <option value="RecursosPropiosICDE">Recursos Propios ICDE</option>
+                            <option value="SGP">SGP</option>
+                            <option value="Regalias">Regalias</option>
+                            <option value="Credito">Credito</option>
+                            <option value="Estampillas">Estampillas</option>
+                            <option value="SGP Cultura">SGP Cultura</option>
+                            <option value="SGP Deporte">SGP Deporte</option>
+                            <option value="SGP Educacion">SGP Educacion</option>
+                            <option value="SGP Salud">SGP Salud</option>
+                            <option value="SGP Libre inversion">SGP Libre inversion</option>
+                            <option value="Cofinanciacion Departamento">Cofinanciacion Departamento</option>
+                            <option value="Cofinanciacion Nacion">Cofinanciacion Nacion</option>
+                            <option value="Propios">Propios</option>
+                            <option value="Funcionamiento">Funcionamiento</option>
+                        </select>
+                    </div>
+                    {showOther ?
+                        <input
+                            name="resources_font"
+                            id="resources_font"
+                            type="text"
+                            className=" tw-p-2 tw-ml-3 tw-mt-6 tw-rounded
+                                        tw-border-2 tw-border-gray-400
+                                        tw-bg-white"
+                            onChange={e => handleInputChange(e)}
+                            value={data.resources_font}
+                        />
+                        : null}
                 </div>
             </div>
 
@@ -463,5 +510,6 @@ export const EvidenceForm = () => {
                 </button>
             </div>
         </form>
+        }</>
     );
 };

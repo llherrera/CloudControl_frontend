@@ -7,8 +7,7 @@ import { incrementLevelIndex, setParent, setProgressNodes,
         setFinancial, AddRootTree } from '@/store/plan/planSlice';
 import { setNode } from "@/store/content/contentSlice";
 
-import { NodeInterface, NodesWeight, Percentages,
-        IdProps } from '@/interfaces';
+import { NodeInterface, NodesWeight, Percentages, IdProps } from '@/interfaces';
 import { Spinner } from '@/assets/icons';
 import { decode, notify } from "@/utils";
 
@@ -20,9 +19,7 @@ export const NodesList = ( props : IdProps ) => {
     const { nodes, yearSelect, levels, indexLevel, progressNodes,
         colorimeter, loadingNodes, rootTree } = useAppSelector(store => store.plan);
     const { mode } = useAppSelector(store => store.content);
-    const [ pesos, setPesos ] = useState<number[]>(
-        nodes.map((item: NodeInterface) => item.weight)
-    );
+    const [ pesos, setPesos ] = useState<number[]>(nodes.map((item: NodeInterface) => item.weight));
 
     const [rol, setRol] = useState("");
     const [id, setId] = useState(0);
@@ -145,23 +142,20 @@ export const NodesList = ( props : IdProps ) => {
             {nodes.map((item: NodeInterface, index: number) =>
                 <div className="tw-my-2 tw-flex tw-transition hover:tw-scale-110"
                     key={item.id_node}>
-                    <button className={`tw-rounded
+                    <button className={`tw-rounded tw-border-4 tw-bg-white
                                         tw-flex tw-justify-center tw-items-center
-                                        tw-border-4
-                                        tw-bg-white
                                         ${colorClass(index)}
                                         tw-ml-3 tw-z-10
                                         tw-w-12 tw-h-12
                                         tw-font-bold`}
                             onClick={ () => handleButton(index)}
-                            title={`${item.description} ${indexLevel !== levels.length-1 ? '' : `\n${item.code}\n${item.responsible}`}`}>
+                            title={`${item.description} ${indexLevel !== levels.length-1 ? '' : `\n${item.code.replace(/(\.\d+)(?=\.)/, '')}\n${item.responsible}`}`}>
                         { parseInt( ((progressNodes[index] === undefined ||
                             progressNodes[index] < 0 ? 0 : progressNodes[index])*100).toString())}%
                     </button>
                     {indexLevel !== levels.length-1 ?
                     <button className={`${colorClass_(index)}
-                                        tw-h-8 tw-my-2
-                                        tw-w-2/3
+                                        tw-h-8 tw-my-2 tw-w-2/3
                                         tw-rounded-r-lg
                                         tw-text-white tw-font-bold tw-text-center
                                         tw-font-montserrat`}
@@ -173,14 +167,13 @@ export const NodesList = ( props : IdProps ) => {
                     </button>
                     :null}
                     {rol === 'admin' || (rol === 'funcionario' && id === props.id) ?
-                        <input  className={`tw-px-2 tw-mx-2
-                                        tw-border tw-rounded
-                                        tw-w-16
-                                        ${mode ? '' : 'tw-hidden'}`}
+                        <input  className={`tw-px-2 tw-mx-2 tw-w-16
+                                            tw-border tw-rounded
+                                            ${mode ? '' : 'tw-hidden'}`}
                                 type='number'
                                 placeholder='peso'
                                 value={ isNaN(pesos[index]) ? 0 : pesos[index]}
-                                onChange={(e)=>handleUpdateWeight(index, e)}/>
+                                onChange={e => handleUpdateWeight(index, e)}/>
                     :null}
                 </div>
             )}

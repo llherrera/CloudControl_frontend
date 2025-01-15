@@ -21,7 +21,7 @@ export const LoginForm = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
-    const { authenticating } = useAppSelector(store => store.auth)
+    const { authenticating } = useAppSelector(store => store.auth);
 
     const [user, setUser] = useState({
         username: "",

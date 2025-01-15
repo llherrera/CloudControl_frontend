@@ -60,7 +60,7 @@ export const EvidencePage = () => {
                                 <p className="tw-font-bold">Código de la meta</p>
                             </th>
                             <th className="tw-border-4 tw-border-double tw-border-gray-500 ">
-                                <p className="tw-font-bold">{ unit.code }</p>
+                                <p className="tw-font-bold">{ unit.code.replace(/(\.\d+)(?=\.)/, '') }</p>
                             </th>
                             <th className="tw-hidden md:tw-table-cell tw-border-4 tw-border-double tw-border-gray-500">
                                 <p className="tw-font-bold">Descripción de la meta</p>

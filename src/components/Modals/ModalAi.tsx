@@ -94,7 +94,7 @@ const ProntInput = (props: ModalProps) => {
 
     const [loading, setLoading] = useState<boolean>(false);
     const [reload, setReload] = useState<boolean>(false);
-    const [plotOpts, setPlotOpts] = useState<(PlotOpt | null)[]>([]);
+    const [plotOpts, setPlotOpts] = useState<(PlotOpt | null)[]>([null]);
     const [conversations, setConversations] = useState<string[]>(['Hazme una pregunta...']);
 
     const [pronts, setPronts] = useState<ProntProps[]>([]);

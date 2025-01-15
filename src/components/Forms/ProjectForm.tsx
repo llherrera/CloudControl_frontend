@@ -67,42 +67,57 @@ export const ProjectForm = ({callback}: PropsCallback) => {
             for (let i = 0; i < projectsF.length; i++) {
                 await dispatch(thunkAddProjects({ id_plan: id_plan, project: projectsF[i], file: files[i]! }));
             }
-            notify('Se ha agregado correctamente', 'success');
+            //notify('Se ha agregado correctamente', 'success');
             callback(false);
         }
     };
 
     return (
-    <form className="tw-p-2 tw-my-2 tw-bg-white ">
+    <form className="tw-p-2 tw-my-2 tw-bg-white"
+        encType="multipart/form-data">
         <p className="tw-font-bold tw-text-center">
             Añadir proyectos
         </p>
-        {projectsF.map((p, index) => (
+        {projectsF.map((p, index) =>
             <div key={index}
-                className=' 
-                            tw-p-1 tw-rounded'>
-                <label>{projectsF.length > 9 && index < 9 ? 0 : null}{index + 1}</label>
-                <input  className="tw-m-2 tw-p-2 tw-rounded tw-border-2 tw-border-gray-400"
-                        onChange={ (e) => handleInputChange(e, index) } value={ p.name}
-                        type="text" name="name" required placeholder="Nombre del proyecto" />
-                <input  className="tw-m-2 tw-p-2 tw-rounded tw-border-2 tw-border-gray-400"
+                className='tw-flex tw-flex-wrap tw-p-1 tw-rounded'>
+                <label className='tw-mr-2'>{projectsF.length > 9 && index < 9 ? 0 : null}{index + 1}</label>
+                <div className='tw-flex tw-flex-col'>
+                    <label>Nombre del proyecto</label>
+                    <input  className="tw-m-2 tw-p-2 tw-rounded tw-border-2 tw-border-gray-400"
+                            onChange={ (e) => handleInputChange(e, index) } value={ p.name}
+                            type="text" name="name" required placeholder="Nombre del proyecto" />
+                </div>
+                <div className='tw-flex tw-flex-col'>
+                    <label>Código BPIM</label>
+                    <input  className="tw-m-2 tw-p-2 tw-rounded tw-border-2 tw-border-gray-400"
                         onChange={ (e) => handleInputChange(e, index) } value={ p.BPIM}
                         type="number" name="BPIM" required placeholder="Código BPIM" />
-                <select className="tw-m-2 tw-p-2 tw-rounded tw-border-2 tw-border-gray-400 tw-w-32"
+                </div>
+                <div className='tw-flex tw-flex-col'>
+                    <label>Secretaría</label>
+                    <select className="tw-m-2 tw-p-2 tw-rounded tw-border-2 tw-border-gray-400 tw-w-32"
                         name="entity" onChange={(e) => handleInputChange(e, index)} value={p.entity}>
-                    <option value="">Seleccionar Entidad</option>
-                    {secretaries && secretaries.map(s => <option key={s.id_secretary} value={s.name}>{s.name}</option>)}
-                </select>
-                <select className="tw-m-2 tw-p-2 tw-rounded tw-border-2 tw-border-gray-400 tw-w-32"
-                        name="year" onChange={(e) => handleInputChange(e, index)} value={p.year}>
-                    <option value="0">Año</option>
-                    {years.map(y => <option key={y} value={y}>{y}</option>)}
-                </select>
-                <input  className={`tw-m-2 tw-p-2 tw-rounded tw-border-2 ${files[index] !== null ? 'tw-border-green-400' : 'tw-border-gray-400'} `}
-                        onChange={ (e) => handleFileChange(e, index) }
+                        <option value="">Seleccionar Entidad</option>
+                        {secretaries && secretaries.map(s => <option key={s.id_secretary} value={s.name}>{s.name}</option>)}
+                    </select>
+                </div>
+                <div className='tw-flex tw-flex-col'>
+                    <label>Año</label>
+                    <select className="tw-m-2 tw-p-2 tw-rounded tw-border-2 tw-border-gray-400 tw-w-32"
+                            name="year" onChange={(e) => handleInputChange(e, index)} value={p.year}>
+                        <option value="0">Año</option>
+                        {years.map(y => <option key={y} value={y}>{y}</option>)}
+                    </select>
+                </div>
+                <div className='tw-flex tw-flex-col'>
+                    <label>Archivo</label>
+                    <input  className={`tw-m-2 tw-p-2 tw-w-32 tw-rounded tw-border-2 ${files[index] !== null ? 'tw-border-green-400' : 'tw-border-gray-400'} `}
+                        onChange={e => handleFileChange(e, index) }
                         type="file" name="file" required placeholder="Enlace" />
+                </div>
             </div>
-        ))}
+        )}
         <div className="tw-flex tw-justify-around tw-py-2 tw-rounded">
             <button className=" tw-bg-green-500
                                 hover:tw-bg-green-300 

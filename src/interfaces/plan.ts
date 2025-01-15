@@ -198,7 +198,7 @@ export interface PropsUpdateProjects {
     project: Project;
 }
 
-export type levelsPlan = Record<`level${1 | 2 | 3}`, string>;
+export type levelsPlan = Record<`level_${1 | 2 | 3}`, string>;
 export interface ActionPlan {
     readonly id_actionPlan: number;
     readonly id_plan: number;
@@ -212,6 +212,9 @@ export interface ActionPlan {
     level1: string;
     level2: string;
     level3: string;
+    level_1: string;
+    level_2: string;
+    level_3: string;
     actions: Activity[];
     rubros: Rubro[];
     nodes: NodeActivityPlan[];

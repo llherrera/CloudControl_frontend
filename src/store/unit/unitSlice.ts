@@ -5,7 +5,7 @@ import { setGenericState, getGenericState, removeGenericState,
     notify } from "@/utils";
 
 import { thunkGetUnit, thunkAddUnit, thunkUpdateUnit, thunkUpdateIndicator,
-    thunkUpdateExecution, thunkAddUnitNodeResult } from "./thunks";
+    thunkUpdateExecution, thunkAddUnitNodeResult,thunkDenegateExecution } from "./thunks";
 
 const getInitialState = (): InitialStateUnitInterface => {
     const unitState = getGenericState("unit");
@@ -140,6 +140,22 @@ export const unitSlice = createSlice({
             notify('Ejecucion actualizada', 'success');
         });
         builder.addCase(thunkUpdateExecution.rejected, (state, action) => {
+            state.loadingUnit = false;
+            state.errorLoadingUnit = action.payload;
+            notify(action.payload?.error_description ?? 'Ha ocurrido un error, vuelva a intertarlo más tarde', 'error');
+        });
+
+
+        builder.addCase(thunkDenegateExecution.pending, state => {
+            if (!state.loadingUnit) state.loadingUnit = true;
+            state.errorLoadingUnit = undefined;
+        });
+        builder.addCase(thunkDenegateExecution.fulfilled, state => {
+            //state.plan!.deadline = action.meta.arg.date
+            state.loadingUnit = false;
+            notify('Ejecucion rechazada', 'warning');
+        });
+        builder.addCase(thunkDenegateExecution.rejected, (state, action) => {
             state.loadingUnit = false;
             state.errorLoadingUnit = action.payload;
             notify(action.payload?.error_description ?? 'Ha ocurrido un error, vuelva a intertarlo más tarde', 'error');

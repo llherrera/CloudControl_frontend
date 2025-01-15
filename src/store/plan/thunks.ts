@@ -19,7 +19,8 @@ import {getPDTid, addPDT, getLastPDT, getColors, getLevelNodes,
         updateLocations, updateDeadline, getPDTByDept, getProjectsByPlan,
         addProjectsAtPlan, updateProjectById, getCountProjectsByPlan,
         getPlanByUuid, getActionPlans, getActivityActionPlan,
-        addActionPlan, addActivityActionPlans } from '@/services/api';
+        addActionPlan, addActivityActionPlans, updateActivityActionPlans
+    } from '@/services/api';
 
 export const thunkGetPDTid = createAsyncThunk<PDTInterface, number, { rejectValue: ErrorBasicInterface }>(
     'pdt/getPDTid',
@@ -437,6 +438,19 @@ export const thunkAddActivityActionPlan = createAsyncThunk<Activity[], PropsAddA
     async (props: PropsAddActivity, { rejectWithValue }) => {
         try {
             const res = await addActivityActionPlans(props.id_plan, props.activities, props.node);
+            return res;
+        } catch (err) {
+            const result = parseErrorAxios(err);
+            return rejectWithValue(result);
+        }
+    }
+)
+
+export const thunkUpdateActivityActionPlan = createAsyncThunk<Activity[], PropsAddActivity, { rejectValue: ErrorBasicInterface }>(
+    'pdt/updateActivityActionPlan',
+    async (props: PropsAddActivity, { rejectWithValue }) => {
+        try {
+            const res = await updateActivityActionPlans(props.id_plan, props.activities, props.node);
             return res;
         } catch (err) {
             const result = parseErrorAxios(err);

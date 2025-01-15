@@ -37,12 +37,6 @@ export const Memory = ({callback}: PropsCallback) => {
 
     const [yearSelect, setYearSelect] = useState<number>(new Date(plan.deadline == null ? `${years[0]-1}-02-1` : plan.deadline).getFullYear());
     const deadline = yearSelect >= years[0] ? yearSelect : 'No hay fecha de corte';
-    let temp = new Date(plan.deadline!);
-
-    const year = today.getMonth() < temp.getMonth() ? today.getFullYear() :
-        today.getDate() <= temp.getDate() + 1 && today.getMonth() < temp.getMonth() ? today.getFullYear() :
-        today.getFullYear() + 1;
-    temp = new Date(year, temp.getMonth(), temp.getDate() + 1);
 
     if (unit === undefined) return <div>No hay una meta seleccionada</div>;
 

@@ -112,6 +112,19 @@ export const thunkUpdateExecution = createAsyncThunk<void, PropsExecution, { rej
     }
 );
 
+export const thunkDenegateExecution = createAsyncThunk<void, PropsExecution, { rejectValue: ErrorBasicInterface }>(
+    'unit/denegateExecution',
+    async (props: PropsExecution, { rejectWithValue }) => {
+        try {
+            const res = await updateExecution(props.date, props.value, props.code, props.user_id, props.plan_id, props.reason);
+            return res;
+        } catch (err) {
+            const result = parseErrorAxios(err);
+            return rejectWithValue(result);
+        }
+    }
+);
+
 export const thunkAddUnitNodeResult = createAsyncThunk<void, PropsAddUnitResult, { rejectValue: ErrorBasicInterface }>(
     'unit/addUnitNodeResult',
     async (props: PropsAddUnitResult, { rejectWithValue }) => {

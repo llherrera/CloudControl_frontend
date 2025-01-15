@@ -99,10 +99,19 @@ export const ActionPlanPage = () => {
                         </button>
                     </div>
                 </div>
-                <div className='tw-basis-1/2 tw-bg-gray-300'>
-                    <p>Control de entrada a plan de acción</p>
-                    <p>Alcaldia: {plan.municipality}</p>
-                    <p>Por: {plan.name}</p>
+                <div className='tw-basis-1/2'>
+                    <p className="tw-text-2xl tw-text-white tw-font-bold
+                                tw-drop-shadow-[0_2px_2px_rgba(0,255,0,0.9)]">
+                        Control de entrada a plan de acción
+                    </p>
+                    <p className="tw-text-2xl tw-text-white tw-font-bold
+                                tw-drop-shadow-[0_2px_2px_rgba(0,255,0,0.9)]">
+                        Alcaldia: {plan.municipality}
+                    </p>
+                    <p className="tw-text-2xl tw-text-white tw-font-bold
+                                tw-drop-shadow-[0_1.2px_1.2px_rgba(0,255,0,0.9)]">
+                        Por: {plan.name}
+                    </p>
                 </div>
             </div>
             }

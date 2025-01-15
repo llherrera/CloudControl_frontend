@@ -15,14 +15,14 @@ export const Options = ({ callback }: PropsCallback) => {
                 PLANES DE ACCIÓN
             </h1>
             <ModalOption
-                className='tw-bg-[#F1C19A] tw-rounded'
-                i={0}/>
-            <ModalOption
                 className='tw-bg-[#F5CE76] tw-rounded'
                 i={1}/>
             <ModalOption
                 className='tw-bg-[#D3B3DD] tw-rounded'
                 i={2}/>
+            <ModalOption
+                className='tw-bg-[#F1C19A] tw-rounded'
+                i={0}/>
             <ModalOption
                 className='tw-bg-[#D5DFE2] tw-rounded'
                 i={3}/>

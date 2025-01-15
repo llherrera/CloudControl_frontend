@@ -1,21 +1,23 @@
 import { Fragment, useEffect, useState } from "react";
-import { Box, CircularProgress, List, ListItem } from '@mui/material';
+import { Box, CircularProgress, List, ListItem, Tooltip, Button, Zoom } from '@mui/material';
+import InfoIcon from '@mui/icons-material/Info';
 import { InputLabel, InputTable, CloseBtn } from "@/components";
 
 import { useAppSelector, useAppDispatch } from '@/store';
-import { thunkAddActionPlan, thunkAddActivityActionPlan } from '@/store/plan/thunks';
+import { thunkAddActionPlan, thunkAddActivityActionPlan, thunkUpdateActivityActionPlan } from '@/store/plan/thunks';
 
 import { NodeInterface, UnitNodeInterface, ActionPlan, Activity,
     Rubro, levelsPlan } from "@/interfaces";
 import { getLevelNodes, getListNodes } from '@/services/api';
 import { notify } from "@/utils";
 
-export const ActionPlanFrom = () => {
+export const ActionPlanFrom = ({showPlan} :{showPlan?: ActionPlan}) => {
     const dispatch = useAppDispatch();
 
     const { id_plan } = useAppSelector(store => store.content);
     const { plan, levels, secretaries, loadingActionPlan } = useAppSelector(store => store.plan);
-    const [actionPlan, setActionPlan] = useState<ActionPlan>({
+    const [actionPlan, setActionPlan] = useState<ActionPlan>(
+        showPlan ?? {
         id_actionPlan: 0,
         id_plan: id_plan,
         planCode: '',
@@ -28,6 +30,9 @@ export const ActionPlanFrom = () => {
         level1: '',
         level2: '',
         level3: '',
+        level_1: '',
+        level_2: '',
+        level_3: '',
         actions: [],
         rubros: [],
         nodes: [],
@@ -98,6 +103,9 @@ export const ActionPlanFrom = () => {
                 level1: '',
                 level2: '',
                 level3: '',
+                level_1: '',
+                level_2: '',
+                level_3: '',
                 actions: [],
                 rubros: [],
                 nodes: [],
@@ -174,7 +182,7 @@ export const ActionPlanFrom = () => {
         e.preventDefault();
         const updatedActionPlan = { ...actionPlan };
         for (let i = 0; i < 3; i++) {
-            const str = `level${i + 1}` as keyof levelsPlan;
+            const str = `level_${i + 1}` as keyof levelsPlan;
             updatedActionPlan[str] = programs[i][index_[i]].id_node;
         }
         setActionPlan(updatedActionPlan);
@@ -190,8 +198,391 @@ export const ActionPlanFrom = () => {
         setSend(false);
     };
 
-    return (
-        <form   onSubmit={handleSubmit}
+    return (<>
+        {showPlan ?
+        <div className="tw-flex tw-flex-col
+                            tw-mt-3 tw-p-3
+                            tw-border-4 tw-border-double
+                            tw-border-gray-500 tw-bg-slate-200">
+            <header className="tw-text-center">
+                <h1 className="tw-font-bold">Ficha plan de Acción</h1>
+                <h1 className="tw-font-bold">{plan!.municipality}</h1>
+                <h1 className="tw-font-bold">Ficha de programación y seguimiento</h1>
+            </header>
+            <div className={`tw-py-2 tw-grid tw-grid-cols-2
+                            tw-border-y-4 tw-border-double tw-border-gray-500`}>
+                <div className={`tw-my-2 tw-justify-self-end`}>
+                    <label className="tw-col-start-1 tw-justify-self-end tw-self-center">
+                        Código Plan de Acción:
+                    </label>
+                    <p className={` tw-col-start-2
+                                    tw-w-48 tw-p-2 tw-rounded
+                                    tw-border-2
+                                    tw-border-gray-400
+                                    tw-bg-white`}>
+                        {showPlan.planCode}
+                    </p>
+                </div>
+                <div className="tw-ml-4 tw-my-2">
+                    <label
+                        htmlFor="selectSecre"
+                        className="tw-col-start-1 tw-justify-self-end tw-self-center">
+                        Secretaría:
+                    </label>&nbsp;&nbsp;&nbsp;&nbsp;
+                    <p className={` tw-col-start-2
+                                    tw-w-48 tw-p-2 tw-rounded
+                                    tw-border-2
+                                    tw-border-gray-400
+                                    tw-bg-white`}>
+                        {showPlan.office}
+                    </p>
+                </div>
+            </div>
+            <div className="tw-my-4">
+                <div className="tw-mb-3 tw-grid tw-grid-cols-2 tw-gap-3">
+                    <div className="tw-col-start-1 tw-justify-self-end">
+                        <label
+                            htmlFor="progDate">
+                            Programación:
+                        </label>&nbsp;&nbsp;&nbsp;&nbsp;
+                        <input
+                            readOnly
+                            type="date"
+                            name="programedDate"
+                            id="progDate"
+                            value={showPlan.programedDate === null ? undefined : (new Date(showPlan.programedDate)).toISOString().split('T')[0]}
+                            className={`tw-p-2 tw-rounded
+                                        tw-border-2 tw-border-gray-400
+                                        tw-bg-white`} />
+                    </div>
+                    <div className="tw-col-start-2">
+                        <label
+                            htmlFor="follDate">
+                            Seguimiento:
+                        </label>&nbsp;&nbsp;&nbsp;&nbsp;
+                        <input
+                            readOnly
+                            type="date"
+                            name="followDate"
+                            id="follDate"
+                            value={showPlan.followDate === null ? undefined : (new Date(showPlan.followDate)).toISOString().split('T')[0]}
+                            className={`tw-p-2 tw-rounded
+                                        tw-border-2 tw-border-gray-400
+                                        tw-bg-white`} />
+                    </div>
+                </div>
+                <div className='tw-flex tw-m-auto tw-gap-2
+                                tw-justify-center tw-items-center'>
+                    <div className='tw-grid tw-grid-cols-2 tw-gap-4 tw-items-center'>
+                        <label className='tw-text-right'>{levels[0].name}</label>
+                        <p className="tw-p-2 tw-mr-3 tw-w-24 tw-rounded tw-col-span-1 tw-border-2 tw-border-gray-400 tw-bg-white">
+                            {showPlan.level_1}
+                        </p>
+                    </div>
+                    <div className='tw-grid tw-grid-cols-2 tw-gap-4 tw-items-center'>
+                        <label className='tw-text-right'>{levels[1].name}</label>
+                        <p className="tw-p-2 tw-mr-3 tw-w-24 tw-rounded tw-col-span-1 tw-border-2 tw-border-gray-400 tw-bg-white">
+                            {showPlan.level_2}
+                        </p>
+                    </div>
+                    <div className='tw-grid tw-grid-cols-2 tw-gap-4 tw-items-center'>
+                        <label className='tw-text-right'>{levels[2].name}</label>
+                        <p className="tw-p-2 tw-mr-3 tw-w-24 tw-rounded tw-col-span-1 tw-border-2 tw-border-gray-400 tw-bg-white">
+                            {showPlan.level_3}
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div className="tw-pt-2 tw-border-t-4
+                            tw-border-double tw-border-gray-500">
+                <div className={`tw-my-2 tw-grid tw-grid-cols-4 tw-gap-3`}>
+                    <label className="tw-col-start-1 tw-justify-self-end tw-self-center">
+                        Nombre del proyecto POAI:
+                    </label>
+                    <p className={` tw-col-span-2
+                                    tw-p-2 tw-rounded
+                                    tw-border-2
+                                    tw-border-gray-400
+                                    tw-bg-white`}>
+                        {showPlan.POAINameProject}
+                    </p>
+                </div>
+                <div className={`tw-my-2 tw-grid tw-grid-cols-4 tw-gap-3`}>
+                    <label className="tw-col-start-1 tw-justify-self-end tw-self-center">
+                        Código BPIM:
+                    </label>
+                    <p className={` tw-col-span-2
+                                    tw-p-2 tw-rounded
+                                    tw-border-2
+                                    tw-border-gray-400
+                                    tw-bg-white`}>
+                        {showPlan.BPIMCode}
+                    </p>
+                </div>
+                <div className={`tw-my-2 tw-grid tw-grid-cols-4 tw-gap-3`}>
+                    <label className="tw-col-start-1 tw-justify-self-end tw-self-center">
+                        Objetivos:
+                    </label>
+                    <p className={` tw-col-span-2
+                                    tw-p-2 tw-rounded
+                                    tw-border-2
+                                    tw-border-gray-400
+                                    tw-bg-white`}>
+                        {showPlan.Objetives}
+                    </p>
+                </div>
+            </div>
+            <div className="tw-mb-4 tw-border-y-4 tw-border-double tw-border-gray-500">
+                <ul className="tw-mb-2">
+                {showPlan.rubros.map((r, i) =>
+                    <li key={i} className="tw-pt-2 tw-grid tw-grid-cols-4 tw-gap-3">
+                        <div className={`tw-grid tw-gap-3 tw-justify-self-end
+                                        tw-col-start-1 tw-col-span-2`}>
+                            <label className="tw-col-start-1 tw-justify-self-end tw-self-center">
+                                Código Presupuestal:
+                            </label>
+                            <p className={` tw-col-start-2
+                                            tw-p-2 tw-rounded
+                                            tw-border-2
+                                            tw-border-gray-400
+                                            tw-bg-white`}>
+                                {r.presupuestalCode}
+                            </p>
+                        </div>
+                        <div className={`tw-grid tw-gap-3 tw-justify-self-start
+                                        tw-col-start-3 tw-col-span-2`}>
+                            <label className="tw-col-start-1 tw-justify-self-end tw-self-center">
+                                Rubro:
+                            </label>
+                            <p className={`tw-col-start-2
+                                            tw-w-48 tw-p-2 tw-rounded
+                                            tw-border-2
+                                            tw-border-gray-400
+                                            tw-bg-white`}>
+                                {r.rubro}
+                            </p>
+                        </div>
+                    </li>
+                )}
+                </ul>
+            </div>
+            <table className="  tw-table-auto
+                                tw-border-collapse
+                                tw-w-full tw-text-sm">
+                <thead>
+                    <tr>
+                        <th rowSpan={2}
+                            className=" tw-border-r-4 tw-border-b-4 tw-border-double
+                                        tw-border-gray-500 tw-bg-slate-200">
+                            Principales Actividades
+                        </th>
+                        <th rowSpan={2}
+                            className=" tw-border-r-4 tw-border-b-4 tw-border-double
+                                        tw-border-gray-500 tw-bg-slate-200">
+                            Prog/Ejec
+                        </th>
+                        <th rowSpan={2}
+                            className=" tw-border-r-4 tw-border-b-4 tw-border-double
+                                        tw-border-gray-500 tw-bg-slate-200">
+                            Unidad de Medida
+                        </th>
+                        <th rowSpan={2}
+                            className=" tw-border-r-4 tw-border-b-4 tw-border-double
+                                        tw-border-gray-500 tw-bg-slate-200">
+                            Cantidad
+                        </th>
+                        <th rowSpan={2}
+                            className=" tw-border-r-4 tw-border-b-4 tw-border-double
+                                        tw-border-gray-500 tw-bg-slate-200">
+                            Costo Total (Miles)
+                        </th>
+                        <th colSpan={4}
+                            className=" tw-border-r-4 tw-border-b-4 tw-border-double
+                                        tw-border-gray-500 tw-bg-slate-200">
+                            Fuentes Financiación
+                        </th>
+                        <th colSpan={2}
+                            className=" tw-border-r-4 tw-border-b-4 tw-border-double
+                                        tw-border-gray-500 tw-bg-slate-200">
+                            Programación (dd/mm/aa)
+                        </th>
+                        <th colSpan={3}
+                            className=" tw-border-b-4 tw-border-double
+                                        tw-border-gray-500 tw-bg-slate-200">
+                            Indicadores
+                        </th>
+                    </tr>
+                    <tr>
+                        <th className=" tw-border-r-4 tw-border-b-4 tw-border-double
+                                        tw-border-gray-500 tw-bg-slate-200">
+                            MPIO
+                        </th>
+                        <th className=" tw-border-r-4 tw-border-b-4 tw-border-double
+                                        tw-border-gray-500 tw-bg-slate-200">
+                            SGP
+                        </th>
+                        <th className=" tw-border-r-4 tw-border-b-4 tw-border-double
+                                        tw-border-gray-500 tw-bg-slate-200">
+                            REGALÍAS
+                        </th>
+                        <th className=" tw-border-r-4 tw-border-b-4 tw-border-double
+                                        tw-border-gray-500 tw-bg-slate-200">
+                            OTROS
+                        </th>
+                        <th className=" tw-border-r-4 tw-border-b-4 tw-border-double
+                                        tw-border-gray-500 tw-bg-slate-200">
+                            INICIO
+                        </th>
+                        <th className=" tw-border-r-4 tw-border-b-4 tw-border-double
+                                        tw-border-gray-500 tw-bg-slate-200">
+                            TERMINA
+                        </th>
+                        <th className=" tw-border-r-4 tw-border-b-4 tw-border-double
+                                        tw-border-gray-500 tw-bg-slate-200">
+                            FÍSICO
+                        </th>
+                        <th className=" tw-border-r-4 tw-border-b-4 tw-border-double
+                                        tw-border-gray-500 tw-bg-slate-200">
+                            INVERSIÓN
+                        </th>
+                        <th className=" tw-border-b-4 tw-border-double
+                                        tw-border-gray-500 tw-bg-slate-200">
+                            EFICIENCIA
+                        </th>
+                    </tr>
+                </thead>
+                <tbody className="tw-bg-white tw-border-b-4 tw-border-double
+                            tw-border-gray-500 ">
+                    {showPlan.actions.map((a, i) =>
+                    <Fragment key={i}>
+                        <tr>
+                            <td rowSpan={2}
+                                className="tw-border-r-4 tw-border-double tw-border-gray-500">
+                                <textarea
+                                    readOnly
+                                    value={a.activityDesc}
+                                    name={`activityDesc_${i + 1}`}
+                                    id="activityDesc"
+                                    className={`tw-border-2 tw-rounded tw-border-gray-400`}>
+                                </textarea>
+                            </td>
+                            <td className=" tw-border-double tw-border-gray-500
+                                            tw-font-bold tw-text-center">
+                                P
+                            </td>
+                            <td rowSpan={2}
+                                className="tw-border-x-4 tw-border-double tw-border-gray-500">
+                                <p className={`tw-w-full tw-rounded tw-border-2 tw-my-2 tw-border-gray-400 `}>
+                                    {a.unitMeter}
+                                </p>
+                            </td>
+                            <td className="tw-border-r-4 tw-border-double tw-border-gray-500">
+                                <p className={`tw-w-full tw-rounded tw-border-2 tw-my-2 tw-border-gray-400 `}>
+                                    {a.amountP}
+                                </p>
+                            </td>
+                            <td className="tw-border-r-4 tw-border-double tw-border-gray-500">
+                                <p className={` tw-w-full tw-rounded
+                                                tw-border-2 tw-my-2 tw-text-center
+                                                ${errors[`totalCostP_${i + 1}`] ? 'tw-border-red-400' : 'tw-border-gray-400' }
+                                            `}>
+                                    {a.totalCostP}
+                                </p>
+                            </td>
+                            <td className="tw-border-r-4 tw-border-double tw-border-gray-500">
+                                <p className={`tw-w-full tw-rounded tw-border-2 tw-my-2 tw-border-gray-400 `}>
+                                    {a.municipioP}
+                                </p>
+                            </td>
+                            <td className="tw-border-r-4 tw-border-double tw-border-gray-500">
+                                <p className={`tw-w-full tw-rounded tw-border-2 tw-my-2 tw-border-gray-400 `}>
+                                    {a.sgpP}
+                                </p>
+                            </td>
+                            <td className="tw-border-r-4 tw-border-double tw-border-gray-500">
+                                <p className={`tw-w-full tw-rounded tw-border-2 tw-my-2 tw-border-gray-400 `}>
+                                    {a.regaliasP}
+                                </p>
+                            </td>
+                            <td className="tw-border-double tw-border-gray-500">
+                                <p className={`tw-w-full tw-rounded tw-border-2 tw-my-2 tw-border-gray-400 `}>
+                                    {a.otrosP}
+                                </p>
+                            </td>
+                            <td rowSpan={2}
+                                className="tw-border-x-4 tw-border-double tw-border-gray-500">
+                                <p className={`tw-w-full tw-rounded tw-border-2 tw-my-2 tw-border-gray-400 `}>
+                                    {a.start_date?.toString().split('T')[0]}
+                                </p>
+                            </td>
+                            <td rowSpan={2}
+                                className="tw-border-r-4 tw-border-double tw-border-gray-500">
+                                <p className={`tw-w-full tw-rounded tw-border-2 tw-my-2 tw-border-gray-400 `}>
+                                    {a.end_date!.toString().split('T')[0]}
+                                </p>
+                            </td>
+                            <td rowSpan={2}
+                                className="tw-border-r-4 tw-border-double tw-border-gray-500">
+                                <p className={`tw-w-full tw-rounded tw-border-2 tw-my-2 tw-border-gray-400 `}>
+                                    {a.phisicalIndicator}
+                                </p>
+                            </td>
+                            <td rowSpan={2}
+                                className="tw-border-r-4 tw-border-double tw-border-gray-500">
+                                <p className={`tw-w-full tw-rounded tw-border-2 tw-my-2 tw-border-gray-400 `}>
+                                    {a.invertionIndicator}
+                                </p>
+                            </td>
+                            <td rowSpan={2}>
+                                <p className={`tw-w-full tw-rounded tw-border-2 tw-my-2 tw-border-gray-400 `}>
+                                    {a.efficiencyIndicator}
+                                </p>
+                            </td>
+                        </tr>
+                        <tr className="tw-border-b-8 tw-border-double tw-border-gray-500">
+                            <td className=" tw-border-t-4 tw-border-double tw-border-gray-500
+                                            tw-font-bold tw-text-center">
+                                E
+                            </td>
+                            <td className="tw-border-t-4 tw-border-r-4 tw-border-double tw-border-gray-500">
+                                <p className={`tw-w-full tw-rounded tw-border-2 tw-my-2 tw-border-gray-400 `}>
+                                    {a.amountE}
+                                </p>
+                            </td>
+                            <td className="tw-border-t-4 tw-border-r-4 tw-border-double tw-border-gray-500">
+                                <p className={` tw-w-full tw-rounded
+                                                tw-border-2 tw-my-2 tw-text-center
+                                                ${errors[`totalCostE_${i + 1}`] ? 'tw-border-red-400' : 'tw-border-gray-400' }
+                                            `}>
+                                    {a.totalCostE}
+                                </p>
+                            </td>
+                            <td className="tw-border-t-4 tw-border-r-4 tw-border-double tw-border-gray-500">
+                                <p className={`tw-w-full tw-rounded tw-border-2 tw-my-2 tw-border-gray-400 `}>
+                                    {a.municipioE}
+                                </p>
+                            </td>
+                            <td className="tw-border-t-4 tw-border-r-4 tw-border-double tw-border-gray-500">
+                                <p className={`tw-w-full tw-rounded tw-border-2 tw-my-2 tw-border-gray-400 `}>
+                                    {a.sgpE}
+                                </p>
+                            </td>
+                            <td className="tw-border-t-4 tw-border-r-4 tw-border-double tw-border-gray-500">
+                                <p className={`tw-w-full tw-rounded tw-border-2 tw-my-2 tw-border-gray-400 `}>
+                                    {a.regaliasE}
+                                </p>
+                            </td>
+                            <td className="tw-border-t-4 tw-border-double tw-border-gray-500">
+                                <p className={`tw-w-full tw-rounded tw-border-2 tw-my-2 tw-border-gray-400 `}>
+                                    {a.otrosE}
+                                </p>
+                            </td>
+                        </tr>
+                    </Fragment>
+                    )}
+                </tbody>
+            </table>
+        </div> : <form   onSubmit={handleSubmit}
                 className=" tw-flex tw-flex-col
                             tw-mt-3 tw-p-3
                             tw-border-4 tw-border-double
@@ -278,8 +669,8 @@ export const ActionPlanFrom = () => {
                             <label className='tw-text-right'>{levels[index].name}</label>
                             <select onChange={e => handleChangePrograms(index, e)}
                                 className=' tw-p-2 tw-mr-3 tw-w-24
-                                                tw-rounded tw-col-span-1
-                                                tw-border-2 tw-border-gray-400'>
+                                            tw-rounded tw-col-span-1
+                                            tw-border-2 tw-border-gray-400'>
                                 {program.map((node, index) => <option value={node.id_node} key={index}>{node.name}</option>)}
                             </select>
                         </div>
@@ -364,13 +755,14 @@ export const ActionPlanFrom = () => {
                 }
             </button>
         </form>
-    );
+        }
+    </>);
 }
 
-export const ActivityForm = ({ plan }: { plan: ActionPlan }) => {
+export const ActivityForm = ({ showPlan }: { showPlan: ActionPlan }) => {
     const dispatch = useAppDispatch();
 
-    const { loadingActivityActionPlan, selectedPlan } = useAppSelector(store => store.plan);
+    const { plan, levels, loadingActivityActionPlan, selectedPlan } = useAppSelector(store => store.plan);
 
     const [listNodes, setListNodes] = useState<UnitNodeInterface[]>([]);
     const [selectNodes, setSelectNodes] = useState<UnitNodeInterface[]>([]);
@@ -429,7 +821,7 @@ export const ActivityForm = ({ plan }: { plan: ActionPlan }) => {
     );
 
     useEffect(() => {
-        getListNodes(plan.level3)
+        getListNodes(showPlan.level3)
             .then((res: UnitNodeInterface[]) => {
                 setListNodes(res);
             })
@@ -437,6 +829,12 @@ export const ActivityForm = ({ plan }: { plan: ActionPlan }) => {
                 console.log(err);
             });
     }, []);
+
+    useEffect(() => {
+        if (listNodes.length > 0) {
+            setSelectNodes(listNodes.filter((l) => showPlan.nodes.map(n => n.id_node).includes(l.id_node)));
+        }
+    }, [listNodes]);
 
     const addActivity = () => {
         const newData = [...activities, activity];
@@ -566,17 +964,195 @@ export const ActivityForm = ({ plan }: { plan: ActionPlan }) => {
             notify('Errores de validación de tareas: ', 'error');
         } else {
             let temp = selectNodes.map(s => s.id_node)[0];
-            dispatch(thunkAddActivityActionPlan(
-                {
-                    id_plan: plan.id_actionPlan,
-                    activities,
-                    node: temp
-                }
-            ));
+            if (true) {
+                dispatch(thunkAddActivityActionPlan(
+                    {
+                        id_plan: showPlan.id_actionPlan,
+                        activities,
+                        node: temp
+                    }
+                ));
+            } else {
+                dispatch(thunkUpdateActivityActionPlan(
+                    {
+                        id_plan: showPlan.id_actionPlan,
+                        activities,
+                        node: temp
+                    }
+                ));
+            }
         }
     };
 
     return (
+        <>
+        <div className=" tw-flex tw-flex-col
+                            tw-mt-3 tw-p-3
+                            tw-border-4 tw-border-double
+                            tw-border-gray-500 tw-bg-slate-200">
+            <header className="tw-text-center">
+                <h1 className="tw-font-bold">Ficha plan de Acción</h1>
+                <h1 className="tw-font-bold">{plan!.municipality}</h1>
+                <h1 className="tw-font-bold">Ficha de programación y seguimiento</h1>
+            </header>
+            <div className={`tw-py-2 tw-grid tw-grid-cols-2
+                            tw-border-y-4 tw-border-double tw-border-gray-500`}>
+                <div className={`tw-my-2 tw-justify-self-end`}>
+                    <label className="tw-col-start-1 tw-justify-self-end tw-self-center">
+                        Código Plan de Acción:
+                    </label>
+                    <label className={` tw-col-start-2
+                                    tw-w-48 tw-p-2 tw-rounded
+                                    tw-border-2
+                                    tw-border-gray-400
+                                    tw-bg-white`}>
+                        {showPlan.planCode}
+                    </label>
+                </div>
+                <div className="tw-ml-4 tw-my-2">
+                    <label
+                        htmlFor="selectSecre"
+                        className="tw-col-start-1 tw-justify-self-end tw-self-center">
+                        Secretaría:
+                    </label>&nbsp;&nbsp;&nbsp;&nbsp;
+                    <label className={` tw-col-start-2
+                                    tw-w-48 tw-p-2 tw-rounded
+                                    tw-border-2
+                                    tw-border-gray-400
+                                    tw-bg-white`}>
+                        {showPlan.office}
+                    </label>
+                </div>
+            </div>
+            <div className="tw-my-4">
+                <div className="tw-mb-3 tw-grid tw-grid-cols-2 tw-gap-3">
+                    <div className="tw-col-start-1 tw-justify-self-end">
+                        <label
+                            htmlFor="progDate">
+                            Programación:
+                        </label>&nbsp;&nbsp;&nbsp;&nbsp;
+                        <input
+                            readOnly
+                            type="date"
+                            name="programedDate"
+                            id="progDate"
+                            value={showPlan.programedDate === null ? undefined : (new Date(showPlan.programedDate)).toISOString().split('T')[0]}
+                            className={`tw-p-2 tw-rounded
+                                        tw-border-2 tw-border-gray-400
+                                        tw-bg-white`} />
+                    </div>
+                    <div className="tw-col-start-2">
+                        <label
+                            htmlFor="follDate">
+                            Seguimiento:
+                        </label>&nbsp;&nbsp;&nbsp;&nbsp;
+                        <input
+                            readOnly
+                            type="date"
+                            name="followDate"
+                            id="follDate"
+                            value={showPlan.followDate === null ? undefined : (new Date(showPlan.followDate)).toISOString().split('T')[0]}
+                            className={`tw-p-2 tw-rounded
+                                        tw-border-2 tw-border-gray-400
+                                        tw-bg-white`} />
+                    </div>
+                </div>
+                <div className='tw-flex tw-m-auto tw-gap-2
+                                tw-justify-center tw-items-center'>
+                    <div className='tw-grid tw-grid-cols-2 tw-gap-4 tw-items-center'>
+                        <label className='tw-text-right'>{levels[0].name}</label>
+                        <label className="tw-p-2 tw-mr-3 tw-w-24 tw-rounded tw-col-span-1 tw-border-2 tw-border-gray-400 tw-bg-white">
+                            {showPlan.level_1}
+                        </label>
+                    </div>
+                    <div className='tw-grid tw-grid-cols-2 tw-gap-4 tw-items-center'>
+                        <label className='tw-text-right'>{levels[1].name}</label>
+                        <label className="tw-p-2 tw-mr-3 tw-w-24 tw-rounded tw-col-span-1 tw-border-2 tw-border-gray-400 tw-bg-white">
+                            {showPlan.level_2}
+                        </label>
+                    </div>
+                    <div className='tw-grid tw-grid-cols-2 tw-gap-4 tw-items-center'>
+                        <label className='tw-text-right'>{levels[2].name}</label>
+                        <label className="tw-p-2 tw-mr-3 tw-w-24 tw-rounded tw-col-span-1 tw-border-2 tw-border-gray-400 tw-bg-white">
+                            {showPlan.level_3}
+                        </label>
+                    </div>
+                </div>
+            </div>
+            <div className="tw-pt-2 tw-border-t-4
+                            tw-border-double tw-border-gray-500">
+                <div className={`tw-my-2 tw-grid tw-grid-cols-4 tw-gap-3`}>
+                    <label className="tw-col-start-1 tw-justify-self-end tw-self-center">
+                        Nombre del proyecto POAI:
+                    </label>
+                    <label className={` tw-col-span-2
+                                    tw-p-2 tw-rounded
+                                    tw-border-2
+                                    tw-border-gray-400
+                                    tw-bg-white`}>
+                        {showPlan.POAINameProject}
+                    </label>
+                </div>
+                <div className={`tw-my-2 tw-grid tw-grid-cols-4 tw-gap-3`}>
+                    <label className="tw-col-start-1 tw-justify-self-end tw-self-center">
+                        Código BPIM:
+                    </label>
+                    <label className={` tw-col-span-2
+                                    tw-p-2 tw-rounded
+                                    tw-border-2
+                                    tw-border-gray-400
+                                    tw-bg-white`}>
+                        {showPlan.BPIMCode}
+                    </label>
+                </div>
+                <div className={`tw-my-2 tw-grid tw-grid-cols-4 tw-gap-3`}>
+                    <label className="tw-col-start-1 tw-justify-self-end tw-self-center">
+                        Objetivos:
+                    </label>
+                    <label className={` tw-col-span-2
+                                    tw-p-2 tw-rounded
+                                    tw-border-2
+                                    tw-border-gray-400
+                                    tw-bg-white`}>
+                        {showPlan.Objetives}
+                    </label>
+                </div>
+            </div>
+            <div className="tw-mb-4 tw-border-y-4 tw-border-double tw-border-gray-500">
+                <ul className="tw-mb-2">
+                {showPlan.rubros.map((r, i) =>
+                    <li key={i} className="tw-pt-2 tw-grid tw-grid-cols-4 tw-gap-3">
+                        <div className={`tw-grid tw-gap-3 tw-justify-self-end
+                                        tw-col-start-1 tw-col-span-2`}>
+                            <label className="tw-col-start-1 tw-justify-self-end tw-self-center">
+                                Código Presupuestal:
+                            </label>
+                            <label className={` tw-col-start-2
+                                            tw-p-2 tw-rounded
+                                            tw-border-2
+                                            tw-border-gray-400
+                                            tw-bg-white`}>
+                                {r.presupuestalCode}
+                            </label>
+                        </div>
+                        <div className={`tw-grid tw-gap-3 tw-justify-self-start
+                                        tw-col-start-3 tw-col-span-2`}>
+                            <label className="tw-col-start-1 tw-justify-self-end tw-self-center">
+                                Rubro:
+                            </label>
+                            <label className={`tw-col-start-2
+                                            tw-w-48 tw-p-2 tw-rounded
+                                            tw-border-2
+                                            tw-border-gray-400
+                                            tw-bg-white`}>
+                                {r.rubro}
+                            </label>
+                        </div>
+                    </li>
+                )}
+                </ul>
+            </div>
+        </div>
         <form   onSubmit={handleSubmit}
                 className=" tw-flex tw-flex-col tw-mt-3
                             tw-border-4 tw-border-double
@@ -674,6 +1250,7 @@ export const ActivityForm = ({ plan }: { plan: ActionPlan }) => {
                             <td rowSpan={2}
                                 className="tw-border-r-4 tw-border-double tw-border-gray-500">
                                 <textarea
+                                    value={a.activityDesc}
                                     onChange={e => handleInputFormChange(e, i)}
                                     name={`activityDesc_${i + 1}`}
                                     id="activityDesc"
@@ -689,6 +1266,7 @@ export const ActivityForm = ({ plan }: { plan: ActionPlan }) => {
                             <td rowSpan={2}
                                 className="tw-border-x-4 tw-border-double tw-border-gray-500">
                                 <InputTable
+                                    value={a.unitMeter}
                                     name={`unitMeter_${i + 1}`}
                                     type={'text'}
                                     onChange={e => handleInputFormChange(e, i)}
@@ -697,6 +1275,7 @@ export const ActivityForm = ({ plan }: { plan: ActionPlan }) => {
                             </td>
                             <td className="tw-border-r-4 tw-border-double tw-border-gray-500">
                                 <InputTable
+                                    value={a.amountP}
                                     name={`amountP_${i + 1}`}
                                     type={'number'}
                                     onChange={e => handleInputFormChange(e, i)}
@@ -713,6 +1292,7 @@ export const ActivityForm = ({ plan }: { plan: ActionPlan }) => {
                             </td>
                             <td className="tw-border-r-4 tw-border-double tw-border-gray-500">
                                 <InputTable
+                                    value={a.municipioP}
                                     name={`municipioP_${i + 1}`}
                                     type={'number'}
                                     onChange={e => handleInputFormChange(e, i)}
@@ -721,6 +1301,7 @@ export const ActivityForm = ({ plan }: { plan: ActionPlan }) => {
                             </td>
                             <td className="tw-border-r-4 tw-border-double tw-border-gray-500">
                                 <InputTable
+                                    value={a.sgpP}
                                     name={`sgpP_${i + 1}`}
                                     type={'number'}
                                     onChange={e => handleInputFormChange(e, i)}
@@ -729,6 +1310,7 @@ export const ActivityForm = ({ plan }: { plan: ActionPlan }) => {
                             </td>
                             <td className="tw-border-r-4 tw-border-double tw-border-gray-500">
                                 <InputTable
+                                    value={a.regaliasP}
                                     name={`regaliasP_${i + 1}`}
                                     type={'number'}
                                     onChange={e => handleInputFormChange(e, i)}
@@ -737,6 +1319,7 @@ export const ActivityForm = ({ plan }: { plan: ActionPlan }) => {
                             </td>
                             <td className="tw-border-double tw-border-gray-500">
                                 <InputTable
+                                    value={a.otrosP}
                                     name={`otrosP_${i + 1}`}
                                     type={'number'}
                                     onChange={e => handleInputFormChange(e, i)}
@@ -764,6 +1347,7 @@ export const ActivityForm = ({ plan }: { plan: ActionPlan }) => {
                             <td rowSpan={2}
                                 className="tw-border-r-4 tw-border-double tw-border-gray-500">
                                 <InputTable
+                                    value={a.phisicalIndicator}
                                     name={`phisicalIndicator_${i + 1}`}
                                     type={'number'}
                                     onChange={e => handleInputFormChange(e, i)}
@@ -773,6 +1357,7 @@ export const ActivityForm = ({ plan }: { plan: ActionPlan }) => {
                             <td rowSpan={2}
                                 className="tw-border-r-4 tw-border-double tw-border-gray-500">
                                 <InputTable
+                                    value={a.invertionIndicator}
                                     name={`invertionIndicator_${i + 1}`}
                                     type={'number'}
                                     onChange={e => handleInputFormChange(e, i)}
@@ -781,6 +1366,7 @@ export const ActivityForm = ({ plan }: { plan: ActionPlan }) => {
                             </td>
                             <td rowSpan={2}>
                                 <InputTable
+                                    value={a.efficiencyIndicator}
                                     name={`efficiencyIndicator_${i + 1}`}
                                     type={'number'}
                                     onChange={e => handleInputFormChange(e, i)}
@@ -795,6 +1381,7 @@ export const ActivityForm = ({ plan }: { plan: ActionPlan }) => {
                             </td>
                             <td className="tw-border-t-4 tw-border-r-4 tw-border-double tw-border-gray-500">
                                 <InputTable
+                                    value={a.amountE}
                                     name={`amountE_${i + 1}`}
                                     type={'number'}
                                     onChange={e => handleInputFormChange(e, i)}
@@ -811,6 +1398,7 @@ export const ActivityForm = ({ plan }: { plan: ActionPlan }) => {
                             </td>
                             <td className="tw-border-t-4 tw-border-r-4 tw-border-double tw-border-gray-500">
                                 <InputTable
+                                    value={a.municipioE}
                                     name={`municipioE_${i + 1}`}
                                     type={'number'}
                                     onChange={e => handleInputFormChange(e, i)}
@@ -819,6 +1407,7 @@ export const ActivityForm = ({ plan }: { plan: ActionPlan }) => {
                             </td>
                             <td className="tw-border-t-4 tw-border-r-4 tw-border-double tw-border-gray-500">
                                 <InputTable
+                                    value={a.sgpE}
                                     name={`sgpE_${i + 1}`}
                                     type={'number'}
                                     onChange={e => handleInputFormChange(e, i)}
@@ -827,6 +1416,7 @@ export const ActivityForm = ({ plan }: { plan: ActionPlan }) => {
                             </td>
                             <td className="tw-border-t-4 tw-border-r-4 tw-border-double tw-border-gray-500">
                                 <InputTable
+                                    value={a.regaliasE}
                                     name={`regaliasE_${i + 1}`}
                                     type={'number'}
                                     onChange={e => handleInputFormChange(e, i)}
@@ -835,6 +1425,7 @@ export const ActivityForm = ({ plan }: { plan: ActionPlan }) => {
                             </td>
                             <td className="tw-border-t-4 tw-border-double tw-border-gray-500">
                                 <InputTable
+                                    value={a.otrosE}
                                     name={`otrosE_${i + 1}`}
                                     type={'number'}
                                     onChange={e => handleInputFormChange(e, i)}
@@ -866,9 +1457,30 @@ export const ActivityForm = ({ plan }: { plan: ActionPlan }) => {
                 </tbody>
             </table>
             <div className="tw-mx-3">
-                <p className="tw-mt-6">
-                    Metas de producto
-                </p>
+                <div className="tw-flex tw-gap-2 tw-mt-4">
+                    <p className="tw-basis-1/3 tw-mt-6">
+                        Metas de producto
+                    </p>
+                    <div className="tw-basis-2/3 tw-mt-6 tw-flex tw-items-center">
+                        <p className="  tw-p-2 tw-rounded tw-bg-white
+                                        tw-border-2 tw-border-gray-400">
+                            {activities.map(a => a.totalCostP).reduce((a, b) => a + b, 0)}
+                        </p>
+                        <p className="tw-ml-2 tw-align-baseline">
+                            Financiacion para las metas
+                        </p>
+                        <Tooltip
+                            title={`El total acumulado programado para las actividades se debe distribuir en las metas de producto y debe coincidir`}
+                            slots={{
+                                transition: Zoom,
+                            }}
+                        >
+                            <Button>
+                                <InfoIcon color="action"/>
+                            </Button>
+                        </Tooltip>
+                    </div>
+                </div>
                 <div className="tw-flex tw-gap-2 tw-mt-4">
                     <div className="tw-basis-1/3">
                         <select className=" tw-p-2 tw-w-48 tw-rounded
@@ -906,16 +1518,20 @@ export const ActivityForm = ({ plan }: { plan: ActionPlan }) => {
                 </div>
             </div>
             <button type="submit"
-                className={`${loadingActivityActionPlan ? 'tw-bg-green-300' : 'tw-bg-green-500 hover:tw-bg-green-400'}
+                className={`${loadingActivityActionPlan ? 'tw-bg-green-300'
+                            : 'tw-bg-green-500 hover:tw-bg-green-400'}
                             tw-py-2 tw-mt-5 tw-mb-2 tw-mx-3 tw-rounded`}>
                 {loadingActivityActionPlan ?
                     <Box sx={{ display: 'flex' }}>
                         <CircularProgress />
                     </Box>
-                    : <p>Cargar actividad</p>
+                    : <p className="tw-font-bold tw-text-white">
+                        Cargar actividad
+                    </p>
                 }
             </button>
         </form>
+        </>
     );
 }
 

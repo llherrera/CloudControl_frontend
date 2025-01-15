@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import Modal from 'react-modal';
-import { Box } from '@mui/material';
+import { Box, CircularProgress } from '@mui/material';
 
 import { ActionPlanFrom, ActivityForm, BackBtn,
     UpdateActivityForm } from "@/components";
@@ -88,13 +88,17 @@ const ListPlanModal = (props: ModalProps) => {
 
     const { id_plan } = useAppSelector(store => store.content);
     const { actionPlan, selectedPlan, done } = useAppSelector(store => store.plan);
+    const [down, setDown] = useState(false);
+    const [showInfo, setShowInfo] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const isFirstRenderG = useRef(true);
 
     const onClose = () => {
         props.callback(false);
+        setShowInfo(false);
         dispatch(setSelectedActionPlan(-1));
-    }
+    };
 
     useEffect(() => {
         if (!props.modalIsOpen) return;
@@ -103,26 +107,41 @@ const ListPlanModal = (props: ModalProps) => {
 
     useEffect(() => {
         if (!props.modalIsOpen) return;
-        if (selectedPlan) {
+        if (selectedPlan && !done) {
             dispatch(thunkGetActivityActionPlan(selectedPlan.id_actionPlan));
         }
     }, [selectedPlan]);
 
     useEffect(() => {
         if (!props.modalIsOpen) return;
-        if (isFirstRenderG.current) {
-            isFirstRenderG.current = false;
-            return;
-        }
         if (selectedPlan != undefined && done) {
-            generateActionPlanExcel(selectedPlan);
-            dispatch(setSelectedActionPlan(-1));
-            dispatch(setDone(false));
+            setShowInfo(true);
+            //generateActionPlanExcel(selectedPlan);
+            //dispatch(setSelectedActionPlan(-1));
+            //dispatch(setDone(false));
         }
 //        if (count > 0 && count % 2 === 0) setSend(false);
     }, [done]);
 
-    const handleClick = async (index: number) => dispatch(setSelectedActionPlan(index));
+    useEffect(() => {
+        if (down) {
+            setLoading(true);
+            generateActionPlanExcel(selectedPlan!);
+            //dispatch(setSelectedActionPlan(-1));
+            //dispatch(setDone(false));
+            setDown(false);
+            setLoading(false);
+        }
+    }, [down]);
+
+    const handleClick = async (index: number) => {
+        dispatch(setSelectedActionPlan(index));
+    };
+
+    const handleReturn = () => {
+        dispatch(setSelectedActionPlan(-1))
+        setShowInfo(false);
+    }
 
     return (
         <Modal isOpen={props.modalIsOpen}
@@ -133,7 +152,33 @@ const ListPlanModal = (props: ModalProps) => {
                     backgroundColor: 'transparent'
                 }
             }}>
+            {showInfo ?
             <Box>
+                <div className="tw-absolute tw-top-0 tw-right-0">
+                    <button className=" tw-px-2"
+                        onClick={onClose}>
+                        <p className="tw-text-xl tw-text-[#626d75] tw-font-bold">
+                            X
+                        </p>
+                    </button>
+                </div>
+                {<div className="tw-absolute tw-top-0 tw-left-0">
+                    <BackBtn handle={()=>handleReturn()} id={83}/>
+                </div>
+                }
+                <ActionPlanFrom showPlan={selectedPlan}/>
+                <button onClick={() => setDown(true)}
+                    className=' tw-bg-green-300 hover:tw-bg-green-400
+                                    tw-py-2 tw-rounded'>
+                    {loading ?
+                        <Box sx={{ display: 'flex' }}>
+                            <CircularProgress />
+                        </Box>
+                        : <p>Descargar</p>
+                    }
+                </button>
+            </Box>
+            : <Box>
                 <div className="tw-absolute tw-top-0 tw-right-0">
                     <button className=" tw-px-2"
                         onClick={onClose}>
@@ -209,6 +254,7 @@ const ListPlanModal = (props: ModalProps) => {
                     </tbody>
                 </table>
             </Box>
+            }
         </Modal>
     );
 }
@@ -217,7 +263,7 @@ const AddPlanModal = (props: ModalProps) => {
     const dispatch = useAppDispatch();
 
     const { id_plan } = useAppSelector(store => store.content);
-    const { actionPlan, selectedPlan } = useAppSelector(store => store.plan);
+    const { actionPlan, selectedPlan, done } = useAppSelector(store => store.plan);
 
     const [addPlan, setAddPlan] = useState<boolean>(false);
     const [addAction, setAddAction] = useState<boolean>(false);
@@ -232,27 +278,41 @@ const AddPlanModal = (props: ModalProps) => {
     useEffect(() => {
         if (!props.modalIsOpen) return;
         dispatch(thunkGetActionPlans(id_plan));
-    }, []);
+    }, [props.modalIsOpen]);
 
     useEffect(() => {
         if (!props.modalIsOpen) return;
+        dispatch(setSelectedActionPlan(index));
         if (index > -1) {
-            dispatch(setSelectedActionPlan(index));
             setAddAction(true);
         }
     }, [index]);
+
+    useEffect(() => {
+        if (!props.modalIsOpen) return;
+        if (selectedPlan && !done) {
+            dispatch(thunkGetActivityActionPlan(selectedPlan.id_actionPlan));
+        }
+    }, [selectedPlan]);
+
+    useEffect(() => {
+        if (!props.modalIsOpen) return;
+        if (selectedPlan != undefined && done) setAddAction(true);
+    }, [done]);
 
     const handleAddActionPlan = () => setAddPlan(true);
 
     const handleAddActivity = (i: number) => {
         dispatch(setSelectedActionPlan(i));
-        setAddAction(true);
+        //setAddAction(true);
+        //setIndex(i);
     }
 
     const handleReturn = () => {
         setAddPlan(false);
         setAddAction(false);
         setIndex(-1);
+        dispatch(setSelectedActionPlan(-1));
     };
 
     return (
@@ -275,7 +335,7 @@ const AddPlanModal = (props: ModalProps) => {
                 </div>
                 {addPlan || addAction ?
                     <div className="tw-absolute tw-top-0 tw-left-0">
-                        <BackBtn handle={()=>handleReturn()} id={19}/>
+                        <BackBtn handle={() => handleReturn()} id={19}/>
                     </div>
                     : null
                 }
@@ -313,7 +373,7 @@ const AddPlanModal = (props: ModalProps) => {
                 </ul>
                 : addPlan ? <ActionPlanFrom/>
                 : addAction ?
-                    selectedPlan ? <ActivityForm plan={selectedPlan}/>
+                    selectedPlan ? <ActivityForm showPlan={selectedPlan}/>
                     : <p>Cargando plan</p>
                 : null}
             </Box>

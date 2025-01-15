@@ -386,9 +386,10 @@ export const getCodeEvidences = async (id_node: string, id_plan: number) => {
     return response.data;
 }
 
-export const getLatLngs = async (id_node: string, secretary: string, location: string) => {
+export const getLatLngs = async (id_plan: number, id_node: string, secretary: string, location: string) => {
     const response = await api.get(`/nodo/ubicaciones`, {
         params: {
+            id_plan,
             id_node,
             secretary,
             location
@@ -808,6 +809,15 @@ export const addActionPlan = async (id_plan: number, plan: ActionPlan, rubros: R
 
 export const addActivityActionPlans = async (id_plan: number, activities: Activity[], node: string) => {
     const response = await api.post(`/plan-territorial/plan-accion/actividad`, {
+        id_plan,
+        activities,
+        node
+    });
+    return response.data;
+}
+
+export const updateActivityActionPlans = async (id_plan: number, activities: Activity[], node: string) => {
+    const response = await api.put(`/plan-territorial/plan-accion/actividad`, {
         id_plan,
         activities,
         node
