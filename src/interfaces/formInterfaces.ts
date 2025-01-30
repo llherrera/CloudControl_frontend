@@ -1,4 +1,5 @@
 export interface RegisterInterface {
+    readonly id_user: number;
     username: string;
     lastname: string;
     email: string;

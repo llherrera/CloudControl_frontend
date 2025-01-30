@@ -18,7 +18,7 @@ import {getPDTid, addPDT, getLastPDT, getColors, getLevelNodes,
         updateSecretaries, updateWeights, addLevel, addLevelNode,
         updateLocations, updateDeadline, getPDTByDept, getProjectsByPlan,
         addProjectsAtPlan, updateProjectById, getCountProjectsByPlan,
-        getPlanByUuid, getActionPlans, getActivityActionPlan,
+        getPlanByUuid, getActionPlans, getActivityActionPlan, updateActionPlan,
         addActionPlan, addActivityActionPlans, updateActivityActionPlans
     } from '@/services/api';
 
@@ -425,6 +425,19 @@ export const thunkAddActionPlan = createAsyncThunk<ActionPlan[], PropsAddActionP
     async (props: PropsAddActionPlan, { rejectWithValue }) => {
         try {
             const res = await addActionPlan(props.id_plan, props.plan, props.rubros);
+            return res;
+        } catch (err) {
+            const result = parseErrorAxios(err);
+            return rejectWithValue(result);
+        }
+    }
+)
+
+export const thunkUpdateActionPlan = createAsyncThunk<ActionPlan[], PropsAddActionPlan, { rejectValue: ErrorBasicInterface }>(
+    'pdt/updateActionPlan',
+    async (props: PropsAddActionPlan, { rejectWithValue }) => {
+        try {
+            const res = await updateActionPlan(props.id_plan, props.plan, props.rubros);
             return res;
         } catch (err) {
             const result = parseErrorAxios(err);

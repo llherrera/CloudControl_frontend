@@ -8,6 +8,7 @@ export const PublicRouter = () => {
             <Route path="/lobby" element={<pages.LobbyPage/>} />
             <Route path="/escoger" element={<pages.ChooseCityPage/>} />
             <Route path="/login" element={<pages.LoginPage/>} />
+            <Route path="/contrasena" element={<pages.ChangePasswordPage/>} />
             <Route path='/pdt/PlanIndicativo' element={<pages.PDTid/>} />
             <Route path="/pdt/PlanIndicativo/Meta" element={<pages.UnitNodePage/>} />
             <Route path="/pdt/PlanIndicativo/Meta/evidencia" element={<pages.EvidencePage/>} />

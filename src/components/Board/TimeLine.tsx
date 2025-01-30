@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { useAppSelector, useAppDispatch } from "@/store";
-import { selectYear } from '@/store/plan/planSlice'; 
+import { selectYear, setCalcDone } from '@/store/plan/planSlice'; 
 
 import { NodesWeight } from '@/interfaces';
 import { decode } from "@/utils";
@@ -33,7 +33,6 @@ export const TimeLine = () => {
 
     useEffect(() => {
         if (!calcDone) return;
-        console.log('Timeline lanza funcion');
         getYearProgress();
     }, [yearSelect, nodes, calcDone]);
 
@@ -76,7 +75,10 @@ export const TimeLine = () => {
     const handleBtnEvidence = ( event: React.MouseEvent<HTMLButtonElement> ) => {
         event.preventDefault();
         if (rol === '') return;
-        if (plan) navigate(`/PlanIndicativo/evidencias`);
+        if (plan) {
+            dispatch(setCalcDone(false));
+            navigate(`/PlanIndicativo/evidencias`);
+        }
     };
 
     const colorClass = (index: number) => (

@@ -10,7 +10,7 @@ import { setIsFullHeight } from "@/store/content/contentSlice";
 import { Frame, BackBtn, ColorForm, SecretaryForm,
     UploadLogoCity, UploadLogoPlan, LocationsFormPage,
     FileInput, FileFinancialInput, FilePhysicalInput,
-    FileUnitInput, DrawerMenu, ListItemComp } from '@/components';
+    FileUnitInput, DrawerMenu, ListItemComp, UpdateUserForm } from '@/components';
 import { decode, notify } from "@/utils";
 
 import { Button, Tooltip, Zoom } from '@mui/material';
@@ -114,6 +114,11 @@ const SettingPageWrapper = () => {
                     index={3}
                     setPage={() => handlePage(3)}
                     title='Localidades'/>
+                <ListItemComp
+                    page={page}
+                    index={4}
+                    setPage={() => handlePage(4)}
+                    title='Usuario'/>
             </DrawerMenu>
             <div className='sm:tw-ml-2 md:tw-ml-40 tw-mr-2 xl:tw-ml-40
                             tw-mt-24 md:tw-mt-0'>
@@ -237,6 +242,10 @@ const SettingPageWrapper = () => {
                         {((rol === "admin") || ((rol === 'funcionario' || rol === 'planeacion') && id_plan === plan.id_plan!)) ?
                         <LocationsFormPage/>
                         : null}
+                    </div> :
+                page === 4 ?
+                    <div>
+                        <UpdateUserForm/>
                     </div> :
                     <p>Ha ocurrido un error</p>
                 }

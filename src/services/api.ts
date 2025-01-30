@@ -69,6 +69,11 @@ api.interceptors.request.use(
     }
 )
 
+export const getUser = async () => {
+    const response = await api.get("/usuarios");
+    return response.data;
+}
+
 export const getPDTs = async () => {
     const response = await api.get("/plan-territorial");
     return response.data;
@@ -130,10 +135,60 @@ export const doRegister = async (id: number, user_data: RegisterInterface) => {
     return response.data;
 }
 
+export const doUpdateUser = async (id: number, email: string, username: string, lastname: string) => {
+    const response = await api.put('/usuarios', {
+        id_user: id,
+        username,
+        lastname,
+        email
+    });
+    return response.data;
+}
+
+export const doChangePassword = async (id: number, oldPassword: string, newPassword: string) => {
+    const response = await api.put('/usuarios', {
+        id_user: id,
+        oldPassword,
+        newPassword
+    });
+    return response.data;
+}
+
 export const changePermissions = async (id: number, rol: string) => {
-    const response = await api.put('/usuarios/actualizar', {
+    const response = await api.put('/usuarios', {
         id_user: id,
         rol:     rol
+    });
+    return response.data;
+}
+
+interface ResponseCode {
+    msg: string,
+    codename: string,
+    email: string,
+    username: string,
+}
+export const sendCodeToEmail = async (email: string, username?: string): Promise<ResponseCode> => {
+    const response = await api.post('/usuarios/codigo', {
+        email,
+        username
+    });
+    return response.data;
+}
+
+export const validateCode = async (code: string, codename: string) => {
+    const response = await api.put('/usuarios/codigo', {
+        code,
+        codename
+    });
+    return response.data;
+}
+
+export const sendChangePassword = async (email: string, newPassword: string, username?: string) => {
+    const response = await api.post('/usuarios/contrasena', {
+        email,
+        username,
+        newPassword
     });
     return response.data;
 }
@@ -662,7 +717,7 @@ export const getNodesSecretary = async (id_plan: number, secretary: string) => {
     return response.data;
 }
 
-export const getDataDashboardSecretary = async (id_plan: number, secretary: string, year: string) => {
+export const getDataDashboardSecretary = async (id_plan: number, secretary: string, year: number) => {
     const response = await api.get('plan-territorial/dash-secre', {
         params: {
             id_plan,
@@ -673,7 +728,18 @@ export const getDataDashboardSecretary = async (id_plan: number, secretary: stri
     return response.data;
 }
 
-export const getDataDashboardLocation = async (id_plan: number, location: string, year: string) => {
+export const getDataDashboardMapsSecretary = async (id_plan: number, secretary: string, year: number) => {
+    const response = await api.get('plan-territorial/dash-secre', {
+        params: {
+            id_plan,
+            secretary,
+            year
+        }
+    });
+    return response.data;
+}
+
+export const getDataDashboardLocation = async (id_plan: number, location: string, year: number) => {
     const response = await api.get('plan-territorial/dash-locat', {
         params: {
             id_plan,
@@ -684,7 +750,7 @@ export const getDataDashboardLocation = async (id_plan: number, location: string
     return response.data;
 }
 
-export const getDataDashboardEvidence = async (id_plan: number, neighborhood: string, location: string, year: string) => {
+export const getDataDashboardEvidence = async (id_plan: number, neighborhood: string, location: string, year: number) => {
     const response = await api.get('plan-territorial/dash-evide', {
         params: {
             id_plan,
@@ -696,8 +762,31 @@ export const getDataDashboardEvidence = async (id_plan: number, neighborhood: st
     return response.data;
 }
 
-export const getDataDashboardExecution = async (id_plan: number, id_node: string, year: string) => {
+export const getDataDashboardMapsEvidence = async (id_plan: number, neighborhood: string, location: string, year: number) => {
+    const response = await api.get('plan-territorial/dash-evide/mapa', {
+        params: {
+            id_plan,
+            neighborhood,
+            location,
+            year
+        }
+    });
+    return response.data;
+}
+
+export const getDataDashboardExecution = async (id_plan: number, id_node: string, year: number) => {
     const response = await api.get('plan-territorial/dash-ejecu', {
+        params: {
+            id_plan,
+            id_node,
+            year
+        }
+    });
+    return response.data;
+}
+
+export const getDataDashboardMapsExecution = async (id_plan: number, id_node: string, year: number) => {
+    const response = await api.get('plan-territorial/dash-ejecu/mapa', {
         params: {
             id_plan,
             id_node,
@@ -800,6 +889,15 @@ export const getActivityActionPlan = async (id_plan: number) => {
 
 export const addActionPlan = async (id_plan: number, plan: ActionPlan, rubros: Rubro[]) => {
     const response = await api.post(`/plan-territorial/plan-accion`, {
+        id_plan,
+        plan,
+        rubros
+    });
+    return response.data;
+}
+
+export const updateActionPlan = async (id_plan: number, plan: ActionPlan, rubros: Rubro[]) => {
+    const response = await api.put(`/plan-territorial/plan-accion`, {
         id_plan,
         plan,
         rubros

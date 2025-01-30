@@ -1,15 +1,38 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import Modal from 'react-modal';
 import { Box, CircularProgress } from '@mui/material';
+import { ImportExport, Delete, Add, FormatListBulleted, Edit,
+    FileDownload } from '@mui/icons-material';
 
-import { ActionPlanFrom, ActivityForm, BackBtn,
-    UpdateActivityForm } from "@/components";
+import { ShowPlanOrForm, ActivityForm, BackBtn, UpdateActivityForm } from "@/components";
 import { ModalProps, PropsModalActionPlan } from "@/interfaces";
 import { generateActionPlanExcel } from "@/utils";
 
 import { useAppSelector, useAppDispatch } from '@/store';
 import { thunkGetActionPlans, thunkGetActivityActionPlan } from '@/store/plan/thunks';
-import { setSelectedActionPlan, setDone } from '@/store/plan/planSlice';
+import { setSelectedActionPlan } from '@/store/plan/planSlice';
+
+interface Props {
+    bclassName?: string;
+    callback: (props: boolean) => void;
+    tooltip: string;
+    children: JSX.Element | JSX.Element[];
+}
+
+const CustomButton = ({ bclassName, callback, tooltip, children }: Props) => {
+    return(
+        <button
+            title={tooltip}
+            className={`${bclassName} hover:tw-bg-blue-200
+                        tw-h-24 tw-w-full tw-gap-2
+                        tw-flex tw-justify-center
+                        tw-items-center tw-rounded
+                        tw-font-bold tw-text-2xl`}
+            onClick={() => callback(true)}>
+            {children}
+        </button>
+    );
+}
 
 export const ModalOption = ({ i, className, bclassName }: PropsModalActionPlan) => {
     const [isOpen1, setIsOpen1] = useState(false);
@@ -43,40 +66,45 @@ export const ModalOption = ({ i, className, bclassName }: PropsModalActionPlan) 
             <></>
             }
             {i === 0 ?
-            <button
-                title="Listar planes"
-                className={`${bclassName} tw-rounded tw-h-24 tw-w-full`}
-                onClick={() => setIsOpen1(true)}>
-                Lista
-            </button> :
+            <CustomButton
+                bclassName={`${bclassName}`}
+                tooltip="Listar planes"
+                callback={() => setIsOpen1(true)}>
+                <p>Lista</p>
+                <FormatListBulleted/>
+            </CustomButton> :
             i === 1 ?
-            <button
-                title="Agregar plan"
-                className={`${bclassName} tw-rounded tw-h-24 tw-w-full`}
-                onClick={() => setIsOpen2(true)}>
-                Adicionar
-            </button> :
+            <CustomButton
+                bclassName={`${bclassName}`}
+                tooltip="Agregar plan"
+                callback={() => setIsOpen2(true)}>
+                <p>Adicionar</p>
+                <Add/>
+            </CustomButton> :
             i === 2 ?
-            <button
-                title="Actualizar plan"
-                className={`${bclassName} tw-rounded tw-h-24 tw-w-full`}
-                onClick={() => setIsOpen3(true)}>
-                Modificar
-            </button> :
+            <CustomButton
+                bclassName={`${bclassName}`}
+                tooltip="Actualizar plan"
+                callback={() => setIsOpen3(true)}>
+                <p>Modificar</p>
+                <Edit/>
+            </CustomButton> :
             i === 3 ?
-            <button
-                title="Eliminar planes"
-                className={`${bclassName} tw-rounded tw-h-24 tw-w-full`}
-                onClick={() => setIsOpen4(true)}>
-                Eliminar
-            </button> :
+            <CustomButton
+                bclassName={`${bclassName}`}
+                tooltip="Eliminar planes"
+                callback={() => setIsOpen4(true)}>
+                <p>Eliminar</p>
+                <Delete/>
+            </CustomButton> :
             i === 4 ?
-            <button
-                title="Importar planes"
-                className={`${bclassName} tw-rounded tw-h-24 tw-w-full`}
-                onClick={() => setIsOpen4(true)}>
-                Importar
-            </button> :
+            <CustomButton
+                bclassName={`${bclassName}`}
+                tooltip="Importar planes"
+                callback={() => setIsOpen5(true)}>
+                <p>Importar</p>
+                <ImportExport/>
+            </CustomButton> :
             <></>
             }
         </div>
@@ -91,8 +119,6 @@ const ListPlanModal = (props: ModalProps) => {
     const [down, setDown] = useState(false);
     const [showInfo, setShowInfo] = useState(false);
     const [loading, setLoading] = useState(false);
-
-    const isFirstRenderG = useRef(true);
 
     const onClose = () => {
         props.callback(false);
@@ -141,7 +167,7 @@ const ListPlanModal = (props: ModalProps) => {
     const handleReturn = () => {
         dispatch(setSelectedActionPlan(-1))
         setShowInfo(false);
-    }
+    };
 
     return (
         <Modal isOpen={props.modalIsOpen}
@@ -152,7 +178,6 @@ const ListPlanModal = (props: ModalProps) => {
                     backgroundColor: 'transparent'
                 }
             }}>
-            {showInfo ?
             <Box>
                 <div className="tw-absolute tw-top-0 tw-right-0">
                     <button className=" tw-px-2"
@@ -162,99 +187,100 @@ const ListPlanModal = (props: ModalProps) => {
                         </p>
                     </button>
                 </div>
-                {<div className="tw-absolute tw-top-0 tw-left-0">
+                {showInfo ?
+                <div className="tw-absolute tw-top-0 tw-left-0">
                     <BackBtn handle={()=>handleReturn()} id={83}/>
                 </div>
-                }
-                <ActionPlanFrom showPlan={selectedPlan}/>
-                <button onClick={() => setDown(true)}
-                    className=' tw-bg-green-300 hover:tw-bg-green-400
-                                    tw-py-2 tw-rounded'>
-                    {loading ?
-                        <Box sx={{ display: 'flex' }}>
-                            <CircularProgress />
-                        </Box>
-                        : <p>Descargar</p>
-                    }
-                </button>
-            </Box>
-            : <Box>
-                <div className="tw-absolute tw-top-0 tw-right-0">
-                    <button className=" tw-px-2"
-                        onClick={onClose}>
-                        <p className="tw-text-xl tw-text-[#626d75] tw-font-bold">
-                            X
-                        </p>
-                    </button>
-                </div>
-                <table className="tw-w-full">
-                    <thead>
-                        <tr className="tw-bg-blueBar ">
-                            <th>
-                                <p></p>
-                            </th>
-                            <th>
-                                <p>Código plan</p>
-                            </th>
-                            <th>
-                                <p>Fecha Programada</p>
-                            </th>
-                            <th>
-                                <p>Nombre proyecto POAI</p>
-                            </th>
-                            <th>
-                                <p>Código BPIM</p>
-                            </th>
-                            <th>
-                                <p>Objetivos</p>
-                            </th>
-                            <th>
-                                <p>Oficina</p>
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {actionPlan === undefined || actionPlan.length == 0 ?
-                            <tr>
+                : null}
+                {showInfo ?
+                <>
+                    <ShowPlanOrForm showPlan={selectedPlan}/>
+                    <div className="tw-flex tw-justify-center tw-mt-3">
+                        <button onClick={() => setDown(true)}
+                            className=' tw-bg-green-500 hover:tw-bg-green-300
+                                        tw-p-2 tw-rounded tw-flex tw-gap-2
+                                        tw-text-white tw-font-bold'>
+                            {loading ?
+                                <Box sx={{ display: 'flex' }}>
+                                    <CircularProgress />
+                                </Box>
+                                : <>
+                                    <p>Descargar</p>
+                                    <FileDownload/>
+                                </>
+                            }
+                        </button>
+                    </div>
+                </>
+                : <>
+                    <table className="tw-w-full">
+                        <thead>
+                            <tr className="tw-bg-blueBar ">
                                 <th>
-                                    <p className='tw-basis-full tw-p-1'>
-                                        Aún no se han definido los proyectos
-                                    </p>
+                                    <p></p>
+                                </th>
+                                <th>
+                                    <p>Código plan</p>
+                                </th>
+                                <th>
+                                    <p>Fecha Programada</p>
+                                </th>
+                                <th>
+                                    <p>Nombre proyecto POAI</p>
+                                </th>
+                                <th>
+                                    <p>Código BPIM</p>
+                                </th>
+                                <th>
+                                    <p>Objetivos</p>
+                                </th>
+                                <th>
+                                    <p>Oficina</p>
                                 </th>
                             </tr>
-                            : actionPlan.map((p, i) =>
-                                <tr key={i} className='tw-border'>
+                        </thead>
+                        <tbody>
+                            {actionPlan === undefined || actionPlan.length == 0 ?
+                                <tr>
                                     <th>
-                                        <button
-                                            className="tw-bg-green-200 tw-rounded tw-p-1"
-                                            onClick={() => handleClick(i)}>
-                                            Seleccionar
-                                        </button>
-                                    </th>
-                                    <th>
-                                        <p>{p.planCode.slice(0, 20)}</p>
-                                    </th>
-                                    <th>
-                                        <p>{p.programedDate ? new Date(p.programedDate).toISOString().split('T').slice(0, 1) : 'No definido'}</p>
-                                    </th>
-                                    <th>
-                                        <p>{p.POAINameProject.slice(0, 20)}</p>
-                                    </th>
-                                    <th>
-                                        <p>{p.BPIMCode.slice(0, 20)}</p>
-                                    </th>
-                                    <th title={p.Objetives}>
-                                        <p>{p.Objetives.slice(0, 20)}</p>
-                                    </th>
-                                    <th>
-                                        <p title={p.office}>{p.office.replace('Secretaría ','').replace('de ','')}</p>
+                                        <p className='tw-basis-full tw-p-1'>
+                                            Aún no se han definido los proyectos
+                                        </p>
                                     </th>
                                 </tr>
-                            )}
-                    </tbody>
-                </table>
+                                : actionPlan.map((p, i) =>
+                                    <tr key={i} className='tw-border'>
+                                        <th>
+                                            <button
+                                                className="tw-bg-green-200 tw-rounded tw-p-1"
+                                                onClick={() => handleClick(i)}>
+                                                Seleccionar
+                                            </button>
+                                        </th>
+                                        <th>
+                                            <p>{p.planCode.slice(0, 20)}</p>
+                                        </th>
+                                        <th>
+                                            <p>{p.programedDate ? new Date(p.programedDate).toISOString().split('T').slice(0, 1) : 'No definido'}</p>
+                                        </th>
+                                        <th>
+                                            <p>{p.POAINameProject.slice(0, 20)}</p>
+                                        </th>
+                                        <th>
+                                            <p>{p.BPIMCode.slice(0, 20)}</p>
+                                        </th>
+                                        <th title={p.Objetives}>
+                                            <p>{p.Objetives.slice(0, 20)}</p>
+                                        </th>
+                                        <th>
+                                            <p title={p.office}>{p.office.replace('Secretaría ','').replace('de ','')}</p>
+                                        </th>
+                                    </tr>
+                                )}
+                        </tbody>
+                    </table>
+                </>}
             </Box>
-            }
         </Modal>
     );
 }
@@ -302,11 +328,7 @@ const AddPlanModal = (props: ModalProps) => {
 
     const handleAddActionPlan = () => setAddPlan(true);
 
-    const handleAddActivity = (i: number) => {
-        dispatch(setSelectedActionPlan(i));
-        //setAddAction(true);
-        //setIndex(i);
-    }
+    const handleAddActivity = (i: number) => dispatch(setSelectedActionPlan(i));
 
     const handleReturn = () => {
         setAddPlan(false);
@@ -371,9 +393,9 @@ const AddPlanModal = (props: ModalProps) => {
                         </button>
                     </li>)}
                 </ul>
-                : addPlan ? <ActionPlanFrom/>
+                : addPlan ? <ShowPlanOrForm/>
                 : addAction ?
-                    selectedPlan ? <ActivityForm showPlan={selectedPlan}/>
+                    selectedPlan ? <ActivityForm showPlan={selectedPlan} upd={false}/>
                     : <p>Cargando plan</p>
                 : null}
             </Box>
@@ -385,7 +407,7 @@ const UpdatePlanModal = (props: ModalProps) => {
     const dispatch = useAppDispatch();
 
     const { id_plan } = useAppSelector(store => store.content);
-    const { actionPlan, selectedPlan } = useAppSelector(store => store.plan);
+    const { actionPlan, selectedPlan, done } = useAppSelector(store => store.plan);
 
     const [updAction, setUpdAction] = useState<boolean>(false);
     const [index, setIndex] = useState(-1);
@@ -399,7 +421,7 @@ const UpdatePlanModal = (props: ModalProps) => {
     useEffect(() => {
         if (!props.modalIsOpen) return;
         dispatch(thunkGetActionPlans(id_plan));
-    }, []);
+    }, [props.modalIsOpen]);
 
     useEffect(() => {
         if (!props.modalIsOpen) return;
@@ -411,17 +433,22 @@ const UpdatePlanModal = (props: ModalProps) => {
 
     useEffect(() => {
         if (!props.modalIsOpen) return;
-        if (selectedPlan && updAction) {
+        if (selectedPlan && !updAction) {
             dispatch(thunkGetActivityActionPlan(selectedPlan.id_actionPlan));
         }
-    }, [updAction]);
+    }, [selectedPlan]);
 
-    const handleClick = (i: number) => setIndex(i);
+    useEffect(() => {
+        if (!props.modalIsOpen) return;
+        if (selectedPlan != undefined && done) setUpdAction(true);
+    }, [done]);
+
+    const handleAddActivity = (i: number) => dispatch(setSelectedActionPlan(i));
 
     const handleReturn = () => {
         setUpdAction(false);
         setIndex(-1);
-        //dispatch(setSelectedActionPlan(-1));
+        dispatch(setSelectedActionPlan(-1));
     };
 
     return (
@@ -456,19 +483,21 @@ const UpdatePlanModal = (props: ModalProps) => {
                                 Aún no se han definido los proyectos
                             </p>
                         </li>
-                    : actionPlan.map((item, i) => <li className="tw-flex" key={i}>
-                        <button
-                            className=" tw-flex tw-justify-between tw-w-full
-                                        tw-mb-4 tw-p-2 tw-rounded
-                                        tw-bg-gray-200 hover:tw-bg-gray-300
-                                        tw-border-4 tw-border-gray-400"
-                            type="button"
-                            title={`${item.BPIMCode}\n${item.office}`}
-                            onClick={() => handleClick(i)}>
-                            <p>{item.POAINameProject}</p>
-                            <p>Actualizar plan</p>
-                        </button>
-                    </li>)}
+                    : actionPlan.map((item, i) =>
+                        <li className="tw-flex" key={i}>
+                            <button
+                                className=" tw-flex tw-justify-between tw-w-full
+                                            tw-mb-4 tw-p-2 tw-rounded
+                                            tw-bg-gray-200 hover:tw-bg-gray-300
+                                            tw-border-4 tw-border-gray-400"
+                                type="button"
+                                title={`${item.BPIMCode}\n${item.office}`}
+                                onClick={() => handleAddActivity(i)}>
+                                <p>{item.POAINameProject}</p>
+                                <p>Actualizar plan</p>
+                            </button>
+                        </li>
+                    )}
                 </ul>
                 : updAction ?
                     <>

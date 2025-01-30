@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import { useAppSelector, useAppDispatch } from "@/store";
 import { thunkGetNodes, thunkUpdateWeight } from '@/store/plan/thunks';
-import { incrementLevelIndex, setParent, setProgressNodes,
+import { incrementLevelIndex, setParent, setProgressNodes, setCalcDone,
         setFinancial, AddRootTree } from '@/store/plan/planSlice';
 import { setNode } from "@/store/content/contentSlice";
 
@@ -34,7 +34,6 @@ export const NodesList = ( props : IdProps ) => {
 
     useEffect(() => {
         if (!calcDone) return;
-        console.log('lista de nodos lanza funcion');
         getProgress();
     }, [yearSelect, nodes, calcDone]);
 
@@ -88,6 +87,7 @@ export const NodesList = ( props : IdProps ) => {
             dispatch(incrementLevelIndex(indexLevel+1));
             dispatch(thunkGetNodes({id_level: nodes[index].id_level+1, parent:nodes[index].id_node}));
         } else {
+            dispatch(setCalcDone(false));
             dispatch(setNode(nodes[index]));
             navigate(`/pdt/PlanIndicativo/Meta`, {state: {idPDT: props.id, idNodo: nodes[index].id_node}});
         }
@@ -132,6 +132,7 @@ export const NodesList = ( props : IdProps ) => {
     );
 
     const handleClickResult = () => {
+        dispatch(setCalcDone(false));
         navigate('/pdt/PlanIndicativo/MetaResultado');
     };
 

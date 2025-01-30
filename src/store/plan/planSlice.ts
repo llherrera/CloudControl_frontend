@@ -16,8 +16,8 @@ import {
     thunkAddLocations, thunkGetLocations, thunkAddLevel,
     thunkAddNodes, removePDT, thunkUpdateLocations, thunkUpdateDeadline,
     thunkGetProjects, thunkAddProjects, thunkUpdateProjects,
-    thunkGetCountProjects, thunkGetPDTByUuid, thunkAddActionPlan,
-    thunkGetActionPlans, thunkGetActivityActionPlan, thunkAddActivityActionPlan
+    thunkGetCountProjects, thunkGetPDTByUuid, thunkAddActionPlan, thunkUpdateActionPlan,
+    thunkUpdateActivityActionPlan, thunkGetActionPlans, thunkGetActivityActionPlan, thunkAddActivityActionPlan
     } from "./thunks";
 
 const getInitialState = (): InitialStatePlanInterface => {
@@ -678,6 +678,40 @@ export const planSlice = createSlice({
             setGenericState('plan', state);
         });
         builder.addCase(thunkAddActivityActionPlan.rejected, (state, action) => {
+            state.loadingActivityActionPlan = false;
+            state.errorLoadingActivityActionPlan = action.payload;
+            notify(action.payload?.error_description ?? errorMSGUpdate, 'error');
+        });
+
+
+        builder.addCase(thunkUpdateActionPlan.pending, state => {
+            if (!state.loadingActionPlan) state.loadingActionPlan = true;
+            state.errorLoadingActionPlan = undefined;
+        });
+        builder.addCase(thunkUpdateActionPlan.fulfilled, (state, action) => {
+            state.loadingActionPlan = false;
+            state.actionPlan = action.payload;
+            notify('Ficha actualizada', 'success');
+            setGenericState('plan', state);
+        });
+        builder.addCase(thunkUpdateActionPlan.rejected, (state, action) => {
+            state.loadingActionPlan = false;
+            state.errorLoadingActionPlan = action.payload;
+            notify(action.payload?.error_description ?? errorMSGUpdate, 'error');
+        });
+
+
+        builder.addCase(thunkUpdateActivityActionPlan.pending, state => {
+            if (!state.loadingActivityActionPlan) state.loadingActivityActionPlan = true;
+            state.errorLoadingActivityActionPlan = undefined;
+        });
+        builder.addCase(thunkUpdateActivityActionPlan.fulfilled, (state, action) => {
+            state.loadingActivityActionPlan = false;
+            state.selectedPlan!.actions = action.payload;
+            notify('Actividad registrada', 'success');
+            setGenericState('plan', state);
+        });
+        builder.addCase(thunkUpdateActivityActionPlan.rejected, (state, action) => {
             state.loadingActivityActionPlan = false;
             state.errorLoadingActivityActionPlan = action.payload;
             notify(action.payload?.error_description ?? errorMSGUpdate, 'error');

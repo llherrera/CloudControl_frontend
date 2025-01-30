@@ -220,6 +220,7 @@ export interface ActionPlan {
     rubros: Rubro[];
     nodes: NodeActivityPlan[];
     nodesResult: UnitNodeResultInterface[];
+    year?: number;
 }
 
 export interface Activity {

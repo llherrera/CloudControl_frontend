@@ -90,7 +90,7 @@ export const LevelsSelectFilter = ({callback}: PropsCallback) => {
                     const emptyOption: NodeInterface = {
                         id_node: res[0].id_node.split('.').slice(0, -1).join('.'),
                         code: '',
-                        name: "Selecciona una opción",
+                        name: `${levels[i].name}...`,
                         description: "",
                         parent: null,
                         id_level: id_level,
@@ -122,12 +122,11 @@ export const LevelsSelectFilter = ({callback}: PropsCallback) => {
     };
 
     return (
-        <div className=''>
+        <div className='tw-flex tw-flex-wrap tw-mr-2'>
             {programs.map((program, index) =>
-                <div key={index}
-                    className='tw-mb-1'>
+                <div key={index} className='tw-my-2'>
                     <select onChange={e => handleChangePrograms(index, e)}
-                            className='tw-w-full'>
+                            className='tw-w-28'>
                         {program.map((node, index) =>
                             <option value={node.id_node}
                                 key={index}>

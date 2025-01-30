@@ -8,6 +8,7 @@ export const OfficerRouter = () => {
             <Route path="/login" element={<pages.LoginPage/>} />
             <Route path="/escoger" element={<pages.ChooseCityPage/>} />
             <Route path='/register' element={<pages.RegisterPage/>} />
+            <Route path='/contrasena' element={<pages.ChangePasswordPage/>} />
             <Route path="/lobby" element={<pages.LobbyPage/>} />
             <Route path='/pdt/PlanIndicativo' element={<pages.PDTid/>} />
             <Route path='/pdt/PlanIndicativo/configuracion' element={<pages.SettingPage/>} />
@@ -29,5 +30,5 @@ export const OfficerRouter = () => {
             <Route path='/meta/:uuid' element={<pages.SearchUnitPage/>} />
             <Route path='*' element={<pages.NotFoundPage/>} />
         </Routes>
-  )
+    )
 }

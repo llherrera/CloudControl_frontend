@@ -8,6 +8,7 @@ export const PrivateRouter = () => {
             <Route path="/login" element={<pages.LoginPage/>} />
             <Route path="/escoger" element={<pages.ChooseCityPage/>} />
             <Route path='/register' element={<pages.RegisterPage/>} />
+            <Route path='/contrasena' element={<pages.ChangePasswordPage/>} />
             <Route path="/lobby" element={<pages.LobbyPage/>} />
             <Route path='/pdt' element={<pages.PDT/>} />
             <Route path='/pdt/PlanIndicativo' element={<pages.PDTid/>} />

@@ -910,8 +910,21 @@ export const manageVisualization = (v: Visualization): VisualizationRedux => {
     id: v.id,
     title: v.title,
     value: v.value,
+    info: {
+      yearSelect: 0,
+      execSelect: '',
+      cateSelect: '',
+      subCateSelect: '',
+      categories_: [],
+      subCategories_: [],
+      field: '',
+      fieldSelect: '',
+      locations_: [],
+      locations__: [],
+    },
     chart: v.chart,
     count: v.count,
+    map: v.map
   } as VisualizationRedux;
 }
 

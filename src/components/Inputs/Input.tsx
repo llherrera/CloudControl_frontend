@@ -18,15 +18,21 @@ export const Input = (props: InputProps) => {
             id={props.id}
             center={props.center}
             label={props.label}>
+            {props.isRequired != undefined && !props.isRequired ?
+            <p className="tw-text-gray-300">
+                (opcional)
+            </p>
+            : <></>}
             <input
                 type={props.type}
                 id={props.id}
                 name={props.name}
                 placeholder={props.placeholder ?? props.name}
-                className={`tw-p-2 tw-rounded tw-border-2 tw-border-gray-400`}
+                className={`tw-p-2 tw-rounded tw-border-2
+                            ${props.errors ? props.errors[props.name] ? 'tw-border-red-400' : 'tw-border-gray-400' : 'tw-border-gray-400'} `}
                 value={props.value}
                 onChange={props.onChange}
-                required/>
+                required={props.isRequired??true}/>
         </Component>
     );
 }

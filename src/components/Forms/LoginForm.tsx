@@ -50,14 +50,14 @@ export const LoginForm = () => {
         .then(res => {
             if (res === undefined) return notify("Usuario o contraseña incorrectos", 'error');
             const info = decode(res.token);
-            signInWithEmailAndPassword(auth, info.email, user.password)
-            .then(() => {
+            //signInWithEmailAndPassword(auth, info.email, user.password)
+            //.then(() => {
                 info.rol === "admin" ? navigate('/pdt') : validateRol(info);
-            })
-            .catch(err => {
-                console.log(err);
-                alert('Error al autenticar usuario');
-            })
+            //})
+            //.catch(err => {
+            //    console.log(err);
+            //    alert('Error al autenticar usuario');
+            //})
         })
         .catch(() => {
             notify("Usuario o contraseña erronea", 'error');
@@ -90,9 +90,13 @@ export const LoginForm = () => {
                 <div className='tw-h-10 tw-flex'><Spinner/></div> :
                 <p className='tw-font-bold'>Iniciar sesión</p>}
             </button><br />
-            <input  type="button" 
-                    value={'¿Olvidaste tu contraseña?'}
-                    className='tw-pb-10 hover:tw-bg-black-50' />
+            <div className='tw-mb-10 tw-flex tw-justify-center'>
+                <button type="button"
+                        onClick={() => navigate('/contrasena')}
+                        className='hover:tw-bg-gray-100'>
+                    ¿Olvidaste tu contraseña?
+                </button>
+            </div>
         </form>
     );
 }

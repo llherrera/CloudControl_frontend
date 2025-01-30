@@ -70,15 +70,21 @@ export const Content = ( props : IdProps ) => {
         }
     };
 
-    const handleSettings = (page: number = 0) => navigate(`/pdt/PlanIndicativo/configuracion`, {
-        state: {
-            pageN: page
-        }
-    });
+    const handleSettings = (page: number = 0) => {
+        dispatch(setCalcDone(false));
+        navigate(`/pdt/PlanIndicativo/configuracion`, {
+            state: {
+                pageN: page
+            }
+        });
+    }
 
     const handleMode = () => dispatch(setMode(!mode));
 
-    const handleAddUser = () => navigate(`/register`);
+    const handleAddUser = () => {
+        dispatch(setCalcDone(false));
+        navigate(`/register`);
+    }
 
     const colorimeterCircles = (index: number) => (
         index === 0 ? 'tw-bg-redColory hover:tw-bg-red-200' :

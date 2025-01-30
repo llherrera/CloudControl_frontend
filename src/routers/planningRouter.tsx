@@ -7,7 +7,7 @@ export const PlanningRouter = () => {
             <Route path="/" element={<pages.HomePage/>} />
             <Route path="/login" element={<pages.LoginPage/>} />
             <Route path="/escoger" element={<pages.ChooseCityPage/>} />
-            <Route path="/lobby" element={<pages.LobbyPage/>} />
+            <Route path='/contrasena' element={<pages.ChangePasswordPage/>} /><Route path="/lobby" element={<pages.LobbyPage/>} />
             <Route path='/pdt/PlanIndicativo' element={<pages.PDTid/>} />
             <Route path='/pdt/PlanIndicativo/configuracion' element={<pages.SettingPage/>} />
             <Route path="/pdt/PlanIndicativo/Meta" element={<pages.UnitNodePage/>} />

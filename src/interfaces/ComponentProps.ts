@@ -46,12 +46,12 @@ export interface BtnPlanProps {
 export interface EvidenceDetailProps {
     evi: EvidenceInterface;
     index: number;
-};
+}
 
 export interface ExecutedProps {
     ex: ExecutionInterface;
     index: number;
-};
+}
 
 export interface LevelFormProps {
     id: string;
@@ -81,6 +81,7 @@ export interface InputProps {
     isRequired?: boolean;
     classname?: string;
     center: boolean;
+    errors?: {[key: string]: string};
 }
 
 export interface SelectInputProps {
@@ -101,7 +102,7 @@ export interface InputPropChild {
     id: string;
     classname?: string;
     center: boolean;
-    children: JSX.Element;
+    children: JSX.Element | JSX.Element[];
 }
 
 export interface SelectProps {
@@ -180,7 +181,7 @@ export interface DropdownProps {
 
 export interface EvidenceProps {
     evidence: EvidenceInterface;
-};
+}
 
 export interface UnitFrameProps {
     children: (JSX.Element | null)[] | JSX.Element

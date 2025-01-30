@@ -1,4 +1,5 @@
 import { ErrorTypeInterface } from "./common";
+import { LocationInterface } from "./formInterfaces";
 
 export interface ChartInterface {
     data: number[]
@@ -10,6 +11,7 @@ export interface InitialStateChartInterface {
     data: number[];
     type: string;
     board: VisualizationRedux[];
+    boardInfo: ChartInfo[];
     indexSelect: number;
     categories: string[];
     subCategories: string[];
@@ -19,6 +21,20 @@ export interface InitialStateChartInterface {
     cateSelect: string;
     subCateSelect: string;
     fieldSelect: string;
+    deleteAct: boolean;
+}
+
+export interface ChartInfo {
+    yearSelect: number;
+    execSelect: string;
+    cateSelect: string;
+    subCateSelect: string;
+    categories_: string[];
+    subCategories_: string[];
+    field: string;
+    fieldSelect: string;
+    locations_: LocationInterface[];
+    locations__: LocationInterface[];
 }
 
 export interface Field {
@@ -33,16 +49,19 @@ export interface Visualization {
     icon: JSX.Element;
     title: string;
     value: string;
-    chart: boolean;
-    count: boolean;
+    chart?: boolean;
+    count?: boolean;
+    map?: boolean;
 }
 
 export interface VisualizationRedux {
     id: string;
     title: string;
     value: string;
-    chart: boolean;
-    count: boolean;
+    info: ChartInfo;
+    chart?: boolean;
+    count?: boolean;
+    map?: boolean;
 }
 
 export interface Item {
@@ -51,17 +70,20 @@ export interface Item {
 }
 
 export interface PropsChart {
-    type?: string;
+    type: string;
+    info: ChartInfo;
     index: number;
 }
 export interface ComponentProps {
     index: number;
     children: JSX.Element;
     title: string;
-    type?: string;
+    info: ChartInfo;
+    type: string;
     callDataX: React.Dispatch<React.SetStateAction<string[] | number[]>>;
     callDataY: React.Dispatch<React.SetStateAction<number[][]>>;
     callTitle: React.Dispatch<React.SetStateAction<string>>;
+    callMarkers?: React.Dispatch<React.SetStateAction<JSX.Element[]>>;
 }
 export interface ChartData {
     name: string;
@@ -97,4 +119,29 @@ export interface ResponseChartExecu {
     year: number;
     financial_execution: number;
     physical_progress: number;
+}
+
+export interface InfoSelecet {
+    execSelect: string;
+    yearSelect: number;
+    cateSelect: string;
+    subCateSelect: string;
+    categories_: string[];
+    subCategories_: string[];
+    fieldSelect: string;
+}
+
+export interface PointsMarketDash {
+    code: string;
+    lat: number;
+    lng: number;
+    year: number;
+    activitiesDesc: string;
+    responsible: string;
+    name: string;
+    done: number;
+    benefited_population_number: number;
+    benefited_population: string;
+    executed_resources: number;
+    resource_font: string;
 }
