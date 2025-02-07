@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef, Fragment } from "react";
 import * as Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
+import HC_exporting from 'highcharts/modules/exporting';
 import { MapContainer, TileLayer, Marker, Popup, Rectangle } from 'react-leaflet';
 import { Icon } from 'leaflet';
 
@@ -17,11 +18,14 @@ import { PropsChart, ComponentProps, ChartData, ResponseChartSecre, ResponseChar
 import { LevelsSelectFilter } from "../MapFilters";
 
 import { Close, Dataset, Height } from '@mui/icons-material';
+import { Box, CircularProgress } from '@mui/material';
 import { fields, notify, convertLocations } from '@/utils';
 
 import MarkerIcon from '@/assets/icons/location.svg';
 import "react-toastify/dist/ReactToastify.css";
 import 'leaflet/dist/leaflet.css';
+
+HC_exporting(Highcharts);
 
 const Component = ({index, children, info, type, callDataX, callDataY, callTitle, callMarkers}: ComponentProps) => {
     const dispatch = useAppDispatch();
@@ -695,10 +699,17 @@ export const ChartComponent = ({ field, id, index, onClose }: PropsChart2) => {
     const [subFilters, setSubFilters] = useState<string[]>([]);
     const [filterIndex, setFilterIndex] = useState(-1);
     const [subFilterIndex, setSubFilterIndex] = useState(0);
+    const [loading, setLoading] = useState(false);
+    const [showTen, setShowTen] = useState(0);
 
     const [markers, setMarkers] = useState<JSX.Element[]>([]);
     const [locationsMap  , setLocationsMap] = useState<Map<LocationInterface, LocationInterface[]>>();
 //point.percentage:.1f
+    const handleShowTen = () => {
+        console.log('aaa');
+        setShowTen(prev => prev + 10);
+    }
+
     Highcharts.setOptions({
         lang: {
             thousandsSep:'.'
@@ -883,6 +894,16 @@ export const ChartComponent = ({ field, id, index, onClose }: PropsChart2) => {
                     }
                 }
             ]
+        },
+        exporting: {
+            buttons: {
+                customButton: {
+                    text: 'Custom Button',
+                    onclick: function () {
+                        alert('You pressed the button!');
+                    }
+                }
+            }
         }
     };
 
@@ -957,7 +978,7 @@ export const ChartComponent = ({ field, id, index, onClose }: PropsChart2) => {
                                 <p>{loc.benefited_population_number}</p>
                             </div>
                             <div className='tw-flex tw-gap-1 tw--my-4'>
-                                <p className='tw-font-bold'>Fuente de recursos:</p><p>{loc.resource_font}</p>
+                                <p className='tw-font-bold'>Fuente de recursos:</p><p>{loc.resource_font == null ? '' : loc.resource_font}</p>
                             </div>
                             <div className='tw-flex tw-gap'>
                                 <p className='tw-font-bold'>Recursos ejecutados:</p><p>{loc.executed_resources}</p>
@@ -1001,17 +1022,19 @@ export const ChartComponent = ({ field, id, index, onClose }: PropsChart2) => {
         switch (field) {
             case 'secretary':
                 if (secretaries == undefined) return notify('Aun no se han defino secretarías para este plan', 'warning');
+                setLoading(true);
                 if (type === 'map') {
-                    getDataDashboardMapsSecretary(id_plan, filter.replace('evidences', ''), year === 0 ? 0 : year)
-                    .then((res: (PointsMarketDash[])) => {
-                    const data = res.map(r => execution === 'done' ?
-                        r.done : execution === 'benefited_population_number' ?
-                        r.benefited_population_number : r.executed_resources
+                    getDataDashboardMapsSecretary(id_plan, filter.replace('secretary', ''), year)
+                    .then((res: PointsMarketDash[]) => {
+                    const data = res.map(r => execution === 'done' ? r.done :
+                        execution === 'benefited_population_number' ? r.benefited_population_number :
+                        r.executed_resources
                     );
                     const labels: string[] | number[] = year === 0 ? res.map(r => r.year) : filter === '' ? res.map(r => r.code!) : res.map(r => r.code!);
                     setDataX(labels);
                     setDataY([data]);
                     generateMarkers(res);
+                    setLoading(false);
                     });
                 } else {
                     getDataDashboardSecretary(id_plan, filter.replace('secretary', ''), year === 0 ? 0 : year)
@@ -1030,22 +1053,25 @@ export const ChartComponent = ({ field, id, index, onClose }: PropsChart2) => {
                             val = Math.max(...data);
                             label = labels[data.indexOf(val)].toString();
                         }
+                        setLoading(false);
                     });
                 }
                 break;
             case 'evidences':
+                setLoading(true);
                 if (type === 'map') {
                     getDataDashboardMapsEvidence(id_plan, subFilter, filter.replace('evidences', ''), year === 0 ? 0 : year)
-                    .then((res: (PointsMarketDash[])) => {
-                    const data = res.map(r => execution === 'done' ?
-                        r.done : execution === 'benefited_population_number' ?
-                        r.benefited_population_number : r.executed_resources
+                    .then((res: PointsMarketDash[]) => {
+                    const data = res.map(r => execution === 'done' ? r.done :
+                        execution === 'benefited_population_number' ? r.benefited_population_number :
+                        r.executed_resources
                     );
                     const labels: string[] | number[] = year === 0 ? res.map(r => r.year) : filter === '' ? res.map(r => r.code!) : res.map(r => r.code!);
                     setDataX(labels);
                     setDataY([data]);
                     generateMarkers(res);
                     });
+                    setLoading(false);
                 } else {
                     getDataDashboardEvidence(id_plan, subFilter, filter.replace('evidences', ''), year === 0 ? 0 : year)
                     .then((res: (ResponseChartEvide[])) => {
@@ -1064,22 +1090,25 @@ export const ChartComponent = ({ field, id, index, onClose }: PropsChart2) => {
                         val = Math.max(...data);
                         label = labels[data.indexOf(val)].toString();
                     }
+                    setLoading(false);
                     });
                 }
                 break;
             case 'execution':
+                setLoading(true);
                 if (type === 'map') {
-                    getDataDashboardMapsExecution(id_plan, filter.replace('evidences', ''), year === 0 ? 0 : year)
-                    .then((res: (PointsMarketDash[])) => {
-                    const data = res.map(r => execution === 'done' ?
-                        r.done : execution === 'benefited_population_number' ?
-                        r.benefited_population_number : r.executed_resources
+                    getDataDashboardMapsExecution(id_plan, filter.replace('execution', ''), year === 0 ? 0 : year)
+                    .then((res: PointsMarketDash[]) => {
+                    const data = res.map(r => execution === 'done' ? r.done :
+                        execution === 'benefited_population_number' ? r.benefited_population_number :
+                        r.executed_resources
                     );
                     const labels: string[] | number[] = year === 0 ? res.map(r => r.year) : filter === '' ? res.map(r => r.code!) : res.map(r => r.code!);
                     setDataX(labels);
                     setDataY([data]);
                     generateMarkers(res);
                     });
+                    setLoading(false);
                 } else {
                     getDataDashboardExecution(id_plan, filter.replace('execution', '').trim() === '' ? levels[0].id_level!.toString() : filter.replace('execution', ''), year === 0 ? 0 : year)
                     .then((res: ResponseChartExecu[]) => {
@@ -1097,6 +1126,7 @@ export const ChartComponent = ({ field, id, index, onClose }: PropsChart2) => {
                             val = Math.max(...data);
                             label = labels[data.indexOf(val)].toString();
                         }
+                        setLoading(false);
                     });
                 }
                 break;
@@ -1120,7 +1150,7 @@ export const ChartComponent = ({ field, id, index, onClose }: PropsChart2) => {
             <div>
                 <div className="tw-w-full tw-flex">
                     <select
-                        className="tw-border tw-m-1"
+                        className="tw-border tw-border-black tw-m-1"
                         value={type}
                         onChange={e => handleChangeType(e)}>
                         {visualization.map(v =>
@@ -1130,7 +1160,7 @@ export const ChartComponent = ({ field, id, index, onClose }: PropsChart2) => {
                         )}
                     </select>
                     <select
-                        className="tw-border tw-m-1"
+                        className="tw-border tw-border-black tw-m-1"
                         onChange={handleChangeYear}
                         value={year}>
                         <option value={0}>Año...</option>
@@ -1138,7 +1168,7 @@ export const ChartComponent = ({ field, id, index, onClose }: PropsChart2) => {
                     </select>
                     {field === 'secretary' ?
                         <select
-                            className="tw-border tw-m-1 tw-w-32"
+                            className="tw-border tw-border-black tw-m-1 tw-w-32"
                             onChange={handleChangeFilter}
                             value={filter}>
                             <option value={''}>Secretaría...</option>
@@ -1147,14 +1177,14 @@ export const ChartComponent = ({ field, id, index, onClose }: PropsChart2) => {
                     field === 'evidences' ?
                     <>
                         <select
-                            className="tw-border tw-m-1 tw-w-32"
+                            className="tw-border tw-border-black tw-m-1 tw-w-32"
                             onChange={handleChangeFilter}
                             value={filter}>
                             <option value={''}>Localidad...</option>
                             {filters.map(f => <option key={f} value={f}>{f}</option>)}
                         </select>
                         <select
-                            className="tw-border tw-m-1 tw-w-32"
+                            className="tw-border tw-border-black tw-m-1 tw-w-32"
                             onChange={handleChangeSubFilter}
                             value={subFilter}>
                             <option value={''}>Barrio...</option>
@@ -1200,10 +1230,21 @@ export const ChartComponent = ({ field, id, index, onClose }: PropsChart2) => {
                     className={`tw-border tw-w-full tw-text-center
                                 tw-font-bold tw-text-2xl`}
                 />
-                {type === 'map' ?
-                <>{!planLocation ? <></> :
+                {loading ?
+                    <Box sx={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        height: '100%',
+                        width: '100%',
+                    }}>
+                        <CircularProgress />
+                    </Box>
+                : type === 'map' ?
+                <>{planLocation == undefined ? <></> :
                     <MapContainer
-                        style={{width: '100%', height: '100%'}}
+                        style={{width: '100%'}}
                         center={[planLocation.lat, planLocation.lng]}
                         zoom={13}
                         bounds={[[bounding1, bounding3],[bounding2, bounding4]]}

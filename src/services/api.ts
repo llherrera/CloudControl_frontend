@@ -729,7 +729,7 @@ export const getDataDashboardSecretary = async (id_plan: number, secretary: stri
 }
 
 export const getDataDashboardMapsSecretary = async (id_plan: number, secretary: string, year: number) => {
-    const response = await api.get('plan-territorial/dash-secre', {
+    const response = await api.get('plan-territorial/dash-secre/mapa', {
         params: {
             id_plan,
             secretary,

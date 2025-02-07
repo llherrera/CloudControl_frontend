@@ -124,9 +124,9 @@ export const LevelsSelectFilter = ({callback}: PropsCallback) => {
     return (
         <div className='tw-flex tw-flex-wrap tw-mr-2'>
             {programs.map((program, index) =>
-                <div key={index} className='tw-my-2'>
+                <div key={index} className='tw-m-1'>
                     <select onChange={e => handleChangePrograms(index, e)}
-                            className='tw-w-28'>
+                            className='tw-w-28 tw-border tw-border-black'>
                         {program.map((node, index) =>
                             <option value={node.id_node}
                                 key={index}>
