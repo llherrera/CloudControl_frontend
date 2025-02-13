@@ -6,8 +6,8 @@ import { useAppSelector } from '@/store';
 export const Header = ( {children}: HeaderProps) => {
     const { logged } = useAppSelector(store => store.auth);
     return (
-        <main className="   tw-mx-auto tw-my-4
-                            tw-grid 
+        <main className="   tw-mx-auto
+                            tw-grid
                             md:tw-grid-cols-2
                             tw-items-center
                             tw-h-screen">

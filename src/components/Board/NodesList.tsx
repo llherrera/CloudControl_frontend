@@ -109,26 +109,26 @@ export const NodesList = ( props : IdProps ) => {
 
     const colorClass = (index: number) => (
         parseInt( ((progressNodes[index]??0)*100).toString()) < 0 ?
-        'tw-border-gray-400 hover:tw-border-gray-200' :
+        'tw-border-gray-400 group-hover:tw-border-gray-200' :
         parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[0] ?
-        'tw-border-redColory hover:tw-border-red-200' :
+        'tw-border-redColory group-hover:tw-border-red-200' :
         parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[1] ?
-        'tw-border-yellowColory hover:tw-border-yellow-200':
+        'tw-border-yellowColory group-hover:tw-border-yellow-200':
         parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[2] ?
-        'tw-border-greenColory hover:tw-border-green-200':
-        'tw-border-blueColory hover:tw-border-blue-200'
+        'tw-border-greenColory group-hover:tw-border-green-200':
+        'tw-border-blueColory group-hover:tw-border-blue-200'
     );
 
     const colorClass_ = (index: number) => (
         parseInt( ((progressNodes[index]??0)*100).toString()) < 0 ?
-        'tw-bg-gray-400 hover:tw-bg-gray-200' :
+        'tw-bg-gray-400 group-hover:tw-bg-gray-200' :
         parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[0] ?
-        'tw-bg-redColory hover:tw-bg-red-200' :
+        'tw-bg-redColory group-hover:tw-bg-red-200' :
         parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[1] ?
-        'tw-bg-yellowColory hover:tw-bg-yellow-200' :
+        'tw-bg-yellowColory group-hover:tw-bg-yellow-200' :
         parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[2] ?
-        'tw-bg-greenColory hover:tw-bg-green-200' :
-        'tw-bg-blueColory hover:tw-ring-blue-200'
+        'tw-bg-greenColory group-hover:tw-bg-green-200' :
+        'tw-bg-blueColory group-hover:tw-bg-blue-200'
     );
 
     const handleClickResult = () => {
@@ -143,18 +143,35 @@ export const NodesList = ( props : IdProps ) => {
                         'tw-flex tw-flex-row tw-flex-wrap':
                         'tw-flex-col tw-flex-wrap'} `} >
             {nodes.map((item: NodeInterface, index: number) =>
-                <div className="tw-my-2 tw-flex tw-transition hover:tw-scale-110"
+                <div className="tw-my-2 tw-flex tw-transition hover:tw-scale-110 tw-group"
                     key={item.id_node}>
-                    <button className={`tw-rounded tw-border-4 tw-bg-white
-                                        tw-flex tw-justify-center tw-items-center
+                    <button className={`tw-rounded tw-border-4 tw-bg-transparent
                                         ${colorClass(index)}
                                         tw-ml-3 tw-z-10
                                         tw-w-12 tw-h-12
-                                        tw-font-bold`}
+                                        tw-font-bold tw-overflow-hidden
+                                        tw-relative`}
                             onClick={ () => handleButton(index)}
                             title={`${item.description} ${indexLevel !== levels.length-1 ? '' : `\n${item.code.replace(/(\.\d+)(?=\.)/, '')}\n${item.responsible}`}`}>
-                        { parseInt( ((progressNodes[index] === undefined ||
-                            progressNodes[index] < 0 ? 0 : progressNodes[index])*100).toString())}%
+                        <div className='tw-absolute tw-inset-0 tw-z-20
+                                        tw-rounded-full tw-bg-transparent tw-text-black
+                                        tw-flex tw-justify-center tw-items-center'>
+                            { parseInt( ((progressNodes[index] === undefined || progressNodes[index] < 0 ? 0 : progressNodes[index])*100).toString())}%
+                        </div>
+                        {/*<div className={`tw-absolute tw-inset-0
+                                        ${colorClass_(index)}
+                                        tw-rounded-full tw-text-black tw-z-10`}
+                            style={{
+                                maskImage: `conic-gradient(from 0deg at 50% 50%, blue 0deg,
+                                            blue ${parseInt( ((progressNodes[index] === undefined || progressNodes[index] < 0 ? 0 : progressNodes[index])*100).toString())/100*360}deg,
+                                            transparent 0deg)`,
+                            }}
+                        />*/}
+                        {/*<div className={`tw-absolute tw-bottom-0 tw-left-0 tw-w-full tw-transition-all ${colorClass_(index)}`}
+                            style={{
+                                height: `${ parseInt( ((progressNodes[index] === undefined || progressNodes[index] < 0 ? 0 : progressNodes[index])*100).toString())}%`,
+                            }}
+                        />*/}
                     </button>
                     {indexLevel !== levels.length-1 ?
                     <button className={`${colorClass_(index)}
@@ -164,7 +181,7 @@ export const NodesList = ( props : IdProps ) => {
                                         tw-font-montserrat`}
                             onClick={ () => handleButton(index)}
                             title={item.description}>
-                        <p className='tw-truncate hover:tw-text-black'>
+                        <p className='tw-truncate group-hover:tw-text-black'>
                             {item.name}
                         </p>
                     </button>
@@ -193,7 +210,7 @@ export const NodesList = ( props : IdProps ) => {
             : null}
         </ul>
         {indexLevel === levels.length-1 ?
-        <div className='tw-flex tw-justify-center tw-ml-3
+        <div className='tw-flex tw-justify-center tw-mx-3
                         tw-border-t tw-border-slate-500'>
             <button
                 title="Metas de resultado"

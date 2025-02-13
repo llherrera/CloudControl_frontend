@@ -139,7 +139,7 @@ export const Frame = ({children}: FrameProps) => {
                         textColor={3 === index ? `tw-text-${bgcolor}` : `tw-text-${textcolor}`}
                     />
                     <ButtonComponent
-                        text='PLan de acción'
+                        text='Plan de acción'
                         inside={true}
                         onClick={() => {
                             dispatch(selectOption(4));
