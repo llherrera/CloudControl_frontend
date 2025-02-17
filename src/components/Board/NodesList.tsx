@@ -180,20 +180,6 @@ export const NodesList = ( props : IdProps ) => {
                                 <div className={`tw-absolute tw-bottom-0 tw-left-0 tw-w-full tw-h-full tw-transition-all ${colorClass_(index)}`}/>
                             : null
                         }
-                        {/*<div className={`tw-absolute tw-inset-0
-                                        ${colorClass_(index)}
-                                        tw-rounded-full tw-text-black tw-z-10`}
-                            style={{
-                                maskImage: `conic-gradient(from 0deg at 50% 50%, blue 0deg,
-                                            blue ${parseInt( ((progressNodes[index] === undefined || progressNodes[index] < 0 ? 0 : progressNodes[index])*100).toString())/100*360}deg,
-                                            transparent 0deg)`,
-                            }}
-                        />*/}
-                        {/*<div className={`tw-absolute tw-bottom-0 tw-left-0 tw-w-full tw-transition-all ${colorClass_(index)}`}
-                            style={{
-                                height: `${ parseInt( ((progressNodes[index] === undefined || progressNodes[index] < 0 ? 0 : progressNodes[index])*100).toString())}%`,
-                            }}
-                        />*/}
                     </button>
                     {indexLevel !== levels.length-1 ?
                     <button className={`${colorClass_(index)}

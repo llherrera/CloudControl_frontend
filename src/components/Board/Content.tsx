@@ -194,7 +194,7 @@ export const Content = ( props : IdProps ) => {
                 </div>
 
                 <div className="tw-rounded tw-shadow-lg tw-border
-                                tw-bg-white
+                                tw-bg-white tw-overflow-y-auto
                                 tw-mx-6 tw-mt-6
                                 md:tw-ml-6 md:tw-mr-3 md:tw-mt-0
                                 md:tw-order-first md:tw-w-[290px] md:tw-h-[270px]
