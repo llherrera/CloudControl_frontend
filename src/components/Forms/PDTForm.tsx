@@ -31,7 +31,8 @@ export const PDTForm = () => {
         end_date: new Date(fechaInicio + 3, 11, 31).toISOString(),
         description: "",
         deadline: "",
-        uuid: ''
+        uuid: '',
+        fill: 'vacio'
     });
 
     useEffect(() => {

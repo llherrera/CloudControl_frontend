@@ -1,23 +1,25 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 import {
-    InitialStatePlanInterface, Node, levelsPlan,
+    InitialStatePlanInterface, Node, levelsPlan_,
     Coordinates, LevelInterface } from "@/interfaces";
 import {
     setGenericState, getGenericState,
     removeGenericState, notify } from "@/utils";
 
 import {
-    thunkGetPDTid, thunkGetPDTByDept, thunkGetLastPDT,
     thunkAddPDT, thunkGetColors, thunkAddColors,
+    thunkAddActivityActionPlan, thunkupdatePDTFill,
+    thunkGetPDTid, thunkGetPDTByDept, thunkGetLastPDT,
     thunkUpdateColors, thunkGetNodes, thunkUpdateYears,
-    thunkGetLevelsById, thunkGetLevelName, thunkUpdateWeight,
-    thunkGetSecretaries, thunkAddSecretaries, thunkUpdateSecretaries,
+    thunkUpdateActivityActionPlan, thunkGetActionPlans,
     thunkAddLocations, thunkGetLocations, thunkAddLevel,
-    thunkAddNodes, removePDT, thunkUpdateLocations, thunkUpdateDeadline,
+    thunkAddActionPlan, thunkUpdateActionPlan, removePDT,
     thunkGetProjects, thunkAddProjects, thunkUpdateProjects,
-    thunkGetCountProjects, thunkGetPDTByUuid, thunkAddActionPlan, thunkUpdateActionPlan,
-    thunkUpdateActivityActionPlan, thunkGetActionPlans, thunkGetActivityActionPlan, thunkAddActivityActionPlan
+    thunkGetLevelsById, thunkGetLevelName, thunkUpdateWeight,
+    thunkAddNodes, thunkUpdateLocations, thunkUpdateDeadline,
+    thunkGetSecretaries, thunkAddSecretaries, thunkUpdateSecretaries,
+    thunkGetActivityActionPlan, thunkGetCountProjects, thunkGetPDTByUuid,
     } from "./thunks";
 
 const getInitialState = (): InitialStatePlanInterface => {
@@ -294,12 +296,14 @@ export const planSlice = createSlice({
             state.loadingColors = false;
             state.color = true;
             state.colorimeter = action.payload;
+            notify("Colorimetria guardados correctamente");
             setGenericState('plan', state);
         });
         builder.addCase(thunkAddColors.rejected, (state, action) => {
             state.loadingColors = false;
             state.color = false;
             state.errorLoadingColors = action.payload;
+            notify(action.payload?.error_description ?? 'Ha occurido un error', 'error');
         });
 
 
@@ -328,12 +332,14 @@ export const planSlice = createSlice({
             state.loadingColors = false;
             state.color = true;
             state.colorimeter = action.payload;
+            notify("Colorimetria actualizados correctamente");
             setGenericState('plan', state);
         });
         builder.addCase(thunkUpdateColors.rejected, (state, action) => {
             state.loadingColors = false;
             state.color = false;
             state.errorLoadingColors = action.payload;
+            notify(action.payload?.error_description ?? 'Ha occurido un error', 'error');
         });
 
 
@@ -636,7 +642,7 @@ export const planSlice = createSlice({
             state.selectedPlan!.rubros = action.payload[1];
             state.selectedPlan!.nodes = action.payload[2];
             for (let i = 0; i < action.payload[3].length; i++) {
-                const str = `level_${i + 1}` as keyof levelsPlan;
+                const str = `level_${i + 1}` as keyof levelsPlan_;
                 state.selectedPlan![str] = action.payload[3][i].name;
             }
             state.selectedPlan!.nodesResult = action.payload[4];
@@ -714,6 +720,23 @@ export const planSlice = createSlice({
         builder.addCase(thunkUpdateActivityActionPlan.rejected, (state, action) => {
             state.loadingActivityActionPlan = false;
             state.errorLoadingActivityActionPlan = action.payload;
+            notify(action.payload?.error_description ?? errorMSGUpdate, 'error');
+        });
+
+
+        builder.addCase(thunkupdatePDTFill.pending, state => {
+            if (!state.loadingPlan) state.loadingPlan = true;
+            state.errorLoadingPlan = undefined;
+        });
+        builder.addCase(thunkupdatePDTFill.fulfilled, (state, action) => {
+            state.loadingPlan = false;
+            state.plan!.fill = action.payload;
+            notify('Actualizado', 'success');
+            setGenericState('plan', state);
+        });
+        builder.addCase(thunkupdatePDTFill.rejected, (state, action) => {
+            state.loadingPlan = false;
+            state.errorLoadingPlan = action.payload;
             notify(action.payload?.error_description ?? errorMSGUpdate, 'error');
         });
     }

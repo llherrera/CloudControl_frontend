@@ -239,6 +239,13 @@ export const updatePDT = async (id: number, pdt: PDTInterface) => {
     return response.data;
 }
 
+export const updatePDTFill = async (id: number, fill: string) => {
+    const response = await api.put(`/plan-territorial/${id}`, {
+        fill
+    });
+    return response.data;
+}
+
 export const uploadLogoCity = async ( id: number, logo: File ) => {
     const response = await api.put("/plan-territorial/logo", 
     {

@@ -28,6 +28,7 @@ export interface PDTInterface {
     logo_link_city?: string;
     deadline: null | string;
     uuid: string;
+    fill: string;
 }
 
 export interface LevelInterface {

@@ -109,7 +109,7 @@ export const Content = ( props : IdProps ) => {
                 <div className="tw-flex tw-items-center">
                     Plan indicativo
                     {rol === 'admin' || ((rol === 'funcionario' || rol === 'planeacion') && id === props.id) ? 
-                        <SettingsBtn handle={() => handleSettings()} id={props.id}/>
+                        <SettingsBtn handle={() => handleSettings(1)} id={props.id}/>
                         : null
                     }
                     {rol === 'admin' || ((rol === 'funcionario' || rol === 'planeacion') && id === props.id) ? 

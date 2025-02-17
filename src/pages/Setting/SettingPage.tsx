@@ -36,7 +36,7 @@ const SettingPageWrapper = () => {
 
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [yearSelect, setYearSelect] = useState<number | undefined>(plan ? plan.deadline ? parseInt(plan.deadline.split('-')[0]) : undefined : undefined);
-    const [page, setPage] = useState(pageN ?? 0);
+    const [page, setPage] = useState(pageN ?? 1);
     const [rol, setRol] = useState("");
 
     const contentRef = useRef<HTMLDivElement>(null);
@@ -96,14 +96,14 @@ const SettingPageWrapper = () => {
             <DrawerMenu>
                 <ListItemComp
                     page={page}
-                    index={0}
-                    setPage={() => handlePage(0)}
-                    title='Cargar plan'/>
-                <ListItemComp
-                    page={page}
                     index={1}
                     setPage={() => handlePage(1)}
                     title='Ajustes'/>
+                <ListItemComp
+                    page={page}
+                    index={0}
+                    setPage={() => handlePage(0)}
+                    title='Cargar plan'/>
                 <ListItemComp
                     page={page}
                     index={2}
@@ -144,7 +144,7 @@ const SettingPageWrapper = () => {
                         {rol === "admin" ? <FileUnitInput/>: null}
                     </div> :
                 page === 1 ?
-                    <div>
+                    <div className='tw-pb-2'>
                         {rol === "admin" || (rol === 'funcionario' && id_plan === plan.id_plan! ) ?
                             <div className='tw-flex tw-justify-center
                                             tw-gap-6 tw-items-center
@@ -219,7 +219,7 @@ const SettingPageWrapper = () => {
                             </div>
                             : null
                         }
-                        <div className='tw-flex tw-justify-center
+                        <div className=' tw-justify-center
                                         tw-ml-4 tw-mt-4
                                         tw-bg-white
                                         tw-rounded'>

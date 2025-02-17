@@ -17,12 +17,14 @@ export const NodesList = ( props : IdProps ) => {
 
     const { token_info } = useAppSelector(store => store.auth);
     const { nodes, yearSelect, levels, indexLevel, progressNodes, calcDone,
-        colorimeter, loadingNodes, rootTree } = useAppSelector(store => store.plan);
+        colorimeter, loadingNodes, rootTree, plan } = useAppSelector(store => store.plan);
     const { mode } = useAppSelector(store => store.content);
     const [ pesos, setPesos ] = useState<number[]>(nodes.map((item: NodeInterface) => item.weight));
 
     const [rol, setRol] = useState("");
     const [id, setId] = useState(0);
+
+    if (plan == undefined) return <>Plan no definido</>;
 
     useEffect(() => {
         if (token_info?.token !== undefined) {
@@ -158,6 +160,26 @@ export const NodesList = ( props : IdProps ) => {
                                         tw-flex tw-justify-center tw-items-center'>
                             { parseInt( ((progressNodes[index] === undefined || progressNodes[index] < 0 ? 0 : progressNodes[index])*100).toString())}%
                         </div>
+                        {plan.fill === 'vertical' ?
+                            <div className={`tw-absolute tw-bottom-0 tw-left-0 tw-w-full tw-transition-all ${colorClass_(index)}`}
+                                style={{
+                                    height: `${ parseInt( ((progressNodes[index] === undefined || progressNodes[index] < 0 ? 0 : progressNodes[index])*100).toString())}%`,
+                                }}
+                            /> :
+                        plan.fill === 'radial' ?
+                            <div className={`tw-absolute tw-inset-0
+                                            ${colorClass_(index)}
+                                            tw-text-black tw-z-10`}
+                                style={{
+                                    maskImage: `conic-gradient(from 0deg at 50% 50%, blue 0deg,
+                                                blue ${parseInt( ((progressNodes[index] === undefined || progressNodes[index] < 0 ? 0 : progressNodes[index])*100).toString())/100*360}deg,
+                                                transparent 0deg)`,
+                                }}
+                            /> :
+                            plan.fill === 'completo' ?
+                                <div className={`tw-absolute tw-bottom-0 tw-left-0 tw-w-full tw-h-full tw-transition-all ${colorClass_(index)}`}/>
+                            : null
+                        }
                         {/*<div className={`tw-absolute tw-inset-0
                                         ${colorClass_(index)}
                                         tw-rounded-full tw-text-black tw-z-10`}
