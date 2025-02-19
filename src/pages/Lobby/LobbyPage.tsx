@@ -70,10 +70,19 @@ export const LobbyPage = () => {
                 bgColor="tw-bg-greenBtn"/>
             <ButtonComponent
                 inside={false}
+                text='Plan de acción'
+                icon={<PlanAccionIcon color='white'/>}
+                onClick={() => {
+                    dispatch(selectOption(1));
+                    navigate('/PlanIndicativo/Plan-accion');
+                }}
+                bgColor="tw-bg-greenBtn"/>
+            <ButtonComponent
+                inside={false}
                 text='Banco de proyectos'
                 icon={<ProjectBankIcon color='white'/>}
                 onClick={() => {
-                    dispatch(selectOption(1));
+                    dispatch(selectOption(2));
                     dispatch(setProjectPage(5));
                     navigate('/PlanIndicativo/Banco-proyectos');
                 }}
@@ -83,7 +92,7 @@ export const LobbyPage = () => {
                 text='POAI'
                 icon={<ChartIcon color='white'/>}
                 onClick={() => {
-                    dispatch(selectOption(2));
+                    dispatch(selectOption(3));
                     navigate('/PlanIndicativo/POAI');
                 }}
                 bgColor="tw-bg-greenBtn"/>
@@ -92,17 +101,8 @@ export const LobbyPage = () => {
                 text='Mapa de intervención'
                 icon={<MapICon color='white'/>}
                 onClick={() => {
-                    dispatch(selectOption(3));
-                    navigate('/PlanIndicativo/Mapa');
-                }}
-                bgColor="tw-bg-greenBtn"/>
-            <ButtonComponent
-                inside={false}
-                text='PLan de acción'
-                icon={<PlanAccionIcon color='white'/>}
-                onClick={() => {
                     dispatch(selectOption(4));
-                    navigate('/PlanIndicativo/Plan-accion');
+                    navigate('/PlanIndicativo/Mapa');
                 }}
                 bgColor="tw-bg-greenBtn"/>
             {/*<ButtonComponent

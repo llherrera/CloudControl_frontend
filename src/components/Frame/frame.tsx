@@ -99,58 +99,59 @@ export const Frame = ({children}: FrameProps) => {
                         textColor={0 === index ? `tw-text-${bgcolor}` : `tw-text-${textcolor}`}
                     />
                     <ButtonComponent
+                        text='Plan de acción'
+                        inside={true}
+                        onClick={() => {
+                            dispatch(selectOption(1));
+                            dispatch(AddRootTree([]));
+                            dispatch(setZeroLevelIndex());
+                            navigate('/PlanIndicativo/Plan-accion', {replace: true});
+                        }}
+                        icon={<PlanAccionIcon color={ index === 1 ? logocolor : textcolor}/>}
+                        bgColor={1 === index ? `tw-bg-${textcolor}` : `tw-bg-${bgcolor}`}
+                        textColor={1 === index ? `tw-text-${bgcolor}` : `tw-text-${textcolor}`}
+                    />
+                    <ButtonComponent
                         text={`Banco de proyectos`}
                         inside={true}
                         onClick={ () => {
-                            dispatch(selectOption(1));
+                            dispatch(selectOption(2));
                             dispatch(setProjectPage(5));
                             dispatch(AddRootTree([]));
                             dispatch(setZeroLevelIndex());
                             navigate('/PlanIndicativo/Banco-proyectos', {replace: true});
                         }}
-                        icon={<ProjectBankIcon color={ index === 1 ? logocolor : textcolor}/>}
-                        bgColor={1 === index ? `tw-bg-${textcolor}` : `tw-bg-${bgcolor}`}
-                        textColor={1 === index ? `tw-text-${bgcolor}` : `tw-text-${textcolor}`}
+                        icon={<ProjectBankIcon color={ index === 2 ? logocolor : textcolor}/>}
+                        bgColor={2 === index ? `tw-bg-${textcolor}` : `tw-bg-${bgcolor}`}
+                        textColor={2 === index ? `tw-text-${bgcolor}` : `tw-text-${textcolor}`}
                     />
                     <ButtonComponent
                         text={`POAI`}
                         inside={true}
                         onClick={ () => {
-                            dispatch(selectOption(2));
+                            dispatch(selectOption(3));
                             dispatch(AddRootTree([]));
                             dispatch(setZeroLevelIndex());
                             navigate('/PlanIndicativo/POAI', {replace: true});
                         }}
-                        icon={<ChartIcon color={ index === 2 ? logocolor : textcolor}/>}
-                        bgColor={2 === index ? `tw-bg-${textcolor}` : `tw-bg-${bgcolor}`}
-                        textColor={2 === index ? `tw-text-${bgcolor}` : `tw-text-${textcolor}`}
+                        icon={<ChartIcon color={ index === 3 ? logocolor : textcolor}/>}
+                        bgColor={3 === index ? `tw-bg-${textcolor}` : `tw-bg-${bgcolor}`}
+                        textColor={3 === index ? `tw-text-${bgcolor}` : `tw-text-${textcolor}`}
                     />
                     <ButtonComponent
                         text={`Mapa de intervención`}
                         inside={true}
                         onClick={ () => {
-                            dispatch(selectOption(3));
+                            dispatch(selectOption(4));
                             dispatch(AddRootTree([]));
                             dispatch(setZeroLevelIndex());
                             navigate('/PlanIndicativo/Mapa', {replace: true});
                         }}
-                        icon={<MapICon color={ index === 3 ? logocolor : textcolor}/>}
-                        bgColor={3 === index ? `tw-bg-${textcolor}` : `tw-bg-${bgcolor}`}
-                        textColor={3 === index ? `tw-text-${bgcolor}` : `tw-text-${textcolor}`}
-                    />
-                    <ButtonComponent
-                        text='Plan de acción'
-                        inside={true}
-                        onClick={() => {
-                            dispatch(selectOption(4));
-                            dispatch(AddRootTree([]));
-                            dispatch(setZeroLevelIndex());
-                            navigate('/PlanIndicativo/Plan-accion', {replace: true});
-                        }}
-                        icon={<PlanAccionIcon color={ index === 4 ? logocolor : textcolor}/>}
+                        icon={<MapICon color={ index === 4 ? logocolor : textcolor}/>}
                         bgColor={4 === index ? `tw-bg-${textcolor}` : `tw-bg-${bgcolor}`}
                         textColor={4 === index ? `tw-text-${bgcolor}` : `tw-text-${textcolor}`}
                     />
+                    
                     {/*<ButtonComponent
                         inside={false}
                         text='PQRS'
