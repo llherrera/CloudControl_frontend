@@ -158,7 +158,7 @@ export const NodesList = ( props : IdProps ) => {
                         <div className='tw-absolute tw-inset-0 tw-z-20
                                         tw-rounded-full tw-bg-transparent tw-text-black
                                         tw-flex tw-justify-center tw-items-center'>
-                            { parseInt( ((progressNodes[index] === undefined || progressNodes[index] < 0 ? 0 : progressNodes[index])*100).toString())}%
+                            { Math.round( ((progressNodes[index] === undefined || progressNodes[index] < 0 ? 0 : progressNodes[index])*100))}%
                         </div>
                         {plan.fill === 'vertical' ?
                             <div className={`tw-absolute tw-bottom-0 tw-left-0 tw-w-full tw-transition-all ${colorClass_(index)}`}

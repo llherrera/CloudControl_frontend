@@ -246,7 +246,10 @@ export const Content = ( props : IdProps ) => {
                         <ModalBoard/>
                     </div>
                     <Graph
-                        dataValues={ radioBtn === 'fisica' ? progressNodes : financial}/>
+                        dataValues={ radioBtn === 'fisica' ?
+                            progressNodes.map(p => Math.round(p*100)) :
+                            financial.map(p => Math.round(p*100)/100)}
+                    />
                 </div>
 
             </div>

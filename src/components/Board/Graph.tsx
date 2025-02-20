@@ -62,6 +62,16 @@ export const Graph = ( props: GraphProps ) => {
             enabled: false,
         },
         plotOptions: {
+            series: {
+                dataLabels:[{
+                    enabled: true,
+                    //distance: -30,
+                    format: radioBtn === 'fisica' ? '{y}%' : '{y} M',
+                    formatter: function() {
+                        return Highcharts.numberFormat(this.y??0, 0, ',', '.');
+                    }
+                }],
+            },
             pie: {
                 dataLabels: {
                     enabled: false,
@@ -93,32 +103,35 @@ export const Graph = ( props: GraphProps ) => {
                 ],
             },
         ],
+        xAxis: {
+            categories: categories
+        },
         yAxis: {
             title: {
-                text: radioBtn === 'fisica' ? 'Percentages de ejecución fisica' : 'Ejecución financiera',
+                text: radioBtn === 'fisica' ? 'Porcentajes de ejecución física' : 'Ejecución financiera',
             },
             labels: {
                 formatter: function () {
-                    return this.value + (radioBtn === 'fisica' ? '' : 'M');
+                    return this.value + (radioBtn === 'fisica' ? '%' : 'M');
                 },
             },
         },
         series: [
             {
-                name: radioBtn === 'fisica' ? 'Percentages de ejecución fisica año' : 'Ejecución financiera año',
+                name: radioBtn === 'fisica' ? 'Porcentajes de ejecución física año' : 'Ejecución financiera año',
                 type: type === 'donut' ? 'pie' : type.valueOf() as any,
                 data: pieValues,
                 zones: radioBtn === 'fisica' ? [
                     {
-                        value: colorimeter[0]/100,
+                        value: colorimeter[0],
                         color: '#FE1700',
                     },
                     {
-                        value: colorimeter[1]/100,
+                        value: colorimeter[1],
                         color: '#FCC623',
                     },
                     {
-                        value: colorimeter[2]/100,
+                        value: colorimeter[2],
                         color: '#119432',
                     },
                     {
@@ -143,18 +156,17 @@ export const Graph = ( props: GraphProps ) => {
     };
 
     return (
-        <div className="tw-flex tw-flex-col 
+        <div className="tw-flex tw-flex-col
                         tw-pb-3
-                        tw-items-center 
+                        tw-items-center
                         md:tw-flex-row
                         md:tw-flex-wrap
-                        md:tw-justify-around
-                        ">
-            <div className='tw-flex tw-flex-col 
-                            tw-w-full md:tw-w-1/3 tw-h-full 
+                        md:tw-justify-around">
+            <div className='tw-flex tw-flex-col
+                            tw-w-full md:tw-w-1/3 tw-h-full
                             tw-justify-around'>
-                <select name="type" id="type" 
-                        onChange={onChangeType} 
+                <select name="type" id="type"
+                        onChange={onChangeType}
                         value={typeList[indexType].value}
                         className='tw-border tw-self-start tw-p-2 tw-m-2'>
                     {typeList.map((type)=><option value={type.value} key={type.value}>{type.type}</option>)}
@@ -165,7 +177,7 @@ export const Graph = ( props: GraphProps ) => {
                             className='tw-mr-2'
                             onChange={ ()=> dispatch(setRadioBtn('fisica'))}
                             checked={radioBtn === 'fisica'}/>
-                    <label htmlFor='fisica'>Ejecución fisica</label><br />
+                    <label htmlFor='fisica'>Ejecución física</label><br />
                     <input  type="radio"
                             id='financiera'
                             className='tw-mr-2'
