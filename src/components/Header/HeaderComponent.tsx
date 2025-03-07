@@ -1,5 +1,6 @@
 //import cclogo from "@/assets/images/logo-cc.png";
-import cclogo from "@/assets/images/ControlLand.png";
+//import cclogo from "@/assets/images/ControlLand.png";
+import cclogo from "@/assets/images/ControlLand2.png";
 import { HeaderProps } from "@/interfaces";
 import { useAppSelector } from '@/store';
 

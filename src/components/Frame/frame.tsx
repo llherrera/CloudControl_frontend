@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { IconButton } from '@mui/material';
 import LogoutIcon from '@mui/icons-material/Logout';
 //import cclogo from '@/assets/images/logo-cc.png';
-import cclogo from "@/assets/images/ControlLand.png";
+//import cclogo from "@/assets/images/ControlLand.png";
+import cclogo from "@/assets/images/ControlLand2.png";
 
 import { useAppDispatch, useAppSelector } from '@/store';
 import { thunkLogout } from '@/store/auth/thunks';

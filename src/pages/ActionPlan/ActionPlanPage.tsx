@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { Frame, Options, BackBtn } from '@/components';
-import cclogo from "@/assets/images/ControlLand.png";
+//import cclogo from "@/assets/images/ControlLand.png";
+import cclogo from "@/assets/images/ControlLand2.png";
 
 import { useAppSelector, useAppDispatch } from '@/store';
 import { thunkGetSecretaries } from '@/store/plan/thunks';
