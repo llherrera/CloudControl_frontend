@@ -58,7 +58,7 @@ export const authSlice = createSlice({
         }
         state.errorAuthenticating = {
           status: action.payload.status,
-          error_code: action.payload.error_code || action.payload.error,
+          error_code: action.payload.error_code ?? action.payload.error,
           error_description: error_text
         };
       } else {

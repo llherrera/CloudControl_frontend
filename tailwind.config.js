@@ -21,6 +21,12 @@ export default {
         'yellowColory': '#FCC623',
         'greenColory': '#119432',
         'blueColory': '#008DCC',
+        'logoBorder': '#273b53',
+        'hoverBlueBar': '#049cdb',
+        'blueBar': '#d9edf7'
+      },
+      transitionProperty: {
+        'height': 'height',
       }
     },
     fontSize: {

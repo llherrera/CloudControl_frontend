@@ -1,9 +1,9 @@
 export const getEnvironment = () => {
     return {
-        BASE_URL: import.meta.env.VITE_BASE_URL,
-        API_COL: import.meta.env.VITE_COLOMBIA_API_URL,
-        GEOPORTAL_BASE_URL: import.meta.env.VITE_GEOPORTAL_DANE_API,
-        API_KEY: import.meta.env.VITE_API_KEY_MAPS,
-        ENC_KEY: import.meta.env.VITE_ENCRYPTED_KEY
+        BASE_URL: process.env.VITE_BASE_URL,
+        ENC_KEY: process.env.VITE_ENCRYPTED_KEY,
+        URL_CHAT: process.env.VITE_URL_CHAT,
+        GEOCODER_API: process.env.VITE_GEOCODER_API,
+        URL_FILES: process.env.VITE_FIRESTORE_URL
     }
 }

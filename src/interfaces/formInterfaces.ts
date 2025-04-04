@@ -1,4 +1,5 @@
 export interface RegisterInterface {
+    readonly id_user: number;
     username: string;
     lastname: string;
     email: string;
@@ -15,7 +16,7 @@ export interface UserInterface {
 }
 
 export interface PDTInterface {
-    id_plan?: number;
+    readonly id_plan: number;
     name: string;
     department: string;
     municipality: string;
@@ -25,6 +26,9 @@ export interface PDTInterface {
     end_date: string;
     logo_link_plan?: string;
     logo_link_city?: string;
+    deadline: null | string;
+    uuid: string;
+    fill: string;
 }
 
 export interface LevelInterface {
@@ -35,21 +39,42 @@ export interface LevelInterface {
 
 export interface NodeInterface {
     id_node: string;
+    code: string;
     name: string;
     description: string;
     parent: (string | null);
     id_level: number;
     weight: number;
+    responsible?: (string | null);
+}
+
+export interface ListNode extends NodeInterface {
+    tree: string;
 }
 
 export interface UnitInterface {
     code: string,
+    id_node: string,
     description: string,
     indicator: string,
     base: number,
     goal: number,
     responsible: string,
-    years: YearInterface[]
+    years: YearInterface[],
+    hv_indicator: string
+}
+
+export interface UnitNodeInterface {
+    readonly id_node: string;
+    name: string;
+    id_plan: number;
+    code: string;
+    description: string;
+    indicator: string;
+    base_line: number;
+    goal: number;
+    responsible: string;
+    link_hv_indicator: string;
 }
 
 export interface YearInterface {
@@ -80,6 +105,18 @@ export interface EvidenceInterface {
     file_link: string;
     locations: UbicationDB[];
     state: number;
+    name?: string;
+    responsible?: string;
+}
+
+export interface ExecutionInterface {
+    year: Date;
+    code: string;
+    readonly id_node: string;
+    physical_execution: number;
+    modified_execution: number;
+    modified_date: Date;
+    id_user: number;
 }
 
 export interface LoginProps {
@@ -94,13 +131,53 @@ export interface UbicationDB {
     lng: number;
 }
 export enum locationTypes {
-    neighborhood = 'Barrio / Vereda',
-    commune = 'Comuna / Corregimiento',
+    neighborhood = 'Barrio',
+    vereda = 'Vereda',
+    center = 'Centro poblado',
 }
 export interface LocationInterface {
-    id_plan: number
-    type: locationTypes
+    id_plan: number;
+    type: string;
     name: string;
-    lat?: number
-    lng?: number
+    lat?: number;
+    lng?: number;
+    belongs?: string;
+}
+
+export interface PQRSInform {
+    id_plan: number;
+    tipo_solicitante: string;
+	tipo_identificacion: string; 
+	numero_identificacion: number;
+	razon_social: string;
+	primer_nombre: string;
+	segundo_nombre?: string;
+	primer_apellido: string;
+	segundo_apellido: string;
+	email: string;
+	telefono: number
+	direccion: string;
+	barrio: string;
+	ciudad: string;
+	departamento: string;
+	pais: string;
+    fecha: Date;
+    tipo_peticion: string;
+    secretaria: string;
+    asunto: string;
+    peticion: string;
+}
+
+export interface UnitNodeResultInterface {
+    readonly id_node: string;
+    readonly code: string;
+    readonly id_plan: number;
+    description: string;
+    indicator: string;
+    base_line: number;
+    goal: number;
+    executed: number;
+    responsible: string;
+    unitMeter: string;
+    unitNodes: string[]
 }

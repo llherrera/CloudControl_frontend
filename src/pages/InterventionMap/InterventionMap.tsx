@@ -1,272 +1,152 @@
-import  React, 
-    {   useState, 
-        useCallback, 
-        useEffect } from 'react';
-import {useNavigate } from 'react-router-dom';
-import {
-    GoogleMap, 
-    useJsApiLoader, 
-    InfoWindow, 
-    Marker } from '@react-google-maps/api';
-import { ToastContainer, toast } from 'react-toastify';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+import { MapContainer, TileLayer, Marker,
+    Popup, Rectangle } from 'react-leaflet';
+import { Icon } from 'leaflet';
+
+import { useAppSelector } from '@/store';
+
+import { BackBtn, Frame, SecretarySelect } from '@/components';
+
+import MarkerIcon from '@/assets/icons/location.svg';
 import "react-toastify/dist/ReactToastify.css";
-import icono from "@/assets/icons/location.svg";
-
-import { useAppDispatch, useAppSelector } from '@/store';
-import { setEvidences } from '@/store/evidence/evidenceSlice';
-
-import {
-    BackBtn, 
-    Frame } from '@/components';
-import {
-    Coordinates, 
-    NodeInterface, 
-    Node, 
-    EvidenceInterface } from '@/interfaces';
-import { 
-    getLevelNodes, 
-    getUbiEvidences, 
-    getCodeEvidences } from '@/services/api';
+import 'leaflet/dist/leaflet.css';
 
 export const InterventionMap = () => {
     return (
-        <Frame
-            data={<Section/>}
-        />
+        <Frame>
+            <Section/>
+        </Frame>
     );
 }
 
-const API_KEY = import.meta.env.VITE_API_KEY_MAPS as string;
-
-const containerStyle = {
-    width: '500px',
-    height: '500px',
-    borderRadius: '15px'
-};
-
-const mapOptions = {
-    disableDefaultUI: true,
-    zoom: 0,
-    restriction: {
-        latLngBounds: {
-            north: 13.011493,
-            east: -66.9,
-            south: -4.334669,
-            west: -79.314914
-        }
-    },
-};
-
 const Section = () => {
-    const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
-    const { levels, planLocation } = useAppSelector(state => state.plan);
-    const { evidences } = useAppSelector(store => store.evidence);
-    const { id_plan } = useAppSelector(store => store.content);
+    const { planLocation, bounding1, bounding2,
+        bounding3, bounding4 } = useAppSelector(store => store.plan);
+    const { id_plan, locs, secretary } = useAppSelector(store => store.content);
 
-    const { isLoaded } = useJsApiLoader({
-        id: 'google-map-script',
-        googleMapsApiKey: API_KEY
-    });
-
-    const [map, setMap] = useState<google.maps.Map|null>(null);
-    const [ubication, setUbication] = useState<Coordinates>({lat: 10.96854, lng: -74.78132});
-
-    const [programs, setPrograms] = useState<NodeInterface[][]>([]);
-    const [index_, setIndex] = useState<number[]>([0, 0]);
-    const [codes, setCodes] = useState<string[]>([]);
-
-    const [showTooltip, setShowTooltip] = useState<boolean>(false);
+    const [markers, setMarkers] = useState<JSX.Element[]>([]);
 
     useEffect(() => {
-        navigator.geolocation.getCurrentPosition((position) => {
-            setUbication({lat: position.coords.latitude, lng: position.coords.longitude});
-        }, (error) => {
-            console.log(error);
-        }, {
-            enableHighAccuracy: true,
-            timeout: 5000,
-            maximumAge: 0
-        });
-    }, []);
-
-    useEffect(() => {
-        if (!map || !planLocation) return;
-        map.setCenter(planLocation);
-    }, []);
-
-    useEffect(() => {
-        const fetch = async () => {
-            await getUbiEvidences(id_plan)
-            .then((res)=> {
-                localStorage.setItem('evidences', JSON.stringify(res));
-                if (res.length === 0)
-                    notify();
+        if (locs.length === 0) {
+            setMarkers([]);
+        } else {
+            let markers: JSX.Element[] = [];
+            locs.forEach(loc => {
+                const { lat, lng } = loc;
+                const marker = 
+                <Marker key={loc.lat+loc.date}
+                    position={[lat, lng]}
+                    icon={new Icon({
+                        iconUrl: MarkerIcon,
+                        iconSize: [25,41],
+                        iconAnchor: [12, 41]
+                    })}>
+                    <Popup>
+                        <div>
+                            <div className='tw-flex tw-gap-1 tw--mb-4'>
+                                <p className='tw-font-bold'>Fecha de evidencia: </p>
+                                <p>{loc.date.split('T')[0]}</p>
+                            </div>
+                            <p className='tw-font-bold'>{loc.responsible}</p>
+                            <div className='tw-flex tw-gap-1 tw--my-4'>
+                                <p className='tw-font-bold'>Meta:</p> <p>{loc.code}</p>
+                            </div>
+                            <p>{loc.name}</p>
+                            <div className='tw-flex tw-gap-1'>
+                                <p className='tw-font-bold'>Actividades: </p>
+                                <p>{loc.activitiesDesc}</p>
+                            </div>
+                            <div className='tw-flex tw-gap-1 tw--my-4'>
+                                <p className='tw-font-bold'>Población beneficiada:</p>
+                                <p>{loc.benefited_population}</p>
+                            </div>
+                            <div className='tw-flex tw-gap-1 tw--my-4'>
+                                <p className='tw-font-bold'>Cantidad de personas beneficiadas:</p>
+                                <p>{loc.benefited_population_number}</p>
+                            </div>
+                            <div className='tw-flex tw-gap-1 tw--my-4'>
+                                <p className='tw-font-bold'>Fuente de recursos:</p><p>{loc.resource_font}</p>
+                            </div>
+                            <div className='tw-flex tw-gap'>
+                                <p className='tw-font-bold'>Recursos ejecutados:</p><p>{loc.executed_resources}</p>
+                            </div>
+                        </div>
+                    </Popup>
+                </Marker>
+                markers.push(marker);
             });
+            //evidences.forEach((item) => {
+            //    item.locations.forEach((location, index) => {
+            //        const { lat, lng } = location;
+            //        const marker__ = <Marker key={item.id_evidence + index} 
+            //            position={[lat, lng]}>
+            //            <Popup>
+            //                {item.date.split('T')[0]} <br /><br />
+            //                {item.name} <br /><br />
+            //                {item.activitiesDesc} <br />
+            //                {item.responsible}
+            //            </Popup>
+            //        </Marker>
+            //        markers__.push(marker__);
+            //    });
+            //});
+            setMarkers(markers);
         }
-        fetch();
-    }, []);
-
-    useEffect(() => {
-        const fetch = async () => {
-            if (levels.length === 0) return;
-            let parent: (string | null) = null;
-            let response = [] as NodeInterface[][];
-            for (let i = 0; i < 2; i++) {
-                const { id_level } = levels[i];
-                if (id_level) {
-                    const res: NodeInterface[] = await getLevelNodes({id_level: id_level, parent: parent});
-                    let temp_ = [] as NodeInterface[];
-                    res.forEach((item:Node) => {
-                        temp_.push({
-                            id_node: item.id_node,
-                            name: item.name,
-                            description: item.description,
-                            parent: item.parent,
-                            id_level: item.id_level,
-                            weight: 0,
-                        });
-                    });
-                    if (res.length === 0) break;
-                    const temp = [...programs];
-                    temp[i] = temp_;
-                    parent = res[index_[i]].id_node;
-                    response.push(temp_);
-                }
-            }
-            response[0].push({
-                id_node: '',
-                name: 'Todas',
-                description: '',
-                parent: null,
-                id_level: 0,
-                weight: 0,
-            })
-            setPrograms(response);
-        }
-        fetch();
-    }, [index_]);
-
-    useEffect(() => {
-        const fetch = async () => {
-            if (programs.length === 0) return;
-            await getCodeEvidences(programs[1][index_[1]].id_node, id_plan)
-            .then((res) => {
-                setCodes(res);
-            });
-        }
-        fetch();
-    }, [programs]);
-
-    useEffect(() => {
-        if (codes.length === 0) return;
-        const evidencesLocal = localStorage.getItem('evidences');
-        const evidens = JSON.parse(evidencesLocal as string) as EvidenceInterface[];
-        let temp = [] as EvidenceInterface[];
-        evidens.forEach((item: EvidenceInterface) => {
-            if (codes.includes(item.code)) {
-                temp.push(item);
-            }
-        });
-        dispatch(setEvidences(temp));
-    }, [codes]);
-
-    const onLoad = useCallback(function callback(map: google.maps.Map) {
-        setMap(map);
-    }, []);
-
-    const onUnmount = useCallback(function callback() {
-        setMap(null);
-    }, []);
+    }, [locs]);
 
     const handleBack = () => navigate(-1);
 
-    const handleChangePrograms = (index: number, event: React.ChangeEvent<HTMLSelectElement>) => {
-        const newIndex = event.target.selectedIndex;
-        let newIndex_ = [...index_];
-        if (newIndex === 0) {
-            newIndex_[index] = newIndex;
-        } else if (newIndex === programs[index].length) {
-            const evidencesLocal = localStorage.getItem('evidence');
-            const evidens = JSON.parse(evidencesLocal as string);
-            dispatch(setEvidences(evidens));
-        } else {
-            newIndex_[index] = newIndex;
-            for (let i = index+1; i < newIndex_.length; i++) {
-                newIndex_[i] = 0;
-            }
-        }
-        setIndex(newIndex_);
-    };
-
-    const handleShowTooltip = () => setShowTooltip(true);
-
-    const notify = () => toast("No hay evidencias para mostrar", { 
-        position: "top-center",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "light",
-    });
-
+    
     return (
-        <div className={`tw-bg-[url('/src/assets/images/bg-plan-indicativo.png')]
-                        tw-pb-3`} >
+        planLocation === undefined ?
+        <p>Cargando...</p>:
+        <div className={``} >
             <div className='tw-flex tw-my-4'>
                 <BackBtn handle={handleBack} id={id_plan} />
-                <h1 className='tw-grow tw-text-center'>Mapa de intervenciones</h1>
+                <h1 className='tw-grow tw-text-center'>
+                    <p className='  tw-inline-block tw-bg-white
+                                    tw-p-2 tw-rounded
+                                    tw-font-bold tw-text-xl'>
+                        Mapa de intervenciones
+                    </p>
+                </h1>
             </div>
-            <ToastContainer />
 
-            <div className='tw-flex tw-justify-center tw-mb-3'>
-                {programs.map((program, index) => (
-                    <div className='tw-flex tw-flex-col' key={index}>
-                        <label className='tw-text-center'>
-                            {levels[index].name}
-                        </label>
-                        <select value={program[index_[index]].name}
-                                onChange={(e)=>handleChangePrograms(index, e)}
-                                className='tw-border tw-border-gray-300 tw-rounded tw-mr-3 '>
-                            {program.map((node, index) => (<option value={node.name} key={index}>{node.name}</option>))}
-                        </select>
-                    </div>
-                ))}
+            <div className='tw-flex tw-justify-center
+                            tw-gap-2 tw-mx-2 tw-pb-2
+                            tw-relative'>
+                <SecretarySelect/>
+                <MapContainer
+                    center={[planLocation.lat, planLocation.lng]}
+                    zoom={13}
+                    bounds={[[bounding1, bounding3],[bounding2, bounding4]]}
+                    scrollWheelZoom={false}>
+                    <TileLayer
+                        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    />
+                    {markers}
+                    <Rectangle
+                        bounds={[[bounding1, bounding3],[bounding2, bounding4]]}
+                        pathOptions={{color:'blue', fillOpacity: 0}}
+                    />
+                </MapContainer>
+                
+                <h2 className=' tw-absolute tw-w-1/4
+                                tw-top-2 tw-z-50
+                                tw-translate-x-1/4
+                                tw-bg-white tw-p-2
+                                tw-h-10
+                                tw-rounded
+                                tw-font-bold
+                                tw-text-wrap'>
+                    {secretary === 'void' ? '' : secretary}
+                </h2>
             </div>
-            {isLoaded ? (<div className='tw-flex tw-justify-center'>
-                <GoogleMap
-                    mapContainerStyle={containerStyle}
-                    center={{lat: ubication.lat, lng: ubication.lng}}
-                    zoom={10}
-                    options={mapOptions}
-                    onLoad={onLoad}
-                    onUnmount={onUnmount}>
-                    {evidences.length > 0 ? evidences.map((item) => (
-                        item.locations.map((location, index) => {
-                            const { lat, lng } = location;
-                            return <Marker 
-                                position={{lat, lng}}
-                                onClick={handleShowTooltip}
-                                icon={{
-                                    url: icono,
-                                    scaledSize: new window.google.maps.Size(30, 30),
-                                }}>
-                                {showTooltip && (
-                                    <InfoWindow onCloseClick={()=>setShowTooltip(false)}>
-                                        <div>
-                                            <p>{item.code}</p>
-                                        </div>
-                                    </InfoWindow>
-                                )}
-                            </Marker>
-                        })
-                    )):null}
-                </GoogleMap>
-            </div>
-            ) : <p>Cargando...</p>}
         </div>
     );
 }

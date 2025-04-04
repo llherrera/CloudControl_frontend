@@ -3,4 +3,5 @@ export interface Token {
     user: string;
     rol: string;
     id_plan: number;
+    email: string;
 }

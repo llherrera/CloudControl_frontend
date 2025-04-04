@@ -30,8 +30,23 @@ export interface ModalPDTProps {
     data: ReportPDTInterface[]
 }
 
-export interface ModalsecretaryProps {
+export interface ModalProps {
     modalIsOpen: boolean
     callback: React.Dispatch<React.SetStateAction<boolean>>,
 }
 
+export interface ModalProps2 extends ModalProps {
+    index: number;
+    id: number;
+}
+
+type Keys = 'plan' | 'meta' | 'result';
+export interface ModalShareProps {
+    [key: string]: boolean;
+}
+
+export interface ProntProps {
+    readonly id_input: number;
+    input: string;
+    id_user: number;
+}

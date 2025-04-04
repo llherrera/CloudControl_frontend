@@ -1,31 +1,49 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { useAppSelector } from "@/store";
+import { useAppSelector, useAppDispatch } from "@/store";
+import { resetEvidence, setEvidence } from "@/store/evidence/evidenceSlice";
+import { AddRootTree, setZeroLevelIndex } from "@/store/plan/planSlice";
+import { resetUnit } from "@/store/unit/unitSlice";
 
-import { BackBtn, EvidenceForm } from "@/components";
+import { BackBtn, DoubleBackBtn, EvidenceForm, Memory } from "@/components";
 
 export const EvidencePage = () => {
     const navigate = useNavigate();
+    const dispatch = useAppDispatch();
 
-    const { namesTree } = useAppSelector((state) => state.plan);
-    const { unit } = useAppSelector((state) => state.unit);
-    const { id_plan } = useAppSelector((state) => state.content);
+    const { rootTree } = useAppSelector(store => store.plan);
+    const { unit } = useAppSelector(store => store.unit);
+    const { id_plan } = useAppSelector(store => store.content);
     
     const [cargar, setCargar] = useState(false);
 
-    const handleBack = () => navigate(-1);
+    const handleStartReturn = () => {
+        dispatch(AddRootTree([]));
+        dispatch(resetEvidence());
+        dispatch(resetUnit());
+        dispatch(setZeroLevelIndex());
+        navigate(-2);
+    };
+
+    const handleBack = () => {
+        dispatch(setEvidence(undefined));
+        dispatch(resetEvidence());
+        navigate(-1);
+    };
 
     const handleSubmitButton = () => setCargar(!cargar);
 
-    const memorias = () => {
-        if (unit === undefined) 
-            return <div className="tw-text-center">No hay una meta seleccionada</div>;
+    const Memorias = () => {
+        if (unit === undefined)
+            return <div className="tw-text-center">
+                No hay una meta seleccionada
+            </div>;
         return(
             <div className="tw-mx-3 tw-mt-2">
-                <header className=" tw-border-4 tw-border-double
-                                    tw-border-gray-500 
-                                    tw-flex tw-bg-slate-200">
+                <header className=" tw-flex tw-border-4 tw-border-double
+                                    tw-border-gray-500 tw-bg-slate-200">
+                    <DoubleBackBtn handle={handleStartReturn} id={id_plan}/>
                     <BackBtn handle={handleBack} id={id_plan}/>
                     <h1 className=" tw-text-3xl tw-text-center 
                                     tw-font-bold tw-text-blue-700
@@ -39,119 +57,59 @@ export const EvidencePage = () => {
                     <thead>
                         <tr>
                             <th className="tw-border-4 tw-border-double tw-border-gray-500">
-                                <label className="tw-font-bold">Código de la meta</label>
+                                <p className="tw-font-bold">Código de la meta</p>
                             </th>
                             <th className="tw-border-4 tw-border-double tw-border-gray-500 ">
-                                <label className="tw-font-bold">{ unit.code }</label>
+                                <p className="tw-font-bold">{ unit.code.replace(/(\.\d+)(?=\.)/, '') }</p>
                             </th>
                             <th className="tw-hidden md:tw-table-cell tw-border-4 tw-border-double tw-border-gray-500">
-                                <label className="tw-font-bold">Descripción de la meta</label>
+                                <p className="tw-font-bold">Descripción de la meta</p>
                             </th>
                             <th className="tw-hidden md:tw-table-cell tw-border-4 tw-border-double tw-border-gray-500 ">
-                                <label className="tw-font-bold">{ unit.description }</label>
+                                <p className="tw-font-bold">{ unit.description }</p>
                             </th>
                         </tr>
                     </thead>
                     <tbody>
-                        {namesTree.map((name, index) => (
-                            <tr key={index}>
+                        {rootTree.map((name, index) => (
+                            <tr key={name[1]}>
                                 <td className="tw-border-4 tw-border-double tw-border-gray-500">
-                                    <label className="tw-font-bold">{ name[1] }</label>
+                                    <p className="tw-font-bold">{ name[1] }</p>
                                 </td>
                                 <td className="tw-border-4 tw-border-double tw-border-gray-500">
-                                    <label className="tw-font-bold">{ name[0] }</label>
+                                    <p className="tw-font-bold">{ name[0] }</p>
                                 </td>
                                 <td className="tw-hidden md:tw-table-cell tw-border-4 tw-border-double tw-border-gray-500">
-                                    <label className="tw-font-bold">{ index === 0 ? 'Linea base': index === 1 ? 'Meta' : null }</label>
+                                    <p className="tw-font-bold">{ index === 0 ? 'Linea base' : index === 1 ? 'Meta' : null }</p>
                                 </td>
                                 <td className="tw-hidden md:tw-table-cell tw-border-4 tw-border-double tw-border-gray-500">
-                                    <label className="tw-font-bold">{ index === 0 ? unit.base: index === 1 ? unit.goal : null }</label>
+                                    <p className="tw-font-bold">{ index === 0 ? unit.base : index === 1 ? unit.goal : null }</p>
                                 </td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
-                <section className="tw-bg-slate-200
-                                    tw-border-4 tw-border-double
-                                    tw-border-gray-500
-                                    tw-mt-3 tw-px-3">
-                    <p className="tw-mt-3">
-                        Fecha: { new Date().toLocaleDateString()} &nbsp;&nbsp;&nbsp;&nbsp;
-                        Hora: { new Date().toLocaleTimeString()}
-                    </p>
-                    <div className="tw-flex tw-flex-col md:tw-flex-row">
-                        <p className="tw-font-bold tw-mt-4">
-                            Lugar:
-                        </p>
-                        <input  className=" tw-py-4 tw-px-2 tw-mt-4
-                                            tw-grow 
-                                            tw-border-4 tw-border-gray-400
-                                            tw-rounded
-                                            md:tw-ml-2"
-                                type="text" 
-                                value={unit.indicator??""}
-                                readOnly
-                                name="" 
-                                id=""/>
-                    </div>
-                    <div className="tw-flex">
-                        <p className="  tw-font-bold tw-mt-4 
-                                        tw-justify-self-start
-                                        tw-break-words ">
-                            Responsable del cargo:
-                        </p>
-                        <input  className=" tw-py-4 tw-px-2 tw-mt-4
-                                            tw-grow 
-                                            tw-border-4 tw-border-gray-400
-                                            tw-rounded
-                                            md:tw-ml-2" 
-                                type="text"
-                                value={unit.responsible??"Por asignar"}
-                                readOnly
-                                name="" 
-                                id="" />
-                    </div>
-                    <div className="tw-flex">
-                        <p className="  tw-font-bold tw-mt-4
-                                        tw-justify-self-start
-                                        tw-break-words">
-                            Descripción:
-                        </p>
-                        <input  className=" tw-py-4 tw-px-2 tw-mt-4
-                                            tw-grow 
-                                            tw-border-4 tw-border-gray-400
-                                            tw-rounded
-                                            md:tw-ml-2" 
-                                type="text"
-                                value={unit.description??"Por asignar"}
-                                readOnly
-                                name="" 
-                                id=""/>
-                    </div>
-                    <div className="tw-flex tw-justify-center tw-my-4">
-                        <button className=" tw-bg-blue-500
-                                            tw-p-4
-                                            tw-rounded
-                                            tw-text-white tw-font-bold"
-                                            onClick={()=>handleSubmitButton()}>
-                            cargar evidencias de esta meta
-                        </button>
-                    </div>
-                </section>
+                <Memory callback={handleSubmitButton}/>
             </div>
         );
     };
 
-    const evidencias = () => {
+    const Evidencias = () => {
         if (unit === undefined) 
-            return <div className="tw-text-center">No hay una meta seleccionada</div>;
+            return <div className="tw-text-center">
+                No hay una meta seleccionada
+                </div>;
         return(
             <div className="tw-mx-3 tw-mt-2">
-                <header className=" tw-flex tw-flex-col
-                                    tw-border-4 tw-border-double
+                <header className=" tw-flex tw-border-4 tw-border-double
                                     tw-border-gray-500 tw-bg-slate-200">
-                    <h1 className=" tw-text-3xl tw-font-bold tw-text-center tw-text-blue-700">Evidencias de la meta</h1>
-                    <button className="inline-block" onClick={()=>handleSubmitButton()} >return</button>
+                    <DoubleBackBtn handle={handleStartReturn} id={id_plan}/>
+                    <BackBtn handle={handleSubmitButton} id={id_plan}/>
+                    <h1 className=" tw-text-3xl tw-text-center
+                                    tw-font-bold tw-text-blue-700
+                                    tw-grow">
+                        Evidencias de la meta
+                    </h1>
                 </header>
                 <EvidenceForm />
             </div>
@@ -159,6 +117,6 @@ export const EvidencePage = () => {
     };
 
     return (
-        cargar ? evidencias() : memorias()
+        cargar ? <Evidencias/> : <Memorias/>
     );
 }

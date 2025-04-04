@@ -1,15 +1,30 @@
-import { useState, useCallback } from 'react';
-import { useJsApiLoader, GoogleMap, Marker } from '@react-google-maps/api';
+import { useState, useEffect } from 'react';
+import {
+    MapContainer,
+    TileLayer,
+    Marker,
+    Rectangle,
+    useMapEvents,
+    useMap } from 'react-leaflet';
+import L, { latLng, Icon } from 'leaflet';
 import { Popover } from 'react-tiny-popover';
 
 import { useAppDispatch, useAppSelector } from '@/store';
 import { setPoints } from '@/store/evidence/evidenceSlice';
+import { Coordinates } from '@/interfaces';
 
 import { LocationIcon } from '@/assets/icons';
-import { Coordinates, PopoverProps } from '@/interfaces';
-import icono from "@/assets/icons/location.svg";
+import { PopoverProps } from '@/interfaces';
 
-const API_KEY = import.meta.env.VITE_API_KEY_MAPS as string;
+import MarkerIcon from '@/assets/icons/location.svg';
+
+const ResizeMap = () => {
+    const map = useMap();
+    useEffect(() => {
+        map.invalidateSize();
+    }, [map]);
+    return null;
+};
 
 export const LocationPopover = (props: PopoverProps) => {
     const [poLocationIsOpen, setPoLocationIsOpen] = useState(false);
@@ -21,8 +36,8 @@ export const LocationPopover = (props: PopoverProps) => {
     return (
         <Popover
             isOpen={poLocationIsOpen}
-            positions={['right']}
-            content={mapContainer(props)}
+            positions={['right', 'left', 'top', 'bottom']}
+            content={MapContainer_(props)}
             onClickOutside={toggleOpen}>
             <button type="button" onClick={toggleOpen}>
                 <LocationIcon color={locationSelected ? green:red} />
@@ -39,9 +54,8 @@ export const UbicationsPopover = () => {
     return (
         <Popover
             isOpen={poLocationIsOpen}
-            positions={['right']}
-            content={mapContainerUbi()}
-            onClickOutside={toggleOpen}>
+            positions={['right', 'left', 'top', 'bottom']}
+            content={MapContainerUbi()}>
             <button type="button" onClick={toggleOpen}>
                 <LocationIcon color={red}/>
             </button>
@@ -49,177 +63,177 @@ export const UbicationsPopover = () => {
     );
 }
 
-let contentStyle: React.CSSProperties = {
-    background: 'white',
-    width: '400px',
-    height: '250px',
-    borderRadius: '15px'
-};
-
-const mapContainer = (props: PopoverProps) => {
-    const [map, setMap] = useState<google.maps.Map | null>(null);
-    const [marker, setMarker] = useState<google.maps.Marker | null>(null);
-    
-    const { planLocation } = useAppSelector(state => state.plan);
-
-    let options: google.maps.MapOptions = {
-        disableDefaultUI: true,
-        zoom: 12,
-        restriction: {
-            latLngBounds: {
-                north: 13.011493,
-                east: -66.9,
-                south: -4.334669,
-                west: -79.314914
-            }
+const LocationMarker = ({position, callback}: {position: number[],callback: Function}) => {
+    const map = useMapEvents({
+        click(e) {
+            callback([e.latlng.lat, e.latlng.lng])
         },
-        center: planLocation
-    };
-
-    let item = props.item;
-    
-    const { isLoaded } = useJsApiLoader({
-        id: 'google-map-script',
-        googleMapsApiKey: API_KEY
     });
 
-    const onLoad = useCallback(function callback(map: google.maps.Map) {
-        if (item.lat && item.lng) {
-            let markerPosition: google.maps.LatLngLiteral = {
-                lat: item.lat,
-                lng: item.lng
-            };
-            let markerOptions = {
-                clickable: false,
-                draggable: false,
-                position: markerPosition,
-                map
-            };
-            setMarker(new google.maps.Marker(markerOptions));
-        }
-        setMap(map);
-    }, [props.item]);
-
-    const onUnmount = useCallback(function callback() {
-        setMap(null);
-        setMarker(null);
-    }, []);
-
-    const handleMapClick = (e: google.maps.MapMouseEvent) => {
-        if (!map) return;
-        let markerPosition: google.maps.LatLngLiteral = {
-            lat: e.latLng?.lat()!,
-            lng: e.latLng?.lng()!
-        };
-
-        let markerOptions = {
-            clickable: false,
-            draggable: false,
-            position: markerPosition,
-            map
-        };
-        if (!marker) {
-            setMarker(new google.maps.Marker(markerOptions));
-        } else {
-            marker.setOptions(markerOptions);
-        }
-        props.callback(markerPosition, props.index);
-    };
-
-    return (
-        <div>
-            {isLoaded ? (
-                <GoogleMap
-                    mapContainerStyle={contentStyle}
-                    center={planLocation}
-                    zoom={4}
-                    onLoad={onLoad}
-                    onUnmount={onUnmount}
-                    options={options}
-                    onClick={handleMapClick}>
-                </GoogleMap>
-            ) : <p>Cargando...</p>}
-        </div>
-    );
-
+    return position.length === 0 ? <div/>:
+        <Marker position={[position[0], position[1]]}/>
 }
 
-const mapContainerUbi = () => {
+const MapContainer_ = (props: PopoverProps) => {
+    const [position, setPosition] = useState<number[]>([]);
+
+    useEffect(() => {
+        if (position.length === 0) return;
+        props.callback({lat: position[0], lng: position[1]}, props.index)
+    }, [position]);
+
+    const {
+        planLocation,
+        bounding1,
+        bounding2,
+        bounding3,
+        bounding4
+    } = useAppSelector(store => store.plan);
+
+    return (
+        planLocation === undefined ?
+        <p>Cargando...</p>:
+        <MapContainer
+            style={{height: '250px', width: '400px'}}
+            center={[planLocation.lat,planLocation.lng]}
+            zoom={13}
+            bounds={[[bounding1, bounding3],[bounding2, bounding4]]}
+            scrollWheelZoom={false}>
+            <ResizeMap/>
+            <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+            <LocationMarker position={position} callback={setPosition}/>
+            <Rectangle
+                bounds={[[bounding1, bounding3],[bounding2, bounding4]]}
+                pathOptions={{color:'blue', fillOpacity: 0}}
+            />
+        </MapContainer>
+    );
+}
+
+const UbiMarker = () => {
     const dispatch = useAppDispatch();
-    const { list_points } = useAppSelector(state => state.evidence);
-
-    const [map, setMap] = useState<google.maps.Map|null>(null);
-    const { planLocation } = useAppSelector(state => state.plan);
-    let centerLocation = planLocation;
-
-    let options: google.maps.MapOptions = {
-        disableDefaultUI: true,
-        zoom: 12,
-        restriction: {
-            latLngBounds: {
-                north: 13.011493,
-                east: -66.9,
-                south: -4.334669,
-                west: -79.314914
-            }
+    const { list_points } = useAppSelector(store => store.evidence);
+    const hola = () => console.log('hhh');
+    const map = useMapEvents({
+        click(e) {
+            let markerPosition = {
+                lat: e.latlng.lat,
+                lng: e.latlng.lng
+            };
+            let newList = [...list_points, markerPosition];
+            dispatch(setPoints(newList));
         },
-        center: planLocation
-    };
-
-    const { isLoaded } = useJsApiLoader({
-        id: 'google-map-script',
-        googleMapsApiKey: API_KEY
     });
 
-    const onLoad = useCallback(function callback(map: google.maps.Map) {
-        const bounds = new window.google.maps.LatLngBounds();
-        map.fitBounds(bounds);
-        setMap(map);
-    }, []);
-
-    const onUnmount = useCallback(function callback(map: google.maps.Map) {
-        setMap(null);
-    }, []);
-
-    const handleMapClick = (event: google.maps.MapMouseEvent) => {
-        const lat = event.latLng?.lat();
-        const lng = event.latLng?.lng();
-        if (lat && lng) {
-            const exist = list_points.find((point) => point.lat === lat && point.lng === lng);
-            if (exist) return;
-            dispatch(setPoints([...list_points, {lat, lng} as Coordinates]));
-        }
-    };
-
-    const handleDeleteMarker = (index: number) => {
-        const newList = list_points.filter((point, i) => i !== index);
-        dispatch(setPoints(newList));
-    };
-
-    const markers = list_points.map((point, index) => (
-        <Marker key={index} 
-                position={{lat:point.lat, lng:point.lng}}
-                icon={{
-                    url: icono,
-                    scaledSize: new window.google.maps.Size(30, 30),
+    return list_points.length === 0 ? [<div/>] :
+        list_points.map((p, i) => 
+            <Marker
+                key={i}
+                eventHandlers={{
+                    click: hola
                 }}
-                onClick={()=>handleDeleteMarker(index)} />
-    ));
+                position={[p.lat, p.lng]}
+            />
+        )
+}
+
+
+//delete L.Icon.Default.prototype._getIconUrl;
+//L.Icon.Default.mergeOptions({
+//    iconRetinaUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon-2x.png',
+//    iconUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-icon.png',
+//    shadowUrl: 'https://unpkg.com/leaflet@1.7.1/dist/images/marker-shadow.png',
+//});
+const MapContainerUbi = () => {
+    const dispatch = useAppDispatch();
+
+    const {
+        planLocation,
+        bounding1,
+        bounding2,
+        bounding3,
+        bounding4
+    } = useAppSelector(store => store.plan);
+
+    const [markers, setMarkers] = useState<Coordinates[]>([]);
+    const MapEvents = () => {
+        useMapEvents({
+            click(e) {
+                const { lat, lng } = e.latlng;
+                const markerExists = markers.some(marker => marker.lat === lat && marker.lng === lng);
+                if (!markerExists) {
+                    setMarkers([...markers, { lat, lng }]);
+                }
+            },
+        });
+        return null;
+    };
+
+    useEffect(() => {
+        dispatch(setPoints(markers));
+    }, [markers]);
+
+    const handleMarkerClick = (index: number) => {
+        //console.log('hoka');
+        setMarkers(markers.filter((_, i) => i !== index));
+    };
 
     return (
-        <div>
-            {isLoaded ? 
-                <GoogleMap
-                    mapContainerStyle={contentStyle}
-                    center={centerLocation}
-                    zoom={15}
-                    options={options}
-                    onLoad={onLoad}
-                    onUnmount={onUnmount}
-                    onClick={handleMapClick}>
-                    {markers}
-                </GoogleMap>
-            :<p>Cargando...</p>}
-        </div>
+        planLocation === undefined ?
+        <p>Cargando...</p>:
+        <MapContainer
+            style={{height: '250px', width: '400px'}}
+            center={[planLocation.lat,planLocation.lng]}
+            zoom={13}
+            bounds={[[bounding1, bounding3],[bounding2, bounding4]]}
+            scrollWheelZoom={false}>
+            <ResizeMap/>
+            <TileLayer
+                attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+            <MapEvents/>
+            {markers.map((marker, index) => (
+                <Marker
+                    key={index}
+                    position={[marker.lat, marker.lng]}
+                    icon={new Icon({
+                        iconUrl: MarkerIcon,
+                        iconSize: [25,41],
+                        iconAnchor: [12, 41]
+                    })}
+                    eventHandlers={{
+                        click: () => handleMarkerClick(index)
+                    }}
+                />
+            ))}
+            
+            <Rectangle
+                bounds={[[bounding1, bounding3],[bounding2, bounding4]]}
+                pathOptions={{color:'blue', fillOpacity: 0}}
+            />
+        </MapContainer>
     );
 }
+
+/*<MapEvents/>
+{markers.map((marker, index) => (
+                <Marker
+                    key={index}
+                    position={[marker.lat, marker.lng]}
+                    eventHandlers={{
+                        click: () => handleMarkerClick(index)
+                    }}
+                />
+            ))}
+*/
+
+//const { list_points } = useAppSelector(store => store.evidence);
+//const handleDeleteMarker = (index: number) => {
+//    const newList = list_points.filter((point, i) => i !== index);
+//    dispatch(setPoints(newList));
+//};
+//<UbiMarker/>

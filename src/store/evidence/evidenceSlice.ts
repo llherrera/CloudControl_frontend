@@ -2,8 +2,7 @@ import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 
 import {EvidenceInterface, 
         InitialStateEvidenceInterface, 
-        Coordinates, 
-        UbicationDB} from "@/interfaces";
+        Coordinates} from "@/interfaces";
 import {setGenericState, 
         getGenericState, 
         removeGenericState } from "@/utils";
@@ -14,15 +13,19 @@ import {thunkGetEvidence,
         thunkGetUserEvidences,
         thunkAddEvidenceGoal,
         thunkUpdateEvidence,
-        thunkGetUbiEvidence } from "./thunks";
+        thunkGetUbiEvidence,
+        thunkGetExecutionsToApro } from "./thunks";
 
 const getInitialState = (): InitialStateEvidenceInterface => {
     const evidenceState = getGenericState("evidence");
     if (evidenceState) return evidenceState;
     return {
         loadingEvidence: false,
+        loadingExecuted: false,
         errorLoadingEvidence: undefined,
+        errorLoadingExecuted: undefined,
         evidences: [],
+        executes: [],
         evi_selected: undefined,
         evi_count: 0,
         list_points: [],
@@ -36,7 +39,10 @@ export const evidenceSlice = createSlice({
         removeEvidence: (state, action: PayloadAction<number>) => {
             state.evidences = state.evidences?.slice(action.payload, 1);
         },
-        resetEvidence: () => getInitialState(),
+        resetEvidence: () => {
+            removeGenericState("evidence");
+            return getInitialState();
+        },
         setEvidence: (state, action: PayloadAction<EvidenceInterface | undefined>) => {
             state.evi_selected = action.payload;
             setGenericState('evidence', state);
@@ -103,7 +109,6 @@ export const evidenceSlice = createSlice({
         });
         builder.addCase(thunkAddEvidenceGoal.fulfilled, (state, action) => {
             state.loadingEvidence = false;
-            state.evi_selected = action.payload;
             setGenericState('evidence', state);
         });
         builder.addCase(thunkAddEvidenceGoal.rejected, (state, action) => {
@@ -154,6 +159,21 @@ export const evidenceSlice = createSlice({
         builder.addCase(thunkGetUbiEvidence.rejected, (state, action) => {
             state.loadingEvidence = false;
             state.errorLoadingEvidence = action.payload;
+        });
+
+
+        builder.addCase(thunkGetExecutionsToApro.pending, state => {
+            if (!state.loadingExecuted) state.loadingExecuted = true;
+            state.errorLoadingExecuted = undefined;
+        });
+        builder.addCase(thunkGetExecutionsToApro.fulfilled, (state, action) => {
+            state.loadingExecuted = false;
+            state.executes = action.payload;
+            setGenericState('evidence', state);
+        });
+        builder.addCase(thunkGetExecutionsToApro.rejected, (state, action) => {
+            state.loadingExecuted = false;
+            state.errorLoadingExecuted = action.payload;
         });
     }
 });

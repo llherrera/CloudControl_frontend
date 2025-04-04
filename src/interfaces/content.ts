@@ -11,9 +11,17 @@ export interface InitialStateContentInterface {
     index: number;
     list_department: string[];
     id_plan: number;
+    projectPage: number;
     mode: boolean;
     node?: NodeInterface;
     url_logo: string;
+    url_logo_plan: string;
+    reload: boolean;
+    secretary: string;
+    location: string;
+    node_code: string;
+    locs: EvidencesLocs[];
+    isFullHeight: boolean;
 }
 
 export interface GetUnitProps {
@@ -27,4 +35,18 @@ export interface AddUnitProps {
     unit: UnitInterface;
     years: YearInterface[];
     id_city?: number;
+}
+
+export interface EvidencesLocs {
+    code: string;
+    date: string;
+    name: string;
+    responsible: string;
+    activitiesDesc: string;
+    lat: number;
+    lng: number;
+    benefited_population_number: number;
+    benefited_population: string;
+    executed_resources: number;
+    resource_font: string;
 }

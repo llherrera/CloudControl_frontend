@@ -1,8 +1,8 @@
 {
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "ESNext",
-    "lib": ["DOM", "DOM.Iterable", "ESNext", "scripthost"],
+    "target": "esnext",
+    "module": "esnext",
+    "lib": ["dom", "dom.iterable", "esnext", "scripthost"],
     "allowJs": false,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
@@ -22,5 +22,5 @@
       "@/*": ["src/*"]
     }
   },
-  "include": ["src", "jest.setup.ts", "vite.config.ts"]
+  "include": ["src", "jest.setup.ts", "vite.config.ts", "spec"]
 }

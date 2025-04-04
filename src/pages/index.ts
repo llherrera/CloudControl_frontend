@@ -10,3 +10,8 @@ export * from './Setting';
 export * from './InterventionMap';
 export * from './POAI';
 export * from './ProjectBank';
+export * from './ChooseCity';
+export * from './Search';
+export * from './PQRS';
+export * from './NotFound';
+export * from './ActionPlan';

@@ -1,24 +1,27 @@
-import { createAction, createAsyncThunk } from "@reduxjs/toolkit";
+import { createAsyncThunk } from "@reduxjs/toolkit";
 
 import {
-    EvidenceInterface, 
-    ErrorBasicInterface, 
-    GetEvidenceProps, 
-    GetEvidencesProps, 
+    EvidenceInterface,
+    ErrorBasicInterface,
+    GetEvidenceProps,
+    GetEvidencesProps,
     AddEvidenceProps,
     UpdateEvidenceProps,
     Coordinates,
-    UbicationDB} from "@/interfaces";
+    UbicationDB,
+    GetUserEviProps,
+    ExecutionInterface } from "@/interfaces";
 import { parseErrorAxios } from "@/utils";
 
-import { 
-    getEvidence, 
-    getEvidences, 
-    getEvidenceCount, 
+import {
+    getEvidence,
+    getEvidences,
+    getEvidenceCount,
     getUserEvidences,
     addEvicenceGoal,
     updateEvicenceGoal,
-    getUbiEvidences } from "@/services/api";
+    getUbiEvidences,
+    getExecutionsToApro } from "@/services/api";
 
 export const thunkGetEvidence = createAsyncThunk<EvidenceInterface[], GetEvidenceProps, { rejectValue: ErrorBasicInterface}>(
     "evidence/getEvidence", 
@@ -46,6 +49,19 @@ export const thunkGetEvidences = createAsyncThunk<EvidenceInterface[], GetEviden
     }
 );
 
+export const thunkGetExecutionsToApro = createAsyncThunk<ExecutionInterface[], GetEvidencesProps, { rejectValue: ErrorBasicInterface}>(
+    "evidence/getExecution", 
+    async (props: GetEvidencesProps, { rejectWithValue }) => {
+        try {
+            const res = await getExecutionsToApro(props.id, props.page);
+            return res;
+        } catch (err) {
+            const result = parseErrorAxios(err);
+            return rejectWithValue(result);
+        }
+    }
+);
+
 export const thunkGetEvidenceCount = createAsyncThunk<number, number, { rejectValue: ErrorBasicInterface}>(
     "evidence/getEvidenceCount", 
     async (id_plan: number, { rejectWithValue }) => {
@@ -59,11 +75,11 @@ export const thunkGetEvidenceCount = createAsyncThunk<number, number, { rejectVa
     }
 );
 
-export const thunkGetUserEvidences = createAsyncThunk<EvidenceInterface[], number, { rejectValue: ErrorBasicInterface}>(
+export const thunkGetUserEvidences = createAsyncThunk<EvidenceInterface[], GetUserEviProps, { rejectValue: ErrorBasicInterface}>(
     "evidence/getUserEvidences", 
-    async (page: number, { rejectWithValue }) => {
+    async (props: GetUserEviProps, { rejectWithValue }) => {
         try {
-            const res = await getUserEvidences(page);
+            const res = await getUserEvidences(props.page, props.id_plan);
             return res;
         } catch (err) {
             const result = parseErrorAxios(err);
@@ -77,7 +93,7 @@ export const thunkAddEvidenceGoal = createAsyncThunk<EvidenceInterface, AddEvide
     async (props: AddEvidenceProps, { rejectWithValue }) => {
         try {
             const res = await addEvicenceGoal(props.id_plan, props.code, props.data, props.file, props.list_points);
-            return res;
+            return res[0];
         } catch (err) {
             const result = parseErrorAxios(err);
             return rejectWithValue(result);
@@ -89,7 +105,7 @@ export const thunkUpdateEvidence = createAsyncThunk<EvidenceInterface, UpdateEvi
     "evidence/updateEvidence",
     async (props: UpdateEvidenceProps, { rejectWithValue}) => {
         try {
-            const res = await updateEvicenceGoal(props.data, props.file, props.list_points);
+            const res = await updateEvicenceGoal(props.id_evidence, props.data, props.file, props.list_points);
             return res;
         } catch (err) {
             const result = parseErrorAxios(err);

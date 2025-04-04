@@ -7,3 +7,7 @@ export * from './RegisterForm';
 export * from './SecretaryForm';
 export * from './LocationsForm';
 export * from './EvidenceForm';
+export * from './PQRSForm';
+export * from './ProjectForm';
+export * from './ActionPlan';
+export * from './ResultForm';

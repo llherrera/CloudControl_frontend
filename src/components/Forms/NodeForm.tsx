@@ -1,33 +1,37 @@
 import React, { useState } from 'react';
 
-import { useAppSelector } from '@/store';
+import { useAppSelector, useAppDispatch } from '@/store';
+import { thunkAddNodes } from '@/store/plan/thunks';
 
-import { NodeInterface, NodeFormProps } from '../../interfaces';
-import { addLevelNode } from '../../services/api';
+import { NodeInterface, NodeFormProps } from '@/interfaces';
 
 export const NodeForm = ( props : NodeFormProps ) => {
+    const dispatch = useAppDispatch();
     const { parent } = useAppSelector(store => store.plan);
 
     let id_nodo_gen : number = 1;
     const [data, setData] = useState<NodeInterface[]>([
         {   id_node: `${parent ?? props.id}.${id_nodo_gen++}`,
-            name: "", 
-            description: "", 
-            id_level: props.id, 
+            code: '',
+            name: "",
+            description: "",
+            id_level: props.id,
             parent: parent,
             weight: 33.33
         },
-        {   id_node: `${parent ?? props.id}.${id_nodo_gen++}`, 
-            name: "", 
-            description: "", 
-            id_level: props.id, 
+        {   id_node: `${parent ?? props.id}.${id_nodo_gen++}`,
+            code: '',
+            name: "",
+            description: "",
+            id_level: props.id,
             parent: parent,
             weight: 33.33
         },
-        {   id_node: `${parent ?? props.id}.${id_nodo_gen++}`, 
-            name: "", 
-            description: "", 
-            id_level: props.id, 
+        {   id_node: `${parent ?? props.id}.${id_nodo_gen++}`,
+            code: '',
+            name: "",
+            description: "",
+            id_level: props.id,
             parent: parent,
             weight: 33.33
         }
@@ -35,6 +39,7 @@ export const NodeForm = ( props : NodeFormProps ) => {
 
     let nodo: NodeInterface = ({
         id_node: `${parent ?? props.id}.${data.length + 1}`,
+        code: '',
         name: "",
         description: "",
         id_level: props.id,
@@ -42,28 +47,30 @@ export const NodeForm = ( props : NodeFormProps ) => {
         weight: 0
     });
 
-    const agregarNodo = () => {
+    const addNode = () => {
         const newData = [...data, nodo];
         setData(newData);
-        nodo = ({ 
-            id_node: `${parent ?? props.id}.${newData.length + 1}`, 
-            name: "", 
-            description: "", 
-            id_level: props.id, 
+        nodo = ({
+            id_node: `${parent ?? props.id}.${newData.length + 1}`,
+            code: '',
+            name: "",
+            description: "",
+            id_level: props.id,
             parent: parent,
             weight: 100/data.length
         });
     };
 
-    const eliminarNodo = () => {
+    const deleteNode = () => {
         if (data.length > 1) {
             const newData = data.slice(0, data.length - 1);
             setData(newData);
             nodo = ({ 
-                id_node: `${parent ?? props.id}.${newData.length }`, 
-                name: "", 
-                description: "", 
-                id_level: props.id, 
+                id_node: `${parent ?? props.id}.${newData.length }`,
+                code: '',
+                name: "",
+                description: "",
+                id_level: props.id,
                 parent: parent,
                 weight: 100/data.length
             });
@@ -87,11 +94,11 @@ export const NodeForm = ( props : NodeFormProps ) => {
             alert('La suma de los pesos debe ser 100');
             return;
         }
-        try {
-            await addLevelNode(data, props.id);
-        } catch (error) {
+        dispatch(thunkAddNodes({nodes: data, id_plan: props.id}))
+        .unwrap()
+        .catch((error) => {
             console.log(error);
-        }
+        });
     };
 
     return (
@@ -104,23 +111,23 @@ export const NodeForm = ( props : NodeFormProps ) => {
                     <li className="tw-ml-3">
                         <input  type={"text"}
                                 placeholder={`Nombre del nodo`}
-                                id={"NodeName"}
-                                name={"NodeName"}
+                                id={"name"}
+                                name={"name"}
                                 value={e.name}
                                 className='tw-rounded tw-my-1 tw-w-5/6 tw-border '
                                 onChange={ (event) => handleInputFormChange(event, index) }/><br/>
                         <input  type={"text"}
                                 placeholder="Descripción del Nodo"
-                                id={"Description"}
-                                name={"Description"}
+                                id={"description"}
+                                name={"description"}
                                 value={e.description}
                                 className='rounded my-1 tw-w-5/6 tw-border'
                                 onChange={ (event) => handleInputFormChange(event, index) }/><br/>
                     </li>
                     <input  type="number"
                             placeholder='Peso'
-                            id='Weight'
-                            name='Weight'
+                            id='weight'
+                            name='weight'
                             value={e.weight}
                             className=' tw-w-1/6 tw-absolute tw-border tw-right-4 tw-h-7 tw-rounded'
                             onChange={ (event) => handleInputFormChange(event, index) } />
@@ -133,14 +140,14 @@ export const NodeForm = ( props : NodeFormProps ) => {
                                         tw-py-2 tw-px-1 tw-rounded tw-mr-5" 
                             type='button'
                             title='Agregar Nodo'
-                            onClick={agregarNodo}>Agregar Nodo</button>
+                            onClick={addNode}>Agregar Nodo</button>
                     <button className=" tw-bg-red-500
                                         hover:tw-bg-red-300
                                         tw-text-white tw-font-bold
                                         tw-py-2 tw-rounded tw-ml-5"
                             type='button'
                             title='Eliminar Nodo'
-                            onClick={eliminarNodo}>Eliminar Nodo</button>
+                            onClick={deleteNode}>Eliminar Nodo</button>
                 </div>
             </ul>
             <input  type="submit"

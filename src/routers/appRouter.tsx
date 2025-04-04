@@ -13,34 +13,13 @@ import { decode } from '@/utils';
 export const AppRouter = () => {
     const { logged, token_info } = useAppSelector(store => store.auth);
     let token;
-    if (token_info) 
-        token = decode(token_info.token).rol;
+    if (token_info) token = decode(token_info.token).rol;
 
-    return logged ? (
-        token === 'admin' ? (
-            <Routes>
-                <Route path="*" element={<PrivateRouter />} />
-            </Routes>
-        ): token === 'funcionario' ? (
-            <Routes>
-                <Route path="*" element={<OfficerRouter />} />
-            </Routes>
-        ): token === 'planeacion' ? (
-            <Routes>
-                <Route path="*" element={<PlanningRouter />} />
-            </Routes>
-        ): token === 'sectorialista' ? (
-            <Routes>
-                <Route path="*" element={<SectorialistRouter />} />
-            </Routes>
-        ):(
-            <Routes>
-                <Route path="*" element={<PublicRouter />} />
-            </Routes>
-        )
-    ):(
-        <Routes>
-            <Route path="*" element={<PublicRouter />} />
-        </Routes>
-    )
+    return logged ?
+        token === 'admin' ? <Routes><Route path="*" element={<PrivateRouter />} /></Routes> :
+        token === 'funcionario' ? <Routes><Route path="*" element={<OfficerRouter />} /></Routes> :
+        token === 'planeacion' ? <Routes><Route path="*" element={<PlanningRouter />} /></Routes> :
+        token === 'sectorialista' ? <Routes><Route path="*" element={<SectorialistRouter />} /></Routes> :
+        <Routes><Route path="*" element={<PublicRouter />} /></Routes> :
+    <Routes><Route path="*" element={<PublicRouter />} /></Routes>
 }
