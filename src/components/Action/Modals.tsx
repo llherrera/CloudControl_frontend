@@ -4,7 +4,9 @@ import { Box, CircularProgress } from '@mui/material';
 import { ImportExport, Delete, Add, FormatListBulleted, Edit,
     FileDownload } from '@mui/icons-material';
 
-import { ShowPlanOrForm, ActivityForm, BackBtn, UpdateActivityForm } from "@/components";
+import { ShowPlanOrForm, ActivityForm, BackBtn, UpdateActivityForm,
+    ActivitieasPlansFileInput
+ } from "@/components";
 import { ModalProps, PropsModalActionPlan } from "@/interfaces";
 import { generateActionPlanExcel } from "@/utils";
 
@@ -549,7 +551,7 @@ const ImportPlanModal = (props: ModalProps) => {
     const onClose = () => {
         dispatch(setSelectedActionPlan(-1));
         props.callback(false);
-    }
+    };
 
     return (
         <Modal isOpen={props.modalIsOpen}
@@ -569,6 +571,7 @@ const ImportPlanModal = (props: ModalProps) => {
                         </p>
                     </button>
                 </div>
+                <ActivitieasPlansFileInput/>
             </Box>
         </Modal>
     );

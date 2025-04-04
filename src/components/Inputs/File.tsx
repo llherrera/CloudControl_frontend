@@ -1,17 +1,18 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import * as XLSX from 'xlsx';
+import ExcelJS, { Row, Cell } from 'exceljs';
 import ProgressBar from "@ramonak/react-progress-bar";
 
 import IconButton from "@mui/material/IconButton";
-import DownloadIcon from '@mui/icons-material/Download';
+import { Download, AttachFile } from '@mui/icons-material';
 
-import { notify, handleInputFile, dividirArreglo } from '@/utils';
+import { notify, handleInputFile, dividirArreglo, readActivityFile } from '@/utils';
 
 import { useAppSelector, useAppDispatch } from "@/store";
 import { setLevels } from "@/store/plan/planSlice";
 
-import { ExcelPlan, LevelInterface, ExcelFinancial,
-    ExcelPhysical, ExcelUnitNode, Secretary} from "@/interfaces";
+import { ExcelPlan, LevelInterface, ExcelFinancial, ActivityExcel,
+    ExcelPhysical, ExcelUnitNode, Secretary } from "@/interfaces";
 import { updateFinancial, updatePhysicalExcel, updateUniNodeExcel,
     addLevel, addSecretaries, addNodes, addUnits } from "@/services/api";
 import { ModalSpinner } from "../Spinner";
@@ -183,7 +184,7 @@ export const FileInput = () => {
                 Descargar plantilla de Excel
                 <IconButton className='tw-p-1 tw-ml-3'
                             size='large'>
-                    <DownloadIcon/>
+                    <Download/>
                 </IconButton>
             </a><br />
 
@@ -285,7 +286,7 @@ export const FileFinancialInput = () => {
                 Descargar plantilla de Excel
                 <IconButton className='tw-p-1 tw-ml-3'
                             size='large'>
-                    <DownloadIcon/>
+                    <Download/>
                 </IconButton>
             </a><br />
 
@@ -388,7 +389,7 @@ export const FilePhysicalInput = () => {
                 Descargar plantilla de Excel
                 <IconButton className='tw-p-1 tw-ml-3'
                             size='large'>
-                    <DownloadIcon/>
+                    <Download/>
                 </IconButton>
             </a><br />
 
@@ -485,7 +486,7 @@ export const FileUnitInput = () => {
                 Descargar plantilla de Excel
                 <IconButton className='tw-p-1 tw-ml-3'
                             size='large'>
-                    <DownloadIcon/>
+                    <Download/>
                 </IconButton>
             </a><br />
 
@@ -506,6 +507,143 @@ export const FileUnitInput = () => {
                 Cargar metas
             </button>
             <ModalSpinner isOpen={isOpen}/>
+        </form>
+    );
+}
+
+export const ActivitieasPlansFileInput = () => {
+    const [data, setData] = useState<File>();
+    const [textBar, setTextBar] = useState('');
+    const [progressBar, setProgressBar] = useState(0);
+    const [fileName, setFileName] = useState<string | undefined>();
+
+    const { plan, years } = useAppSelector(store => store.plan);
+    const { id_plan } = useAppSelector(store => store.content);
+
+    useEffect(() => {
+        if (data == undefined) setFileName(undefined)
+        else setFileName(data.name);
+    }, [data]);
+
+    const loadActivities = async (data: ActivityExcel[]) => {
+        if (plan === undefined) return;
+        if (data.length === 0) return;
+        if (id_plan === 0) return;
+        const id_city = parseInt(plan.id_municipality);
+
+        const parts = dividirArreglo(data, 50);
+        const tam = 100/parts.length;
+        for (let i = 0; i < parts.length; i++) {
+            try {
+                //await updateFinancial(id_plan, id_city, parts[i], years);
+                //setTextBar('Actividades subidas');
+                //setProgressBar(40 + (tam * (i + 1)));
+            } catch (error) {
+                console.error(`Error al enviar la parte ${i + 1}:`, error);
+            }
+        }
+    };
+
+    const readExcel = (file: File) => {
+        const promise = new Promise((resolve, reject) => {
+            const fileReader = new FileReader();
+            fileReader.readAsArrayBuffer(file);
+
+            fileReader.onload = async (e: any) => {
+                const buffer = e.target.result as ArrayBuffer;
+                const wb = new ExcelJS.Workbook();
+                await wb.xlsx.load(buffer);
+
+                const ws = wb.worksheets[0];
+                const rows: any[] = [];
+
+                ws.eachRow((row, rowNumber) => {
+                    console.log(row.getCell(1).result);
+                    console.log(row.getCell(2).result);
+                    console.log(row.getCell(3).result);
+                    console.log(row.getCell(4).result);
+                    console.log(row.getCell(5).result);
+                    console.log(row.getCell(6).result);
+                    console.log(row.getCell(7).result);
+                });
+
+            };
+
+            fileReader.onerror = (error) => {
+                reject(error);
+            };
+        });
+
+        promise.then( async (d) => {
+            const data = d as ActivityExcel[];
+            console.log('done');
+            //await loadActivities(data)
+            //.then(() => notify('Se han cargado con éxito las actividades de los planes de acción', 'success'))
+            //.catch(() => notify('Ha ocurrido un error cargando las actividades', 'error'));
+        });
+    };
+
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        if (data === undefined) return;
+        readActivityFile(data, id_plan);
+    };
+
+    return (
+        <form className='tw-p-4 tw-ml-4
+                        tw-bg-white
+                        tw-rounded'
+            onSubmit={handleSubmit}>
+            <ProgressBar completed={progressBar} customLabel={textBar} />
+            <a  className="tw-text-[#222222]
+                            tw-font-bold tw-text-lg
+                            tw-font-montserrat"
+                href={"https://firebasestorage.googleapis.com/v0/b/cloudcontrol-51ebb.appspot.com/o/Files%2FPlantilla%20Ejecuciones%20Financieras%20definitivo.xlsx?alt=media&token=60af1a7f-adca-4994-8fcc-06f72c595e14"}
+                download='Plantilla_Ejecuciones_Financieras.xlsx'>
+                Descargar plantilla de Excel
+                <IconButton className='tw-p-1 tw-ml-3'
+                            size='large'>
+                    <Download/>
+                </IconButton>
+            </a><br />
+
+            <p className="tw-text-[#222222]
+                            tw-font-bold tw-text-lg
+                            tw-font-montserrat">
+                Generar planes de acción y actividades mediante un archivo de Excel
+            </p>
+            <div className="tw-flex items-center tw-rounded
+                            tw-overflow-hidden tw-w-fit">
+                <label className={` tw-flex tw-items-center
+                                    tw-bg-blue-400 hover:tw-bg-blue-600
+                                    tw-text-white tw-px-3 tw-py-1
+                                    tw-cursor-pointer`}>
+                    <AttachFile className="mr-2"/>
+                    Escoger archivo
+                    <input
+                        type="file"
+                        className="tw-hidden"
+                        onChange={e => handleInputFile(e, setData)}
+                    />
+                </label>
+                <div className={`${fileName == undefined ?
+                                    'tw-bg-red-400 tw-text-gray-200'
+                                    : 'tw-bg-green-400'}
+                                tw-rounded-r tw-align-bottom
+                                tw-px-3 tw-py-1 tw-whitespace-nowrap`}>
+                    {fileName??'No se ha escogido un archivo'}
+                </div>
+                <input
+                    type="submit"
+                    value='Cargar'
+                    title="Guardar las actividades desde el archivo"
+                    className={`
+                        tw-bg-green-400 hover:tw-bg-green-600
+                        tw-p-2 tw-ml-6 tw-rounded tw-text-white
+                        tw-cursor-pointer
+                    `}
+                />
+            </div>
         </form>
     );
 }

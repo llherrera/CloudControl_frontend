@@ -434,7 +434,8 @@ const PlanForm = ({showPlan} :{showPlan?: ActionPlan}) => {
         actions: [],
         rubros: [],
         nodes: [],
-        nodesResult: []
+        nodesResult: [],
+        year: 0
     });
     const [rubros, setRubros] = useState<Rubro[]>(
         showPlan ? showPlan.rubros :
@@ -531,8 +532,17 @@ const PlanForm = ({showPlan} :{showPlan?: ActionPlan}) => {
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement |
                                         HTMLSelectElement |
                                         HTMLTextAreaElement>) => {
-        const { name, value } = event.target;
-        setActionPlan({ ...actionPlan, [name]: value });
+        const { name, value, type } = event.target;
+        let newData = actionPlan;
+        let newDate = new Date('2025-01-02');
+        if (type === 'date') {
+            const [, month, day] = value.split("-");
+            newDate = new Date(`${yearRegister}-${month}-${parseInt(day)+1}`);
+            newData = { ...newData, [name]: newDate };
+        } else {
+            newData = { ...newData, [name]: value };
+        }
+        setActionPlan(newData);
     };
 
     const validateFields = (): boolean => {
@@ -556,7 +566,7 @@ const PlanForm = ({showPlan} :{showPlan?: ActionPlan}) => {
         e.preventDefault();
         const updatedActionPlan = { ...actionPlan };
         for (let i = 0; i < 3; i++) {
-            const str = `level_${i + 1}` as keyof levelsPlan;
+            const str = `level${i + 1}` as keyof levelsPlan;
             updatedActionPlan[str] = programs[i][index_[i]].id_node;
         }
         updatedActionPlan['year'] = yearRegister;
@@ -591,21 +601,23 @@ const PlanForm = ({showPlan} :{showPlan?: ActionPlan}) => {
             <div className="tw-my-2">
                 {typeof deadline == 'number' ? years[0] === deadline ? null :
                     <button className={`${yearRegister === todayDate.getUTCFullYear()- 1 ?
-                                        'tw-bg-blue-400' : 'tw-bg-red-400'}
+                                        'tw-bg-green-400' : 'tw-bg-red-400'}
                                         tw-rounded tw-p-2 tw-mr-3 tw-mt-3
+                                        tw-font-bold tw-text-white
                                         tw-border tw-border-black`}
                             onClick={() => setYearRegister(todayDate.getUTCFullYear() - 1)}
                             type="button">
-                        Adicionar registros {deadline - 1}
+                        Adicionar plan {deadline - 1}
                     </button>
                 : null}
                 <button className={`${yearRegister === todayDate.getUTCFullYear() ?
-                                    'tw-bg-blue-400' : 'tw-bg-red-400'}
+                                    'tw-bg-green-400' : 'tw-bg-red-400'}
                                     tw-rounded tw-p-2
+                                    tw-font-bold tw-text-white
                                     tw-border tw-border-black`}
                         onClick={() => setYearRegister(todayDate.getUTCFullYear())}
                         type="button">
-                    Adicionar registros {deadline}
+                    Adicionar plan {deadline}
                 </button>
             </div>
             <div className={`tw-py-2 tw-grid tw-grid-cols-2
@@ -793,23 +805,23 @@ export const ActivityForm = ({ showPlan, upd }: { showPlan: ActionPlan, upd: boo
         id_node: '',
         activityDesc: '',
         unitMeter: '',
-        amountP: -1,
+        amountP: 0,
         totalCostP: 0,
-        municipioP: -1,
-        sgpP: -1,
-        regaliasP: -1,
-        otrosP: -1,
-        amountE: -1,
+        municipioP: 0,
+        sgpP: 0,
+        regaliasP: 0,
+        otrosP: 0,
+        amountE: 0,
         totalCostE: 0,
-        municipioE: -1,
-        sgpE: -1,
-        regaliasE: -1,
-        otrosE: -1,
+        municipioE: 0,
+        sgpE: 0,
+        regaliasE: 0,
+        otrosE: 0,
         start_date: null,
         end_date: null,
-        phisicalIndicator: -1,
-        invertionIndicator: -1,
-        efficiencyIndicator: -1
+        phisicalIndicator: 0,
+        invertionIndicator: 0,
+        efficiencyIndicator: 0
     });
     const [activities, setActivities] = useState<Activity[]>(
         selectedPlan && selectedPlan.actions && selectedPlan.actions.length > 0 ? selectedPlan.actions :
@@ -820,23 +832,23 @@ export const ActivityForm = ({ showPlan, upd }: { showPlan: ActionPlan, upd: boo
                 id_node: '',
                 activityDesc: '',
                 unitMeter: '',
-                amountP: -1,
+                amountP: 0,
                 totalCostP: 0,
-                municipioP: -1,
-                sgpP: -1,
-                regaliasP: -1,
-                otrosP: -1,
-                amountE: -1,
+                municipioP: 0,
+                sgpP: 0,
+                regaliasP: 0,
+                otrosP: 0,
+                amountE: 0,
                 totalCostE: 0,
-                municipioE: -1,
-                sgpE: -1,
-                regaliasE: -1,
-                otrosE: -1,
+                municipioE: 0,
+                sgpE: 0,
+                regaliasE: 0,
+                otrosE: 0,
                 start_date: null,
                 end_date: null,
-                phisicalIndicator: -1,
-                invertionIndicator: -1,
-                efficiencyIndicator: -1
+                phisicalIndicator: 0,
+                invertionIndicator: 0,
+                efficiencyIndicator: 0
             }
         ]
     );
@@ -930,6 +942,16 @@ export const ActivityForm = ({ showPlan, upd }: { showPlan: ActionPlan, upd: boo
         else notify('No puede relacionar la misma meta mas de una vez', 'warning');
     };
 
+    const handleSelectChange2 = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const index = e.target.selectedIndex - 1;
+        const temp = selectNodes.map(item => item.id_node);
+        if (index < 0) return;
+        if (!temp.includes(listNodes[index].id_node)) {
+            setSelectNodes(prevItems => [...prevItems, listNodes[index]]);
+            setSelectNodesFinan(prevItems => [...prevItems, 0]);
+        }
+    };
+
     const handleInputFinalcial = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
         const { value, name } = e.target;
         const temp = selectNodesFinan;
@@ -985,6 +1007,8 @@ export const ActivityForm = ({ showPlan, upd }: { showPlan: ActionPlan, upd: boo
         if (!validateActionFields()) {
             for (const key in errors) errorJoin += '\n' + errors[key];
             notify('Errores de validación de tareas: ', 'error');
+            console.log(errors);
+            console.log(errorJoin);
         } else {
             let temp = selectNodes.map(s => s.id_node)[0];
             dispatch(thunkAddActivityActionPlan(
@@ -1102,7 +1126,7 @@ export const ActivityForm = ({ showPlan, upd }: { showPlan: ActionPlan, upd: boo
                             <td rowSpan={2}>
                                 <select className=" tw-p-2 tw-w-32 tw-rounded
                                                     tw-border-2 tw-border-gray-400"
-                                    onChange={e => handleSelectChange(e)}>
+                                    onChange={e => handleSelectChange2(e)}>
                                     <option value=""></option>
                                     {listNodes.map((l, i) =>
                                         <option value={l.id_node} key={i}>
@@ -1113,15 +1137,23 @@ export const ActivityForm = ({ showPlan, upd }: { showPlan: ActionPlan, upd: boo
                             </td>
                             <td rowSpan={2}
                                 className="tw-border-x-4 tw-border-double tw-border-gray-500">
-                                <textarea
-                                    value={a.activityDesc}
-                                    onChange={e => handleInputFormChange(e, i)}
-                                    name={`activityDesc_${i + 1}`}
-                                    id="activityDesc"
-                                    className={`tw-border-2 tw-rounded
-                                                ${errors[`activityDesc_${i + 1}`] ? 'tw-border-red-400' : 'tw-border-gray-400'}
-                                                `}>
-                                </textarea>
+                                <div className="tw-w-full">
+                                    <textarea
+                                        value={a.activityDesc}
+                                        onChange={e => handleInputFormChange(e, i)}
+                                        name={`activityDesc_${i + 1}`}
+                                        id="activityDesc"
+                                        title={errors[`activityDesc_${i + 1}`] ? errors[`activityDesc_${i + 1}`] : ''}
+                                        className={`tw-border-2 tw-rounded
+                                                    ${errors[`activityDesc_${i + 1}`] ? 'tw-border-red-400' : 'tw-border-gray-400'}
+                                                    `}>
+                                    </textarea>
+                                    {errors[`activityDesc_${i + 1}`] ?
+                                        <p className="tw-text-red-400">
+                                            {errors[`activityDesc_${i + 1}`]}
+                                        </p>
+                                    : null}
+                                </div>
                             </td>
                             <td className=" tw-border-double tw-border-gray-500
                                             tw-font-bold tw-text-center">
@@ -1147,12 +1179,19 @@ export const ActivityForm = ({ showPlan, upd }: { showPlan: ActionPlan, upd: boo
                                 />
                             </td>
                             <td className="tw-border-r-4 tw-border-double tw-border-gray-500">
-                                <p className={` tw-w-full tw-rounded
-                                                tw-border-2 tw-my-2 tw-text-center
-                                                ${errors[`totalCostP_${i + 1}`] ? 'tw-border-red-400' : 'tw-border-gray-400' }
-                                            `}>
-                                    {a.totalCostP}
-                                </p>
+                                <>
+                                    <p className={` tw-w-full tw-rounded
+                                                    tw-border-2 tw-my-2 tw-text-center
+                                                    ${errors[`totalCostP_${i + 1}`] ? 'tw-border-red-400' : 'tw-border-gray-400' }
+                                                `}>
+                                        {a.totalCostP}
+                                    </p>
+                                    {errors[`totalCostP_${i + 1}`] ?
+                                        <p className="tw-text-red-400">
+                                            {errors[`totalCostP_${i + 1}`]}
+                                        </p>
+                                    : null}
+                                </>
                             </td>
                             <td className="tw-border-r-4 tw-border-double tw-border-gray-500">
                                 <InputTable
@@ -1195,6 +1234,7 @@ export const ActivityForm = ({ showPlan, upd }: { showPlan: ActionPlan, upd: boo
                                 <InputTable
                                     name={`start_date_${i + 1}`}
                                     type={'date'}
+                                    value={a.start_date === null ? undefined : (new Date(a.start_date)).toISOString().split('T')[0]}
                                     onChange={e => handleInputFormChange(e, i)}
                                     errors={errors}
                                 />
@@ -1204,6 +1244,7 @@ export const ActivityForm = ({ showPlan, upd }: { showPlan: ActionPlan, upd: boo
                                 <InputTable
                                     name={`end_date_${i + 1}`}
                                     type={'date'}
+                                    value={a.end_date === null ? undefined : (new Date(a.end_date)).toISOString().split('T')[0]}
                                     onChange={e => handleInputFormChange(e, i)}
                                     errors={errors}
                                 />
@@ -1253,12 +1294,19 @@ export const ActivityForm = ({ showPlan, upd }: { showPlan: ActionPlan, upd: boo
                                 />
                             </td>
                             <td className="tw-border-t-4 tw-border-r-4 tw-border-double tw-border-gray-500">
-                                <p className={` tw-w-full tw-rounded
-                                                tw-border-2 tw-my-2 tw-text-center
-                                                ${errors[`totalCostE_${i + 1}`] ? 'tw-border-red-400' : 'tw-border-gray-400' }
-                                            `}>
-                                    {a.totalCostE}
-                                </p>
+                                <>
+                                    <p className={` tw-w-full tw-rounded
+                                                    tw-border-2 tw-my-2 tw-text-center
+                                                    ${errors[`totalCostE_${i + 1}`] ? 'tw-border-red-400' : 'tw-border-gray-400' }
+                                                `}>
+                                        {a.totalCostE}
+                                    </p>
+                                    {errors[`totalCostE_${i + 1}`] ?
+                                        <p className="tw-text-red-400">
+                                            {errors[`totalCostE_${i + 1}`]}
+                                        </p>
+                                    : null}
+                                </>
                             </td>
                             <td className="tw-border-t-4 tw-border-r-4 tw-border-double tw-border-gray-500">
                                 <InputTable
@@ -1322,9 +1370,9 @@ export const ActivityForm = ({ showPlan, upd }: { showPlan: ActionPlan, upd: boo
             </table>
             <div className="tw-mx-3">
                 <div className="tw-flex tw-gap-2 tw-mt-4">
-                    <p className="tw-basis-1/3 tw-mt-6">
+                    {/*<p className="tw-basis-1/3 tw-mt-6">
                         Metas de producto
-                    </p>
+                    </p>*/}
                     <div className="tw-basis-2/3 tw-mt-6 tw-flex tw-items-center">
                         <p className="  tw-p-2 tw-rounded tw-bg-white
                                         tw-border-2 tw-border-gray-400">
@@ -1346,7 +1394,7 @@ export const ActivityForm = ({ showPlan, upd }: { showPlan: ActionPlan, upd: boo
                     </div>
                 </div>
                 <div className="tw-flex tw-gap-2 tw-mt-4">
-                    <div className="tw-basis-1/3">
+                    {/*<div className="tw-basis-1/3">
                         <select className=" tw-p-2 tw-w-48 tw-rounded
                                             tw-border-2 tw-border-gray-400"
                             onChange={e => handleSelectChange(e)}>
@@ -1357,8 +1405,8 @@ export const ActivityForm = ({ showPlan, upd }: { showPlan: ActionPlan, upd: boo
                                 </option>
                             )}
                         </select>
-                    </div>
-                    <List className="tw-basis-2/3 tw-bg-white">
+                    </div>*/}
+                    <List className="tw-basis-full tw-bg-white">
                         {selectNodes.map((node, i) =>
                             <ListItem
                                 key={i}

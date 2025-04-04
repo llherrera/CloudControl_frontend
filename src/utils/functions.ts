@@ -2,7 +2,13 @@ import type { AxiosError } from 'axios';
 import ExcelJS from 'exceljs';
 import { useNavigate } from 'react-router-dom';
 
-import { doRefreshToken } from '@/services/api';
+import { notify } from '@/utils';
+import {
+  doRefreshToken,
+  loadActionPlansExcel,
+  loadActivityExcel
+} from '@/services/api';
+
 import {
   AuthInterface,
   ErrorBasicInterface,
@@ -14,7 +20,8 @@ import {
   NodesSecretary,
   Visualization,
   VisualizationRedux,
-  ActionPlan
+  ActionPlan,
+  ActivityExcel
 } from '../interfaces';
 import { setToken } from './storage';
 
@@ -1015,4 +1022,110 @@ export const sortData = (data: ReportPDTInterface[]): ReportPDTInterface[] => {
     }
     return 0;
   })
+}
+
+export const readActivityFile = (file: File, id_plan: number) => {
+  const promise = new Promise((resolve, reject) => {
+    const fileReader = new FileReader();
+    fileReader.readAsArrayBuffer(file);
+    let rowHeader = 0;
+
+    fileReader.onload = async (e: any) => {
+      let plannes: any[] = [];
+      let activities: any[] = [];
+      const buffer = e.target.result as ArrayBuffer;
+      const wb = new ExcelJS.Workbook();
+      await wb.xlsx.load(buffer);
+      const ws = wb.worksheets[0];
+      for (let rowNumber = 0; rowNumber <= ws.rowCount; rowNumber++) {
+        const row = ws.getRow(rowNumber)
+        if (row.getCell(1).value != null) {
+          rowHeader = rowNumber;
+          break;
+        }
+      }
+      ws.eachRow((row, rowNumber) => {
+        if (rowNumber > rowHeader) {
+          if (row.getCell(1).value != null) {
+            let plan = {
+              level2: row.getCell(1).value?.toString() ?? null,
+              responsible: row.getCell(2).value?.toString() ?? null,
+              level3: row.getCell(3).value?.toString() ?? null,
+              BPIMcode: row.getCell(4).value?.toString() ?? null,
+              project_name: row.getCell(5).value?.toString() ?? null
+            };
+            plannes.push(plan);
+          }
+        }
+        //row.eachCell((cell: Cell, colNumber: number) => {
+        //  const cell_ = cell as any;
+        //  //console.log(`${rowNumber},${colNumber}: ${cell.result??cell.value}`);
+        //  console.log(rowNumber, colNumber, (cell_.value?.result == undefined) ? (cell.value == '' ? 0 : cell.value) : cell_.value.result);
+        //  //console.log();
+        //});
+      });
+
+      let prevRowValues: string[] = ['0', '', ''];
+      ws.eachRow((row, rowNumber) => {
+//        let values: string[] = ['0', '', ''];
+        if (rowNumber > rowHeader) {
+          if (row.getCell(4).value != null || row.getCell(4).value != undefined) {
+            prevRowValues[0] = row.getCell(4).value?.toString()?? '';
+          }
+          if (row.getCell(6).value != null || row.getCell(6).value != undefined) {
+            prevRowValues[1] = row.getCell(6).value?.toString()?? '';
+          }
+          if (row.getCell(7).value != null || row.getCell(7).value != undefined) {
+            prevRowValues[2] = row.getCell(7).value?.toString()?? '';
+          }
+          if (row.getCell(8).value != null) {
+            const cell = row.getCell(13) as any;
+            let activity = {
+              level4: row.getCell(6).value?.toString() ?? prevRowValues[1],
+              BPIMcode: row.getCell(4).value?.toString() ?? prevRowValues[0],
+              indicator: row.getCell(7).value?.toString() ?? prevRowValues[2],
+              activity: row.getCell(8).value?.toString() ?? null,
+              programed_year_1: parseInt(row.getCell(9).value?.toString() ?? '0'),
+              programed_year_2: parseInt(row.getCell(10).value?.toString() ?? '0'),
+              programed_year_3: parseInt(row.getCell(11).value?.toString() ?? '0'),
+              programed_year_4: parseInt(row.getCell(12).value?.toString() ?? '0'),
+              programed_year_total: cell.value.result
+            };
+            activities.push(activity);
+          }
+        }
+      });
+      resolve([plannes, activities]);
+    };
+    fileReader.onerror = (error) => {
+      reject(error);
+    };
+  });
+
+  promise.then( async (d) => {
+    const data = d as any[];
+    const parts_plans = dividirArreglo(data[0], 50);
+    const parts_activities = dividirArreglo(data[1], 50);
+    for (let i = 0; i < parts_plans.length; i++) {
+      try {
+        await loadActionPlansExcel(id_plan, parts_plans[i])
+          .then(() => notify('Se han cargado con éxito los planes de acción', 'success'))
+          .catch(() => notify('Ha ocurrido un error cargando los planes', 'error'));
+      } catch (error) {
+        throw console.error(`Error al enviar la parte ${i + 1}:`, error);
+      }
+    }
+    for (let i = 0; i < parts_activities.length; i++) {
+      try {
+        await loadActivityExcel(id_plan, parts_activities[i])
+          .then(() => notify('Se han cargado con éxito las actividades de los planes de acción', 'success'))
+          .catch(() => notify('Ha ocurrido un error cargando las actividades', 'error'));
+      } catch (error) {
+        throw console.error(`Error al enviar la parte ${i + 1}:`, error);
+      }
+    }
+//    await loadActionPlansExcel(id_plan, data[0])
+//    await loadActivityExcel(id_plan, data[1])
+
+  });
 }

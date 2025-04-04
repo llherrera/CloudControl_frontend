@@ -957,4 +957,22 @@ export const getUnitNodeResult = async (id_node: string) => {
     return response.data;
 }
 
+export const loadActionPlansExcel = async (id_plan: number, data: any[]) => {
+    const response = await api.post(`/plan-territorial/plan-accion`, {
+        excel: true,
+        id_plan,
+        data
+    });
+    return response.data;
+}
+
+export const loadActivityExcel = async (id_plan: number, data: any[]) => {
+    const response = await api.post(`/plan-territorial/plan-accion/actividad`, {
+        excel: true,
+        id_plan,
+        data
+    });
+    return response.data;
+}
+
 export default api;

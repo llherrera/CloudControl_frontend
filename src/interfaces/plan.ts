@@ -279,3 +279,19 @@ export interface PropsAddActivity {
     activities: Activity[];
     node: string;
 }
+
+export interface ActivityExcel {
+    level2: string | null;
+    responsible: string | null;
+    level3: string | null;
+    BPIMcode: string | null;
+    project_name: string | null;
+    level4: string | null;
+    indicator: string | null;
+    activity: string;
+    programed_year_1: number;
+    programed_year_2: number;
+    programed_year_3: number;
+    programed_year_4: number;
+    programed_year_total: number;
+}

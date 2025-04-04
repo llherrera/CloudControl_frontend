@@ -88,17 +88,24 @@ export const InputLabel = ({name, label, id, onChange, errors, className, value}
 
 export const InputTable = ({name, type, value, onChange, errors, className}: PropsInputTable) => {
     return (
-        <input
-            onChange={e => onChange(e)}
-            type={type}
-            value={value}
-            name={name}
-            id={name}
-            className={`${className}
-                        tw-w-full tw-rounded
-                        tw-border-2 tw-my-2
-                        ${errors[name] ? 'tw-border-red-400' : 'tw-border-gray-400' }
-                        `}
-        />
+        <div className="">
+            <input
+                onChange={e => onChange(e)}
+                type={type}
+                value={value}
+                name={name}
+                id={name}
+                className={`${className}
+                            tw-w-full tw-rounded
+                            tw-border-2 tw-my-2
+                            ${errors[name] ? 'tw-border-red-400' : 'tw-border-gray-400' }
+                            `}
+            />
+            {errors[name] ?
+                <p className="tw-text-red-400">
+                    {errors[name]}
+                </p>
+            : null}
+        </div>
     );
 }
