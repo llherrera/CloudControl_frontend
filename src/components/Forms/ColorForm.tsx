@@ -18,7 +18,7 @@ export const ColorForm = ( {id} : IdProps ) => {
     const { id_plan } = useAppSelector(store => store.content);
 
     const [value, setValue] = useState(
-        colorimeter.length === 0 ? [[0, 24], [25, 49], [50, 74], [75, 100]] :
+        colorimeter.length === 0 ? [[0, 40], [41, 70], [71, 99], [100, 100]] :
         colorimeter.map((item: number, index) => [index === 0 ? 0 : colorimeter[index-1]+1, item])
     );
     const [radioBtn, setRadioBtn] = useState<string>(plan == undefined ? 'vacio' : plan.fill == null ? 'vacio' : plan.fill);

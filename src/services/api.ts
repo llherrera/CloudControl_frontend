@@ -247,7 +247,7 @@ export const updatePDTFill = async (id: number, fill: string) => {
 }
 
 export const uploadLogoCity = async ( id: number, logo: File ) => {
-    const response = await api.put("/plan-territorial/logo", 
+    const response = await api.put("/plan-territorial/logo",
     {
         city:    true,
         id_plan: id,
@@ -261,7 +261,7 @@ export const uploadLogoCity = async ( id: number, logo: File ) => {
 }
 
 export const uploadLogoPlan = async ( id: number, logo: File ) => {
-    const response = await api.put("/plan-territorial/logo", 
+    const response = await api.put("/plan-territorial/logo",
     {
         city:    false,
         id_plan: id,
@@ -285,7 +285,7 @@ export const addLevel = async (levels: LevelInterface[], id : string) => {
 }
 
 export const getLevelNodes = async (props: GetNodeProps) => {
-    const response = await api.get(`/plan-territorial/nivel`, { 
+    const response = await api.get(`/plan-territorial/nivel`, {
         params: {
             id_level: props.id_level,
             Parent:   props.parent
@@ -295,8 +295,8 @@ export const getLevelNodes = async (props: GetNodeProps) => {
 }
 
 export const updateWeights = async (ids: string[], weights: number[]) => {
-    const response = await api.put("/plan-territorial/nivel", 
-        {   
+    const response = await api.put("/plan-territorial/nivel",
+        {
             ids: ids,
             weights: weights,
         }
@@ -305,7 +305,7 @@ export const updateWeights = async (ids: string[], weights: number[]) => {
 }
 
 export const addLevelNode = async (nodes: NodeInterface[], id_level: number) => {
-    const response = await api.post("/plan-territorial/nivel", { 
+    const response = await api.post("/plan-territorial/nivel", {
         nodes: nodes,
         id_level: id_level
     });
@@ -317,6 +317,14 @@ export const addNodes =async (data: ExcelPlan[], id_plan: number, levelsName: st
         data:       data,
         id_plan:    id_plan,
         levelsName: levelsName
+    });
+    return response.data;
+}
+
+export const updateLevelNode = async (nodes: NodeInterface[], id_level: number) => {
+    const response = await api.put("/plan-territorial/nivel", {
+        nodes: nodes,
+        id_level: id_level
     });
     return response.data;
 }

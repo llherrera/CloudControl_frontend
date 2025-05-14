@@ -145,7 +145,7 @@ export const NodesList = ( props : IdProps ) => {
                         'tw-flex tw-flex-row tw-flex-wrap':
                         'tw-flex-col tw-flex-wrap'} `} >
             {nodes.map((item: NodeInterface, index: number) =>
-                <div className="tw-my-2 tw-flex tw-transition hover:tw-scale-110 tw-group"
+                <li className="tw-my-2 tw-flex tw-transition hover:tw-scale-110 tw-group"
                     key={item.id_node}>
                     <button className={`tw-rounded tw-border-4 tw-bg-transparent
                                         ${colorClass(index)}
@@ -203,9 +203,9 @@ export const NodesList = ( props : IdProps ) => {
                                 value={ isNaN(pesos[index]) ? 0 : pesos[index]}
                                 onChange={e => handleUpdateWeight(index, e)}/>
                     :null}
-                </div>
+                </li>
             )}
-            {mode && (rol === 'admin' || (rol === 'funcionario' && id === props.id)) ?
+            {/*mode && (rol === 'admin' || (rol === 'funcionario' && id === props.id)) ?
             <div className='tw-flex tw-justify-center'>
                 <button className='tw-px-2 tw-mx-2
                                     tw-bg-greenBtn tw-text-white
@@ -215,7 +215,7 @@ export const NodesList = ( props : IdProps ) => {
                     Guardar
                 </button>
             </div>
-            : null}
+            : null*/}
         </ul>
         {indexLevel === levels.length-1 ?
         <div className='tw-flex tw-justify-center tw-mx-3

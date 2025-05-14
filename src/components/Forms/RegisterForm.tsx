@@ -117,7 +117,8 @@ export const RegisterForm = ({id}: IdProps) => {
             </div>
             <form   onSubmit={submitForm}
                     className=" tw-px-10 tw-shadow-2xl
-                                tw-rounded tw-bg-white">
+                                tw-rounded tw-bg-white"
+                    autoComplete="off">
                 <h1 className=" tw-mb-4 tw-grow
                                 tw-text-center tw-text-xl">
                     Registrar funcionario
@@ -752,7 +753,8 @@ const ChangePasswordForm = ({ callback, callback2, email, username }: ChangeProp
     return(
         <form   onSubmit={submitRecoverPassword}
                 className=" tw-px-10 tw-shadow-2xl
-                            tw-rounded tw-bg-white">
+                            tw-rounded tw-bg-white"
+                >
             <h1 className=" tw-mb-4 tw-grow
                             tw-text-center tw-text-xl">
                 Cambiar contraseña

@@ -16,10 +16,8 @@ export const PDTForm = () => {
     const { plan, loadingPlan } = useAppSelector(store => store.plan);
 
     const fechaInicio = new Date().getFullYear();
-    const years = [];
-    for (let i = -1; i <= 4; i++) {
-        years.push(fechaInicio + i);
-    }
+    const startYears = new Date().getFullYear() - 4;
+    const years = Array.from({ length: 12 }, (_, i) => i + startYears); ;
 
     const [planData, setPlanData] = useState<PDTInterface>({
         id_plan: 0,
@@ -47,10 +45,8 @@ export const PDTForm = () => {
 
     const handleInputYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const { value } = e.target;
-        let newYear = new Date().getFullYear() + parseInt(value) - 1;
-        let newDate = new Date(newYear, 0, 1).toISOString();
-        let endYear = new Date().getFullYear() + parseInt(value) + 2;
-        let endDate = new Date(endYear, 11, 31).toISOString();
+        let newDate = new Date(parseInt(value), 0, 1).toISOString();
+        let endDate = new Date(parseInt(value) + 3, 11, 31).toISOString();
 
         setPlanData({
             ...planData,
@@ -133,7 +129,6 @@ export const PDTForm = () => {
                         center={true}
                         classname="tw-justify-between tw-gap-2"
                 />
-
                 <Select label="Fecha de inicio:"
                         id="start_date"
                         name="start_date"

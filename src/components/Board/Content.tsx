@@ -175,7 +175,7 @@ export const Content = ( props : IdProps ) => {
                                 tw-bg-white
                                 md:tw-col-span-2">
                     <p className="tw-font-montserrat tw-ml-4 tw-font-bold">
-                        Plan de desarrollo. ¡Así vamos!
+                        {plan!.name}. ¡Así vamos!
                     </p>
                     <div className="tw-ml-4 tw-mb-3">
                     {rootTree.length <= 0 ? null :
@@ -227,7 +227,9 @@ export const Content = ( props : IdProps ) => {
                             </div>
                             }
                         </div>
-                        : <NodesList id={props.id}/>
+                        : mode ?
+                            <NodeForm index={indexLevel} id={levels[indexLevel].id_level!} nodes={nodes}/> :
+                            <NodesList id={props.id}/>
                         }
                     </div>
                 </div>
