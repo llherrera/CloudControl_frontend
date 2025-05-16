@@ -15,3 +15,4 @@ export * from './secretary';
 export * from './ubication';
 export * from './responseGeoportal';
 export * from './pqrs';
+export * from './UserManager';

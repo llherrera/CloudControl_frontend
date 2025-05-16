@@ -490,12 +490,13 @@ export const thunkUpdateActivityActionPlan = createAsyncThunk<Activity[], PropsA
 interface Props {
     id: number;
     fill: string;
+    shape: string;
 }
 export const thunkupdatePDTFill = createAsyncThunk<string, Props, { rejectValue: ErrorBasicInterface }>(
     'pdt/updatePDTFill',
     async (props: Props, { rejectWithValue }) => {
         try {
-            const res = await updatePDTFill(props.id, props.fill);
+            const res = await updatePDTFill(props.id, props.fill, props.shape);
             return res;
         } catch (err) {
             const result = parseErrorAxios(err);

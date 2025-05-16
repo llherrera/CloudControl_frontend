@@ -26,6 +26,7 @@ export const PlanningRouter = () => {
             <Route path='/plan/:uuid' element={<pages.SearchPage/>} />
             <Route path='/meta/:uuid' element={<pages.SearchUnitPage/>} />
             <Route path='*' element={<pages.NotFoundPage/>} />
+            <Route path='/AtencionCiudadana' element={<pages.AtencionCiudadanaPage/>} /> 
         </Routes>
     )
 }

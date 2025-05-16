@@ -6,6 +6,7 @@ export interface RegisterInterface {
     password: string;
     confirm_password: string;
     rol: string;
+    office?: string; // Add this line
 }
 
 export interface UserInterface {
@@ -29,6 +30,7 @@ export interface PDTInterface {
     deadline: null | string;
     uuid: string;
     fill: string;
+    shape: string;
 }
 
 export interface LevelInterface {
