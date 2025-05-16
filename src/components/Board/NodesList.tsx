@@ -143,11 +143,11 @@ export const NodesList = ( props : IdProps ) => {
         : <>
         <ul className={`${indexLevel === levels.length-1 ?
                         'tw-flex tw-flex-row tw-flex-wrap':
-                        'tw-flex-col tw-flex-wrap'} `} >
+                        'tw-flex-col tw-flex-wrap'} tw-overflow-hidden tw-mt-4`} >
             {nodes.map((item: NodeInterface, index: number) =>
-                <div className="tw-my-2 tw-flex tw-transition hover:tw-scale-110 tw-group"
+                <div className="tw-my-2 tw-ml-12 tw-py-1 tw-flex tw-transition hover:tw-scale-110 tw-group"
                     key={item.id_node}>
-                    <button className={`tw-rounded tw-border-4 tw-bg-transparent
+                    <button className={`${plan.shape === 'radial' ? 'tw-rounded' : 'tw-rounded-full tw-overflow-hidden tw-scale-[1.2]'} tw-border-4 tw-bg-transparent
                                         ${colorClass(index)}
                                         tw-ml-3 tw-z-10
                                         tw-w-12 tw-h-12
@@ -205,7 +205,7 @@ export const NodesList = ( props : IdProps ) => {
                     :null}
                 </div>
             )}
-            {mode && (rol === 'admin' || (rol === 'funcionario' && id === props.id)) ?
+            {/*mode && (rol === 'admin' || (rol === 'funcionario' && id === props.id)) ?
             <div className='tw-flex tw-justify-center'>
                 <button className='tw-px-2 tw-mx-2
                                     tw-bg-greenBtn tw-text-white
@@ -215,7 +215,7 @@ export const NodesList = ( props : IdProps ) => {
                     Guardar
                 </button>
             </div>
-            : null}
+            : null*/}
         </ul>
         {indexLevel === levels.length-1 ?
         <div className='tw-flex tw-justify-center tw-mx-3

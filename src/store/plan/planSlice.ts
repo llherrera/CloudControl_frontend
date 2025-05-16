@@ -19,7 +19,7 @@ import {
     thunkGetLevelsById, thunkGetLevelName, thunkUpdateWeight,
     thunkAddNodes, thunkUpdateLocations, thunkUpdateDeadline,
     thunkGetSecretaries, thunkAddSecretaries, thunkUpdateSecretaries,
-    thunkGetActivityActionPlan, thunkGetCountProjects, thunkGetPDTByUuid,
+    thunkGetActivityActionPlan, thunkGetCountProjects, thunkGetPDTByUuid, thunkUpdateNodes
     } from "./thunks";
 
 const getInitialState = (): InitialStatePlanInterface => {
@@ -368,6 +368,21 @@ export const planSlice = createSlice({
             setGenericState('plan', state);
         });
         builder.addCase(thunkAddNodes.rejected, (state, action) => {
+            state.loadingNodes = false;
+            state.errorLoadingNodes = action.payload;
+        });
+
+
+        builder.addCase(thunkUpdateNodes.pending, state => {
+            if (!state.loadingNodes) state.loadingNodes = true;
+            state.errorLoadingNodes = undefined;
+        });
+        builder.addCase(thunkUpdateNodes.fulfilled, (state, action) => {
+            state.loadingNodes = false;
+            state.nodes = action.payload;
+            setGenericState('plan', state);
+        });
+        builder.addCase(thunkUpdateNodes.rejected, (state, action) => {
             state.loadingNodes = false;
             state.errorLoadingNodes = action.payload;
         });

@@ -18,10 +18,11 @@ export const ColorForm = ( {id} : IdProps ) => {
     const { id_plan } = useAppSelector(store => store.content);
 
     const [value, setValue] = useState(
-        colorimeter.length === 0 ? [[0, 24], [25, 49], [50, 74], [75, 100]] :
+        colorimeter.length === 0 ? [[0, 40], [41, 70], [71, 99], [100, 100]] :
         colorimeter.map((item: number, index) => [index === 0 ? 0 : colorimeter[index-1]+1, item])
     );
     const [radioBtn, setRadioBtn] = useState<string>(plan == undefined ? 'vacio' : plan.fill == null ? 'vacio' : plan.fill);
+    const [shapeBtn, setShapeBtn] = useState<'radial' | 'square'>('radial');
 
     useEffect(() => {
         if (colorimeter.length === 0) {
@@ -57,9 +58,15 @@ export const ColorForm = ( {id} : IdProps ) => {
         event.preventDefault();
         dispatch(thunkupdatePDTFill({
             id: id,
-            fill: radioBtn
+            fill: radioBtn,
+            shape: shapeBtn,
         }));
     };
+    
+    const handleShape = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setShapeBtn(event.target.value as 'radial' | 'square');
+    };
+
 
     const handleRadio = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { value } = event.target;
@@ -104,36 +111,36 @@ export const ColorForm = ( {id} : IdProps ) => {
                         <div className={`tw-w-12 tw-h-12 tw-ml-3
                                         tw-border-4 tw-mt-3
                                         ${colorClass(index)}
-                                        tw-rounded-full tw-self-center
+                                        ${shapeBtn === 'radial' ? 'tw-rounded-full' : ''}
+                                        tw-self-center
                                         tw-overflow-hidden
                                         tw-relative`}>
-                            <p className='  tw-absolute tw-inset-0 tw-z-20
-                                            tw-rounded-full tw-bg-transparent
-                                            tw-font-bold
-                                            tw-flex tw-justify-center tw-items-center'>
+                            <p className="tw-absolute tw-inset-0 tw-z-20
+                                            ${shapeBtn === 'radial' ? 'tw-rounded-full' : ''}
+                                            tw-bg-transparent tw-font-bold
+                                            tw-flex tw-justify-center tw-items-center">
                                 {value[1]}
                             </p>
                             <>
-                            {radioBtn == 'vacio' ? <></>
-                            : radioBtn == 'vertical' ?
-                                <div className={`tw-absolute tw-bottom-0 tw-left-0 tw-w-full tw-transition-all ${colorClass_(index)}`}
-                                    style={{
-                                        height: `${value[1]}%`,
-                                    }}
-                                />
-                            : radioBtn == 'radial' ?
-                                <div className={`tw-absolute tw-inset-0
-                                                ${colorClass_(index)}
-                                                tw-rounded-full tw-text-black tw-z-10`}
-                                    style={{
-                                        maskImage: `conic-gradient(from 0deg at 50% 50%, blue 0deg,
-                                                    blue ${value[1]/100*360}deg,
-                                                    transparent 0deg)`,
-                                    }}
-                                />
-                            : radioBtn == 'completo' ?
-                                <div className={`tw-absolute tw-bottom-0 tw-left-0 tw-w-full tw-h-full tw-transition-all ${colorClass_(index)}`}/>
-                            : null}
+                                {radioBtn == 'vacio' ? <></>
+                                    : radioBtn == 'vertical' ?
+                                        <div className={`tw-absolute tw-bottom-0 tw-left-0 tw-w-full tw-transition-all ${colorClass_(index)}`}
+                                            style={{ height: `${value[1]}%` }}
+                                        />
+                                    : radioBtn == 'radial' ?
+                                        <div className={`tw-absolute tw-inset-0
+                                                        ${colorClass_(index)}
+                                                        ${shapeBtn === 'radial' ? 'tw-rounded-full' : ''}
+                                                        tw-text-black tw-z-10`}
+                                            style={{
+                                                maskImage: `conic-gradient(from 0deg at 50% 50%, blue 0deg,
+                                                            blue ${value[1] / 100 * 360}deg,
+                                                            transparent 0deg)`
+                                            }}
+                                        />
+                                    : radioBtn == 'completo' ?
+                                        <div className={`tw-absolute tw-bottom-0 tw-left-0 tw-w-full tw-h-full tw-transition-all ${colorClass_(index)}`} />
+                                    : null}
                             </>
                         </div>
                     </div>
@@ -147,62 +154,57 @@ export const ColorForm = ( {id} : IdProps ) => {
                     Guardar
                 </button>
             </form>
-            <p className='tw-font-bold tw-text-xl tw-text-center'>
-                Llenado
-            </p>
-            <form className='tw-flex tw-justify-center tw-items-center'>
-                <ul className='tw-flex tw-gap-4'>
-                    <div>
-                        <input
-                            type="radio"
-                            id='vacio'
-                            value='vacio'
-                            className='tw-mr-2'
-                            onChange={handleRadio}
-                            checked={radioBtn === 'vacio'}
-                        />
-                        <label htmlFor="vacio">Vacío</label>
-                    </div>
-                    <div>
-                        <input
-                            type="radio"
-                            id='vertical'
-                            value='vertical'
-                            className='tw-mr-2'
-                            onChange={handleRadio}
-                            checked={radioBtn === 'vertical'}
-                        />
-                        <label htmlFor="vertical">Vertical</label>
-                    </div>
-                    <div>
-                        <input
-                            type="radio"
-                            id='radial'
-                            value='radial'
-                            className='tw-mr-2'
-                            onChange={handleRadio}
-                            checked={radioBtn === 'radial'}
-                        />
-                        <label htmlFor="radial">Radial</label>
-                    </div>
-                    <div>
-                        <input
-                            type="radio"
-                            id='completo'
-                            value='completo'
-                            className='tw-mr-2'
-                            onChange={handleRadio}
-                            checked={radioBtn === 'completo'}
-                        />
-                        <label htmlFor="completo">Completo</label>
-                    </div>
-                </ul>
-                <button className=' tw-bg-greenColory hover:tw-bg-green-400
-                                    tw-text-white hover:tw-text-black
-                                    tw-px-2 tw-my-2 tw-ml-4
-                                    tw-font-bold
-                                    tw-rounded'
-                        onClick={handleUpdateFill}>
+            <form className='tw-flex tw-flex-col md:tw-flex-row tw-justify-center tw-items-center tw-gap-8'>
+                <div>
+                    <p className='tw-font-bold tw-text-xl tw-text-center'>Llenado</p>
+                    <ul className='tw-flex tw-gap-4'>
+                        {['vacio', 'vertical', 'radial', 'completo'].map((item) => (
+                            <div key={item}>
+                                <input
+                                    type="radio"
+                                    id={item}
+                                    value={item}
+                                    className='tw-mr-2'
+                                    onChange={handleRadio}
+                                    checked={radioBtn === item}
+                                />
+                                <label htmlFor={item}>{item.charAt(0).toUpperCase() + item.slice(1)}</label>
+                            </div>
+                        ))}
+                    </ul>
+                </div>
+                
+                <div>
+                    <p className='tw-font-bold tw-text-xl tw-text-center'>Forma</p>
+                    <ul className='tw-flex tw-gap-4'>
+                        <div>
+                            <input
+                                type="radio"
+                                id='forma-radial'
+                                value='radial'
+                                className='tw-mr-2'
+                                onChange={handleShape}
+                                checked={shapeBtn === 'radial'}
+                            />
+                            <label htmlFor="forma-radial">Radial</label>
+                        </div>
+                        <div>
+                            <input
+                                type="radio"
+                                id='forma-cubo'
+                                value='square'
+                                className='tw-mr-2'
+                                onChange={handleShape}
+                                checked={shapeBtn === 'square'}
+                            />
+                            <label htmlFor="forma-cubo">Cubo</label>
+                        </div>
+                    </ul>
+                </div>
+                <button className='tw-bg-greenColory hover:tw-bg-green-400
+                                   tw-text-white hover:tw-text-black
+                                   tw-px-2 tw-my-2 tw-font-bold tw-rounded'
+                    onClick={handleUpdateFill}>
                     Guardar
                 </button>
             </form>

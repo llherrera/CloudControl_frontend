@@ -159,7 +159,7 @@ export interface AddLevelProps {
 }
 
 export interface AddNodeProps {
-    id_plan: number;
+    id_level: number;
     nodes: NodeInterface[];
 }
 

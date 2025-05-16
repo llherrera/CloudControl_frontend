@@ -32,7 +32,8 @@ export const Input = (props: InputProps) => {
                             ${props.errors ? props.errors[props.name] ? 'tw-border-red-400' : 'tw-border-gray-400' : 'tw-border-gray-400'} `}
                 value={props.value}
                 onChange={props.onChange}
-                required={props.isRequired??true}/>
+                required={props.isRequired??true}
+                autoComplete={`new-${props.name}`}/>
         </Component>
     );
 }

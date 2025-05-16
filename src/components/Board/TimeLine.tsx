@@ -136,7 +136,7 @@ export const TimeLine = () => {
         {years.map((year: number, index: number) =>
             <li className="tw-grid tw-grid-rows-3 tw-w-full tw-justify-items-center"
                 key={year}>
-                <button className={`tw-rounded tw-border-4
+                <button className={`${plan.shape === 'radial' ? 'tw-rounded' : 'tw-rounded-full tw-overflow-hidden'} tw-border-4
                                     tw-flex tw-justify-center tw-items-center
                                     tw-transition hover:tw-scale-110
                                     ${colorClass(index)}
@@ -215,7 +215,7 @@ export const TimeLine = () => {
                 </div>
             </li>
         )}
-        <button className={`tw-rounded tw-border-4
+        <button className={`${plan.shape === 'radial' ? 'tw-rounded' : 'tw-rounded-full tw-overflow-hidden tw-w-[6vw]'} tw-border-4
                             tw-flex tw-justify-center tw-items-center
                             tw-self-center
                             tw-w-12 tw-h-12

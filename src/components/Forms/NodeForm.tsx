@@ -1,17 +1,20 @@
 import React, { useState } from 'react';
 
 import { useAppSelector, useAppDispatch } from '@/store';
-import { thunkAddNodes } from '@/store/plan/thunks';
+import { thunkAddNodes, thunkUpdateNodes } from '@/store/plan/thunks';
+import { setMode } from "@/store/content/contentSlice";
 
 import { NodeInterface, NodeFormProps } from '@/interfaces';
+import { Box, CircularProgress } from '@mui/material';
+import { notify } from "@/utils";
 
 export const NodeForm = ( props : NodeFormProps ) => {
     const dispatch = useAppDispatch();
-    const { parent } = useAppSelector(store => store.plan);
+    const { parent, loadingNodes } = useAppSelector(store => store.plan);
 
-    let id_nodo_gen : number = 1;
-    const [data, setData] = useState<NodeInterface[]>([
-        {   id_node: `${parent ?? props.id}.${id_nodo_gen++}`,
+    const [data, setData] = useState<NodeInterface[]>(
+        props.nodes??[
+        {   id_node: `${parent ?? props.id}.1`,
             code: '',
             name: "",
             description: "",
@@ -19,7 +22,7 @@ export const NodeForm = ( props : NodeFormProps ) => {
             parent: parent,
             weight: 33.33
         },
-        {   id_node: `${parent ?? props.id}.${id_nodo_gen++}`,
+        {   id_node: `${parent ?? props.id}.2`,
             code: '',
             name: "",
             description: "",
@@ -27,7 +30,7 @@ export const NodeForm = ( props : NodeFormProps ) => {
             parent: parent,
             weight: 33.33
         },
-        {   id_node: `${parent ?? props.id}.${id_nodo_gen++}`,
+        {   id_node: `${parent ?? props.id}.2`,
             code: '',
             name: "",
             description: "",
@@ -37,43 +40,28 @@ export const NodeForm = ( props : NodeFormProps ) => {
         }
     ]);
 
-    let nodo: NodeInterface = ({
-        id_node: `${parent ?? props.id}.${data.length + 1}`,
-        code: '',
-        name: "",
-        description: "",
-        id_level: props.id,
-        parent: parent,
-        weight: 0
-    });
+    const updateWeights = (newItems: NodeInterface[]): NodeInterface[] => {
+        const weight = 100 / newItems.length;
+        return newItems.map((item, i) => ({ ...item, weight, id_node: `${parent ?? props.id}.${i+1}` }));
+    };
 
     const addNode = () => {
-        const newData = [...data, nodo];
-        setData(newData);
-        nodo = ({
-            id_node: `${parent ?? props.id}.${newData.length + 1}`,
+        let newData = [...data, {
+            id_node: ``,
             code: '',
             name: "",
             description: "",
             id_level: props.id,
             parent: parent,
-            weight: 100/data.length
-        });
+            weight: 0
+        }];
+        setData(updateWeights(newData));
     };
 
     const deleteNode = () => {
         if (data.length > 1) {
             const newData = data.slice(0, data.length - 1);
-            setData(newData);
-            nodo = ({ 
-                id_node: `${parent ?? props.id}.${newData.length }`,
-                code: '',
-                name: "",
-                description: "",
-                id_level: props.id,
-                parent: parent,
-                weight: 100/data.length
-            });
+            setData(updateWeights(newData));
         }
     };
 
@@ -94,11 +82,24 @@ export const NodeForm = ( props : NodeFormProps ) => {
             alert('La suma de los pesos debe ser 100');
             return;
         }
-        dispatch(thunkAddNodes({nodes: data, id_plan: props.id}))
-        .unwrap()
-        .catch((error) => {
-            console.log(error);
-        });
+        if (props.nodes != undefined) {
+            dispatch(thunkUpdateNodes({nodes: data, id_level: props.id}))
+            .unwrap()
+            .catch((error) => {
+                notify('Ocurrió un error', 'error');
+                console.log(error);
+            })
+            .finally(() => {
+                dispatch(setMode(false));
+            });
+        } else {
+            dispatch(thunkAddNodes({nodes: data, id_level: props.id}))
+            .unwrap()
+            .catch((error) => {
+                notify('Ocurrió un error', 'error');
+                console.log(error);
+            });
+        }
     };
 
     return (
@@ -106,9 +107,9 @@ export const NodeForm = ( props : NodeFormProps ) => {
                 className='tw-mx-4'>
             <ul className=''>
                 {data.map(( e: NodeInterface, index: number )=> 
-                <div className='tw-mb-3 tw-p-1 tw-relative tw-shadow-lb tw-bg-gray-300 tw-border tw-flex tw-rounded'
+                <li className='tw-mb-3 tw-p-1 tw-relative tw-shadow-lb tw-bg-gray-300 tw-border tw-flex tw-rounded'
                     key={e.id_node}>
-                    <li className="tw-ml-3">
+                    <div className="tw-ml-3">
                         <input  type={"text"}
                                 placeholder={`Nombre del nodo`}
                                 id={"name"}
@@ -123,7 +124,7 @@ export const NodeForm = ( props : NodeFormProps ) => {
                                 value={e.description}
                                 className='rounded my-1 tw-w-5/6 tw-border'
                                 onChange={ (event) => handleInputFormChange(event, index) }/><br/>
-                    </li>
+                    </div>
                     <input  type="number"
                             placeholder='Peso'
                             id='weight'
@@ -131,7 +132,7 @@ export const NodeForm = ( props : NodeFormProps ) => {
                             value={e.weight}
                             className=' tw-w-1/6 tw-absolute tw-border tw-right-4 tw-h-7 tw-rounded'
                             onChange={ (event) => handleInputFormChange(event, index) } />
-                </div>
+                </li>
                 )}
                 <div className='tw-flex tw-justify-between'>
                     <button className=" tw-bg-green-500
@@ -150,15 +151,22 @@ export const NodeForm = ( props : NodeFormProps ) => {
                             onClick={deleteNode}>Eliminar Nodo</button>
                 </div>
             </ul>
-            <input  type="submit"
-                    value={"Guardar"}
-                    title='Guardar nodos en el nivel'
-                    className=" tw-bg-blue-500
-                                hover:tw-bg-blue-300 
-                                tw-text-white tw-font-bold
-                                tw-flex tw-justify-center
-                                tw-rounded tw-w-full
-                                tw-p-2 tw-mt-2"/>
+            <div>
+                {loadingNodes ?
+                <Box sx={{ display: 'flex' }}>
+                    <CircularProgress />
+                </Box> :
+                <input  type="submit"
+                        value={"Guardar"}
+                        title='Guardar nodos en el nivel'
+                        className=" tw-bg-blue-500
+                                    hover:tw-bg-blue-300 
+                                    tw-text-white tw-font-bold
+                                    tw-flex tw-justify-center
+                                    tw-rounded tw-w-full
+                                    tw-p-2 tw-mt-2"/>
+                }
+            </div>
         </form>
     );
 }

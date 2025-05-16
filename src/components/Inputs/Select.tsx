@@ -25,7 +25,7 @@ export const Select = (props: SelectProps) => {
                 disabled={props.disabled}
                 required={!!props.isRequired}>
                 {props.options.map((e, i) => 
-                    <option key={e} value={i}>{e}</option>
+                    <option key={i} value={e}>{e}</option>
                 )}
             </select>
         </div>

@@ -15,7 +15,7 @@ import { parseErrorAxios } from '@/utils';
 import {getPDTid, addPDT, getLastPDT, getColors, getLevelNodes,
         addColor, updateColor, getPDTLevelsById, getLevelName,
         getSecretaries, addSecretaries, addLocations, getLocations,
-        updateSecretaries, updateWeights, addLevel, addLevelNode,
+        updateSecretaries, updateWeights, addLevel, addLevelNode, updateLevelNode,
         updateLocations, updateDeadline, getPDTByDept, getProjectsByPlan,
         addProjectsAtPlan, updateProjectById, getCountProjectsByPlan,
         getPlanByUuid, getActionPlans, getActivityActionPlan, updateActionPlan,
@@ -148,7 +148,21 @@ export const thunkAddNodes = createAsyncThunk<NodeInterface[], AddNodeProps, { r
     'pdt/addNodes',
     async (props: AddNodeProps, { rejectWithValue }) => {
         try {
-            await addLevelNode(props.nodes, props.id_plan);
+            await addLevelNode(props.nodes, props.id_level);
+            let temp = props.nodes;
+            return temp;
+        } catch (err) {
+            const result = parseErrorAxios(err);
+            return rejectWithValue(result);
+        }
+    }
+)
+
+export const thunkUpdateNodes = createAsyncThunk<NodeInterface[], AddNodeProps, { rejectValue: ErrorBasicInterface }>(
+    'pdt/updateNodes',
+    async (props: AddNodeProps, { rejectWithValue }) => {
+        try {
+            await updateLevelNode(props.nodes, props.id_level);
             let temp = props.nodes;
             return temp;
         } catch (err) {
@@ -476,12 +490,13 @@ export const thunkUpdateActivityActionPlan = createAsyncThunk<Activity[], PropsA
 interface Props {
     id: number;
     fill: string;
+    shape: string;
 }
 export const thunkupdatePDTFill = createAsyncThunk<string, Props, { rejectValue: ErrorBasicInterface }>(
     'pdt/updatePDTFill',
     async (props: Props, { rejectWithValue }) => {
         try {
-            const res = await updatePDTFill(props.id, props.fill);
+            const res = await updatePDTFill(props.id, props.fill, props.shape);
             return res;
         } catch (err) {
             const result = parseErrorAxios(err);

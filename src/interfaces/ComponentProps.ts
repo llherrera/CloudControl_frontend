@@ -60,6 +60,7 @@ export interface LevelFormProps {
 export interface NodeFormProps {
     index: number;
     id: number;
+    nodes?: NodeInterface[];
 }
 
 export interface FrameProps {
