@@ -131,6 +131,7 @@ export const doRegister = async (id: number, user_data: RegisterInterface) => {
         password: user_data.password,
         email:    user_data.email,
         rol:      user_data.rol,
+        office:   user_data.office,
     });
     return response.data;
 }
@@ -239,9 +240,10 @@ export const updatePDT = async (id: number, pdt: PDTInterface) => {
     return response.data;
 }
 
-export const updatePDTFill = async (id: number, fill: string) => {
+export const updatePDTFill = async (id: number, fill: string, shape: string) => {
     const response = await api.put(`/plan-territorial/${id}`, {
-        fill
+        fill,
+        shape
     });
     return response.data;
 }

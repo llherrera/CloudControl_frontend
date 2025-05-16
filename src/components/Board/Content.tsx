@@ -116,15 +116,6 @@ export const Content = ( props : IdProps ) => {
                         <ModalShare plan/>
                         : null
                     }
-                    {rol === 'admin' || (rol === 'funcionario' && id === props.id) ?
-                        <IconButton color="success"
-                                    aria-label="delete"
-                                    onClick={() => handleAddUser()}
-                                    title="Agregar funcionario al plan">
-                            <PersonAddAltIcon/>
-                        </IconButton>
-                        : null
-                    }
                     {rol === 'admin' || ((rol === 'funcionario' || rol === 'planeacion' || rol === 'sectorialista') && id === props.id) ?
                         <p  className={`tw-truncate tw-w-6 hover:tw-w-24`}
                             title="usuario">

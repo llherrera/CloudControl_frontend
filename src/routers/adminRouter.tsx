@@ -28,9 +28,11 @@ export const PrivateRouter = () => {
             <Route path='/PQRS/radicar' element={<pages.PQRSFiledPage/>} />
             <Route path='/PQRS/consultar' element={<pages.PQRSStatePage/>} />
             <Route path='/PQRS/peticiones' element={<pages.PQRSReqPage/>} />
+            <Route path='/gestion-usuarios' element={<pages.RegisterPage/>} />
             <Route path='/plan/:uuid' element={<pages.SearchPage/>} />
             <Route path='/meta/:uuid' element={<pages.SearchUnitPage/>} />
             <Route path='/resultado/:uuid' element={<pages.SearchUnitResultPage/>} />
+            <Route path='/AtencionCiudadana' element={<pages.AtencionCiudadanaPage/>} /> 
             <Route path='*' element={<pages.NotFoundPage/>} />
         </Routes>
     )
