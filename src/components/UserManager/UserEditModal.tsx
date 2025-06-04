@@ -182,8 +182,7 @@ const UserEditModal: React.FC<UserEditModalProps> = ({ user, onClose, onSave }) 
                             {[
                                 { value: 'funcionario', label: 'Funcionario' },
                                 { value: 'planeacion', label: 'Planeación' },
-                                { value: 'sectorialista', label: 'Sectorialista' },
-                                { value: 'administrador', label: 'Administrador' }
+                                { value: 'sectorialista', label: 'Sectorialista' }
                             ].map((role) => (
                                 <button
                                     key={role.value}

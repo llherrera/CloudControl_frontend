@@ -491,19 +491,30 @@ interface Props {
     id: number;
     fill: string;
     shape: string;
-}
-export const thunkupdatePDTFill = createAsyncThunk<string, Props, { rejectValue: ErrorBasicInterface }>(
+  }
+  
+  interface FillUpdatePayload {
+    fill: string;
+    shape: string;
+  }
+  
+  export const thunkupdatePDTFill = createAsyncThunk<
+    FillUpdatePayload, // 👈 tipo de retorno (action.payload)
+    Props,
+    { rejectValue: ErrorBasicInterface }
+  >(
     'pdt/updatePDTFill',
     async (props: Props, { rejectWithValue }) => {
-        try {
-            const res = await updatePDTFill(props.id, props.fill, props.shape);
-            return res;
-        } catch (err) {
-            const result = parseErrorAxios(err);
-            return rejectWithValue(result);
-        }
+      try {
+        const res = await updatePDTFill(props.id, props.fill, props.shape);
+        return res as FillUpdatePayload; // asegúrate de que res tenga esta forma
+      } catch (err) {
+        const result = parseErrorAxios(err);
+        return rejectWithValue(result);
+      }
     }
-)
+  );
+  
 
 export const thunkUpdateYears = createAction('plan/updateYears', (years:number[]) => {
     return {

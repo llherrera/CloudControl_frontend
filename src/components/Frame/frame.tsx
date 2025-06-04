@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Button, IconButton } from '@mui/material';
+import { Button, Divider, IconButton, Typography } from '@mui/material';
 import LogoutIcon from '@mui/icons-material/Logout';
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 import { MdSupportAgent } from 'react-icons/md';
@@ -204,107 +204,138 @@ export const Frame = ({ children }: FrameProps) => {
 
     return (
         <div className='tw-min-h-screen tw-flex tw-flex-col'>
-            <header className='tw-flex tw-justify-between tw-bg-header tw-drop-shadow-xl'>
-                <div className='tw-flex tw-items-center tw-gap-4'>
-                    {/* Logo */}
-                    <img src={cclogo} title='ControlLand' width={100} />
+            <header
+                className="
+        tw-bg-header tw-drop-shadow-xl
+        tw-flex tw-flex-col md:tw-flex-row tw-items-center
+        md:tw-justify-between
+        tw-py-2 tw-px-4
+        tw-gap-4 md:tw-gap-0
+      "
+            >
+                {/* ============================= */}
+                {/*   CONTENEDOR DE LOS 3 LOGOS   */}
+                {/* ============================= */}
+                <div
+                    className="
+          tw-flex tw-items-center tw-gap-4 tw-flex-nowrap
+          tw-overflow-x-auto
+        "
+                >
+                    {/* Logo de ControlLand */}
+                    <img
+                        src={cclogo}
+                        title="ControlLand"
+                        className="tw-h-[60px] sm:tw-h-[80px] md:tw-h-[100px]"
+                        alt="ControlLand"
+                    />
 
-                    {/* Botón de gestión de usuarios (solo para admin) */}
-                    {localStorage.getItem('rol') === 'admin' && (
-                        <button
-                            onClick={handleAddUser}
-                            className='tw-flex tw-items-center tw-gap-2 hover:tw-bg-green-200 tw-p-2 tw-rounded-lg'
-                            title="Agregar funcionario al plan"
-                        >
-                            <PersonAddAltIcon sx={{ fontSize: 30, color: '#006400' }} />
-                            <span className='tw-text-[#006400] tw-font-montserrat tw-font-semibold tw-text-xl'>
-                                Gestión de usuarios
-                            </span>
-                        </button>
+                    {/* Logo del Municipio */}
+                    {url_logo && (
+                        <img
+                            src={url_logo}
+                            title="Municipio"
+                            className="tw-h-[60px] sm:tw-h-[80px] md:tw-h-[100px]"
+                            alt="Municipio"
+                        />
+                    )}
+
+                    {/* Logo del Plan */}
+                    {url_logo_plan && (
+                        <img
+                            src={url_logo_plan}
+                            title="Plan"
+                            className="tw-h-[60px] sm:tw-h-[80px] md:tw-h-[100px]"
+                            alt="Plan"
+                        />
                     )}
                 </div>
-                <div className='tw-flex tw-gap-3'>
-                    {url_logo && <img src={url_logo} title='Municipio' className='tw-h-[100px]' />}
-                    {url_logo_plan && <img src={url_logo_plan} title='Plan' className='tw-h-[100px]' />}
-                </div>
-                <div className='tw-flex tw-items-center tw-gap-4'>
-                    <div className='tw-flex tw-flex-col tw-items-start tw-gap-2'>
-                        <div className="tw-flex tw-gap-6 tw-bg-green-50 tw-p-4 tw-rounded-md tw-shadow-md tw-items-center">
-                            <span className="tw-font-montserrat tw-text-base tw-text-[#006400] tw-font-semibold">
-                                Usuario: <span className="tw-font-normal">{localStorage.getItem('user')}</span>
+
+                {/* ============================= */}
+                {/*        BOTÓN DE ADMIN         */}
+                {/* (solo visible en md+ o según rol) */}
+                {/* ============================= */}
+                {localStorage.getItem('rol') === 'admin' && (
+                    <button
+                        onClick={handleAddUser}
+                        className="
+            tw-flex tw-items-center tw-gap-2
+            hover:tw-bg-green-200
+            tw-p-2 tw-rounded-lg
+            tw-text-sm md:tw-text-base
+          "
+                        title="Agregar funcionario al plan"
+                    >
+                        <PersonAddAltIcon sx={{ fontSize: 28, color: '#006400' }} />
+                        <span className="tw-text-[#006400] tw-font-montserrat tw-font-semibold">
+                            Gestión de usuarios
+                        </span>
+                    </button>
+                )}
+
+                {/* ============================= */}
+                {/*    DATOS DE USUARIO + ÍCONOS   */}
+                {/* ============================= */}
+                <div className="tw-flex tw-items-center tw-gap-4 tw-flex-wrap tw-justify-end tw-w-full md:tw-w-auto">
+                    {/* Caja con Usuario / Rol / Oficina */}
+                    <div
+                        className="
+            tw-flex tw-flex-col tw-items-start tw-gap-2
+            tw-bg-green-50 tw-p-3 tw-rounded-md tw-shadow-md
+            tw-w-full sm:tw-w-auto
+          "
+                    >
+                        <div
+                            className="
+              tw-flex tw-flex-col sm:tw-flex-row
+              tw-gap-2 sm:tw-gap-4
+            "
+                        >
+                            <span className="tw-font-montserrat tw-text-sm sm:tw-text-base tw-text-[#006400] tw-font-semibold">
+                                Usuario:{' '}
+                                <span className="tw-font-normal">
+                                    {localStorage.getItem('user')}
+                                </span>
                             </span>
-                            <span className="tw-font-montserrat tw-text-base tw-text-[#006400] tw-font-semibold">
-                                Rol: <span className="tw-font-normal">{localStorage.getItem('rol')}</span>
+                            <span className="tw-font-montserrat tw-text-sm sm:tw-text-base tw-text-[#006400] tw-font-semibold">
+                                Rol:{' '}
+                                <span className="tw-font-normal">
+                                    {localStorage.getItem('rol')}
+                                </span>
                             </span>
+                            {/* Oficina solo si es funcionario */}
                             {localStorage.getItem('rol') === 'funcionario' && (
-                                <span className="tw-font-montserrat tw-text-base tw-text-[#006400] tw-font-semibold">
-                                    Oficina: <span className="tw-font-normal">{localStorage.getItem('office')}</span>
+                                <span className="tw-font-montserrat tw-text-sm sm:tw-text-base tw-text-[#006400] tw-font-semibold">
+                                    Oficina:{' '}
+                                    <span className="tw-font-normal">
+                                        {localStorage.getItem('office')}
+                                    </span>
                                 </span>
                             )}
                         </div>
                     </div>
 
-                    {/* Ícono de notificación solo visible para rol 'funcionario' */}
+                    {/* Ícono de notificaciones (solo funcionario) */}
                     {localStorage.getItem('rol') === 'funcionario' && (
-                        <div className='tw-px-4'>
-                            <IconButton
-                                onClick={handleClickNotifications}
-                                className='tw-relative'
-                                title="Notificaciones"
-                            >
-                                <Badge badgeContent={solicitudes.length} color="error">
-                                    <Notifications sx={{ fontSize: 28, color: '#333' }} />
-                                </Badge>
-                            </IconButton>
-                            <Menu
-                                anchorEl={anchorEl}
-                                open={open}
-                                onClose={handleCloseNotifications}
-                                PaperProps={{
-                                    sx: {
-                                        mt: 1,
-                                        minWidth: 250,
-                                        maxHeight: 300,
-                                    },
-                                }}
-                            >
-                                {solicitudes.length > 0 ? (
-                                    solicitudes.map(solicitud => (
-                                        <MenuItem
-                                            key={solicitud.documento}
-                                            onClick={handleCloseNotifications}
-                                            title={solicitud.nombre}
-                                        >
-                                            {`Solicitud ${solicitud.documento}: ${solicitud.nombre}`}
-                                        </MenuItem>
-                                    ))
-                                ) : (
-                                    <MenuItem disabled>No hay solicitudes pendientes</MenuItem>
-                                )}
-
-                                <MenuItem
-                                    onClick={() => {
-                                        handleCloseNotifications();
-                                        navigate('/AtencionCiudadana'); // <-- Redirecciona aquí
-                                    }}
-                                    sx={{ justifyContent: 'center', fontWeight: 'bold' }}
-                                >
-                                    <Button variant="contained" color="primary" fullWidth>
-                                        Ver todas las solicitudes
-                                    </Button>
-                                </MenuItem>
-                            </Menu>
-                        </div>
+                        <IconButton
+                            onClick={handleClickNotifications}
+                            className="tw-relative"
+                            title="Notificaciones"
+                        >
+                            <Badge badgeContent={solicitudes.length} color="error">
+                                <Notifications sx={{ fontSize: 28, color: '#333' }} />
+                            </Badge>
+                        </IconButton>
                     )}
 
-                    <div className='tw-px-4'>
-                        <IconButton onClick={handleBtn}
-                            title='Cerrar sesión'
-                            type='button'
-                            className='tw-self-center'>
-                            <LogoutIcon sx={{ color: '#006400' }} />
-                        </IconButton>
-                    </div>
+                    {/* Ícono de cerrar sesión */}
+                    <IconButton
+                        onClick={handleBtn}
+                        title="Cerrar sesión"
+                        className="tw-self-center"
+                    >
+                        <LogoutIcon sx={{ color: '#006400', fontSize: 28 }} />
+                    </IconButton>
                 </div>
             </header>
             <div className='tw-flex tw-flex-col xl:tw-flex-row tw-flex-grow'>

@@ -15,6 +15,7 @@ export const NavBar = ({ children }: NavBarProps) => {
                 xl:tw-px-10
                 xl:tw-h-screen
                 xl:tw-left-0
+                tw-z-auto
             `}
         >
             {children}
