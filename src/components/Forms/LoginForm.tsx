@@ -56,13 +56,11 @@ export const LoginForm = () => {
 
                 // Agregar datos a localStorage
                 localStorage.removeItem('id');
-                localStorage.removeItem('id_plan');
                 localStorage.removeItem('rol');
                 localStorage.removeItem('user');
                 localStorage.removeItem('office');
 
                 localStorage.setItem('id', (info.id).toString());
-                localStorage.setItem('id_plan', (info.id_plan).toString());
                 localStorage.setItem('rol', info.rol);
                 localStorage.setItem('user', info.user);
 

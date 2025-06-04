@@ -52,6 +52,8 @@ const ListPDT = ( props: PDTPageProps ) => {
     }
 
     const handlePdtid = (id: number) => {
+        localStorage.removeItem('id_plan');
+        localStorage.setItem('id_plan', id.toString());
         dispatch(setIdPlan(id));
         dispatch(thunkGetPDTid(id));
         navigate(`/lobby`);
