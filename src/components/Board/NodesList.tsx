@@ -147,7 +147,7 @@ export const NodesList = ( props : IdProps ) => {
             {nodes.map((item: NodeInterface, index: number) =>
                 <div className="tw-my-2 tw-ml-12 tw-py-1 tw-flex tw-transition hover:tw-scale-110 tw-group"
                     key={item.id_node}>
-                    <button className={`${plan.shape === 'radial' ? 'tw-rounded' : 'tw-rounded-full tw-overflow-hidden tw-scale-[1.2]'} tw-border-4 tw-bg-transparent
+                    <button className={`${plan.shape === 'radial' ? 'tw-rounded-full tw-overflow-hidden tw-scale-[1.2]' : 'tw-rounded'} tw-border-4 tw-bg-transparent
                                         ${colorClass(index)}
                                         tw-ml-3 tw-z-10
                                         tw-w-12 tw-h-12
