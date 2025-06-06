@@ -148,7 +148,27 @@ export const thunkAddNodes = createAsyncThunk<NodeInterface[], AddNodeProps, { r
     'pdt/addNodes',
     async (props: AddNodeProps, { rejectWithValue }) => {
         try {
+<<<<<<< Updated upstream
             await addLevelNode(props.nodes, props.id_plan);
+=======
+            await addLevelNode(props.nodes, props.id_level);
+            let temp = props.nodes;
+            return temp;
+        } catch (err) {
+            const result = parseErrorAxios(err);
+            return rejectWithValue(result);
+        }
+    }
+)
+
+export const thunkUpdateNodes = createAsyncThunk<NodeInterface[], AddNodeProps, { rejectValue: ErrorBasicInterface }>(
+    'pdt/updateNodes',
+    async (props: AddNodeProps, { rejectWithValue }) => {
+        try {
+            await updateLevelNode(props.nodes, props.id_level);
+            console.log(props.nodes);
+            console.log(props.id_level);
+>>>>>>> Stashed changes
             let temp = props.nodes;
             return temp;
         } catch (err) {
@@ -270,6 +290,7 @@ export const thunkAddLocations = createAsyncThunk<LocationInterface[], PropsLoca
     'pdt/addLocations',
     async (props: PropsLocations, { rejectWithValue }) => {
         try {
+            console.log(props);
             const { id_plan, locations } = props;
             const res = await addLocations(id_plan, locations, props.location);
             return res;

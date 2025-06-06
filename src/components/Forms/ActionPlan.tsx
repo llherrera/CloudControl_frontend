@@ -495,6 +495,8 @@ const PlanForm = ({showPlan} :{showPlan?: ActionPlan}) => {
     }, [send]);
 
     const addRubro = () => {
+        
+        console.log("addLevel");
         const newData = [...rubros, rubro];
         setRubros(newData);
         setRubro({ id_actionPlan: 0, presupuestalCode: '', rubro: '' });
