@@ -22,7 +22,7 @@ export const LocationsForm = ({loc, locs}: LocFormProps) => {
     const dispatch = useAppDispatch();
     const { id_plan } = useAppSelector(store => store.content);
     const blankLocation: LocationInterface = { id_plan, type: locationTypes.neighborhood, name: '' };
-    const [location, setLocation] = useState<LocationInterface>({id_plan, type: '', name:''});
+    const [location, setLocation] = useState<LocationInterface>({id_plan, type: 'Localidad', name:''});
     const [data, setData] = useState<LocationInterface[]>([blankLocation]);
 
     const addLocation = () => {
@@ -67,7 +67,9 @@ export const LocationsForm = ({loc, locs}: LocFormProps) => {
         //if (locations)
         //    dispatch(thunkUpdateLocations({ id_plan, locations: data, location: {id_plan, type: location, name: locationName}})).then(() => notify("Localidades actualizadas"));
         //else
-            dispatch(thunkAddLocations({ id_plan, locations: data, location: {id_plan, type: location.type, name: location.name}})).then(() => notify("Localidades Añadidas"));
+        dispatch(thunkAddLocations({ id_plan, locations: data, location: {id_plan, type: location.type, name: location.name}}))
+            .then(() => notify("Localidades Añadidas"))
+            .then(() => dispatch(thunkGetLocations(id_plan)));
     };
 
     const handleLocation = (value: Coordinates, index: number) => {
@@ -86,6 +88,7 @@ export const LocationsForm = ({loc, locs}: LocFormProps) => {
                 <div className="tw-flex tw-mt-3">
                     <div className="">
                         <select name="location"
+                                title={loc ? loc.type : location.type}
                                 value={loc ? loc.type : location.type}
                                 onChange={e => handleLocationChange(e)}
                                 className="tw-m-2 tw-p-2 tw-rounded tw-border-2 tw-border-gray-400">
@@ -106,6 +109,7 @@ export const LocationsForm = ({loc, locs}: LocFormProps) => {
                             <li key={index}>
                                 <label>{`${index < 9 ? '0' : ''}${index + 1}`}</label>
                                 <select name="type"
+                                        title={location.type}
                                         value={location.type}
                                         onChange={(e) => handleTypeChange(e, index)}
                                         className="tw-m-2 tw-p-2 tw-rounded tw-border-2 tw-border-gray-400"
@@ -166,7 +170,7 @@ const Pagination = ({array, page, callback}: PaginationProps) => {
                 <button
                     title="Primero"
                     disabled={page === 1}
-                    onClick={() => callback(1)}>
+                    onClick={() => callback(1, false)}>
                     {page === 1 ? <KeyboardDoubleArrowLeft color="disabled"/> : <KeyboardDoubleArrowLeft/>}
                 </button>
             </li>
@@ -174,7 +178,7 @@ const Pagination = ({array, page, callback}: PaginationProps) => {
                 <button
                     title="Anterior"
                     disabled={page === 1}
-                    onClick={() => callback(page - 1)}>
+                    onClick={() => callback(page - 1, false)}>
                     {page === 1 ? <KeyboardArrowLeft color="disabled"/> : <KeyboardArrowLeft/>}
                 </button>
             </li>
@@ -183,26 +187,26 @@ const Pagination = ({array, page, callback}: PaginationProps) => {
                 if (!(i > 0 && i < array.length - 1)) {
                     return <li  key={i}
                                 className={`${page === i + 1 ? 'tw-ring' : ''} hover:tw-bg-zinc-200 tw-rounded tw-px-1`}>
-                        <button onClick={() => callback(i + 1)}>{i + 1}</button>
+                        <button onClick={() => callback(i + 1, false)}>{i + 1}</button>
                     </li>
                 } else if (page < 5) {
                     if (i > 4) {
-                        if (i === 5) return <p>...</p>
+                        if (i === 5) return <li><p>...</p></li>
                         return null
                     } else {
                         return <li  key={i}
                                     className={`${page === i + 1 ? 'tw-ring' : ''} hover:tw-bg-zinc-200 tw-rounded tw-px-1`}>
-                            <button onClick={() => callback(i + 1)}>{i + 1}</button>
+                            <button onClick={() => callback(i + 1, false)}>{i + 1}</button>
                         </li>
                     }
                 } else if (page > array.length - 4) {
                     if (i < array.length - 5) {
-                        if (i === array.length - 6) return <p>...</p>
+                        if (i === array.length - 6) return <li><p>...</p></li>
                         return null
                     } else {
                         return <li  key={i} 
                                     className={`${page === i + 1 ? 'tw-ring' : ''} hover:tw-bg-zinc-200 tw-rounded tw-px-1`}>
-                            <button onClick={() => callback(i + 1)}>{i + 1}</button>
+                            <button onClick={() => callback(i + 1, false)}>{i + 1}</button>
                         </li>
                     }
                 } else {
@@ -210,9 +214,9 @@ const Pagination = ({array, page, callback}: PaginationProps) => {
                         return <li  key={i} 
                                     className={`tw-flex tw-gap-4`}>
                             <p>...</p>
-                            <button onClick={() => callback(i - 1)} className="hover:tw-bg-zinc-200 tw-rounded tw-px-1">{i - 1}</button>
-                            <button onClick={() => callback(i)} className="tw-ring hover:tw-bg-zinc-200 tw-rounded tw-px-1">{i}</button>
-                            <button onClick={() => callback(i + 1)} className="hover:tw-bg-zinc-200 tw-rounded tw-px-1">{i + 1}</button>
+                            <button onClick={() => callback(i - 1, false)} className="hover:tw-bg-zinc-200 tw-rounded tw-px-1">{i - 1}</button>
+                            <button onClick={() => callback(i, false)} className="tw-ring hover:tw-bg-zinc-200 tw-rounded tw-px-1">{i}</button>
+                            <button onClick={() => callback(i + 1, false)} className="hover:tw-bg-zinc-200 tw-rounded tw-px-1">{i + 1}</button>
                             <p>...</p>
                         </li>
                 }
@@ -220,17 +224,22 @@ const Pagination = ({array, page, callback}: PaginationProps) => {
 
             <li>
                 <button
-                    title="Siguiente"
-                    disabled={page === array.length}
-                    onClick={() => callback(page + 1)}>
-                    {page === array.length ? <KeyboardArrowRight color="disabled"/> : <KeyboardArrowRight/>}
+                    title={page === array.length ? 'Añadir localidad' : "Siguiente"}
+                    disabled={false}
+                    onClick={() => {
+                        if (page === array.length)
+                            callback(0, true)
+                        else
+                            callback(page + 1, false)
+                    }}>
+                    <KeyboardArrowRight/>
                 </button>
             </li>
             <li>
                 <button
                     title="Ultimo"
                     disabled={page === array.length}
-                    onClick={() => callback(array.length)}>
+                    onClick={() => callback(array.length, false)}>
                     {page === array.length ? <KeyboardDoubleArrowRight color="disabled"/> : <KeyboardDoubleArrowRight/>}
                 </button>
             </li>
@@ -248,15 +257,31 @@ export const LocationsFormPage = () => {
     const [locations__, setLocations__] = useState<LocationInterface[]>([]);
     const [page, setPage] = useState(1);
 
-    const handlePage = (page: number) => setPage(page);
+    const handlePage = (newPage: number, opt: boolean) => {
+        if (!opt) {
+            setPage(newPage);
+        } else {
+            let newLocs = convertLocations(locations!);
+            newLocs.set(
+                {
+                    id_plan: 0,
+                    type: '',
+                    name: ''
+                },
+                []
+            );
+            setLocationsMap(newLocs);
+            setPage(page+1);
+        }
+    }
 
     useEffect(() => {
-        if (locations == undefined)
+        if (locations == undefined || locations.length == 0)
             dispatch(thunkGetLocations(id_plan));
     }, []);
 
     useEffect(() => {
-        if (locations == undefined) return
+        if (locations == undefined) return;
         if (locations.length === 0) return;
         setLocationsMap(convertLocations(locations));
     }, [locations]);
@@ -273,7 +298,7 @@ export const LocationsFormPage = () => {
         loadingLocations ? <p>Cargando...</p> :
         <div className="tw-flex tw-flex-col tw-justify-center">
             <Pagination array={locations_} page={page} callback={handlePage}/>
-            <LocationsForm loc={locations_[page-1]} locs={locations__}/>
+            <LocationsForm loc={locations_[page-1]?.id_plan==0?undefined:locations_[page-1]} locs={locations__.length==0?undefined:locations__}/>
         </div>
     );
 }
