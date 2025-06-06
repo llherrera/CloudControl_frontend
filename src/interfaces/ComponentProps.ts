@@ -156,7 +156,7 @@ export interface LocFormProps {
 export interface PaginationProps {
     array: Array<any>;
     page: number;
-    callback: (page: number) => void;
+    callback: (page: number, opt: boolean) => void;
 }
 
 export interface DrawerProps {

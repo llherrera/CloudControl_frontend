@@ -31,7 +31,7 @@ export const LocationsForm = ({ loc, locs }: LocFormProps) => {
   // Estado para el “parent” (tipo + nombre) de la sección
   const [location, setLocation] = useState<LocationInterface>({
     id_plan,
-    type: "",
+    type: "Localidad",
     name: "",
   });
 
@@ -129,7 +129,8 @@ export const LocationsForm = ({ loc, locs }: LocFormProps) => {
           name: location.name,
         },
       })
-    ).then(() => notify("Localidades Añadidas"));
+    ).then(() => notify("Localidades Añadidas"))
+    .then(() => dispatch(thunkGetLocations(id_plan)));
   };
 
   return (
@@ -155,6 +156,7 @@ export const LocationsForm = ({ loc, locs }: LocFormProps) => {
             </label>
             <select
               name="type"
+              title={location.type}
               value={location.type}
               onChange={handleLocationChange}
               className="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-lg focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-green-300"
@@ -211,6 +213,7 @@ export const LocationsForm = ({ loc, locs }: LocFormProps) => {
                   </label>
                   <select
                     name="type"
+                    title={locationItem.type}
                     value={locationItem.type}
                     onChange={(e) => handleTypeChange(e, index)}
                     className="tw-w-full tw-px-3 tw-py-2 tw-border tw-border-gray-300 tw-rounded-lg focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-green-300"
@@ -299,7 +302,7 @@ const Pagination = ({ array, page, callback }: PaginationProps) => {
         <button
           title="Primero"
           disabled={page === 1}
-          onClick={() => callback(1)}
+          onClick={() => callback(1, false)}
           className="tw-disabled:tw-opacity-50"
         >
           {page === 1 ? (
@@ -313,7 +316,7 @@ const Pagination = ({ array, page, callback }: PaginationProps) => {
         <button
           title="Anterior"
           disabled={page === 1}
-          onClick={() => callback(page - 1)}
+          onClick={() => callback(page - 1, false)}
           className="tw-disabled:tw-opacity-50"
         >
           {page === 1 ? (
@@ -333,7 +336,7 @@ const Pagination = ({ array, page, callback }: PaginationProps) => {
                 page === i + 1 ? "tw-bg-green-100 tw-rounded-lg" : ""
               } tw-transition hover:tw-bg-gray-100 tw-px-2 tw-py-1`}
             >
-              <button onClick={() => callback(i + 1)}>{i + 1}</button>
+              <button onClick={() => callback(i + 1, false)}>{i + 1}</button>
             </li>
           );
         } else if (page < 5) {
@@ -348,7 +351,7 @@ const Pagination = ({ array, page, callback }: PaginationProps) => {
                   page === i + 1 ? "tw-bg-green-100 tw-rounded-lg" : ""
                 } tw-transition hover:tw-bg-gray-100 tw-px-2 tw-py-1`}
               >
-                <button onClick={() => callback(i + 1)}>{i + 1}</button>
+                <button onClick={() => callback(i + 1, false)}>{i + 1}</button>
               </li>
             );
           }
@@ -364,7 +367,7 @@ const Pagination = ({ array, page, callback }: PaginationProps) => {
                   page === i + 1 ? "tw-bg-green-100 tw-rounded-lg" : ""
                 } tw-transition hover:tw-bg-gray-100 tw-px-2 tw-py-1`}
               >
-                <button onClick={() => callback(i + 1)}>{i + 1}</button>
+                <button onClick={() => callback(i + 1, false)}>{i + 1}</button>
               </li>
             );
           }
@@ -374,19 +377,19 @@ const Pagination = ({ array, page, callback }: PaginationProps) => {
               <li key={i} className="tw-flex tw-items-center tw-gap-2">
                 <p>...</p>
                 <button
-                  onClick={() => callback(i - 1)}
+                  onClick={() => callback(i - 1, false)}
                   className="hover:tw-bg-gray-100 tw-rounded-lg tw-px-2 tw-py-1"
                 >
                   {i - 1}
                 </button>
                 <button
-                  onClick={() => callback(i)}
+                  onClick={() => callback(i, false)}
                   className="tw-bg-green-100 tw-rounded-lg tw-px-2 tw-py-1 tw-font-semibold"
                 >
                   {i}
                 </button>
                 <button
-                  onClick={() => callback(i + 1)}
+                  onClick={() => callback(i + 1, false)}
                   className="hover:tw-bg-gray-100 tw-rounded-lg tw-px-2 tw-py-1"
                 >
                   {i + 1}
@@ -401,9 +404,14 @@ const Pagination = ({ array, page, callback }: PaginationProps) => {
 
       <li>
         <button
-          title="Siguiente"
-          disabled={page === array.length}
-          onClick={() => callback(page + 1)}
+          title={page === array.length ? 'Añadir localidad' : "Siguiente"}
+          disabled={false}
+          onClick={() => {
+            if (page === array.length)
+              callback(0, true)
+            else
+              callback(page + 1, false)
+          }}
           className="tw-disabled:tw-opacity-50"
         >
           {page === array.length ? (
@@ -417,7 +425,7 @@ const Pagination = ({ array, page, callback }: PaginationProps) => {
         <button
           title="Último"
           disabled={page === array.length}
-          onClick={() => callback(array.length)}
+          onClick={() => callback(array.length, false)}
           className="tw-disabled:tw-opacity-50"
         >
           {page === array.length ? (
@@ -443,10 +451,26 @@ export const LocationsFormPage = () => {
   const [locations__, setLocations__] = useState<LocationInterface[]>([]);
   const [page, setPage] = useState(1);
 
-  const handlePage = (newPage: number) => setPage(newPage);
+  const handlePage = (newPage: number, opt: boolean) => {
+    if (!opt) {
+      setPage(newPage);
+    } else {
+      let newLocs = convertLocations(locations!);
+      newLocs.set(
+        {
+          id_plan: id_plan,
+          type: 'Localidad',
+          name: ''
+        },
+        []
+      );
+      setLocationsMap(newLocs);
+      setPage(page+1);
+    }
+  }
 
   useEffect(() => {
-    if (locations === undefined) dispatch(thunkGetLocations(id_plan));
+    if (locations === undefined || locations.length == 0) dispatch(thunkGetLocations(id_plan));
   }, [locations, dispatch, id_plan]);
 
   useEffect(() => {
@@ -467,7 +491,8 @@ export const LocationsFormPage = () => {
   ) : (
     <div className="tw-flex tw-flex-col tw-justify-center tw-space-y-4">
       <Pagination array={locations_} page={page} callback={handlePage} />
-      <LocationsForm loc={locations_[page - 1]} locs={locations__} />
+      <LocationsForm loc={locations_[page - 1]} locs={locations__.length==0?undefined:locations__} />
     </div>
   );
 };
+
