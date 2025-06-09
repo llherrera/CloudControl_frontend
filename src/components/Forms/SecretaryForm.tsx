@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useAppSelector, useAppDispatch } from "@/store";
-import { thunkAddSecretaries, thunkUpdateSecretaries } from "@/store/plan/thunks";
+import { thunkAddSecretaries, thunkUpdateSecretaries, thunkGetSecretaries } from "@/store/plan/thunks";
 import { Secretary } from "@/interfaces";
 import { validateEmail, notify } from "@/utils";
 import { Box, CircularProgress } from "@mui/material";
@@ -38,9 +38,11 @@ export const SecretaryForm = () => {
             }
         }
         if (secretaries) {
-            dispatch(thunkUpdateSecretaries({ id_plan, secretaries: data }));
+            dispatch(thunkUpdateSecretaries({ id_plan, secretaries: data }))
+            .then(() => dispatch(thunkGetSecretaries(id_plan)));
         } else {
-            dispatch(thunkAddSecretaries({ id_plan, secretaries: data }));
+            dispatch(thunkAddSecretaries({ id_plan, secretaries: data }))
+            .then(() => dispatch(thunkGetSecretaries(id_plan)));
         }
     };
 

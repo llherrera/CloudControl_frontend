@@ -470,8 +470,8 @@ export const LocationsFormPage = () => {
   }
 
   useEffect(() => {
-    if (locations === undefined || locations.length == 0) dispatch(thunkGetLocations(id_plan));
-  }, [locations, dispatch, id_plan]);
+    if (locations === undefined) dispatch(thunkGetLocations(id_plan));
+  }, [locations, id_plan]);
 
   useEffect(() => {
     if (!locations || locations.length === 0) return;

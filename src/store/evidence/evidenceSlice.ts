@@ -5,7 +5,8 @@ import {EvidenceInterface,
         Coordinates} from "@/interfaces";
 import {setGenericState, 
         getGenericState, 
-        removeGenericState } from "@/utils";
+        removeGenericState,
+        notify } from "@/utils";
 
 import {thunkGetEvidence, 
         thunkGetEvidences, 
@@ -109,10 +110,12 @@ export const evidenceSlice = createSlice({
         });
         builder.addCase(thunkAddEvidenceGoal.fulfilled, (state, action) => {
             state.loadingEvidence = false;
+            notify('Evidencia añadida con exito', 'success');
             setGenericState('evidence', state);
         });
         builder.addCase(thunkAddEvidenceGoal.rejected, (state, action) => {
             state.loadingEvidence = false;
+            notify('Error al añadir evidencia', 'error');
             state.errorLoadingEvidence = action.payload;
         });
 
@@ -139,10 +142,12 @@ export const evidenceSlice = createSlice({
         builder.addCase(thunkUpdateEvidence.fulfilled, (state, action) => {
             state.loadingEvidence = false;
             state.evi_selected = action.payload;
+            notify('Evidencia actualizada con exito', 'success');
             setGenericState('evidence', state);
         });
         builder.addCase(thunkUpdateEvidence.rejected, (state, action) => {
             state.loadingEvidence = false;
+            notify('Error al actualizar evidencia', 'error');
             state.errorLoadingEvidence = action.payload;
         });
 

@@ -4,7 +4,8 @@ export const ShowEvidence = ( {evi}: EvidenceDetailProps ) => {
     return (
         <tr>
             <th  className={`tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black`}>
-                {new Date(evi.date).getDate()}/{new Date(evi.date).getMonth()+1}/{new Date(evi.date).getFullYear()}
+                {/*new Date(evi.date).getDate()}/{new Date(evi.date).getMonth()+1}/{new Date(evi.date).getFullYear()*/}
+                {evi.date.split('T')[0]}
             </th>
             <th  className={`tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black
                             tw-hidden lg:tw-table-cell`}>
@@ -34,7 +35,8 @@ export const ShowEvidence = ( {evi}: EvidenceDetailProps ) => {
             </th>
             <th  className={`tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black
                             tw-hidden md:tw-table-cell`}>
-                {new Date(evi.date_file).getDate()}/{new Date(evi.date_file).getMonth()+1}/{new Date(evi.date_file).getFullYear()}
+                {/*new Date(evi.date_file).getDate()}/{new Date(evi.date_file).getMonth()+1}/{new Date(evi.date_file).getFullYear()*/}
+                {evi.date_file.split('T')[0]}
             </th>
             <th  className={`tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black`}>
                 <a href={evi.file_link} target="_blank">Visitar</a>

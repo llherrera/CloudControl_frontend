@@ -985,4 +985,13 @@ export const loadActivityExcel = async (id_plan: number, data: any[]) => {
     return response.data;
 }
 
+export const generalReport = async (id_plan: number) => {
+    const response = await api.get('/plan-territorial/generalReport', {
+        params: {
+            id_plan,
+        }
+    });
+    return response.data;
+}
+
 export default api;

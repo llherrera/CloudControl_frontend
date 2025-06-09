@@ -30,7 +30,8 @@ export const PDTForm = () => {
         description: "",
         deadline: "",
         uuid: '',
-        fill: 'vacio'
+        fill: 'vacio',
+        shape: ''
     });
 
     useEffect(() => {

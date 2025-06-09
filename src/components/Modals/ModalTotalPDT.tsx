@@ -9,23 +9,25 @@ import IconButton from "@mui/material/IconButton";
 import { Spinner } from "@/assets/icons";
 
 import { ReportPDTInterface, NodesWeight, Percentages,
-    YearDetail, ModalPDTProps } from "@/interfaces";
-import { getLevelName } from "@/services/api";
+    YearDetail, ModalPDTProps, ReportPDTInterface2 } from "@/interfaces";
+import { getLevelName, generalReport } from "@/services/api";
 import { generateExcelYears, sortData } from "@/utils";
 
 export const ModalTotalPDT = () => {
     const dispatch = useAppDispatch();
 
     const { levels } = useAppSelector(store => store.plan);
+    const { id_plan } = useAppSelector(store => store.content);
 
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [data, setData] = useState<ReportPDTInterface[]>([]);
+    const [data_, setData_] = useState<ReportPDTInterface2[]>([]);
 
     const handleBtn = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault();
         setModalIsOpen(true);
         dispatch(setLoadingReport(true));
-        genReport().then(data => setData(data));
+        genReport().then(data => setData_(data));
     };
 
     const genReport = async () => {
@@ -34,7 +36,8 @@ export const ModalTotalPDT = () => {
         const pesos = pesosStr ? JSON.parse(pesosStr) : [];
         const detalle = detalleStr ? JSON.parse(detalleStr) : [];
         const data: ReportPDTInterface[] = [];
-
+        let data_: ReportPDTInterface2[] = [];
+        /*
         await Promise.all(pesos.map(async (peso: NodesWeight) => {
             const { id_node, percents } = peso;
             if (id_node.split('.').length !== levels.length + 1) return;
@@ -49,7 +52,8 @@ export const ModalTotalPDT = () => {
                     return [...acumulator, concatenado];
                 }
             }, []);
-            ids2 = ids2.slice(1);*/
+            ids2 = ids2.slice(1);
+            //
             const percentages = percents?.map((Percentages: Percentages) => Percentages.progress*100);
             let root: {nodo:string, nivel:string}[] = await getLevelName(id_node);
             let root_: string[] = root.map(item => item.nodo);
@@ -71,8 +75,10 @@ export const ModalTotalPDT = () => {
             };
             data.push(item);
         }));
+        */
+        data_ = await generalReport(id_plan);
         dispatch(setLoadingReport(false));
-        return data;
+        return data_;
     };
 
     return (
@@ -80,7 +86,7 @@ export const ModalTotalPDT = () => {
             <ModalPDT
                 modalIsOpen={modalIsOpen}
                 callback={setModalIsOpen}
-                data={data}/>
+                data={data_}/>
             <IconButton aria-label="delete"
                         size="large"
                         color='inherit'
@@ -100,16 +106,17 @@ const ModalPDT = ( props: ModalPDTProps ) => {
             loadingReport,
             colorimeter } = useAppSelector(store => store.plan);
 
-    const data = sortData(props.data);
-    const colorClass = (item: ReportPDTInterface, index: number) => (
-        item['percentExecuted'][index] < 0 ? 'tw-bg-gray-400' :
-        item['percentExecuted'][index] < colorimeter[0] ? 'tw-bg-redColory'   :
-        item['percentExecuted'][index] < colorimeter[1] ? 'tw-bg-yellowColory':
-        item['percentExecuted'][index] < colorimeter[2] ? 'tw-bg-greenColory' :
+    //const data = sortData(props.data);
+    const data = props.data;
+    const colorClass = (item: ReportPDTInterface2, index: number) => (
+        parseFloat(item.percentExecuted.split(',')[index]) < 0 ? 'tw-bg-gray-400' :
+        parseFloat(item.percentExecuted.split(',')[index]) < colorimeter[0] ? 'tw-bg-redColory'   :
+        parseFloat(item.percentExecuted.split(',')[index]) < colorimeter[1] ? 'tw-bg-yellowColory':
+        parseFloat(item.percentExecuted.split(',')[index]) < colorimeter[2] ? 'tw-bg-greenColory' :
         'tw-bg-blueColory hover:tw-ring-blue-200'
     );
 
-    const tableBody = (item: ReportPDTInterface) => {
+    const tableBody = (item: ReportPDTInterface2) => {
         return (
             <tr key={item.goalCode}>
                 <td className='tw-border tw-p-2'>{item.responsible}</td>
@@ -120,24 +127,24 @@ const ModalPDT = ( props: ModalPDTProps ) => {
                         className={`tw-border tw-p-2 tw-text-center 
                             ${colorClass(item, index)}
                         `}>
-                        {item['percentExecuted'][index] < 0 ? 0 : item['percentExecuted'][index]}
+                        {parseFloat(item.percentExecuted.split(',')[index]) < 0 ? 0 : parseFloat(item['percentExecuted'].split(',')[index])}
                     </td>
                 ))}
                 {levels.map((level, index) => (
                     <td className='tw-border tw-p-2' key={level.name}>
-                        {item['planSpecific'][index]}
+                        {item['planSpecific'].split(',')[index]}
                     </td>
                 ))}
                 <td className='tw-border tw-p-2'>{item.indicator}</td>
                 <td className='tw-border tw-p-2'>{item.base}</td>
                 {years.map((year, index) => (
                     <td className='tw-border tw-p-2' key={year}>
-                        {item['programed'][index]}
+                        {item['programed'].split(',')[index]}
                     </td>
                 ))}
                 {years.map((year, index) => (
                     <td className='tw-border tw-p-2' key={year}>
-                        {item['executed'][index]}
+                        {item['executed'].split(',')[index]}
                     </td>
                 ))}
             </tr>

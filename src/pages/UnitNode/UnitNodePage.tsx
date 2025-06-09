@@ -75,6 +75,7 @@ export const UnitNodePage = () => {
 
     const handleSubmitButton = () => {
         dispatch(setPoints([]));
+        if(unit.code === '') return notify('Termine de configurar esta meta de producto', 'info');
         navigate(`/pdt/PlanIndicativo/Meta/evidencia`);
     };
 
@@ -182,6 +183,7 @@ export const UnitNodePage = () => {
 
     const YearsForm = () => {
         if (unit === undefined || unit === null) return null;
+        console.log(unit);
         return(
             <div className="tw-border tw-border-slate-500 
                             tw-rounded tw-bg-white 
