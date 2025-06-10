@@ -15,7 +15,8 @@ import {thunkGetEvidence,
         thunkAddEvidenceGoal,
         thunkUpdateEvidence,
         thunkGetUbiEvidence,
-        thunkGetExecutionsToApro } from "./thunks";
+        thunkGetExecutionsToApro, 
+        thunkDeleteEvidence} from "./thunks";
 
 const getInitialState = (): InitialStateEvidenceInterface => {
     const evidenceState = getGenericState("evidence");
@@ -179,6 +180,20 @@ export const evidenceSlice = createSlice({
         builder.addCase(thunkGetExecutionsToApro.rejected, (state, action) => {
             state.loadingExecuted = false;
             state.errorLoadingExecuted = action.payload;
+        });
+        builder.addCase(thunkDeleteEvidence.pending, state => {
+            if (!state.loadingEvidence) state.loadingEvidence = true;
+            state.errorLoadingEvidence = undefined;
+        });
+        builder.addCase(thunkDeleteEvidence.fulfilled, (state, action) => {
+            state.loadingEvidence = false;
+            // Elimina la evidencia del array usando el id retornado
+            state.evidences = state.evidences.filter(evi => evi.id_evidence !== action.payload);
+            setGenericState('evidence', state);
+        });
+        builder.addCase(thunkDeleteEvidence.rejected, (state, action) => {
+            state.loadingEvidence = false;
+            state.errorLoadingEvidence = action.payload;
         });
     }
 });

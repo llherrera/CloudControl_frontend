@@ -5,13 +5,18 @@ import UserTable from "./UserTable";
 import UserEditModal from "./UserEditModal";
 import { User } from "@/interfaces";
 import { thunkGetModulosUsuarioById, thunkGetUsersByPlan } from "@/store/pqrs/thunks";
+import { useNavigate } from "react-router-dom";
+import { IconButton } from "@mui/material";
+import ArrowBackIos from "@mui/icons-material/ArrowBackIos";
 
 export const UserManager = () => {
+    const navigate = useNavigate();
     const { id_plan } = useAppSelector(store => store.content);
     const [selectedPanel, setSelectedPanel] = useState<'register' | 'edit' | null>(null);
     const [isAnimating, setIsAnimating] = useState(false);
     const [editingUser, setEditingUser] = useState<User | null>(null);
     const dispatch = useAppDispatch();
+    const [users, setUsers] = useState<User[]>([]);
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -19,7 +24,7 @@ export const UserManager = () => {
             dispatch(thunkGetUsersByPlan(id_plan))
                 .unwrap()
                 .then((result: any) => {
-                    setUsers(result); // Actualiza el estado con los usuarios obtenidos
+                    setUsers(result);
                 })
                 .catch((error: any) => {
                     console.error("Error al obtener usuarios:", error);
@@ -27,9 +32,6 @@ export const UserManager = () => {
         };
         fetchUsers();
     }, [dispatch]);
-
-    // Initialize users state with useState
-    const [users, setUsers] = useState<User[]>([]);
 
     const handlePanelChange = (panel: 'register' | 'edit' | null) => {
         setIsAnimating(true);
@@ -42,9 +44,7 @@ export const UserManager = () => {
         dispatch(thunkGetModulosUsuarioById(userID))
             .unwrap()
             .then((result: any) => {
-                // Convertir el objeto en un arreglo de booleanos
                 const modulesAccess = Object.values(result[0]) as boolean[];
-                // Actualizar el usuario en edición con el nuevo campo modulesAccess
                 setEditingUser({ ...user, modulesAccess });
             })
             .catch((error: any) => {
@@ -55,16 +55,32 @@ export const UserManager = () => {
     const handleSaveUser = (updatedUser: User) => {
         setUsers(users.map(user => user.id_user === updatedUser.id_user ? updatedUser : user));
         setEditingUser(null);
-        // Optionally, make an API call to save changes
     };
 
+    const handleBack = () => navigate(-1); // función simple de regreso
+
     return (
-        <div className="tw-container tw-mx-auto tw-p-4">
-            <div className="tw-bg-white tw-rounded-lg tw-shadow-md tw-p-6 tw-max-w-5xl tw-mx-auto">
-                <h1 className="tw-text-2xl tw-font-bold tw-text-center tw-text-gray-800 tw-mb-6">
-                    Gestión de Usuarios
-                </h1>
-                <div className="tw-grid tw-grid-cols-2 tw-gap-4 tw-mb-6">
+        <div className="tw-container tw-mx-auto tw-p-4 tw-pt-12">
+            <div className="tw-bg-white tw-rounded-lg tw-shadow-md tw-p-6 tw-w-full">
+                <div className="tw-relative tw-flex tw-items-center tw-justify-center tw-mb-6">
+                    <div className="tw-absolute tw-left-0">
+                        <IconButton
+                            aria-label="regresar"
+                            size="small"
+                            color="secondary"
+                            onClick={handleBack}
+                            title="Regresar"
+                        >
+                            <ArrowBackIos />
+                        </IconButton>
+                    </div>
+                    <h1 className="tw-text-2xl tw-font-bold tw-text-gray-800">
+                        Gestión de Usuarios
+                    </h1>
+                </div>
+
+
+                <div className="tw-grid tw-grid-cols-2 tw-gap-8 tw-mb-6">
                     <button
                         onClick={() => handlePanelChange(selectedPanel === 'edit' ? null : 'edit')}
                         className={`tw-px-6 tw-py-3 tw-rounded-lg tw-font-semibold tw-text-center
