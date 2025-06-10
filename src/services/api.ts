@@ -993,5 +993,4 @@ export const generalReport = async (id_plan: number) => {
     });
     return response.data;
 }
-
 export default api;

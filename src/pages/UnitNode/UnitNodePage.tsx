@@ -61,6 +61,7 @@ export const UnitNodePage = () => {
         setAcumFinan( acumFinalcial );
     }, [unit]);
 
+    
     const handleChangeFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files;
         if (file) {
@@ -293,60 +294,66 @@ export const UnitNodePage = () => {
     };
 
     const Ternary = () => (
-        evidences.length > 0 ?
-        <div className="tw-mb-4">
-            <p className="tw-text-2xl tw-font-bold tw-flex tw-justify-center">Evidencias</p>
-            <table>
-                <thead>
-                    <tr>
-                        <th className={`tw-bg-black tw-border`}>
-                            <p className="tw-text-white">Fecha de seguimiento</p>
-                        </th>
-                        <th className={`tw-bg-black tw-border 
-                                        tw-hidden lg:tw-table-cell`}>
-                            <p className="tw-text-white">Descripción</p>
-                        </th>
-                        <th className={`tw-bg-black tw-border 
-                                        tw-hidden lg:tw-table-cell`}>
-                            <p className="tw-text-white">Comuna o Corregimiento</p>
-                        </th>
-                        <th className={`tw-bg-black tw-border 
-                                        tw-hidden md:tw-table-cell`}>
-                            <p className="tw-text-white">Barrio o Vereda</p>
-                        </th>
-                        <th className={`tw-bg-black tw-border 
-                                        tw-hidden md:tw-table-cell`}>
-                            <p className="tw-text-white">Unidad</p>
-                        </th>
-                        <th className={`tw-bg-black tw-border 
-                                        tw-hidden md:tw-table-cell`}>
-                            <p className="tw-text-white">Cantidad</p>
-                        </th>
-                        <th className={`tw-bg-black tw-border `}>
-                            <p className="tw-text-white">Grupo poblacional</p>
-                        </th>
-                        <th className={`tw-bg-black tw-border`}>
-                            <p className="tw-text-white">Población beneficiada</p>
-                        </th>
-                        <th className={`tw-bg-black tw-border 
-                                        tw-hidden md:tw-table-cell`}>
-                            <p className="tw-text-white">Fecha archivo</p>
-                        </th>
-                        <th className={`tw-bg-black tw-border`}>
-                            <p className="tw-text-white">Enlace</p>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {evidences.map((evi, index) => (
-                        <ShowEvidence evi={evi} index={index} key={evi.id_evidence}/>
-                    ))}
-                </tbody>
-            </table>
-        </div> : <p className="tw-text-2xl tw-font-bold tw-flex tw-justify-center">
-            No hay evidencias cargadas
-        </p>
+        evidences.length > 0 ? (
+            <div className="tw-mb-4">
+                <p className="tw-text-2xl tw-font-bold tw-flex tw-justify-center">Evidencias</p>
+                <table className="tw-mx-auto tw-table-auto tw-border-collapse">
+                    <thead>
+                        <tr>
+                            <th className="tw-bg-black tw-border">
+                                <p className="tw-text-white">Fecha de seguimiento</p>
+                            </th>
+                            <th className="tw-bg-black tw-border tw-hidden lg:tw-table-cell">
+                                <p className="tw-text-white">Descripción</p>
+                            </th>
+                            <th className="tw-bg-black tw-border tw-hidden lg:tw-table-cell">
+                                <p className="tw-text-white">Comuna o Corregimiento</p>
+                            </th>
+                            <th className="tw-bg-black tw-border tw-hidden md:tw-table-cell">
+                                <p className="tw-text-white">Barrio o Vereda</p>
+                            </th>
+                            <th className="tw-bg-black tw-border tw-hidden md:tw-table-cell">
+                                <p className="tw-text-white">Unidad</p>
+                            </th>
+                            <th className="tw-bg-black tw-border tw-hidden md:tw-table-cell">
+                                <p className="tw-text-white">Cantidad</p>
+                            </th>
+                            <th className="tw-bg-black tw-border">
+                                <p className="tw-text-white">Grupo poblacional</p>
+                            </th>
+                            <th className="tw-bg-black tw-border">
+                                <p className="tw-text-white">Población beneficiada</p>
+                            </th>
+                            <th className="tw-bg-black tw-border tw-hidden md:tw-table-cell">
+                                <p className="tw-text-white">Fecha archivo</p>
+                            </th>
+                            <th className="tw-bg-black tw-border">
+                                <p className="tw-text-white">Enlace</p>
+                            </th>
+                            <th className="tw-bg-black tw-border">
+                                <p className="tw-text-white">Acciones</p>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {evidences.map((evi, index) => (
+                            <ShowEvidence
+                            evi={evi}
+                            index={index}
+                            key={evi.id_evidence}
+                            handleEvidence={handleEvidence}
+                          />                          
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+        ) : (
+            <p className="tw-text-2xl tw-font-bold tw-flex tw-justify-center">
+                No hay evidencias cargadas
+            </p>
+        )
     );
+    
 
     return (
         loadingUnit ? <Spinner/>:
