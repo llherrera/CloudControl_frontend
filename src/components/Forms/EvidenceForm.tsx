@@ -28,29 +28,29 @@ export const EvidenceForm = () => {
 
     const [loading, setLoading] = useState(false);
     const [showOther, setShowOther] = useState(false);
-    const [data, setData] = useState<EvidenceInterface>(evi_selected??
-        {
+    const blankData = {
         id_evidence: 0,
         code: unit.code,
-        date: plan ? new Date(`${yearRegister-1}-02-1`).toISOString() : new Date().toISOString(),
+        date: new Date().toISOString(),
         activitiesDesc: "",
-        unit: "num",
+        unit: "M",
         amount: 0,
-        commune: "Tubara",
-        neighborhood: "Soledad",
-        corregimiento: "Carrizal",
-        vereda: "Eden",
+        commune: "",
+        neighborhood: "",
+        corregimiento: "",
+        vereda: "",
         benefited_population: "AdultoMayor",
         benefited_population_number: 0,
         executed_resources: 0,
-        resources_font: "Privado",
+        resources_font: "Otros",
         name_file: "",
         place: "",
         date_file: "",
         file_link: "",
         locations: [],
         state: 0,
-    });
+    };
+    const [data, setData] = useState<EvidenceInterface>(evi_selected??blankData);
     const [documento, setDocumento] = useState<FileList | null>(null);
 
     const [locationsMap, setLocationsMap] = useState<Map<LocationInterface, LocationInterface[]>>();
@@ -134,7 +134,7 @@ export const EvidenceForm = () => {
         if (data.neighborhood === "") return notify('No se ha seleccionado un barrio', 'warning');
         if (data.amount <= 0) return notify('No se ha seleccionado una cantidad', 'warning');
         if (data.commune === "") return notify('No se ha seleccionado una comuna', 'warning');
-        if (data.corregimiento === "") return notify('No se ha seleccionado un correguimiento', 'warning');
+        //if (data.corregimiento === "") return notify('No se ha seleccionado un correguimiento', 'warning');
         if (data.activitiesDesc === "") return notify('No se ha seleccionado una descripcion de actividades', 'warning');
         if (data.date === "") return notify('No se ha seleccionado una fecha', 'warning');
         if (data.date_file === "") return notify('No se ha seleccionado una fecha de archivo', 'warning');
@@ -145,7 +145,7 @@ export const EvidenceForm = () => {
         if (data.benefited_population === "") return notify('No se ha seleccionado una poblacion beneficiada', 'warning');
         //if (data.executed_resources <= 0) return notify('No se ha seleccionado un recurso ejecutado', 'warning');
         if (data.unit === "") return notify('No se ha seleccionado una unidad', 'warning');
-        if (data.vereda === "") return notify('No se ha seleccionado una vereda', 'warning');
+        //if (data.vereda === "") return notify('No se ha seleccionado una vereda', 'warning');
         if (list_points.length === 0) return notify('No se ha seleccionado una ubicacion', 'warning');
         setLoading(true);
 
@@ -157,14 +157,9 @@ export const EvidenceForm = () => {
                 file: documento[0],
                 list_points: list_points
             }))
-            .unwrap()
             .then(() => {
                 setLoading(false);
-                notify('Evidencia añadida con exito', 'success');
-            })
-            .catch(()=> {
-                setLoading(false);
-                notify('Error al añadir evidencia', 'error');
+                setData(blankData);
             });
         } else { 
             dispatch(thunkUpdateEvidence({
@@ -173,14 +168,9 @@ export const EvidenceForm = () => {
                 file: documento[0],
                 list_points: list_points
             }))
-            .unwrap()
-            .then(()=> {
+            .then(() => {
                 setLoading(false);
-                notify('Evidencia actualizada con exito', 'success');
-            })
-            .catch(()=> {
-                setLoading(false);
-                notify('Error al actualizar evidencia', 'error');
+                setData(blankData);
             });
         }
     };

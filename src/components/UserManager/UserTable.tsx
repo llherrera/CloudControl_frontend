@@ -41,41 +41,45 @@ const UserTable: React.FC<UserTableProps> = ({ users, onEdit }) => {
 
     return (
         <div>
-            <table className="tw-w-full tw-bg-white tw-rounded-lg tw-shadow-md tw-table-auto">
-                <thead>
-                    <tr className="tw-bg-gray-200">
-                        <th className="tw-px-4 tw-py-2 tw-text-center">ID</th>
-                        <th className="tw-px-4 tw-py-2 tw-text-center">Oficina</th>
-                        <th className="tw-px-4 tw-py-2 tw-text-center">Activo</th>
-                        <th className="tw-px-4 tw-py-2 tw-text-center">Nombre</th>
-                        <th className="tw-px-4 tw-py-2 tw-text-center">Apellido</th>
-                        <th className="tw-px-4 tw-py-2 tw-text-center">Correo</th>
-                        <th className="tw-px-4 tw-py-2 tw-text-center">Rol</th>
-                        <th className="tw-px-4 tw-py-2 tw-text-center">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {currentUsers.map((user) => (
-                        <tr key={user.id_user} className="tw-border-b">
-                            <td className="tw-px-4 tw-py-2 tw-text-center">{user.id_user}</td>
-                            <td className="tw-px-4 tw-py-2 tw-text-center">{user.office}</td>
-                            <td className="tw-px-4 tw-py-2 tw-text-center">{user.isActive ? 'Sí' : 'No'}</td>
-                            <td className="tw-px-4 tw-py-2 tw-text-center">{user.name}</td>
-                            <td className="tw-px-4 tw-py-2 tw-text-center">{user.lastname}</td>
-                            <td className="tw-px-4 tw-py-2 tw-text-center">{user.email}</td>
-                            <td className="tw-px-4 tw-py-2 tw-text-center">{user.rol}</td>
-                            <td className="tw-px-4 tw-py-2 tw-text-center">
-                                <button
-                                    onClick={() => onEdit(user)}
-                                    className="tw-bg-blue-500 tw-text-white tw-px-3 tw-py-1 tw-rounded tw-shadow hover:tw-bg-blue-600"
-                                >
-                                    Editar
-                                </button>
-                            </td>
+            <div className="tw-overflow-x-auto tw-w-full">
+                <table className="tw-w-full tw-bg-white tw-rounded-lg tw-shadow-md tw-table-auto">
+                    <thead>
+                        <tr className="tw-bg-gray-200">
+                            <th className="tw-px-4 tw-py-2 tw-text-center">ID</th>
+                            <th className="tw-px-4 tw-py-2 tw-text-center">Oficina</th>
+                            <th className="tw-px-4 tw-py-2 tw-text-center">Activo</th>
+                            <th className="tw-px-4 tw-py-2 tw-text-center">Nombre</th>
+                            <th className="tw-px-4 tw-py-2 tw-text-center">Apellido</th>
+                            <th className="tw-px-4 tw-py-2 tw-text-center">Correo</th>
+                            <th className="tw-px-4 tw-py-2 tw-text-center">Rol</th>
+                            <th className="tw-px-4 tw-py-2 tw-text-center">Acciones</th>
                         </tr>
-                    ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        {currentUsers.map((user) => (
+                            <tr key={user.id_user} className="tw-border-b">
+                                <td className="tw-px-4 tw-py-2 tw-text-center">{user.id_user}</td>
+                                <td className="tw-px-4 tw-py-2 tw-text-center">{user.office}</td>
+                                <td className="tw-px-4 tw-py-2 tw-text-center">{user.isActive ? 'Sí' : 'No'}</td>
+                                <td className="tw-px-4 tw-py-2 tw-text-center">{user.name}</td>
+                                <td className="tw-px-4 tw-py-2 tw-text-center">{user.lastname}</td>
+                                <td className="tw-px-4 tw-py-2 tw-text-center">{user.email}</td>
+                                <td className="tw-px-4 tw-py-2 tw-text-center">{user.rol}</td>
+                                <td className="tw-px-4 tw-py-2 tw-text-center">
+                                    <button
+                                        onClick={() => onEdit(user)}
+                                        className="tw-bg-blue-500 tw-text-white tw-px-3 tw-py-1 tw-rounded tw-shadow hover:tw-bg-blue-600"
+                                    >
+                                        Editar
+                                    </button>
+                                </td>
+                            </tr>
+                        ))}
+                    </tbody>
+                </table>
+            </div>
+    
+            {/* Paginación */}
             <div className="tw-flex tw-justify-between tw-mt-4">
                 <button
                     onClick={handlePreviousPage}
@@ -95,6 +99,8 @@ const UserTable: React.FC<UserTableProps> = ({ users, onEdit }) => {
                     Siguiente
                 </button>
             </div>
+    
+            {/* Selector de cantidad */}
             <div className="tw-flex tw-justify-end tw-mt-4">
                 <span className="tw-mr-2">Usuarios por página:</span>
                 <select
@@ -111,6 +117,6 @@ const UserTable: React.FC<UserTableProps> = ({ users, onEdit }) => {
             </div>
         </div>
     );
-};
+};    
 
 export default UserTable;

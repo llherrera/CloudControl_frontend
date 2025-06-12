@@ -14,6 +14,7 @@ import {
   ErrorBasicInterface,
   LevelInterface,
   ReportPDTInterface,
+  ReportPDTInterface2,
   LocationInterface,
   Secretary,
   Item,
@@ -154,7 +155,7 @@ export const generateExcel = (
 }
 
 export const generateExcelYears = (
-  data: ReportPDTInterface[],
+  data: ReportPDTInterface2[],
   name: string,
   levels: LevelInterface[],
   years: number[],
@@ -187,13 +188,13 @@ export const generateExcelYears = (
     right: { style: 'thin' }
   };
 
-  data.forEach((d: ReportPDTInterface) => {
+  data.forEach((d: ReportPDTInterface2) => {
     let tempEjecPor = years.map((y, i) => ({
-      [`ejecucion_${y}`]: d.percentExecuted[i] < 0 ? 0 : d.percentExecuted[i]
+      [`ejecucion_${y}`]: parseFloat(d.percentExecuted.split(',')[i]) < 0 ? 0 : d.percentExecuted[i]
     }));
     const ejecPor_ = tempEjecPor.reduce((acc, curr) => ({ ...acc, ...curr }), {});
 
-    let tempLevels = d.planSpecific.map((d_, i) => ({ [`nivel_${i}`]: d_ }));
+    let tempLevels = d.planSpecific.split(',').map((d_, i) => ({ [`nivel_${i}`]: d_ }));
     const levels_ = tempLevels.reduce((acc, curr) => ({ ...acc, ...curr }), {});
 
     let tempPro = years.map((y, i) => ({ [`programado_${y}`]: d.programed[i] }));
@@ -217,15 +218,15 @@ export const generateExcelYears = (
     years.forEach((y, i) => {
       const ejecCell = row.getCell(`ejecucion_${y}`);
 
-      const ternary3 = d.percentExecuted[i] < color[2] ? 'FF119432' : 'FF008DCC';
-      const ternary2 = d.percentExecuted[i] < color[1] ? 'FFFCC623' : ternary3;
-      const ternaty = d.percentExecuted[i] < color[0] ? 'FFFE1700' : ternary2;
+      const ternary3 = parseFloat(d.percentExecuted.split(',')[i]) < color[2] ? 'FF119432' : 'FF008DCC';
+      const ternary2 = parseFloat(d.percentExecuted.split(',')[i]) < color[1] ? 'FFFCC623' : ternary3;
+      const ternaty = parseFloat(d.percentExecuted.split(',')[i]) < color[0] ? 'FFFE1700' : ternary2;
 
       ejecCell.fill = {
         type: 'pattern',
         pattern: 'solid',
         fgColor: {
-          argb: `${d.percentExecuted[i] < 0 ? 'FF9CA3AF' : ternaty}`
+          argb: `${parseFloat(d.percentExecuted.split(',')[i]) < 0 ? 'FF9CA3AF' : ternaty}`
         },
       };
     });

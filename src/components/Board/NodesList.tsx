@@ -154,7 +154,7 @@ export const NodesList = ( props : IdProps ) => {
                                         tw-font-bold tw-overflow-hidden
                                         tw-relative`}
                             onClick={ () => handleButton(index)}
-                            title={`${item.description} ${indexLevel !== levels.length-1 ? '' : `\n${item.code.replace(/(\.\d+)(?=\.)/, '')}\n${item.responsible}`}`}>
+                            title={`${item.description} ${(indexLevel !== levels.length-1 || item.code == null) ? '' : `\n${item.code.replace(/(\.\d+)(?=\.)/, '')}\n${item.responsible}`}`}>
                         <div className='tw-absolute tw-inset-0 tw-z-20
                                         tw-rounded-full tw-bg-transparent tw-text-black
                                         tw-flex tw-justify-center tw-items-center'>

@@ -2,21 +2,25 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { useAppDispatch, useAppSelector } from "@/store";
-import { decrementLevelIndex, setParent, setCalcDone,
-    AddRootTree, setZeroLevelIndex } from "@/store/plan/planSlice";
+import {
+    decrementLevelIndex, setParent, setCalcDone,
+    AddRootTree, setZeroLevelIndex
+} from "@/store/plan/planSlice";
 import { thunkGetNodes } from '@/store/plan/thunks';
 import { setMode } from "@/store/content/contentSlice";
 
 import { IdProps } from "@/interfaces";
-import { NodeForm, NodesList, TimeLine, Graph, BackBtn,
-    DoubleBackBtn, SettingsBtn } from "@/components";
+import {
+    NodeForm, NodesList, TimeLine, Graph, BackBtn,
+    DoubleBackBtn, SettingsBtn
+} from "@/components";
 
 import IconButton from "@mui/material/IconButton";
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 import { ModalBoard, ModalAi, ModalShare } from "../Modals";
 import { decode } from "@/utils";
 
-export const Content = ( props : IdProps ) => {
+export const Content = (props: IdProps) => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
 
@@ -40,7 +44,7 @@ export const Content = ( props : IdProps ) => {
     }, []);
 
     useEffect(() => {
-        dispatch(thunkGetNodes({id_level: levels[indexLevel].id_level!, parent: parent}));
+        dispatch(thunkGetNodes({ id_level: levels[indexLevel].id_level!, parent: parent }));
     }, [years, indexLevel]);
 
     const handleStartReturn = () => {
@@ -55,17 +59,17 @@ export const Content = ( props : IdProps ) => {
             navigate(-1);
             return;
         }
-        try{
+        try {
             let newRoot = rootTree;
             newRoot = newRoot.slice(0, -1);
             dispatch(AddRootTree(newRoot));
             let temp = parent!.split('.');
-            let temp_ = temp.slice(0, temp.length-1);
+            let temp_ = temp.slice(0, temp.length - 1);
             temp.length === 2 ?
                 dispatch(setParent(null))
-            : dispatch(setParent(temp_.join('.')));
+                : dispatch(setParent(temp_.join('.')));
 
-            dispatch(decrementLevelIndex(indexLevel-1));
+            dispatch(decrementLevelIndex(indexLevel - 1));
         } catch (e) {
             console.log(e);
         }
@@ -89,15 +93,15 @@ export const Content = ( props : IdProps ) => {
 
     const colorimeterCircles = (index: number) => (
         index === 0 ? 'tw-bg-redColory hover:tw-bg-red-200' :
-        index === 1 ? 'tw-bg-yellowColory hover:tw-bg-yellow-200' :
-        index === 2 ? 'tw-bg-greenColory hover:tw-bg-green-200' :
-        index === 3 ? 'tw-bg-blueColory hover:tw-bg-blue-200' :null
+            index === 1 ? 'tw-bg-yellowColory hover:tw-bg-yellow-200' :
+                index === 2 ? 'tw-bg-greenColory hover:tw-bg-green-200' :
+                    index === 3 ? 'tw-bg-blueColory hover:tw-bg-blue-200' : null
     );
 
     const HandleRol = () => (
         rol === 'admin' || (rol === 'funcionario' && id === props.id) ?
-        <button onClick={()=>handleSettings(1)}>Definir colorimetría</button>
-        : <p>No se ha definido una colorimetría aún</p>
+            <button onClick={() => handleSettings(1)}>Definir colorimetría</button>
+            : <p>No se ha definido una colorimetría aún</p>
     );
 
     return (
@@ -109,16 +113,16 @@ export const Content = ( props : IdProps ) => {
                             tw-flex tw-justify-between">
                 <div className="tw-flex tw-items-center">
                     Plan indicativo
-                    {rol === 'admin' || ((rol === 'funcionario' || rol === 'planeacion') && id === props.id) ? 
-                        <SettingsBtn handle={() => handleSettings(1)} id={props.id}/>
+                    {rol === 'admin' || ((rol === 'funcionario' || rol === 'planeacion') && id === props.id) ?
+                        <SettingsBtn handle={() => handleSettings(1)} id={props.id} />
                         : null
                     }
-                    {rol === 'admin' || ((rol === 'funcionario' || rol === 'planeacion') && id === props.id) ? 
-                        <ModalShare plan/>
+                    {rol === 'admin' || ((rol === 'funcionario' || rol === 'planeacion') && id === props.id) ?
+                        <ModalShare plan />
                         : null
                     }
                     {rol === 'admin' || ((rol === 'funcionario' || rol === 'planeacion' || rol === 'sectorialista') && id === props.id) ?
-                        <p  className={`tw-truncate tw-w-6 hover:tw-w-24`}
+                        <p className={`tw-truncate tw-w-6 hover:tw-w-24`}
                             title="usuario">
                             {user}
                         </p>
@@ -139,18 +143,17 @@ export const Content = ( props : IdProps ) => {
                                 <div className={`tw-rounded-full
                                                 tw-w-8 tw-h-8
                                                 ${colorimeterCircles(index)}`}
-                                    title={`Ejecutado ${
-                                        isNaN(colorimeter[index-1]) ? 0 : colorimeter[index-1] + 1
+                                    title={`Ejecutado ${isNaN(colorimeter[index - 1]) ? 0 : colorimeter[index - 1] + 1
                                         }% - ${colorimeter[index]}%`}
                                     key={color}>
                                     <p className="tw-invisible">a</p>
                                 </div>
                             ))}
                         </ul>
-                        : <HandleRol/>
+                        : <HandleRol />
                     }
                     {rol === 'admin' || ((rol === 'funcionario' || rol === 'planeacion' || rol === 'sectorialista') && id === props.id) ?
-                        <ModalAi/>
+                        <ModalAi />
                         : null
                     }
                     {/*rol === 'admin' || ((rol === 'funcionario' || rol === 'planeacion' || rol === 'sectorialista') && id === props.id) ?
@@ -170,19 +173,19 @@ export const Content = ( props : IdProps ) => {
                         {plan!.name}. ¡Así vamos!
                     </p>
                     <div className="tw-ml-4 tw-mb-3">
-                    {rootTree.length <= 0 ? null :
-                        <ul className=" tw-flex tw-flex-wrap tw-gap-3
+                        {rootTree.length <= 0 ? null :
+                            <ul className=" tw-flex tw-flex-wrap tw-gap-3
                                         tw-font-montserrat
                                         tw-underline tw-underline-offset-2">
-                            {rootTree.map((item) => (
-                                <li key={item[0]}>
-                                    {item[0]}
-                                </li>
-                            ))}
-                        </ul>
-                    }
+                                {rootTree.map((item) => (
+                                    <li key={item[0]}>
+                                        {item[0]}
+                                    </li>
+                                ))}
+                            </ul>
+                        }
                     </div>
-                    <TimeLine/>
+                    <TimeLine />
                 </div>
 
                 <div className="tw-rounded tw-shadow-lg tw-border
@@ -197,31 +200,31 @@ export const Content = ( props : IdProps ) => {
                         <BackBtn
                             handle={handleBack}
                             id={props.id}
-                            className={`${indexLevel < 2 ? '' : 'tw--translate-x-6'}`}/>
+                            className={`${indexLevel < 2 ? '' : 'tw--translate-x-6'}`} />
                         {levels[indexLevel].name}
                         {rol === 'admin' || (rol === 'funcionario' && id === props.id) ?
-                        <button className={`tw-ml-4 tw-p-2
+                            <button className={`tw-ml-4 tw-p-2
                                             tw-rounded
-                                            ${mode? 'tw-bg-red-300 hover:tw-bg-red-500' :
-                                            'tw-bg-green-300 hover:tw-bg-green-500'}`}
+                                            ${mode ? 'tw-bg-red-300 hover:tw-bg-red-500' :
+                                    'tw-bg-green-300 hover:tw-bg-green-500'}`}
                                 onClick={handleMode}>
-                            Editar
-                        </button>
-                        : null}
+                                Editar
+                            </button>
+                            : null}
                     </p>
                     <div className="tw-pb-1 tw-mb-2">
                         {nodes.length === 0 ?
-                        <div>
-                            {(rol === "admin") || (rol === 'funcionario' && id === props.id) ?
-                            <NodeForm index={indexLevel} id={levels[indexLevel].id_level!}/>
-                            : <div>
-                                <p className="tw-mx-4 tw-text-center">De momemnto no hay contenido en este Plan</p>
+                            <div>
+                                {(rol === "admin") || (rol === 'funcionario' && id === props.id) ?
+                                    <NodeForm index={indexLevel} id={levels[indexLevel].id_level!} />
+                                    : <div>
+                                        <p className="tw-mx-4 tw-text-center">De momemnto no hay contenido en este Plan</p>
+                                    </div>
+                                }
                             </div>
-                            }
-                        </div>
-                        : mode ?
-                            <NodeForm index={indexLevel} id={levels[indexLevel].id_level!} nodes={nodes}/> :
-                            <NodesList id={props.id}/>
+                            : mode ?
+                                <NodeForm index={indexLevel} id={levels[indexLevel].id_level!} nodes={nodes} /> :
+                                <NodesList id={props.id} />
                         }
                     </div>
                 </div>
@@ -237,12 +240,12 @@ export const Content = ( props : IdProps ) => {
                         <p className="tw-font-montserrat tw-ml-2 tw-font-bold tw-mt-3">
                             Cuatrenio  {new Date(plan!.start_date).getUTCFullYear()} - {new Date(plan!.end_date).getUTCFullYear()}
                         </p>
-                        <ModalBoard/>
+                        <ModalBoard />
                     </div>
                     <Graph
-                        dataValues={ radioBtn === 'fisica' ?
-                            progressNodes.map(p => Math.round(p*100)) :
-                            financial.map(p => Math.round(p*100)/100)}
+                        dataValues={radioBtn === 'fisica' ?
+                            progressNodes.map(p => Math.round(p * 100)) :
+                            financial.map(p => Math.round(p * 100) / 100)}
                     />
                 </div>
 
