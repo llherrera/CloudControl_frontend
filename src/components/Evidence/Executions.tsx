@@ -27,7 +27,8 @@ export const Execution = ( {ex, index}: ExecutedProps ) => {
         setModalIsOpen(false);
         dispatch(thunkDenegateExecution({
             date: newModDate,
-            value: ex.modified_execution,
+            value1: ex.modified_execution,
+            value2: ex.financial_value,
             code: ex.id_node,
             user_id: ex.id_user,
             plan_id: id_plan,
@@ -40,9 +41,10 @@ export const Execution = ( {ex, index}: ExecutedProps ) => {
         if (approve === 2) {
             setModalIsOpen(true);
         } else {
-            dispatch(thunkUpdateExecution({
+            dispatch(thunkDenegateExecution({
                 date: newModDate,
-                value: ex.modified_execution,
+                value1: ex.modified_execution,
+                value2: ex.financial_value,
                 code: ex.id_node,
                 user_id: ex.id_user,
                 plan_id: id_plan,
@@ -64,6 +66,9 @@ export const Execution = ( {ex, index}: ExecutedProps ) => {
             </th>
             <th  className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
                 {ex.modified_execution}
+            </th>
+            <th  className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
+                {ex.financial_value}
             </th>
             <th  className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
                 {newModDate.getDate()}/{newModDate.getMonth()+1}/{newModDate.getFullYear()}

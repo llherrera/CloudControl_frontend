@@ -117,6 +117,7 @@ export interface ExecutionInterface {
     readonly id_node: string;
     physical_execution: number;
     modified_execution: number;
+    financial_value: number;
     modified_date: Date;
     id_user: number;
 }

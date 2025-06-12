@@ -338,7 +338,12 @@ export const SearchUnitPage = () => {
                 </thead>
                 <tbody>
                     {evidences.map((evi, index) => (
-                        <ShowEvidence evi={evi} index={index} key={evi.id_evidence}/>
+                        <ShowEvidence
+                        evi={evi}
+                        index={index}
+                        key={index}
+                        handleEvidence={handleEvidence} // esta función debe estar definida
+                      />                      
                     ))}
                 </tbody>
             </table>

@@ -7,12 +7,15 @@ import { thunkUpdateExecution } from "@/store/unit/thunks";
 import { decode } from '@/utils';
 import { PropsCallback } from '@/interfaces';
 
-export const Memory = ({callback}: PropsCallback) => {
+export const Memory = ({ callback }: PropsCallback) => {
     const dispatch = useAppDispatch();
     const { token_info } = useAppSelector(store => store.auth);
     const { unit } = useAppSelector(store => store.unit);
     const { plan, years } = useAppSelector(store => store.plan);
     const { id_plan } = useAppSelector(store => store.content);
+
+    const [valueExecuted, setValueExecuted] = useState<number>(0);
+    const [valueFinancial, setValueFinancial] = useState<number>(0);
 
     const [value, setValue] = useState(0);
     const [id, setId] = useState(0);
@@ -26,16 +29,30 @@ export const Memory = ({callback}: PropsCallback) => {
     }, [token_info]);
 
     const handleChangeValue = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { value } = e.target;
+        const { name, value } = e.target;
         const newData = parseInt(value);
-        setValue(newData);
+
+        if (name === 'executed') {
+            setValueExecuted(newData);
+        } else if (name === 'financial') {
+            setValueFinancial(newData);
+        }
     };
 
-    const handleSave = () => dispatch(thunkUpdateExecution({date: today, value, code: unit.id_node, user_id: id, plan_id: id_plan}));
+    const handleSave = () => {
+        dispatch(thunkUpdateExecution({
+            date: today,
+            value1: valueExecuted,
+            value2: valueFinancial, // debes manejar este en tu thunk
+            code: unit.id_node,
+            user_id: id,
+            plan_id: id_plan,
+        }));
+    };
 
     if (plan === undefined) return <div>No hay un plan seleccionado</div>;
 
-    const [yearSelect, setYearSelect] = useState<number>(new Date(plan.deadline == null ? `${years[0]-1}-02-1` : plan.deadline).getFullYear());
+    const [yearSelect, setYearSelect] = useState<number>(new Date(plan.deadline == null ? `${years[0] - 1}-02-1` : plan.deadline).getFullYear());
     const deadline = yearSelect >= years[0] ? yearSelect : 'No hay fecha de corte';
 
     if (unit === undefined) return <div>No hay una meta seleccionada</div>;
@@ -46,26 +63,26 @@ export const Memory = ({callback}: PropsCallback) => {
                             tw-border-gray-500
                             tw-mt-3 tw-px-3">
             <p className="tw-mt-3">
-                Fecha: { new Date().toLocaleDateString()} &nbsp;&nbsp;&nbsp;&nbsp;
-                Hora: { new Date().toLocaleTimeString()} &nbsp;&nbsp;&nbsp;&nbsp;
+                Fecha: {new Date().toLocaleDateString()} &nbsp;&nbsp;&nbsp;&nbsp;
+                Hora: {new Date().toLocaleTimeString()} &nbsp;&nbsp;&nbsp;&nbsp;
                 <p className={`${typeof deadline === 'number' ? '' : 'tw-text-black tw-font-bold'}`}>
-                    Año activo: { deadline }
+                    Año activo: {deadline}
                 </p>
             </p>
             <div className="tw-flex tw-flex-col md:tw-flex-row">
                 <p className="tw-font-bold tw-mt-4">
                     Lugar:
                 </p>
-                <input  className=" tw-py-4 tw-px-2 tw-mt-4
+                <input className=" tw-py-4 tw-px-2 tw-mt-4
                                     tw-grow
                                     tw-border-4 tw-border-gray-400
                                     tw-rounded
                                     md:tw-ml-2"
-                        type="text"
-                        value={unit.indicator??""}
-                        readOnly
-                        name=""
-                        id=""/>
+                    type="text"
+                    value={unit.indicator ?? ""}
+                    readOnly
+                    name=""
+                    id="" />
             </div>
             <div className="tw-flex">
                 <p className="  tw-font-bold tw-mt-4
@@ -73,16 +90,16 @@ export const Memory = ({callback}: PropsCallback) => {
                                 tw-break-words">
                     Responsable del cargo:
                 </p>
-                <input  className=" tw-py-4 tw-px-2 tw-mt-4
+                <input className=" tw-py-4 tw-px-2 tw-mt-4
                                     tw-grow
                                     tw-border-4 tw-border-gray-400
                                     tw-rounded
                                     md:tw-ml-2"
-                        type="text"
-                        value={unit.responsible??"Por asignar"}
-                        readOnly
-                        name=""
-                        id="" />
+                    type="text"
+                    value={unit.responsible ?? "Por asignar"}
+                    readOnly
+                    name=""
+                    id="" />
             </div>
             <div className="tw-flex">
                 <p className="  tw-font-bold tw-mt-4
@@ -90,16 +107,16 @@ export const Memory = ({callback}: PropsCallback) => {
                                 tw-break-words">
                     Descripción:
                 </p>
-                <input  className=" tw-py-4 tw-px-2 tw-mt-4
+                <input className=" tw-py-4 tw-px-2 tw-mt-4
                                     tw-grow
                                     tw-border-4 tw-border-gray-400
                                     tw-rounded
                                     md:tw-ml-2"
-                        type="text"
-                        value={unit.description??"Por asignar"}
-                        readOnly
-                        name=""
-                        id=""/>
+                    type="text"
+                    value={unit.description ?? "Por asignar"}
+                    readOnly
+                    name=""
+                    id="" />
             </div>
             <ul className=" tw-flex tw-flex-row
                             tw-mt-3 tw-gap-2">
@@ -115,28 +132,45 @@ export const Memory = ({callback}: PropsCallback) => {
                         <p className="tw-text-center">{item.physical_programming}</p>
                         <p className="tw-text-center tw-border-t tw-border-black">{item.physical_execution}</p>
                         {item.year === yearSelect ?
-                        <div>
-                            <input  type="number"
-                                    className=" tw-bg-green-300 tw-border tw-border-black
-                                                tw-px-2 tw-w-1/2"
-                                    onChange={(e)=>handleChangeValue(e)}/>
-                            <button type="button"
+                            <div>
+                                <div>
+                                    <label className="tw-block tw-font-bold tw-mb-1">Valor ejecutado</label>
+                                    <input
+                                        type="number"
+                                        name="executed"
+                                        className="tw-bg-green-300 tw-border tw-border-black tw-px-2 tw-w-1/2"
+                                        onChange={handleChangeValue}
+                                    />
+                                </div>
+                                <div>
+                                    <label className="tw-block tw-font-bold tw-mb-1 tw-pt-4">Ejecución financiera</label>
+                                    <input
+                                        type="number"
+                                        name="financial"
+                                        className="tw-bg-green-300 tw-border tw-border-black tw-px-2 tw-w-1/2"
+                                        onChange={handleChangeValue}
+                                    />
+                                </div>
+                                <button
+                                    type="button"
                                     onClick={handleSave}
-                                    title="Guardar solo el valor ejecutado... Recuerde que esta ejecución sera aprobada por el responsable">
-                                <SaveAsIcon/>
-                            </button>
-                        </div>
-                        : null}
+                                    title="Guardar valores ejecutados y financieros... Recuerde que esta ejecución será aprobada por el responsable"
+                                >
+                                    <SaveAsIcon />
+                                </button>
+                            </div>
+
+                            : null}
                     </li>
-                    )}
+                )}
             </ul>
             <div className="tw-flex tw-justify-center tw-my-4">
                 <button className=" tw-bg-blue-500
                                     tw-p-4
                                     tw-rounded
                                     tw-text-white tw-font-bold"
-                        onClick={callback}
-                        type="button">
+                    onClick={callback}
+                    type="button">
                     cargar evidencias de esta meta
                 </button>
             </div>

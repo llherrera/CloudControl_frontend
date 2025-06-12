@@ -17,7 +17,8 @@ export interface propsIndicator {
 
 export interface PropsExecution {
     date: Date;
-    value: number;
+    value1: number;
+    value2: number;
     code: string;
     user_id: number;
     plan_id: number;

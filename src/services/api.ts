@@ -703,11 +703,12 @@ export const updateDeadline = async (id_plan: number, date: string) => {
     return response.data;
 }
 
-export const updateExecution = async (date: Date, value: number, code: string, user_id: number, plan_id: number, reason?: string) => {
+export const updateExecution = async (date: Date, value1: number, value2: number, code: string, user_id: number, plan_id: number, reason?: string) => {
     let dateForm = date.getFullYear() + '-' + (date.getMonth() + 1).toString().padStart(2, '0') + '-' + date.getDate().toString().padStart(2, '0');
     const response = await api.put('/nodo/ejecucion', {
         date: dateForm,
-        value,
+        value1,
+        value2,
         code,
         user_id,
         plan_id,

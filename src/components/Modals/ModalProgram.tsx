@@ -14,7 +14,8 @@ import {
     ReportPDTInterface,
     YearDetail,
     NodeInterface,
-    Node } from "@/interfaces";
+    Node, 
+    ReportPDTInterface2} from "@/interfaces";
 import { getLevelName, getLevelNodes } from "@/services/api";
 import { generateExcelYears, sortData } from "@/utils";
 
@@ -31,6 +32,23 @@ export const ModalProgram = () => {
 
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [data, setData] = useState<ReportPDTInterface[]>([]);
+    
+    const convertToInterface2 = (data: ReportPDTInterface[]): ReportPDTInterface2[] => {
+        return data.map(item => ({
+            responsible: item.responsible,
+            goalCode: item.goalCode,
+            goalDescription: item.goalDescription,
+            percentExecuted: item.percentExecuted.join(', '), // o usa algún formato adecuado
+            planSpecific: item.planSpecific.join(' > '), // si aplica
+            indicator: item.indicator,
+            base: item.base,
+            executed: item.executed.join(', '),
+            programed: item.programed.join(', ')
+        }));
+    };
+    
+    const data2 = convertToInterface2(data);
+
     const [programs, setPrograms] = useState<NodeInterface[][]>([]);
     const [index_, setIndex_] = useState<number[]>(levels_.map(() => 0));
 
@@ -207,7 +225,7 @@ export const ModalProgram = () => {
                     <button className='tw-bg-gray-300 hover:tw-bg-gray-200
                                         tw-rounded tw-border tw-border-black
                                         tw-px-2 tw-py-1 tw-ml-3'
-                            onClick={() => generateExcelYears(data, 'InformeProgramas', levels, years, colorimeter)}>
+                            onClick={() => generateExcelYears(data2, 'InformeProgramas', levels, years, colorimeter)}>
                         Exportar
                     </button>
                 </div>
