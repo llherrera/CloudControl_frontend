@@ -49,6 +49,7 @@ export const Content = ( props : IdProps ) => {
     };
 
     const handleBack = () => {
+        
         if (indexLevel === 0) {
             dispatch(setCalcDone(false));
             navigate(-1);
