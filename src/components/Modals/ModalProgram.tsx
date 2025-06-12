@@ -202,7 +202,7 @@ export const ModalProgram = () => {
                     onRequestClose={()=>setModalIsOpen(true)}
                     contentLabel='Modal de programas'>
                 {loadingReport ? <Spinner/> : <div>
-                <div className="tw-absolute tw-top-0 tw-right-0 tw-z-index-10">
+                <div className="tw-absolute tw-top-0 tw-right-0">
                     <button className=" tw-px-2"
                             onClick={() => setModalIsOpen(false)}>
                         <p className="tw-text-xl tw-text-[#626d75] tw-font-bold">
