@@ -39,7 +39,7 @@ export const evidenceSlice = createSlice({
     initialState: getInitialState,
     reducers: {
         removeEvidence: (state, action: PayloadAction<number>) => {
-            state.evidences = state.evidences?.slice(action.payload, 1);
+            state.executes = state.executes?.slice(action.payload, 1);
         },
         resetEvidence: () => {
             removeGenericState("evidence");
@@ -66,7 +66,7 @@ export const evidenceSlice = createSlice({
         builder.addCase(thunkGetEvidence.fulfilled, (state, action) => {
             state.loadingEvidence = false;
             state.evidences = action.payload;
-            state.evi_selected = action.payload[0];
+            //state.evi_selected = action.payload[0];
             setGenericState('evidence', state);
         });
         builder.addCase(thunkGetEvidence.rejected, (state, action) => {

@@ -73,11 +73,12 @@ export const Memory = ({ callback }: PropsCallback) => {
                 <p className="tw-font-bold tw-mt-4">
                     Lugar:
                 </p>
-                <input className=" tw-py-4 tw-px-2 tw-mt-4
+                <input className="  tw-py-4 tw-px-2 tw-mt-4
                                     tw-grow
                                     tw-border-4 tw-border-gray-400
                                     tw-rounded
                                     md:tw-ml-2"
+                    title='Lugar'
                     type="text"
                     value={unit.indicator ?? ""}
                     readOnly
@@ -90,11 +91,12 @@ export const Memory = ({ callback }: PropsCallback) => {
                                 tw-break-words">
                     Responsable del cargo:
                 </p>
-                <input className=" tw-py-4 tw-px-2 tw-mt-4
+                <input className="  tw-py-4 tw-px-2 tw-mt-4
                                     tw-grow
                                     tw-border-4 tw-border-gray-400
                                     tw-rounded
                                     md:tw-ml-2"
+                    title='Responsable'
                     type="text"
                     value={unit.responsible ?? "Por asignar"}
                     readOnly
@@ -107,11 +109,12 @@ export const Memory = ({ callback }: PropsCallback) => {
                                 tw-break-words">
                     Descripción:
                 </p>
-                <input className=" tw-py-4 tw-px-2 tw-mt-4
+                <input className="  tw-py-4 tw-px-2 tw-mt-4
                                     tw-grow
                                     tw-border-4 tw-border-gray-400
                                     tw-rounded
                                     md:tw-ml-2"
+                    title='Descripción'
                     type="text"
                     value={unit.description ?? "Por asignar"}
                     readOnly
@@ -136,6 +139,7 @@ export const Memory = ({ callback }: PropsCallback) => {
                                 <div>
                                     <label className="tw-block tw-font-bold tw-mb-1">Valor ejecutado</label>
                                     <input
+                                        title='Valor ejecutado'
                                         type="number"
                                         name="executed"
                                         className="tw-bg-green-300 tw-border tw-border-black tw-px-2 tw-w-1/2"
@@ -145,6 +149,7 @@ export const Memory = ({ callback }: PropsCallback) => {
                                 <div>
                                     <label className="tw-block tw-font-bold tw-mb-1 tw-pt-4">Ejecución financiera</label>
                                     <input
+                                        title='Ejecución financiera'
                                         type="number"
                                         name="financial"
                                         className="tw-bg-green-300 tw-border tw-border-black tw-px-2 tw-w-1/2"

@@ -27,8 +27,6 @@ export const TimeLine = () => {
             const decoded = decode(token_info.token);
             setRol(decoded.rol);
         }
-        console.log(plan);
-        
     }, []);
 
     useEffect(() => {
@@ -184,6 +182,7 @@ export const TimeLine = () => {
                                         ${index%2 === 1 ? 'hover:tw-translate-y-1' : 'hover:tw--translate-y-1'}
                                         ${colorClass(index)}
                                         ${colorYearCla(index)}`}>
+                        <p className='tw-hidden'>a</p>
                     </button>
                     <div className={`tw-h-full tw-grow
                                     tw-flex tw-flex-col`}>
@@ -192,6 +191,7 @@ export const TimeLine = () => {
                                                 tw-h-1/4 tw-w-2
                                                 ${colorYearCla(index)}`}
                                     onClick={event => handleYears(event, year)}>
+                                <p className='tw-hidden'>a</p>
                             </button>
                         : null}
                         <button className={`tw-self-center
@@ -211,6 +211,7 @@ export const TimeLine = () => {
                                                 tw-h-1/4 tw-w-2
                                                 ${colorYearCla(index)}`}
                                     onClick={event => handleYears(event, year)}>
+                                <p className='tw-hidden'>a</p>
                             </button>
                         : null}
                     </div>

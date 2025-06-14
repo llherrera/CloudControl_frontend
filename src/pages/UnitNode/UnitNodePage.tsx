@@ -111,11 +111,15 @@ export const UnitNodePage = () => {
 
     const UploadBtn = () => (
         <div>
-            <input  type="file" 
-                    className="tw-hidden" 
+            <input  type="file"
+                    className="tw-hidden"
                     id="inputFile"
                     ref={fileUpload}
                     onChange={handleChangeFile}/>
+            <label
+                    htmlFor="inputFile"
+                    className="tw-hidden">a
+            </label>
             <IconButton aria-label="delete"
                         size="small"
                         color="inherit"
@@ -184,7 +188,6 @@ export const UnitNodePage = () => {
 
     const YearsForm = () => {
         if (unit === undefined || unit === null) return null;
-        console.log(unit);
         return(
             <div className="tw-border tw-border-slate-500 
                             tw-rounded tw-bg-white 

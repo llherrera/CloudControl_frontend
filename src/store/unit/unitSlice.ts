@@ -5,7 +5,7 @@ import { setGenericState, getGenericState, removeGenericState,
     notify } from "@/utils";
 
 import { thunkGetUnit, thunkAddUnit, thunkUpdateUnit, thunkUpdateIndicator,
-    thunkUpdateExecution, thunkAddUnitNodeResult,thunkDenegateExecution } from "./thunks";
+    thunkUpdateExecution, thunkAddUnitNodeResult, thunkDenegateExecution } from "./thunks";
 
 const getInitialState = (): InitialStateUnitInterface => {
     const unitState = getGenericState("unit");
@@ -92,6 +92,7 @@ export const unitSlice = createSlice({
         builder.addCase(thunkAddUnit.fulfilled, (state, action) => {
             state.loadingUnit = false;
             //state.unit = action.payload;
+            notify('Meta actualizada', 'success');
             setGenericState('unit', state);
         });
         builder.addCase(thunkAddUnit.rejected, (state, action) => {
@@ -107,6 +108,7 @@ export const unitSlice = createSlice({
         builder.addCase(thunkUpdateUnit.fulfilled, (state, action) => {
             state.loadingUnit = false;
             //state.unit = action.payload;
+            notify('Meta actualizada', 'success');
             setGenericState('unit', state);
         });
         builder.addCase(thunkUpdateUnit.rejected, (state, action) => {
@@ -153,7 +155,6 @@ export const unitSlice = createSlice({
         builder.addCase(thunkDenegateExecution.fulfilled, state => {
             //state.plan!.deadline = action.meta.arg.date
             state.loadingUnit = false;
-            notify('Ejecucion rechazada', 'warning');
         });
         builder.addCase(thunkDenegateExecution.rejected, (state, action) => {
             state.loadingUnit = false;

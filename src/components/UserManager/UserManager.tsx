@@ -20,7 +20,7 @@ export const UserManager = () => {
 
     useEffect(() => {
         const fetchUsers = async () => {
-            const id_plan = Number(localStorage.getItem('id_plan'));
+            //const id_plan = Number(localStorage.getItem('id_plan'));
             dispatch(thunkGetUsersByPlan(id_plan))
                 .unwrap()
                 .then((result: any) => {

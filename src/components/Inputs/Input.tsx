@@ -55,8 +55,8 @@ export const SelectInput = (props: SelectInputProps) => {
                 disabled={props.disabled}
                 required={!!props.isRequired}>
                     <option value=""></option>
-                {props.options.map((e, i) =>
-                    <option key={e} value={i}>{e}</option>
+                {props.options.map(e =>
+                    <option key={e} value={e}>{e}</option>
                 )}
             </select>
         </Component>

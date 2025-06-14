@@ -6,7 +6,7 @@ import { doRegister } from "@/services/api";
 import { RegisterInterface, IdProps } from "@/interfaces";
 import { validateEmail, notify, parseErrorAxios } from "@/utils";
 
-import { Box, CircularProgress } from '@mui/material';
+import { Box, CircularProgress, Tooltip } from '@mui/material';
 import { log } from "util";
 
 export const RegisterFormUser = ({ id }: IdProps) => {
@@ -230,16 +230,23 @@ export const RegisterFormUser = ({ id }: IdProps) => {
                             { value: 'planeacion', label: 'Planeación' },
                             { value: 'sectorialista', label: 'Sectorialista' }
                         ].map((role) => (
-                            <button
-                                key={role.value}
-                                type="button"
-                                onClick={() => handleChangeRol(role.value)}
-                                className={`tw-px-4 tw-py-2 tw-rounded-lg tw-font-medium tw-transition-all
-                                    ${form.rol === role.value
-                                        ? 'tw-bg-blue-500 tw-text-white tw-shadow-md'
-                                        : 'tw-bg-gray-100 tw-text-gray-700 hover:tw-bg-gray-200'}`}>
-                                {role.label}
-                            </button>
+                            <Tooltip
+                                title={role.value === 'funcionario' ? `Crea usuarios\nColorimetria\nAñadir o actualizar metas` :
+                                    role.value === 'planeacion' ? `Aprueba evidencias\nSube evidencias` :
+                                    `Sube evidencias`
+                                }
+                            >
+                                <button
+                                    key={role.value}
+                                    type="button"
+                                    onClick={() => handleChangeRol(role.value)}
+                                    className={`tw-px-4 tw-py-2 tw-rounded-lg tw-font-medium tw-transition-all
+                                        ${form.rol === role.value
+                                            ? 'tw-bg-blue-500 tw-text-white tw-shadow-md'
+                                            : 'tw-bg-gray-100 tw-text-gray-700 hover:tw-bg-gray-200'}`}>
+                                    {role.label}
+                                </button>
+                            </Tooltip>
                         ))}
                     </div>
                     {form.rol === 'funcionario' && (

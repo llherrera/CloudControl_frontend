@@ -6,6 +6,7 @@ import { removeEvidence } from "@/store/evidence/evidenceSlice";
 import { thunkUpdateExecution, thunkDenegateExecution } from "@/store/unit/thunks";
 
 import { ExecutedProps } from '@/interfaces';
+import { notify } from "@/utils";
 
 export const Execution = ( {ex, index}: ExecutedProps ) => {
     const dispatch = useAppDispatch();
@@ -33,8 +34,9 @@ export const Execution = ( {ex, index}: ExecutedProps ) => {
             user_id: ex.id_user,
             plan_id: id_plan,
             reason
-        }));
-        dispatch(removeEvidence(index));
+        }))
+        .then(() => dispatch(removeEvidence(index)))
+        .then(() => notify('Ejecución rechazada', 'warning'));
     };
 
     const handleBtnApprove = async (approve: number) => {
@@ -49,7 +51,9 @@ export const Execution = ( {ex, index}: ExecutedProps ) => {
                 user_id: ex.id_user,
                 plan_id: id_plan,
                 reason
-            }));
+            }))
+            .then(() => dispatch(removeEvidence(index)))
+            .then(() => notify('Ejecución aprobada', 'success'));
         }
     };
 
@@ -99,6 +103,7 @@ export const Execution = ( {ex, index}: ExecutedProps ) => {
                                                 tw-rounded tw-shadow-lg
                                                 tw-mt-2
                                                 tw-w-full tw-h-32 tw-p-2"
+                                    title="Rellenar este campo"
                                     onChange={e => onChangeReason(e)}
                                     value={reason}
                                     required/>

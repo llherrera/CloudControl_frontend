@@ -35,8 +35,8 @@ export const EvidenceForm = () => {
         activitiesDesc: "",
         unit: "M",
         amount: 0,
-        commune: "",
-        neighborhood: "",
+        commune: "Todas",
+        neighborhood: "Todas",
         corregimiento: "",
         vereda: "",
         benefited_population: "AdultoMayor",
@@ -146,7 +146,7 @@ export const EvidenceForm = () => {
         //if (data.executed_resources <= 0) return notify('No se ha seleccionado un recurso ejecutado', 'warning');
         if (data.unit === "") return notify('No se ha seleccionado una unidad', 'warning');
         //if (data.vereda === "") return notify('No se ha seleccionado una vereda', 'warning');
-        if (list_points.length === 0) return notify('No se ha seleccionado una ubicacion', 'warning');
+        //if (list_points.length === 0) return notify('No se ha seleccionado una ubicacion', 'warning');
         setLoading(true);
 
         if (evi_selected === undefined) {
@@ -157,9 +157,11 @@ export const EvidenceForm = () => {
                 file: documento[0],
                 list_points: list_points
             }))
-            .then(() => {
+            .then((res) => {
                 setLoading(false);
-                setData(blankData);
+                if (!res.error) {
+                    setData(blankData);
+                }
             });
         } else { 
             dispatch(thunkUpdateEvidence({
@@ -183,9 +185,7 @@ export const EvidenceForm = () => {
             <h1>404</h1>
             <h2>No se ha seleccionado un plan</h2>
             <BackBtn handle={handleBack} id={1}/>
-        </div> :
-        loading ? <ModalSpinner isOpen={loading}/> :
-        <form
+        </div> : <form
             id="formEvidencia"
             encType="multipart/form-data"
             className=" tw-flex tw-flex-col
@@ -225,6 +225,7 @@ export const EvidenceForm = () => {
             </div>
             <p className="tw-mt-4">Descripcion Actividades:</p>
             <textarea
+                title="Descripcion Actividades"
                 name="activitiesDesc"
                 id="activitiesDesc"
                 required
@@ -241,6 +242,7 @@ export const EvidenceForm = () => {
                 <div className="tw-flex tw-flex-col">
                     <p>Unidad</p>
                     <select
+                        title="Unidad"
                         name="unit"
                         id="unit"
                         className=" tw-p-2 tw-rounded
@@ -261,6 +263,7 @@ export const EvidenceForm = () => {
                 <div className="tw-flex tw-ml-3 tw-flex-col">
                     <p>Cantidad</p>
                     <input
+                        title="Cantidad"
                         type="number"
                         name="amount"
                         id="amount"
@@ -280,6 +283,8 @@ export const EvidenceForm = () => {
                 <div className="tw-flex tw-flex-col">
                     <p>Localidad/Comuna/Corregimiento</p>
                     <select
+                        value={data.commune}
+                        title="Localidad"
                         name="commune"
                         id="commune"
                         className=" tw-p-2 tw-rounded
@@ -301,6 +306,8 @@ export const EvidenceForm = () => {
                 <div className="tw-flex tw-flex-col tw-ml-3">
                     <p>Barrio/Vereda/Centro poblado</p>
                     <select
+                        value={data.neighborhood}
+                        title="Barrio"
                         name="neighborhood"
                         id="neighborhood"
                         className=" tw-p-2 tw-rounded
@@ -327,6 +334,7 @@ export const EvidenceForm = () => {
                 <div className="tw-flex tw-flex-col">
                     <p>Poblacion beneficiada</p>
                     <select
+                        title="Poblacion beneficiada"
                         name="benefited_population"
                         id="benefited_population"
                         value={data.benefited_population}
@@ -387,6 +395,7 @@ export const EvidenceForm = () => {
                     <div className="tw-flex tw-flex-col tw-ml-3">
                         <p>Fuente de recursos</p>
                         <select
+                            title="Fuente de recursos"
                             name="resources_font"
                             id="resources_font"
                             value={data.resources_font}
@@ -415,8 +424,9 @@ export const EvidenceForm = () => {
                     </div>
                     {showOther ?
                         <input
+                            title="Otra fuente de recursos"
                             name="resources_font"
-                            id="resources_font"
+                            id="other_resources_font"
                             type="text"
                             className=" tw-p-2 tw-ml-3 tw-mt-6 tw-rounded
                                         tw-border-2 tw-border-gray-400
@@ -433,7 +443,8 @@ export const EvidenceForm = () => {
                             tw-border-2 tw-border-gray-400">
                 <div className="tw-flex tw-flex-col">
                     <p>Archivo de meta</p>
-                    <input  
+                    <input
+                        title="Archivo de meta"
                         type="file"
                         name="documento"
                         id="documento"
@@ -474,6 +485,7 @@ export const EvidenceForm = () => {
                 <div className="tw-flex tw-flex-col tw-ml-3">
                     <p>Fecha del archivo</p>
                     <input
+                        title="Fecha del archivo"
                         type="date"
                         name="date_file"
                         id="date_file"
@@ -493,9 +505,10 @@ export const EvidenceForm = () => {
                                     tw-text-white hover:tw-text-black
                                     tw-font-bold"
                         onClick={handleSubmitEvidence}>
-                    {evi_selected === undefined ?
-                        "Añadir evidencia" :
-                        "Actualizar evidencia"
+                    {loading ? <ModalSpinner isOpen={loading}/> :
+                        evi_selected === undefined ?
+                            "Añadir evidencia" :
+                            "Actualizar evidencia"
                     }
                 </button>
             </div>

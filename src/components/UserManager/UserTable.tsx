@@ -104,6 +104,7 @@ const UserTable: React.FC<UserTableProps> = ({ users, onEdit }) => {
             <div className="tw-flex tw-justify-end tw-mt-4">
                 <span className="tw-mr-2">Usuarios por página:</span>
                 <select
+                    title='Usuarios por página'
                     value={usersPerPage}
                     onChange={handleUsersPerPageChange}
                     className="tw-border tw-rounded tw-px-2 tw-py-1"

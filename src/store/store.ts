@@ -17,6 +17,7 @@ export const reducers = {
   chart: chartReducer,
   unit: unitReducer,
   evidence: evidenceReducer,
+  pqrs: pqrsReducer
 };
 
 const rootReducer = combineReducers(reducers);

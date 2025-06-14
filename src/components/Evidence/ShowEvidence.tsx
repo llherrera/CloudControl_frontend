@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { thunkDeleteEvidence } from '@/store/evidence/thunks';
 import { EvidenceDetailProps } from '@/interfaces';
-import { useAppDispatch } from '@/store';
+import { useAppDispatch, useAppSelector } from '@/store';
+import { decode } from "@/utils";
 
 interface ShowEvidenceProps extends EvidenceDetailProps {
   handleEvidence: () => void;
@@ -9,7 +10,22 @@ interface ShowEvidenceProps extends EvidenceDetailProps {
 
 export const ShowEvidence = ({ evi, handleEvidence }: ShowEvidenceProps) => {
   const dispatch = useAppDispatch();
+  const { token_info } = useAppSelector(store => store.auth);
+  const { id_plan } = useAppSelector(store => store.content);
+
   const [showModal, setShowModal] = useState(false);
+  const [rol, setRol] = useState("");
+  const [user, setUser] = useState("");
+  const [id, setId] = useState(0);
+
+  useEffect(() => {
+    if (token_info?.token !== undefined) {
+      const decoded = decode(token_info.token);
+      setRol(decoded.rol);
+      setId(decoded.id_plan);
+      setUser(decoded.user);
+    }
+  }, []);
 
   const handleDeleteConfirm = () => {
     dispatch(thunkDeleteEvidence(evi.id_evidence));
@@ -50,14 +66,16 @@ export const ShowEvidence = ({ evi, handleEvidence }: ShowEvidenceProps) => {
         <th className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
           <a href={evi.file_link} target="_blank" rel="noopener noreferrer">Visitar</a>
         </th>
+        {rol === 'admin' || (rol === 'funcionario' && id === id_plan) ? 
         <th className="tw-bg-red-200 tw-rounded tw-my-1 tw-border tw-border-black">
           <button
             className="tw-bg-red-500 tw-text-white tw-px-2 tw-py-1 tw-rounded hover:tw-bg-red-700"
             onClick={() => setShowModal(true)}
-          >
+            >
             Eliminar
           </button>
-        </th>
+        </th> : null
+        }
       </tr>
 
       {showModal && (

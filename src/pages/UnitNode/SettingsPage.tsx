@@ -39,6 +39,17 @@ export const SettingsPage = () => {
         const unit_: UnitInterface = {
             ...unit,
             [name]: value,
+            years: unit.years.map((year, i) => {
+                if (year.year == 0) {
+                    let year_: YearInterface = {
+                        ...year,
+                        ['year']: years[i],
+                    }
+                    return year_;
+                } else {
+                    return year;
+                }
+            })
         };
         dispatch(setUnit(unit_));
     };
@@ -49,14 +60,22 @@ export const SettingsPage = () => {
             ...unit,
             years: unit.years.map((year, i) => {
                 if (i === index) {
-                    const year_: YearInterface = {
+                    let year_: YearInterface = {
                         ...year,
                         [name]: value,
                         ['year']: years[i],
                     }
                     return year_;
                 } else {
-                    return year;
+                    if (year.year == 0) {
+                        let year_: YearInterface = {
+                            ...year,
+                            ['year']: years[i],
+                        }
+                        return year_;
+                    } else {
+                        return year;
+                    }
                 }
             })
         }
@@ -65,12 +84,12 @@ export const SettingsPage = () => {
 
     const handleSubmit = async () => {
         if (plan === undefined) return;
-        if (unit.description === '') notify('Debe ingresar una descripción');
-        if (unit.indicator === '') notify('Debe ingresar un indicador');
-        if (unit.goal < 0) notify('Debe ingresar una meta');
-        if (unit.responsible === '') notify('Debe ingresar un responsable');
-        if (unit.years.length <= 0) return notify('Debe ingresar una programación');
-        
+        if (unit.description === '') notify('Debe ingresar una descripción', 'error');
+        if (unit.indicator === '') notify('Debe ingresar un indicador', 'error');
+        if (unit.goal < 0) notify('Debe ingresar una meta', 'error');
+        if (unit.responsible === '') notify('Debe ingresar un responsable', 'error');
+        if (unit.years.length <= 0) return notify('Debe ingresar una programación', 'error');
+
         const id_city = parseInt(plan.id_municipality);
         if (unit.code.length > 0) {
             dispatch(thunkUpdateUnit({
@@ -90,7 +109,7 @@ export const SettingsPage = () => {
         }
     };
 
-    
+
     return (
         loadingUnit ? <Spinner/>:
         <UnitFrame>
