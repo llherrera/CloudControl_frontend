@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { RegisterFormUser } from "@/components/Forms/RegisterFormUser";
 import UserTable from "./UserTable";
@@ -18,22 +18,23 @@ export const UserManager = () => {
     const dispatch = useAppDispatch();
     const [users, setUsers] = useState<User[]>([]);
 
+    // Función para obtener usuarios
+    const fetchUsers = useCallback(async () => {
+        try {
+            const result: any = await dispatch(thunkGetUsersByPlan(id_plan)).unwrap();
+            setUsers(result);
+        } catch (error: any) {
+            console.error("Error al obtener usuarios:", error);
+        }
+    }, [dispatch, id_plan]);
+
+    // Obtener usuarios al montar
     useEffect(() => {
-        const fetchUsers = async () => {
-            //const id_plan = Number(localStorage.getItem('id_plan'));
-            dispatch(thunkGetUsersByPlan(id_plan))
-                .unwrap()
-                .then((result: any) => {
-                    setUsers(result);
-                })
-                .catch((error: any) => {
-                    console.error("Error al obtener usuarios:", error);
-                });
-        };
         fetchUsers();
-    }, [dispatch]);
+    }, [fetchUsers]);
 
     const handlePanelChange = (panel: 'register' | 'edit' | null) => {
+        fetchUsers();
         setIsAnimating(true);
         setSelectedPanel(panel);
         setTimeout(() => setIsAnimating(false), 300);
@@ -48,16 +49,20 @@ export const UserManager = () => {
                 setEditingUser({ ...user, modulesAccess });
             })
             .catch((error: any) => {
-                console.error("Error al obtener Modulos:", error);
+                console.error("Error al obtener módulos:", error);
             });
     };
 
-    const handleSaveUser = (updatedUser: User) => {
-        setUsers(users.map(user => user.id_user === updatedUser.id_user ? updatedUser : user));
+    // Al guardar en el modal, recarga usuarios
+    const handleSaveUser = async (updatedUser: User) => {
+        // Puedes optar por actualizar localmente o recargar completamente:
+        // setUsers(users.map(u => u.id_user === updatedUser.id_user ? updatedUser : u));
+        // Mejor recargar desde el servidor:
         setEditingUser(null);
+        await fetchUsers();
     };
 
-    const handleBack = () => navigate(-1); // función simple de regreso
+    const handleBack = () => navigate(-1);
 
     return (
         <div className="tw-container tw-mx-auto tw-p-4 tw-pt-12">
@@ -78,7 +83,6 @@ export const UserManager = () => {
                         Gestión de Usuarios
                     </h1>
                 </div>
-
 
                 <div className="tw-grid tw-grid-cols-2 tw-gap-8 tw-mb-6">
                     <button
@@ -107,7 +111,7 @@ export const UserManager = () => {
                 <div className="tw-relative tw-overflow-hidden">
                     <div className={`tw-transition-all tw-duration-300 tw-ease-in-out
                         ${selectedPanel ? 'tw-max-h-[2000px] tw-opacity-100' : 'tw-max-h-0 tw-opacity-0'}
-                        ${isAnimating ? 'tw-blur-[1px]' : ''}`}>
+                        ${isAnimating ? 'tw-blur-[1px]' : ''}`}>  
 
                         <div className={`tw-transform tw-transition-all tw-duration-300 tw-ease-in-out
                             ${selectedPanel === 'edit' ? 'tw-translate-x-0 tw-relative' : 'tw-translate-x-full tw-absolute tw-inset-0'}

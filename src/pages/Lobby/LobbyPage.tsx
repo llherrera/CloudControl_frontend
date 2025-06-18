@@ -69,7 +69,17 @@ export const LobbyPage = () => {
             });
             return; // No necesitas llamar al thunk si es admin
         }
-    
+
+        // Desactivar AtencionCiudadana segun el id_plan
+        if (id_plan === 10044) {
+            console.log(modulos);
+            setModulos(prevModulos => ({
+                ...prevModulos,
+                AtencionCiudadana: false
+            }));
+        }
+        
+
         if (id !== null) {
             dispatch(thunkGetModulosUsuarioById(parseInt(id)))
                 .unwrap()
@@ -82,7 +92,7 @@ export const LobbyPage = () => {
                     console.error('Error al obtener los módulos:', err);
                 });
         }
-    }, [dispatch]);    
+    }, [dispatch, id_plan]);
 
     useEffect(() => {
         const fetchLocation = async () => {

@@ -1,8 +1,5 @@
 import { User } from '@/interfaces';
-import React, { useState, useEffect } from 'react';
-import { thunkGetUsersByPlan } from '@/store/pqrs/thunks';
-import { unwrapResult } from '@reduxjs/toolkit';
-import { useAppDispatch } from '@/store';
+import React, { useState } from 'react';
 
 interface UserTableProps {
     users: User[];
@@ -11,8 +8,7 @@ interface UserTableProps {
 
 const UserTable: React.FC<UserTableProps> = ({ users, onEdit }) => {
     const [currentPage, setCurrentPage] = useState(1);
-    const [usersPerPage, setUsersPerPage] = useState(10); // State for users per pa
-
+    const [usersPerPage, setUsersPerPage] = useState(10); // State for users per page
 
     // Calculate the indices for the current page
     const indexOfLastUser = currentPage * usersPerPage;
@@ -57,7 +53,10 @@ const UserTable: React.FC<UserTableProps> = ({ users, onEdit }) => {
                     </thead>
                     <tbody>
                         {currentUsers.map((user) => (
-                            <tr key={user.id_user} className="tw-border-b">
+                            <tr
+                                key={user.id_user}
+                                className={`tw-border-b ${user.isActive ? 'tw-bg-green-100' : 'tw-bg-red-100'}`}
+                            >
                                 <td className="tw-px-4 tw-py-2 tw-text-center">{user.id_user}</td>
                                 <td className="tw-px-4 tw-py-2 tw-text-center">{user.office}</td>
                                 <td className="tw-px-4 tw-py-2 tw-text-center">{user.isActive ? 'Sí' : 'No'}</td>
@@ -78,7 +77,7 @@ const UserTable: React.FC<UserTableProps> = ({ users, onEdit }) => {
                     </tbody>
                 </table>
             </div>
-    
+
             {/* Paginación */}
             <div className="tw-flex tw-justify-between tw-mt-4">
                 <button
@@ -99,7 +98,7 @@ const UserTable: React.FC<UserTableProps> = ({ users, onEdit }) => {
                     Siguiente
                 </button>
             </div>
-    
+
             {/* Selector de cantidad */}
             <div className="tw-flex tw-justify-end tw-mt-4">
                 <span className="tw-mr-2">Usuarios por página:</span>

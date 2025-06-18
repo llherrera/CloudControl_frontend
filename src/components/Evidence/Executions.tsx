@@ -8,7 +8,7 @@ import { thunkUpdateExecution, thunkDenegateExecution } from "@/store/unit/thunk
 import { ExecutedProps } from '@/interfaces';
 import { notify } from "@/utils";
 
-export const Execution = ( {ex, index}: ExecutedProps ) => {
+export const Execution = ({ ex, index }: ExecutedProps) => {
     const dispatch = useAppDispatch();
 
     const { id_plan } = useAppSelector(store => store.content);
@@ -43,7 +43,7 @@ export const Execution = ( {ex, index}: ExecutedProps ) => {
         if (approve === 2) {
             setModalIsOpen(true);
         } else {
-            dispatch(thunkDenegateExecution({
+            await dispatch(thunkDenegateExecution({
                 date: newModDate,
                 value1: ex.modified_execution,
                 value2: ex.financial_value,
@@ -57,49 +57,50 @@ export const Execution = ( {ex, index}: ExecutedProps ) => {
         }
     };
 
+
     return (
         <tr>
-            <th  className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
+            <th className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
                 {ex.code}
             </th>
-            <th  className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
+            <th className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
                 {newModYear.getFullYear()}
             </th>
-            <th  className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
+            <th className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
                 {ex.physical_execution}
             </th>
-            <th  className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
+            <th className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
                 {ex.modified_execution}
             </th>
-            <th  className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
+            <th className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
                 {ex.financial_value}
             </th>
-            <th  className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
-                {newModDate.getDate()}/{newModDate.getMonth()+1}/{newModDate.getFullYear()}
+            <th className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
+                {newModDate.getDate()}/{newModDate.getMonth() + 1}/{newModDate.getFullYear()}
             </th>
-            <th  className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
+            <th className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
                 {ex.id_user}
             </th>
-            <th  className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
+            <th className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
                 <button className="tw-bg-greenBtn hover:tw-bg-green-400
                                     tw-text-white hover:tw-text-black
                                     tw-rounded
                                     tw-py-1 tw-px-2"
-                        onClick={() => handleBtnApprove(1)}>
+                    onClick={() => handleBtnApprove(1)}>
                     Aprobar
                 </button>
                 <button className="tw-bg-redBtn hover:tw-bg-red-400
                                     tw-text-white hover:tw-text-black
                                     tw-rounded
                                     tw-py-1 tw-px-2 tw-mt-1"
-                        onClick={() => handleBtnApprove(2)}>
+                    onClick={() => handleBtnApprove(2)}>
                     Rechazar
                 </button>
-                <Modal  isOpen={modalIsOpen}
-                        onRequestClose={()=>setModalIsOpen(false)}>
+                <Modal isOpen={modalIsOpen}
+                    onRequestClose={() => setModalIsOpen(false)}>
                     <div className="tw-flex tw-flex-col tw-items-center tw-justify-center tw-p-4">
                         <p className="tw-text-2xl tw-font-bold">Ingrese el motivo del rechazo</p>
-                        <textarea   className=" tw-border
+                        <textarea className=" tw-border
                                                 tw-rounded tw-shadow-lg
                                                 tw-mt-2
                                                 tw-w-full tw-h-32 tw-p-2"
@@ -111,7 +112,7 @@ export const Execution = ( {ex, index}: ExecutedProps ) => {
                                         tw-text-white hover:tw-text-black
                                         tw-rounded
                                         tw-p-3 tw-mt-3"
-                                onClick={handleInputModal}>
+                            onClick={handleInputModal}>
                             Enviar
                         </button>
                     </div>

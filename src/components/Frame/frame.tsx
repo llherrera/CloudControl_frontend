@@ -54,6 +54,7 @@ export const Frame = ({ children }: FrameProps) => {
         const id = localStorage.getItem('id');
         const rol = localStorage.getItem('rol');
 
+
         if (rol === 'admin') {
             setModulos({
                 PlanIndicativo: true,
@@ -65,6 +66,16 @@ export const Frame = ({ children }: FrameProps) => {
             });
             return;
         }
+
+        
+        // Desactivar AtencionCiudadana segun el id_plan
+        if (plan?.id_plan === 10044) {
+            setModulos(prevModulos => ({
+                ...prevModulos,
+                AtencionCiudadana: false
+            }));
+        }
+
 
         if (id !== null) {
             dispatch(thunkGetModulosUsuarioById(parseInt(id)))

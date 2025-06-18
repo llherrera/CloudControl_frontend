@@ -124,7 +124,6 @@ export const Content = (props: IdProps) => {
                     {rol === 'admin' || ((rol === 'funcionario' || rol === 'planeacion' || rol === 'sectorialista') && id === props.id) ?
                         <p className={`tw-truncate tw-w-6 hover:tw-w-24`}
                             title="usuario">
-                            {user}
                         </p>
                         : null
                     }

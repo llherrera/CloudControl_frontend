@@ -32,23 +32,6 @@ export const ModalProgram = () => {
 
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [data, setData] = useState<ReportPDTInterface[]>([]);
-    
-    const convertToInterface2 = (data: ReportPDTInterface[]): ReportPDTInterface2[] => {
-        return data.map(item => ({
-            responsible: item.responsible,
-            goalCode: item.goalCode,
-            goalDescription: item.goalDescription,
-            percentExecuted: item.percentExecuted.join(', '), // o usa algún formato adecuado
-            planSpecific: item.planSpecific.join(' > '), // si aplica
-            indicator: item.indicator,
-            base: item.base,
-            executed: item.executed.join(', '),
-            programed: item.programed.join(', ')
-        }));
-    };
-    
-    const data2 = convertToInterface2(data);
-
     const [programs, setPrograms] = useState<NodeInterface[][]>([]);
     const [index_, setIndex_] = useState<number[]>(levels_.map(() => 0));
 
@@ -89,6 +72,22 @@ export const ModalProgram = () => {
         dispatch(setLoadingReport(true));
         genReport();
     };
+
+    const convertToInterface2 = (data: ReportPDTInterface[]): ReportPDTInterface2[] => {
+        return data.map(item => ({
+            responsible: item.responsible,
+            goalCode: item.goalCode,
+            goalDescription: item.goalDescription,
+            percentExecuted: item.percentExecuted.join(', '), // o usa algún formato adecuado
+            planSpecific: item.planSpecific.join(' > '), // si aplica
+            indicator: item.indicator,
+            base: item.base,
+            executed: item.executed.join(', '),
+            programed: item.programed.join(', ')
+        }));
+    };
+    
+    const data2 = convertToInterface2(data); // Convierte los datos a la interfaz ReportPDTInterface2
 
     const genReport = async () => {
         const pesosStr = localStorage.getItem('UnitNode');
@@ -202,7 +201,7 @@ export const ModalProgram = () => {
                     onRequestClose={()=>setModalIsOpen(true)}
                     contentLabel='Modal de programas'>
                 {loadingReport ? <Spinner/> : <div>
-                <div className="tw-absolute tw-top-0 tw-right-0">
+                <div className="tw-absolute tw-top-0 tw-right-0 tw-z-index-10">
                     <button className=" tw-px-2"
                             onClick={() => setModalIsOpen(false)}>
                         <p className="tw-text-xl tw-text-[#626d75] tw-font-bold">
