@@ -145,6 +145,7 @@ export interface LocationInterface {
     lat?: number;
     lng?: number;
     belongs?: string;
+    id_location?: number;
 }
 
 export interface PQRSInform {

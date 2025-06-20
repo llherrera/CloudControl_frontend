@@ -22,6 +22,7 @@ import {
 
 import { getCoords } from '@/services/map_api';
 import { thunkGetModulosUsuarioById } from '@/store/pqrs/thunks';
+import { log } from 'node:console';
 
 export const LobbyPage = () => {
     const dispatch = useAppDispatch();
@@ -57,6 +58,7 @@ export const LobbyPage = () => {
     useEffect(() => {
         const id = localStorage.getItem('id');
         const rol = localStorage.getItem('rol');
+        const idplan = plan?.id_plan;
     
         if (rol === 'admin') {
             setModulos({
@@ -67,32 +69,30 @@ export const LobbyPage = () => {
                 AtencionCiudadana: true,
                 MapaDeIntervencion: true
             });
-            return; // No necesitas llamar al thunk si es admin
+            return;
         }
-
-        // Desactivar AtencionCiudadana segun el id_plan
-        if (id_plan === 10044) {
-            console.log(modulos);
-            setModulos(prevModulos => ({
-                ...prevModulos,
-                AtencionCiudadana: false
-            }));
-        }
-        
-
+    
         if (id !== null) {
             dispatch(thunkGetModulosUsuarioById(parseInt(id)))
                 .unwrap()
                 .then(res => {
                     if (Array.isArray(res) && res.length > 0) {
                         setModulos(res[0]);
+    
+                        if (idplan === 10044) {
+                            setModulos(prevModulos => ({
+                                ...prevModulos,
+                                AtencionCiudadana: false
+                            }));
+                        }
                     }
                 })
                 .catch(err => {
                     console.error('Error al obtener los módulos:', err);
                 });
         }
-    }, [dispatch, id_plan]);
+    }, [dispatch, id_plan, plan]);
+    
 
     useEffect(() => {
         const fetchLocation = async () => {

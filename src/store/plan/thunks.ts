@@ -20,7 +20,7 @@ import {getPDTid, addPDT, getLastPDT, getColors, getLevelNodes,
         addProjectsAtPlan, updateProjectById, getCountProjectsByPlan,
         getPlanByUuid, getActionPlans, getActivityActionPlan, updateActionPlan,
         addActionPlan, addActivityActionPlans, updateActivityActionPlans,
-        updatePDTFill
+        updatePDTFill, deleteLocation
     } from '@/services/api';
 
 export const thunkGetPDTid = createAsyncThunk<PDTInterface, number, { rejectValue: ErrorBasicInterface }>(
@@ -521,5 +521,22 @@ export const thunkUpdateYears = createAction('plan/updateYears', (years:number[]
         payload: years
     }
 })
+
+export const thunkDeleteLocation = createAsyncThunk<
+  number,
+  number,
+  { rejectValue: ErrorBasicInterface }
+>(
+  'pdt/deleteLocation',
+  async (id_location, { rejectWithValue }) => {
+    try {
+      await deleteLocation(id_location);
+      return id_location;
+    } catch (err) {
+      const result = parseErrorAxios(err);
+      return rejectWithValue(result);
+    }
+  }
+);
 
 export const removePDT = createAction('plan/removePDT')

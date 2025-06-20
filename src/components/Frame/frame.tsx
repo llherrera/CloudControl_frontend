@@ -67,15 +67,6 @@ export const Frame = ({ children }: FrameProps) => {
             return;
         }
 
-        
-        // Desactivar AtencionCiudadana segun el id_plan
-        if (plan?.id_plan === 10044) {
-            setModulos(prevModulos => ({
-                ...prevModulos,
-                AtencionCiudadana: false
-            }));
-        }
-
 
         if (id !== null) {
             dispatch(thunkGetModulosUsuarioById(parseInt(id)))
@@ -83,6 +74,14 @@ export const Frame = ({ children }: FrameProps) => {
                 .then(res => {
                     if (Array.isArray(res) && res.length > 0) {
                         setModulos(res[0]);
+                        // Desactivar AtencionCiudadana segun el id_plan
+                        if (plan?.id_plan === 10044) {
+                            setModulos(prevModulos => ({
+                                ...prevModulos,
+                                AtencionCiudadana: false
+                            }));
+                            console.log("Modulo Apagado");
+                        }
                     }
                 })
                 .catch(err => {

@@ -57,7 +57,7 @@ const POAIModule: React.FC = () => {
   
     return (
       <div className="tw-p-4 tw-bg-white tw-rounded-lg tw-shadow-lg tw-m-12">
-        <h1 className="tw-text-2xl tw-font-bold tw-mb-6">Módulo POAI</h1>
+        <h1 className="tw-text-2xl tw-font-bold tw-mb-6">POAI</h1>
   
         {/* Tabs */}
         <div className="tw-flex tw-border-b tw-mb-6">

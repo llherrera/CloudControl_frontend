@@ -904,10 +904,29 @@ export const handleInputFile = (e: React.ChangeEvent<HTMLInputElement>, callback
 }
 
 export const convertLocations = (locations: LocationInterface[]): Map<LocationInterface, LocationInterface[]> => {
-  let result = new Map();
-  const locs = locations.filter(loc => (loc.belongs === '' || loc.belongs === null));
-  for (const element of locs) {
-    const blns = locations.filter(loc => loc.belongs === element.name);
+  let result = new Map<LocationInterface, LocationInterface[]>();
+  // Helper to sort by number if possible, then alphabetically
+  const smartSort = (a: LocationInterface, b: LocationInterface) => {
+    const numA = parseInt(a.name, 10);
+    const numB = parseInt(b.name, 10);
+    const isNumA = !isNaN(numA);
+    const isNumB = !isNaN(numB);
+    if (isNumA && isNumB) {
+      return numA - numB;
+    } else if (isNumA) {
+      return -1;
+    } else if (isNumB) {
+      return 1;
+    } else {
+      return a.name.localeCompare(b.name, 'es', { sensitivity: 'base' });
+    }
+  };
+  // Get parent locations and sort them
+  const locs = locations.filter(loc => (loc.belongs === '' || loc.belongs === null || loc.belongs === undefined));
+  const sortedParents = [...locs].sort(smartSort);
+  for (const element of sortedParents) {
+    // Get and sort children
+    const blns = locations.filter(loc => loc.belongs === element.name).sort(smartSort);
     result.set(element, blns);
   }
   return result;

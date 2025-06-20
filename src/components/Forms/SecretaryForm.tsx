@@ -47,8 +47,8 @@ export const SecretaryForm = () => {
     };
 
     return (
-        <div className="tw-flex tw-justify-center tw-items-center tw-min-h-screen tw-bg-gray-100">
-            <form className="tw-bg-white tw-shadow-lg tw-rounded-2xl tw-p-6 tw-w-full tw-max-w-2xl">
+        <div className="tw-flex tw-justify-center tw-items-center tw-min-h-screen">
+            <form className="tw-bg-white tw-shadow-lg tw-rounded-2xl tw-p-6 tw-w-2/3 tw-my-12">
                 <h2 className="tw-text-xl tw-font-bold tw-text-center tw-mb-6 text-gray-700">
                     Añadir Secretarias
                 </h2>

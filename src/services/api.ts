@@ -648,6 +648,12 @@ export const updateLocations = async (id_plan: number, locations: LocationInterf
     return response.data;
 }
 
+export const deleteLocation = async (id_location: number) => {
+    const response = await api.delete(`/plan-territorial/localidades/${id_location}`);
+    return response.data;
+}
+
+
 export const loadFinancialExcel =async () => {
     const response = await api.put('/plan-territorial/');
     return response;
