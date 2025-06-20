@@ -346,73 +346,75 @@ type PaginationPropsLocal = {
 
 const Pagination = ({ array, page, callback, setShowAddMainModal }: PaginationPropsLocal) => {
   return (
-    <nav className="tw-flex tw-items-center tw-justify-center tw-gap-4 tw-py-4">
-      {/* Botón a la primera página */}
-      <button
-        title="Primero"
-        disabled={page === 1}
-        onClick={() => callback(1, false)}
-        className="tw-p-2 tw-rounded-full tw-transition-colors hover:tw-bg-gray-200 disabled:tw-opacity-50 disabled:tw-cursor-not-allowed"
-      >
-        <ChevronsLeft size={20} />
-      </button>
+    <div className="tw-bg-white tw-rounded-xl tw-shadow-md tw-p-4 tw-mx-32 tw-overflow-x-auto">
+      <nav className="tw-flex tw-items-center tw-justify-center tw-gap-4">
+        {/* Botón a la primera página */}
+        <button
+          title="Primero"
+          disabled={page === 1}
+          onClick={() => callback(1, false)}
+          className="tw-p-2 tw-rounded-full tw-transition-colors hover:tw-bg-gray-200 disabled:tw-opacity-50 disabled:tw-cursor-not-allowed"
+        >
+          <ChevronsLeft size={20} />
+        </button>
 
-      {/* Botón a la página anterior */}
-      <button
-        title="Anterior"
-        disabled={page === 1}
-        onClick={() => callback(page - 1, false)}
-        className="tw-p-2 tw-rounded-full tw-transition-colors hover:tw-bg-gray-200 disabled:tw-opacity-50 disabled:tw-cursor-not-allowed"
-      >
-        <ChevronLeft size={20} />
-      </button>
+        {/* Botón a la página anterior */}
+        <button
+          title="Anterior"
+          disabled={page === 1}
+          onClick={() => callback(page - 1, false)}
+          className="tw-p-2 tw-rounded-full tw-transition-colors hover:tw-bg-gray-200 disabled:tw-opacity-50 disabled:tw-cursor-not-allowed"
+        >
+          <ChevronLeft size={20} />
+        </button>
 
-      {/* Números de página */}
-      <div className="tw-flex tw-items-center tw-gap-2">
-        {array.map((_, i) => (
-          <button
-            key={i}
-            onClick={() => callback(i + 1, false)}
-            className={`tw-w-10 tw-h-10 tw-rounded-full tw-transition-colors ${
-              page === i + 1
-                ? "tw-bg-green-500 tw-text-white tw-font-bold"
-                : "hover:tw-bg-gray-200"
-            }`}
-          >
-            {i + 1}
-          </button>
-        ))}
-      </div>
+        {/* Números de página */}
+        <div className="tw-flex tw-items-center tw-gap-2">
+          {array.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => callback(i + 1, false)}
+              className={`tw-w-10 tw-h-10 tw-rounded-full tw-transition-colors ${
+                page === i + 1
+                  ? "tw-bg-green-500 tw-text-white tw-font-bold"
+                  : "hover:tw-bg-gray-200"
+              }`}
+            >
+              {i + 1}
+            </button>
+          ))}
+        </div>
 
-      {/* Botón a la página siguiente */}
-      <button
-        title="Siguiente"
-        disabled={page === array.length}
-        onClick={() => callback(page + 1, false)}
-        className="tw-p-2 tw-rounded-full tw-transition-colors hover:tw-bg-gray-200 disabled:tw-opacity-50 disabled:tw-cursor-not-allowed"
-      >
-        <ChevronRight size={20} />
-      </button>
+        {/* Botón a la página siguiente */}
+        <button
+          title="Siguiente"
+          disabled={page === array.length}
+          onClick={() => callback(page + 1, false)}
+          className="tw-p-2 tw-rounded-full tw-transition-colors hover:tw-bg-gray-200 disabled:tw-opacity-50 disabled:tw-cursor-not-allowed"
+        >
+          <ChevronRight size={20} />
+        </button>
 
-      {/* Botón a la última página */}
-      <button
-        title="Último"
-        disabled={page === array.length}
-        onClick={() => callback(array.length, false)}
-        className="tw-p-2 tw-rounded-full tw-transition-colors hover:tw-bg-gray-200 disabled:tw-opacity-50 disabled:tw-cursor-not-allowed"
-      >
-        <ChevronsRight size={20} />
-      </button>
+        {/* Botón a la última página */}
+        <button
+          title="Último"
+          disabled={page === array.length}
+          onClick={() => callback(array.length, false)}
+          className="tw-p-2 tw-rounded-full tw-transition-colors hover:tw-bg-gray-200 disabled:tw-opacity-50 disabled:tw-cursor-not-allowed"
+        >
+          <ChevronsRight size={20} />
+        </button>
 
-      {/* Botón para añadir nueva localidad */}
-      <button
-        title="Añadir Localidad Principal"
-        onClick={() => setShowAddMainModal(true)}
-        className="tw-ml-4 tw-p-2 tw-bg-blue-500 tw-text-white tw-rounded-full tw-transition-colors hover:tw-bg-blue-600"
-      >
-        <Plus size={20} />
-      </button>
-    </nav>
+        {/* Botón para añadir nueva localidad */}
+        <button
+          title="Añadir Localidad Principal"
+          onClick={() => setShowAddMainModal(true)}
+          className="tw-ml-4 tw-p-2 tw-bg-blue-500 tw-text-white tw-rounded-full tw-transition-colors hover:tw-bg-blue-600"
+        >
+          <Plus size={20} />
+        </button>
+      </nav>
+    </div>
   );
 };
 
