@@ -114,14 +114,16 @@ export const LocationsForm = ({ loc, locs, currentLocationId }: LocFormProps & {
   };
 
   const handleSubmit = () => {
-    for (const locItem of data) {
+    // Si lat/lng están vacíos, poner 0
+    const sanitizedData = data.map((locItem) => ({
+      ...locItem,
+      lat: locItem.lat === undefined || locItem.lat === null ? 0 : locItem.lat,
+      lng: locItem.lng === undefined || locItem.lng === null ? 0 : locItem.lng,
+    }));
+
+    for (const locItem of sanitizedData) {
       if (locItem.name === "") {
         return notify("Por favor llene todos los campos");
-      }
-      if (!locItem.lat && !locItem.lng) {
-        return notify(
-          `Por favor seleccionar ubicación de localidad: ${locItem.name}`
-        );
       }
     }
 
@@ -130,7 +132,6 @@ export const LocationsForm = ({ loc, locs, currentLocationId }: LocFormProps & {
 
     if (isEditing && currentLocationId) {
       console.log("editando");
-      
       // Si es edición, primero eliminar la localidad existente
       dispatch(thunkDeleteLocation(currentLocationId))
         .then(() => {
@@ -138,7 +139,7 @@ export const LocationsForm = ({ loc, locs, currentLocationId }: LocFormProps & {
           return dispatch(
             thunkAddLocations({
               id_plan,
-              locations: data,
+              locations: sanitizedData,
               location: {
                 id_plan,
                 type: location.type,
@@ -156,7 +157,7 @@ export const LocationsForm = ({ loc, locs, currentLocationId }: LocFormProps & {
       dispatch(
         thunkAddLocations({
           id_plan,
-          locations: data,
+          locations: sanitizedData,
           location: {
             id_plan,
             type: location.type,
@@ -294,6 +295,9 @@ export const LocationsForm = ({ loc, locs, currentLocationId }: LocFormProps & {
                       callback={handleLocation}
                       item={locationItem}
                     />
+                    {(locationItem.lat === 0 && locationItem.lng === 0) && (
+                      <span className="tw-text-xs tw-text-red-500 tw-mt-1">localidad no definida</span>
+                    )}
                   </div>
                 </div>
               </li>
