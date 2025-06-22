@@ -17,6 +17,7 @@ import { createUserWithEmailAndPassword, reauthenticateWithCredential, fetchSign
 import { Box, CircularProgress } from '@mui/material';
 
 import { UserManager } from '@/components/UserManager/UserManager';
+import { User2 } from "lucide-react";
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth();
@@ -105,69 +106,84 @@ export const UpdateUserForm = () => {
     };
 
     return (
-        <div className="tw-flex tw-justify-center tw-my-4">
-            {!logged ?
-            <div>
-                Necesita iniciar sesión para realizar cambios en su usuario
-            </div>
-            : !token_info ? <div>
-                No se ha proveido un token
-            </div>
-            : <form   onSubmit={submitForm}
-                    className=" tw-px-10 tw-shadow-2xl
-                                tw-rounded tw-bg-white">
-                <h1 className=" tw-mb-4 tw-grow
-                                tw-text-center tw-text-xl">
-                    Actualizar usuario
-                </h1>
-                <div className="tw-flex tw-flex-col tw-gap-3">
-                    <Input
-                        value={user.username}
-                        label={"Usuario"}
-                        type={"text"}
-                        id={"username"}
-                        name={"username"}
-                        onChange={ event => handleInputChangeUser(event)}
-                        center={true}
-                        classname="tw-justify-between tw-gap-2"/>
-                    <Input
-                        value={user.lastname}
-                        label={"Apellido"}
-                        type={"text"}
-                        id={"lastname"}
-                        name={"lastname"}
-                        onChange={ event => handleInputChangeUser(event)}
-                        center={true}
-                        classname="tw-justify-between tw-gap-2"/>
-                    <Input
-                        value={user.email}
-                        label={"Correo"}
-                        type={"text"}
-                        id={"email"}
-                        name={"email"}
-                        onChange={ event => handleInputChangeUser(event)}
-                        center={true}
-                        classname="tw-justify-between tw-gap-2"/>
-                    <button onClick={() => navigate('/contrasena')}>
-                        Cambiar contraseña
-                    </button>
+        <div className="tw-flex tw-justify-center tw-items-center tw-min-h-[70vh]">
+            <div className="tw-bg-white tw-shadow-2xl tw-rounded-2xl tw-p-8 tw-w-full tw-max-w-md">
+                <div className="tw-flex tw-flex-col tw-items-center tw-mb-6">
+                    <User2 size={48} className="tw-text-green-500 tw-mb-2" />
+                    <h1 className="tw-text-2xl tw-font-bold tw-text-gray-800">Actualizar usuario</h1>
+                    <p className="tw-text-gray-500 tw-text-sm tw-mt-1">Modifica tu información personal</p>
                 </div>
-                <button type="submit"
-                        className=' tw-bg-green-500 hover:tw-bg-green-300
-                                    tw-py-2 tw-my-4
-                                    tw-text-white tw-font-bold
-                                    tw-rounded
-                                    tw-w-full
-                                    tw-grow'>
-                    {loading ?
-                        <Box sx={{ display: 'flex' }}>
-                            <CircularProgress />
-                        </Box>
-                    :   <p>Actualizar</p>
-                    }
-                </button>
-            </form>
-            }
+                {!logged ? (
+                    <div className="tw-text-center tw-text-red-500 tw-font-semibold">
+                        Necesita iniciar sesión para realizar cambios en su usuario
+                    </div>
+                ) : !token_info ? (
+                    <div className="tw-text-center tw-text-red-500 tw-font-semibold">
+                        No se ha proveido un token
+                    </div>
+                ) : (
+                    <form onSubmit={submitForm} className="tw-space-y-5">
+                        <div>
+                            <Input
+                                value={user.username}
+                                label="Usuario"
+                                type="text"
+                                id="username"
+                                name="username"
+                                onChange={handleInputChangeUser}
+                                center={false}
+                                classname="tw-flex-col"
+                            />
+                        </div>
+                        <div>
+                            <Input
+                                value={user.lastname}
+                                label="Apellido"
+                                type="text"
+                                id="lastname"
+                                name="lastname"
+                                onChange={handleInputChangeUser}
+                                center={false}
+                                classname="tw-flex-col"
+                            />
+                        </div>
+                        <div>
+                            <Input
+                                value={user.email}
+                                label="Correo"
+                                type="email"
+                                id="email"
+                                name="email"
+                                onChange={handleInputChangeUser}
+                                center={false}
+                                classname="tw-flex-col"
+                            />
+                        </div>
+                        <div className="tw-flex tw-justify-end">
+                            <button
+                                type="button"
+                                onClick={() => navigate('/contrasena')}
+                                className="tw-text-green-600 hover:tw-underline tw-text-sm"
+                            >
+                                Cambiar contraseña
+                            </button>
+                        </div>
+                        <button
+                            type="submit"
+                            className="tw-bg-green-500 hover:tw-bg-green-600 tw-text-white tw-font-bold tw-py-3 tw-rounded-xl tw-w-full tw-mt-2 tw-transition"
+                            disabled={loading}
+                        >
+                            {loading ? (
+                                <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                                    <CircularProgress size={24} color="inherit" />
+                                </Box>
+                            ) : (
+                                "Actualizar"
+                            )}
+                        </button>
+                    </form>
+                )}
+            </div>
         </div>
     );
 }
