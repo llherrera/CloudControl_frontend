@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 import { InfoPopover, LocationPopover } from "@/components";
 import {
@@ -172,8 +172,133 @@ export const LocationsForm = ({ loc, locs, currentLocationId }: LocFormProps & {
     }
   };
 
+  // --- NUEVO: Estados y refs para import/export ---
+  const [showImportConfirm, setShowImportConfirm] = useState(false);
+  const [importFile, setImportFile] = useState<File | null>(null);
+  const [importMode, setImportMode] = useState<'overwrite' | 'add' | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // --- NUEVO: Exportar CSV ---
+  const handleExportCSV = () => {
+    const headers = ["type", "name", "lat", "lng"];
+    const rows = data.map(loc => [loc.type, loc.name, loc.lat ?? '', loc.lng ?? '']);
+    const csvContent = [headers, ...rows].map(e => e.join(",")).join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "localidades.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  // --- NUEVO: Descargar plantilla CSV ---
+  const handleDownloadTemplate = () => {
+    const headers = ["type", "name", "lat", "lng"];
+    const examples = [
+      ["Barrio", "San Martín", "6.25184", "-75.56359"],
+      ["Barrio", "El Prado", "6.25200", "-75.56400"],
+      ["vereda", "La Esperanza", "6.25300", "-75.56500"],
+      ["Centro poblado", "Santa Ana", "6.25400", "-75.56600"],
+      ["Barrio", "La Floresta", "6.25500", "-75.56700"],
+    ];
+    const csvContent = [headers, ...examples].map(e => e.join(",")).join("\n");
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "plantilla_localidades.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  // --- NUEVO: Importar CSV (visual y lógica) ---
+  const handleImportClick = () => {
+    fileInputRef.current?.click();
+  };
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] || null;
+    if (file) {
+      setImportFile(file);
+      setShowImportConfirm(true);
+    }
+  };
+  const handleImportConfirm = async (mode: 'overwrite' | 'add') => {
+    if (!importFile) return;
+    try {
+      const text = await importFile.text();
+      const lines = text.split('\n').filter(line => line.trim() !== '');
+      if (lines.length < 2) {
+        notify("El archivo CSV debe tener al menos una fila de datos", "error");
+        return;
+      }
+      const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
+      const expectedHeaders = ['type', 'name', 'lat', 'lng'];
+      if (!expectedHeaders.every(header => headers.includes(header))) {
+        notify("El archivo CSV debe tener las columnas: type, name, lat, lng", "error");
+        return;
+      }
+      const importedLocs: LocationInterface[] = [];
+      const errors: string[] = [];
+      for (let i = 1; i < lines.length; i++) {
+        const values = lines[i].split(',').map(v => v.trim());
+        if (values.length < 4) {
+          errors.push(`Fila ${i + 1}: Datos incompletos`);
+          continue;
+        }
+        const [type, name, lat, lng] = values;
+        if (!type || !name) {
+          errors.push(`Fila ${i + 1}: Tipo y nombre requeridos`);
+          continue;
+        }
+        const latNum = parseFloat(lat);
+        const lngNum = parseFloat(lng);
+        if (isNaN(latNum) || isNaN(lngNum)) {
+          errors.push(`Fila ${i + 1}: Latitud o longitud inválida`);
+          continue;
+        }
+        importedLocs.push({
+          id_plan,
+          type: type as locationTypes,
+          name,
+          lat: latNum,
+          lng: lngNum,
+        });
+      }
+      if (errors.length > 0) {
+        notify(`Errores encontrados:\n${errors.join('\n')}`, "error");
+        return;
+      }
+      if (importedLocs.length === 0) {
+        notify("No se encontraron datos válidos para importar", "warning");
+        return;
+      }
+      if (mode === 'overwrite') {
+        setData(importedLocs);
+        notify(`Se importaron ${importedLocs.length} localidades (modo sobrescribir)`, "success");
+      } else {
+        const combinedData = [...data, ...importedLocs];
+        setData(combinedData);
+        notify(`Se agregaron ${importedLocs.length} localidades a la lista existente`, "success");
+      }
+    } catch (error) {
+      notify("Error al leer el archivo CSV", "error");
+      console.error('Error importing CSV:', error);
+    }
+    setShowImportConfirm(false);
+    setImportFile(null);
+    setImportMode(null);
+  };
+  const handleImportCancel = () => {
+    setShowImportConfirm(false);
+    setImportFile(null);
+    setImportMode(null);
+  };
+
   return (
-    <div className="tw-flex tw-justify-center tw-mt-8 tw-pb-4">
+    <div className="tw-flex tw-flex-col tw-items-center tw-mt-8 tw-pb-4">
       <form className="tw-shadow-lg tw-rounded-2xl tw-p-6 tw-bg-white tw-w-full md:tw-w-3/4 lg:tw-w-2/3">
         <div className="tw-flex tw-items-center tw-justify-between mb-6">
           <h2 className="tw-text-2xl tw-font-semibold tw-text-gray-700">
@@ -337,6 +462,80 @@ export const LocationsForm = ({ loc, locs, currentLocationId }: LocFormProps & {
           </button>
         </div>
       </form>
+      {/* Panel de cargue de datos */}
+      <div className="tw-bg-white tw-mt-12 tw-shadow-md tw-rounded-xl tw-p-6 tw-mb-8 tw-border tw-border-gray-200 tw-w-full md:tw-w-3/4 lg:tw-w-2/3 tw-mt-0">
+        <div className="tw-mb-3">
+          <div className="tw-flex tw-items-center tw-mb-1">
+            <span className="tw-text-xl tw-font-bold tw-text-gray-700">Cargue de datos</span>
+            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="tw-text-blue-400 tw-ml-2"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M12 20a8 8 0 100-16 8 8 0 000 16z" /></svg>
+          </div>
+          <p className="tw-text-gray-500 tw-text-sm tw-mt-1">
+            Utiliza esta herramienta para exportar la lista de localidades a un archivo CSV o importar nuevas localidades desde un archivo CSV. Puedes elegir si deseas sobrescribir los datos actuales o agregarlos a la lista existente.
+          </p>
+        </div>
+        <div className="tw-flex tw-gap-4 tw-mt-6">
+          <button
+            type="button"
+            onClick={handleDownloadTemplate}
+            className="tw-bg-amber-500 hover:tw-bg-amber-600 tw-text-white tw-font-semibold tw-py-3 tw-rounded-lg tw-shadow-sm tw-transition-colors tw-w-1/3"
+          >
+            Descargar plantilla
+          </button>
+          <button
+            type="button"
+            onClick={handleExportCSV}
+            className="tw-bg-blue-500 hover:tw-bg-blue-600 tw-text-white tw-font-semibold tw-py-3 tw-rounded-lg tw-shadow-sm tw-transition-colors tw-w-1/3"
+          >
+            Exportar CSV
+          </button>
+          <button
+            type="button"
+            onClick={handleImportClick}
+            className="tw-bg-gray-500 hover:tw-bg-gray-600 tw-text-white tw-font-semibold tw-py-3 tw-rounded-lg tw-shadow-sm tw-transition-colors tw-w-1/3"
+          >
+            Importar CSV
+          </button>
+          <input
+            type="file"
+            accept=".csv"
+            ref={fileInputRef}
+            style={{ display: "none" }}
+            onChange={handleFileChange}
+          />
+        </div>
+      </div>
+      {/* Panel de confirmación de importación al final */}
+      {showImportConfirm && importFile && (
+        <div className="tw-bg-white tw-shadow-lg tw-rounded-xl tw-p-6 tw-mb-6 tw-border tw-border-gray-300 tw-w-full md:tw-w-3/4 lg:tw-w-2/3">
+          <div className="tw-mb-4 tw-text-center">
+            <p className="tw-font-semibold tw-mb-2">¿Cómo deseas importar el archivo <span className='tw-text-blue-600'>{importFile.name}</span>?</p>
+            <p className="tw-text-sm tw-text-gray-600">Puedes sobrescribir los datos actuales o agregar los nuevos a la lista existente.</p>
+          </div>
+          <div className="tw-flex tw-justify-center tw-gap-4">
+            <button
+              type="button"
+              onClick={() => handleImportConfirm('overwrite')}
+              className="tw-bg-red-500 hover:tw-bg-red-600 tw-text-white tw-font-semibold tw-px-4 tw-py-2 tw-rounded-lg"
+            >
+              Sobrescribir
+            </button>
+            <button
+              type="button"
+              onClick={() => handleImportConfirm('add')}
+              className="tw-bg-green-500 hover:tw-bg-green-600 tw-text-white tw-font-semibold tw-px-4 tw-py-2 tw-rounded-lg"
+            >
+              Agregar
+            </button>
+            <button
+              type="button"
+              onClick={handleImportCancel}
+              className="tw-bg-gray-400 hover:tw-bg-gray-500 tw-text-white tw-font-semibold tw-px-4 tw-py-2 tw-rounded-lg"
+            >
+              Cancelar
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
