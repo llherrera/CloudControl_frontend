@@ -670,11 +670,6 @@ export const LocationsFormPage = () => {
     setLocations__(locTemp ?? []);
   }, [locationsMap, page]);
 
-  useEffect(() => {
-    console.log('Estructura de locations_ (paginación):', locations_);
-    console.log('Estructura de locations__ (paginación):', locations__);
-  }, [locations_]);
-
   const handleModalSubmit = () => {
     // Crear nueva localidad principal localmente
     const newMain = {

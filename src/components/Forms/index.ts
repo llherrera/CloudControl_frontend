@@ -1,4 +1,5 @@
 export * from './LoginForm';
+export * from './ModulesForm';
 export * from './PDTForm';
 export * from './LevelForm';
 export * from './NodeForm';

@@ -1000,4 +1000,10 @@ export const generalReport = async (id_plan: number) => {
     });
     return response.data;
 }
+
+export const updatePlanModulesMask = async (id: number, modules_mask: number) => {
+    const response = await api.put(`/plan-territorial/modules/${id}`, { modules_mask });
+    return response.data;
+}
+
 export default api;

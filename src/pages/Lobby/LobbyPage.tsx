@@ -24,6 +24,30 @@ import { getCoords } from '@/services/map_api';
 import { thunkGetModulosUsuarioById } from '@/store/pqrs/thunks';
 import { log } from 'node:console';
 
+// --- Module Conversion Helpers ---
+interface IModules {
+    indicative_plan: boolean;
+    action_plan: boolean;
+    project_bank: boolean;
+    poai: boolean;
+    citizen_service: boolean;
+    intervention_map: boolean;
+}
+
+const moduleOrder: (keyof IModules)[] = [
+    'indicative_plan', 'action_plan', 'project_bank', 'poai', 'citizen_service', 'intervention_map'
+];
+
+const decimalToModules = (mask: number | undefined | null): IModules => {
+    const validMask = mask || 0;
+    const binaryString = validMask.toString(2).padStart(moduleOrder.length, '0');
+    const modules: any = {};
+    moduleOrder.forEach((key, index) => {
+        modules[key] = binaryString[index] === '1';
+    });
+    return modules;
+};
+
 export const LobbyPage = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
@@ -58,8 +82,8 @@ export const LobbyPage = () => {
     useEffect(() => {
         const id = localStorage.getItem('id');
         const rol = localStorage.getItem('rol');
-        const idplan = plan?.id_plan;
-    
+
+        // Priority 1: Admin has access to everything
         if (rol === 'admin') {
             setModulos({
                 PlanIndicativo: true,
@@ -71,24 +95,48 @@ export const LobbyPage = () => {
             });
             return;
         }
-    
-        if (id !== null) {
+
+        // For non-admins, access depends on plan and user permissions
+        if (plan && id) {
+            // Priority 2: Plan-level permissions from bitmask
+            const planModules = decimalToModules(plan.modules);
+
+            // Priority 3: User-level permissions from API
             dispatch(thunkGetModulosUsuarioById(parseInt(id)))
                 .unwrap()
-                .then(res => {
-                    if (Array.isArray(res) && res.length > 0) {
-                        setModulos(res[0]);
-    
-                        if (idplan === 10044) {
-                            setModulos(prevModulos => ({
-                                ...prevModulos,
-                                AtencionCiudadana: false
-                            }));
+                .then(userModulesArray => {
+                    if (Array.isArray(userModulesArray) && userModulesArray.length > 0) {
+                        const userModules = userModulesArray[0];
+
+                        // Combine permissions: a module is active only if allowed by BOTH plan and user
+                        const finalModules = {
+                            PlanIndicativo: planModules.indicative_plan && userModules.PlanIndicativo,
+                            PlanDeAccion: planModules.action_plan && userModules.PlanDeAccion,
+                            BancoDeProyectos: planModules.project_bank && userModules.BancoDeProyectos,
+                            POAI: planModules.poai && userModules.POAI,
+                            AtencionCiudadana: planModules.citizen_service && userModules.AtencionCiudadana,
+                            MapaDeIntervencion: planModules.intervention_map && userModules.MapaDeIntervencion,
+                        };
+
+                        // Apply specific business logic/overrides
+                        if (plan.id_plan === 10044) {
+                            finalModules.AtencionCiudadana = false;
                         }
+
+                        setModulos(finalModules);
                     }
                 })
                 .catch(err => {
-                    console.error('Error al obtener los módulos:', err);
+                    console.error('Error al obtener los módulos de usuario:', err);
+                     // Fallback to all modules disabled if user permissions fail
+                    setModulos({
+                        PlanIndicativo: false,
+                        PlanDeAccion: false,
+                        BancoDeProyectos: false,
+                        POAI: false,
+                        AtencionCiudadana: false,
+                        MapaDeIntervencion: false
+                    });
                 });
         }
     }, [dispatch, id_plan, plan]);

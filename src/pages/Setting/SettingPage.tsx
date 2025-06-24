@@ -13,7 +13,7 @@ import {
     Frame, BackBtn, ColorForm, SecretaryForm,
     UploadLogoCity, UploadLogoPlan, LocationsFormPage,
     FileInput, FileFinancialInput, FilePhysicalInput,
-    FileUnitInput, DrawerMenu, ListItemComp, UpdateUserForm
+    FileUnitInput, DrawerMenu, ListItemComp, UpdateUserForm, ModulesForm
 } from '@/components';
 import { decode, notify } from "@/utils";
 
@@ -150,6 +150,11 @@ const SettingPageWrapper = () => {
                         index={4}
                         setPage={() => handlePage(4)}
                         title='Usuario' />
+                    <ListItemComp
+                        page={page}
+                        index={5}
+                        setPage={() => handlePage(5)}
+                        title='Módulos' />
                 </DrawerMenu>
                 <div ref={divRef} className='sm:tw-ml-2 md:tw-ml-40 tw-mr-2 xl:tw-ml-40
                             tw-mt-24 md:tw-mt-0'>
@@ -277,6 +282,12 @@ const SettingPageWrapper = () => {
                                     page === 4 ?
                                         <div>
                                             <UpdateUserForm />
+                                        </div> :
+                                    page === 5 ?
+                                        <div>
+                                            {rol === "admin" ?
+                                                <ModulesForm />
+                                                : null}
                                         </div> :
                                         <p>Ha ocurrido un error</p>
                     }

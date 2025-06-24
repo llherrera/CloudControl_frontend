@@ -8,7 +8,9 @@ import {PDTInterface, ErrorBasicInterface, GetNodeProps, Root,
         PropsGetProjectsCount, PropsAddProjects, PropsUpdateProjects,
         ActionPlan, Activity, PropsAddActionPlan, PropsAddActivity,
         Rubro, NodeActivityPlan, LevelActionPlan,
-        UnitNodeResultInterface
+        UnitNodeResultInterface,
+        YearInterface,
+        UnitInterface
     } from '@/interfaces';
 import { parseErrorAxios } from '@/utils';
 
@@ -20,7 +22,7 @@ import {getPDTid, addPDT, getLastPDT, getColors, getLevelNodes,
         addProjectsAtPlan, updateProjectById, getCountProjectsByPlan,
         getPlanByUuid, getActionPlans, getActivityActionPlan, updateActionPlan,
         addActionPlan, addActivityActionPlans, updateActivityActionPlans,
-        updatePDTFill, deleteLocation
+        updatePDTFill, deleteLocation, updatePlanModulesMask
     } from '@/services/api';
 
 export const thunkGetPDTid = createAsyncThunk<PDTInterface, number, { rejectValue: ErrorBasicInterface }>(
@@ -537,6 +539,27 @@ export const thunkDeleteLocation = createAsyncThunk<
       return rejectWithValue(result);
     }
   }
+);
+
+interface ModulesMaskProps {
+    id_plan: number;
+    modules_mask: number;
+}
+
+export const thunkUpdateModulesMask = createAsyncThunk<
+    void,
+    ModulesMaskProps,
+    { rejectValue: ErrorBasicInterface }
+>(
+    'pdt/updateModulesMask',
+    async (props, { rejectWithValue }) => {
+        try {
+            await updatePlanModulesMask(props.id_plan, props.modules_mask);
+        } catch (err) {
+            const result = parseErrorAxios(err);
+            return rejectWithValue(result);
+        }
+    }
 );
 
 export const removePDT = createAction('plan/removePDT')

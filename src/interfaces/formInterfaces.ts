@@ -1,3 +1,5 @@
+import internal from "stream";
+
 export interface RegisterInterface {
     readonly id_user: number;
     username: string;
@@ -31,6 +33,7 @@ export interface PDTInterface {
     uuid: string;
     fill: string;
     shape: string;
+    modules?: number;
 }
 
 export interface LevelInterface {
