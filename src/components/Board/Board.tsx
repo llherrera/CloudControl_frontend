@@ -67,38 +67,38 @@ export const Board = () => {
 
         pesosNodo.forEach((item: NodesWeight) => {
             const { percents, parent } = item;
-            if (percents) {
-                if (parent) {
-                    percents.forEach((Percentages: Percentages) => {
-                        let padre = pesosNodo.find(
-                            (e: NodesWeight) => e.id_node === parent
-                        );
-                        if (padre) {
-                            let progresoPeso = Percentages.progress > 0 ?
-                                Percentages.progress * (item.weight / 100) : 0;
-                            progresoPeso = parseFloat(progresoPeso.toFixed(2));
-                            let financiado = Percentages.financial_execution;
-                            padre.percents = padre.percents ? padre.percents : [];
-                            const temp = padre.percents.find(
-                                (e: Percentages) => e.year === Percentages.year
-                            );
-                            if (temp) {
-                                temp.progress += progresoPeso > 0 ? progresoPeso : 0;
-                                temp.progress = parseFloat(temp.progress.toFixed(2));
-                                temp.financial_execution += financiado;
-                            } else {
-                                padre.percents.push(
-                                    {
-                                        progress : progresoPeso > 1 ? 1 : progresoPeso,
-                                        year: Percentages.year,
-                                        physical_programming: 0,
-                                        financial_execution: financiado
-                                    }
-                                );
-                            }
-                        }
-                    })
-                }
+            if (percents && parent) {
+                percents.forEach((percentageItem: Percentages) => {
+                    const year = percentageItem.year;
+                    let padre = pesosNodo.find((e: NodesWeight) => e.id_node === parent);
+                    if (!padre) return;
+                    const hermanos = pesosNodo.filter(n => n.parent === parent);
+                    const hermanosConProg = hermanos.filter(n => {
+                        const p = n.percents?.find(e => e.year === year);
+                        return p && p.physical_programming > 0;
+                    });
+                    const totalPesoValido = hermanosConProg.reduce((sum, h) => sum + h.weight, 0);
+                    if (percentageItem.physical_programming === 0 || totalPesoValido === 0) return;
+                    const pesoAjustado = item.weight / totalPesoValido;
+
+                    let progresoPeso = percentageItem.progress * pesoAjustado;
+                    progresoPeso = parseFloat(progresoPeso.toFixed(2));
+                    let financiado = percentageItem.financial_execution;
+                    padre.percents = padre.percents ? padre.percents : [];
+                    const temp = padre.percents.find((e: Percentages) => e.year === percentageItem.year);
+                    if (temp) {
+                        temp.progress += progresoPeso > 0 ? progresoPeso : 0;
+                        temp.progress = parseFloat(temp.progress.toFixed(2));
+                        temp.financial_execution += financiado;
+                    } else {
+                        padre.percents.push({
+                            progress : progresoPeso > 1 ? 1 : progresoPeso,
+                            year: percentageItem.year,
+                            physical_programming: 1,
+                            financial_execution: financiado
+                        });
+                    }
+                })
             }
         })
         localStorage.setItem('UnitNode', JSON.stringify(pesosNodo));
