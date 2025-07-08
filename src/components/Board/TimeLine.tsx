@@ -57,7 +57,9 @@ export const TimeLine = () => {
                 const { percents } = item;
                 if (percents) {
                     percents.sort((a,b)=>a.year - b.year);
-                    temp += (percents[i].progress > 0 ? percents[i].progress : 0)*(item.weight/100);
+                    if (percents[i] && typeof percents[i].progress === 'number') {
+                        temp += (percents[i].progress > 0 ? percents[i].progress : 0)*(item.weight/100);
+                    }
                 }
             });
             temp = Math.round(temp*100)/100;

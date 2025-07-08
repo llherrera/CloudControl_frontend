@@ -89,7 +89,6 @@ export const Board = () => {
                     if (temp) {
                         temp.progress += progresoPeso > 0 ? progresoPeso : 0;
                         if (temp.progress > 1) {
-                            console.warn('Progreso mayor a 100% detectado:', temp.progress, temp, item);
                             temp.progress = 1;
                         }
                         temp.progress = parseFloat(temp.progress.toFixed(2));
