@@ -34,6 +34,8 @@ export interface BtnProps {
     onClick: () => void;
     bgColor?: string;
     textColor?: string;
+    className?: string;
+    disabled?: boolean;
 }
 
 export interface BtnPlanProps {

@@ -4,27 +4,38 @@ import cclogo from "@/assets/images/ControlLand2.png";
 import { HeaderProps } from "@/interfaces";
 import { useAppSelector } from '@/store';
 
-export const Header = ( {children}: HeaderProps) => {
+interface HeaderWithPanelProps extends HeaderProps {
+    infoPanel?: React.ReactNode;
+    columns?: number; // Número de columnas opcional
+    rightPanel?: React.ReactNode; // Panel derecho opcional
+}
+
+export const Header = ( {children, infoPanel, columns = 2, rightPanel}: HeaderWithPanelProps ) => {
     const { logged } = useAppSelector(store => store.auth);
+    // Construir la clase de columnas dinámicamente
+    const gridColsClass = `md:tw-grid-cols-${columns}`;
     return (
-        <main className="   tw-mx-auto
-                            tw-grid
-                            md:tw-grid-cols-2
-                            tw-items-center
-                            tw-h-screen">
+        <main className={`tw-mx-4 md:tw-mx-auto tw-grid ${gridColsClass} tw-items-center tw-h-[100%]`}>
             <div className="tw-border-r md:tw-border-black
                             tw-pr-4 tw-m-6
-                            tw-justify-self-end">
-                <img src={cclogo} width={350}/>
-                {logged ? null :
-                <p className="tw-font-montserrat tw-font-bold">
-                    Selecciona un usuario en la derecha para comenzar
-                </p>
-                }
+                            tw-flex tw-justify-center md:tw-justify-end">
+                <img src={cclogo} className="tw-w-28 md:tw-w-[220px]" />
             </div>
-            <ul className="tw-pl-3 tw-flex md:tw-flex-col tw-justify-center tw-gap-3">
-                {children}
-            </ul>
+            <div className="tw-flex tw-flex-row tw-items-center tw-gap-4 tw-justify-center">
+                <ul className="tw-pl-3 tw-flex md:tw-flex-col tw-justify-center tw-gap-3">
+                    {children}
+                </ul>
+                {infoPanel && (
+                    <div className="tw-ml-2 tw-mt-2">
+                        {infoPanel}
+                    </div>
+                )}
+            </div>
+            {rightPanel && (
+                <div className="tw-flex tw-items-start tw-justify-center">
+                    {rightPanel}
+                </div>
+            )}
         </main>
     );
 }

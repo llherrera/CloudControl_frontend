@@ -99,60 +99,53 @@ export const PDTForm = () => {
     };
 
     return (
-        <div className="tw-flex tw-justify-center">
-            <BackBtn handle={()=>navigate(-1)} id={plan?.id_plan??0}/>
-            <form   onSubmit={handleSubmit}
-                    className=" tw-rounded tw-shadow-2xl
-                                tw-bg-white
-                                tw-p-10 tw-my-2">
-                <h1 className=" tw-mb-4 tw-grow 
-                                tw-text-center tw-text-xl tw-font-bold">
-                    Registrar Plan de Desarrollo
-                </h1>
-                <div>
-                <Input  type={"text"}
-                        label="Nombre:"
-                        id={"name"}
-                        name={"name"}
-                        onChange={handleInputChange}
-                        center={true}
-                        classname="tw-justify-between tw-gap-2"
-                />
-                <SelectDept
-                    callbackDept={handleDepartmentChange}
-                    callbackMuni={handleMunicipioChange}
-                />
-                <Input  type={"text"}
-                        label="Descripción:"
-                        id={"description"}
-                        name={"description"}
-                        onChange={handleInputChange}
-                        center={true}
-                        classname="tw-justify-between tw-gap-2"
-                />
-                <Select label="Fecha de inicio:"
-                        id="start_date"
-                        name="start_date"
-                        onChange={handleInputYearChange}
-                        options={years}
-                />
+        <div className="tw-min-h-screen tw-w-full tw-flex tw-flex-col tw-items-center tw-justify-center tw-bg-gradient-to-br tw-from-green-100 tw-to-green-300 tw-p-4">
+            <div className="tw-w-full tw-max-w-2xl tw-bg-white tw-rounded-2xl tw-shadow-lg tw-flex tw-flex-col tw-items-center tw-p-6 md:tw-p-8">
+                <div className="tw-w-full tw-flex tw-justify-start tw-mb-4">
+                    <BackBtn handle={()=>navigate(-1)} id={plan?.id_plan??0}/>
                 </div>
-                <div className="tw-flex tw-justify-center">
-                    {loadingPlan ?
-                    <Box sx={{ display: 'flex' }}>
-                        <CircularProgress />
-                    </Box> :
-                    <input  type="submit"
-                            value="Registrar Plan"
-                            title="Añadir plan"
-                            className=" tw-bg-green-500 hover:tw-bg-green-300
-                                        tw-text-white tw-font-bold
-                                        hover:tw-text-black
-                                        tw-rounded tw-p-2"
+                <h1 className="tw-text-3xl tw-font-bold tw-mb-2 tw-text-green-700 tw-w-full tw-text-center">Registrar Plan de Desarrollo</h1>
+                <form onSubmit={handleSubmit} className="tw-w-full tw-max-w-md tw-space-y-5">
+                    <Input  type={"text"}
+                            label="Nombre:"
+                            id={"name"}
+                            name={"name"}
+                            onChange={handleInputChange}
+                            center={true}
+                            classname="tw-justify-between tw-gap-2"
                     />
-                    }
-                </div>
-            </form>
+                    <SelectDept
+                        callbackDept={handleDepartmentChange}
+                        callbackMuni={handleMunicipioChange}
+                    />
+                    <Input  type={"text"}
+                            label="Descripción:"
+                            id={"description"}
+                            name={"description"}
+                            onChange={handleInputChange}
+                            center={true}
+                            classname="tw-justify-between tw-gap-2"
+                    />
+                    <Select label="Fecha de inicio:"
+                            id="start_date"
+                            name="start_date"
+                            onChange={handleInputYearChange}
+                            options={years}
+                    />
+                    <div className="tw-flex tw-justify-center">
+                        {loadingPlan ?
+                        <Box sx={{ display: 'flex' }}>
+                            <CircularProgress />
+                        </Box> :
+                        <input  type="submit"
+                                value="Registrar Plan"
+                                title="Añadir plan"
+                                className="tw-bg-green-500 hover:tw-bg-green-600 tw-text-white tw-font-bold tw-py-3 tw-rounded-xl tw-w-full tw-transition tw-duration-200 tw-disabled:tw-opacity-50 tw-disabled:tw-cursor-not-allowed"
+                        />
+                        }
+                    </div>
+                </form>
+            </div>
         </div>
     );
 }

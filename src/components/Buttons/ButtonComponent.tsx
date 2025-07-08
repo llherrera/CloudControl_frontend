@@ -9,16 +9,20 @@ export const ButtonComponent = ( props : BtnProps ) => {
                     className={`hover:tw-bg-navBar ${props.bgColor}
                                 tw-border tw-border-greenBtn tw-rounded
                                 tw-w-16 tw-h-16 tw-p-4
-                                md:tw-w-20 md:tw-h-20 md:tw-text-[10px]
-                                xl:tw-w-24 xl:tw-h-24 xl:tw-text-[12px]
-                                2xl:tw-w-28 2xl:tw-h-28 2xl:tw-text-base
+                                md:tw-w-20 md:tw-h-20
+                                xl:tw-w-24 xl:tw-h-24
+                                2xl:tw-w-28 2xl:tw-h-28
                                 tw-flex tw-flex-col
-                                tw-justify-center tw-items-center`}>
+                                tw-justify-center tw-items-center
+                                ${props.className ?? ''}`}
+                    disabled={props.disabled}
+            >
                 {props.src ? <img src={props.src} alt="icon" className="tw-w-10 tw-h-10" /> : null}
                 {props.icon ? props.icon : null}
             </button>
             {props.inside ? null :
-            <p className="  tw-ml-3
+            <p className="  tw-text-[12px]
+                            tw-ml-3
                             tw-font-montserrat
                             tw-self-center
                             tw-hidden md:tw-block">

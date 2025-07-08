@@ -290,79 +290,85 @@ export const ChangePassword = () => {
     };
 
     return(
-        <div className="tw-flex tw-justify-center tw-my-4">
-            {!logged ?
-                !codeSend ?
-                <NotSignIn callback={setCodeSend} callback2={setCodename} callbackMail={setEmail} callbackUser={setUsername} /> :
-                isValid ?
-                <ChangePasswordForm callback={setCodeSend} callback2={setIsValid} email={email} username={username}/> :
-                <ValidateCode callback={setIsValid} codename={codename}/>
-            : <form   onSubmit={submitForm}
-                    className=" tw-px-10 tw-shadow-2xl
-                                tw-rounded tw-bg-white">
-                <h1 className=" tw-mb-4 tw-grow
-                                tw-text-center tw-text-xl">
-                    Cambiar contraseña
-                </h1>
-                <div className="tw-flex tw-flex-col tw-gap-3">
-                    <Input
-                        label={"Anterio contraseña"}
-                        type={"password"}
-                        id={"password"}
-                        name={"password"}
-                        onChange={e => handleOldPasswordChanhe(e)}
-                        center={true}
-                        classname="tw-justify-between tw-gap-2"/>
-                    <Input
-                        label={"Nueva contraseña"}
-                        type={"password"}
-                        id={"new_password"}
-                        name={"new_password"}
-                        onChange={e => handleNewPasswordChanhe(e)}
-                        center={true}
-                        classname="tw-justify-between tw-gap-2"/>
-                    <Input
-                        label={"Confirmar contraseña"}
-                        type={"password"}
-                        id={"confirm_password"}
-                        name={"confirm_password"}
-                        onChange={e => handleConPasswordChanhe(e)}
-                        center={true}
-                        classname="tw-justify-between tw-gap-2"/>
-                </div>
-                <div className="tw-shadow tw-mb-3">
-                    Requerimientos de la contraseña:
-                    <p className={`${newPassword.length >= min && newPassword.length <= max ? 'tw-text-green-400' : 'tw-text-red-400'}`}>
-                        {newPassword.length >= min && newPassword.length <= max ?
-                        '✓' : 'X'} Entre 6 y 16 caracteres
-                    </p>
-
-                    <p className={`${hasNumber ? 'tw-text-green-400' : 'tw-text-red-400'}`}>
-                        {hasNumber ? '✓' : 'X'} Al menos un número
-                    </p>
-                    <p className={`${hasSpecialChar ? 'tw-text-green-400' : 'tw-text-red-400'}`}>
-                        {hasSpecialChar ? '✓' : 'X'} Al menos un caracter especia
-                    </p>
-                    <p className={`${noHasSpace ? 'tw-text-green-400' : 'tw-text-red-400'}`}>
-                        {noHasSpace ? '✓' : 'X'} No espacios
-                    </p>
-                </div>
-                <button type="submit"
-                        className=' tw-bg-green-500 hover:tw-bg-green-300
-                                    tw-py-2 tw-my-4
-                                    tw-text-white tw-font-bold
-                                    tw-rounded
-                                    tw-w-full
-                                    tw-grow'>
-                    {loading ?
-                        <Box sx={{ display: 'flex' }}>
-                            <CircularProgress />
-                        </Box>
-                    :   <p>Cambiar</p>
-                    }
-                </button>
-            </form>
-            }
+        <div className="tw-min-h-screen tw-w-full tw-flex tw-flex-col tw-items-center tw-justify-center tw-bg-gradient-to-br tw-from-green-100 tw-to-green-300 tw-p-4">
+            <div className="tw-w-full tw-max-w-2xl tw-bg-white tw-rounded-2xl tw-shadow-lg tw-flex tw-flex-col tw-items-center tw-p-6 md:tw-p-8">
+                {!logged ?
+                    !codeSend ?
+                    <NotSignIn callback={setCodeSend} callback2={setCodename} callbackMail={setEmail} callbackUser={setUsername} /> :
+                    isValid ?
+                    <ChangePasswordForm callback={setCodeSend} callback2={setIsValid} email={email} username={username}/> :
+                    <ValidateCode callback={setIsValid} codename={codename}/>
+                : (
+                    <>
+                        <h1 className="tw-text-3xl tw-font-bold tw-mb-2 tw-text-green-700">Cambiar contraseña</h1>
+                        <p className="tw-mb-8 tw-text-gray-600 tw-text-center">Ingresa tu contraseña actual y la nueva contraseña</p>
+                        <form onSubmit={submitForm} className="tw-w-full tw-max-w-md tw-space-y-5">
+                            <div>
+                                <Input
+                                    label={"Contraseña anterior"}
+                                    type={"password"}
+                                    id={"password"}
+                                    name={"password"}
+                                    onChange={e => handleOldPasswordChanhe(e)}
+                                    center={true}
+                                    classname="tw-justify-between tw-gap-2"/>
+                            </div>
+                            <div>
+                                <Input
+                                    label={"Nueva contraseña"}
+                                    type={"password"}
+                                    id={"new_password"}
+                                    name={"new_password"}
+                                    onChange={e => handleNewPasswordChanhe(e)}
+                                    center={true}
+                                    classname="tw-justify-between tw-gap-2"/>
+                            </div>
+                            <div>
+                                <Input
+                                    label={"Confirmar contraseña"}
+                                    type={"password"}
+                                    id={"confirm_password"}
+                                    name={"confirm_password"}
+                                    onChange={e => handleConPasswordChanhe(e)}
+                                    center={true}
+                                    classname="tw-justify-between tw-gap-2"/>
+                            </div>
+                            <div className="tw-bg-gray-50 tw-p-4 tw-rounded-xl tw-mb-4">
+                                <h3 className="tw-font-semibold tw-text-gray-700 tw-mb-3">Requerimientos de la contraseña:</h3>
+                                <div className="tw-space-y-2">
+                                    <p className={`tw-flex tw-items-center tw-gap-2 ${newPassword.length >= min && newPassword.length <= max ? 'tw-text-green-600' : 'tw-text-red-500'}`}>
+                                        <span>{newPassword.length >= min && newPassword.length <= max ? '✓' : '✗'}</span>
+                                        Entre 6 y 16 caracteres
+                                    </p>
+                                    <p className={`tw-flex tw-items-center tw-gap-2 ${hasNumber ? 'tw-text-green-600' : 'tw-text-red-500'}`}>
+                                        <span>{hasNumber ? '✓' : '✗'}</span>
+                                        Al menos un número
+                                    </p>
+                                    <p className={`tw-flex tw-items-center tw-gap-2 ${hasSpecialChar ? 'tw-text-green-600' : 'tw-text-red-500'}`}>
+                                        <span>{hasSpecialChar ? '✓' : '✗'}</span>
+                                        Al menos un caracter especial
+                                    </p>
+                                    <p className={`tw-flex tw-items-center tw-gap-2 ${noHasSpace ? 'tw-text-green-600' : 'tw-text-red-500'}`}>
+                                        <span>{noHasSpace ? '✓' : '✗'}</span>
+                                        Sin espacios
+                                    </p>
+                                </div>
+                            </div>
+                            <button type="submit"
+                                    className="tw-bg-green-500 hover:tw-bg-green-600 tw-text-white tw-font-bold tw-py-3 tw-rounded-xl tw-w-full tw-transition tw-duration-200 tw-disabled:tw-opacity-50 tw-disabled:tw-cursor-not-allowed"
+                                    disabled={loading}>
+                                {loading ? (
+                                    <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                                        <CircularProgress size={24} color="inherit" />
+                                    </Box>
+                                ) : (
+                                    "Cambiar contraseña"
+                                )}
+                            </button>
+                        </form>
+                    </>
+                )}
+            </div>
         </div>
     );
 }
@@ -413,51 +419,48 @@ const NotSignIn = ({ callback, callback2, callbackMail, callbackUser }: NotSignI
     };
 
     return(
-        <form   onSubmit={submitSendCodeToEmail}
-                className=" tw-px-10 tw-shadow-2xl
-                            tw-rounded tw-bg-white">
-            <h1 className=" tw-mb-4 tw-grow
-                            tw-text-center tw-text-xl">
-                Recuperar contraseña
-            </h1>
-            <div className="tw-flex tw-flex-col tw-gap-3">
-                <Input
-                    label={"Correo"}
-                    type={"text"}
-                    value={email}
-                    id={"email"}
-                    name={"email"}
-                    onChange={e => handleEmailChanhe(e)}
-                    center={true}
-                    classname="tw-justify-between tw-gap-2"
-                />
-                <Input
-                    label={"Usuario"}
-                    type={"text"}
-                    value={username}
-                    id={"username"}
-                    name={"username"}
-                    onChange={e => handleUsernameChanhe(e)}
-                    center={true}
-                    isRequired={false}
-                    classname="tw-justify-between tw-gap-2"
-                />
-            </div>
-            <button type="submit"
-                    className=' tw-bg-green-500 hover:tw-bg-green-300
-                                tw-py-2 tw-my-4
-                                tw-text-white tw-font-bold
-                                tw-rounded
-                                tw-w-full
-                                tw-grow'>
-                {loading ?
-                    <Box sx={{ display: 'flex' }}>
-                        <CircularProgress />
-                    </Box>
-                :   <p>Enviar código</p>
-                }
-            </button>
-        </form>
+        <>
+            <h1 className="tw-text-3xl tw-font-bold tw-mb-2 tw-text-green-700">Recuperar contraseña</h1>
+            <p className="tw-mb-8 tw-text-gray-600 tw-text-center">Ingresa tu correo electrónico para recibir un código de verificación</p>
+            <form onSubmit={submitSendCodeToEmail} className="tw-w-full tw-max-w-md tw-space-y-5">
+                <div>
+                    <Input
+                        label={"Correo"}
+                        type={"text"}
+                        value={email}
+                        id={"email"}
+                        name={"email"}
+                        onChange={e => handleEmailChanhe(e)}
+                        center={true}
+                        classname="tw-justify-between tw-gap-2"
+                    />
+                </div>
+                <div>
+                    <Input
+                        label={"Usuario"}
+                        type={"text"}
+                        value={username}
+                        id={"username"}
+                        name={"username"}
+                        onChange={e => handleUsernameChanhe(e)}
+                        center={true}
+                        isRequired={false}
+                        classname="tw-justify-between tw-gap-2"
+                    />
+                </div>
+                <button type="submit"
+                        className="tw-bg-green-500 hover:tw-bg-green-600 tw-text-white tw-font-bold tw-py-3 tw-rounded-xl tw-w-full tw-transition tw-duration-200 tw-disabled:tw-opacity-50 tw-disabled:tw-cursor-not-allowed"
+                        disabled={loading}>
+                    {loading ? (
+                        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                            <CircularProgress size={24} color="inherit" />
+                        </Box>
+                    ) : (
+                        "Enviar código"
+                    )}
+                </button>
+            </form>
+        </>
     );
 }
 
@@ -483,40 +486,35 @@ const ValidateCode = ({ callback, codename }: ValidateProps) => {
     };
 
     return (
-        <form   onSubmit={submitCodeToValidated}
-                className=" tw-px-10 tw-shadow-2xl
-                            tw-rounded tw-bg-white">
-            <h1 className=" tw-mb-4 tw-grow
-                            tw-text-center tw-text-xl">
-                Digite el código
-            </h1>
-            <div className="tw-flex tw-flex-col tw-gap-3">
-                <Input
-                    label={"Código"}
-                    value={code}
-                    type={"text"}
-                    id={"code"}
-                    name={"code"}
-                    onChange={e => handleCodeChanhe(e)}
-                    center={true}
-                    classname="tw-justify-between tw-gap-2"
-                />
-            </div>
-            <button type="submit"
-                    className=' tw-bg-green-500 hover:tw-bg-green-300
-                                tw-py-2 tw-my-4
-                                tw-text-white tw-font-bold
-                                tw-rounded
-                                tw-w-full
-                                tw-grow'>
-                {loading ?
-                    <Box sx={{ display: 'flex' }}>
-                        <CircularProgress />
-                    </Box>
-                :   <p>Validar código</p>
-                }
-            </button>
-        </form>
+        <>
+            <h1 className="tw-text-3xl tw-font-bold tw-mb-2 tw-text-green-700">Verificar código</h1>
+            <p className="tw-mb-8 tw-text-gray-600 tw-text-center">Ingresa el código de verificación enviado a tu correo</p>
+            <form onSubmit={submitCodeToValidated} className="tw-w-full tw-max-w-md tw-space-y-5">
+                <div>
+                    <Input
+                        label={"Código"}
+                        value={code}
+                        type={"text"}
+                        id={"code"}
+                        name={"code"}
+                        onChange={e => handleCodeChanhe(e)}
+                        center={true}
+                        classname="tw-justify-between tw-gap-2"
+                    />
+                </div>
+                <button type="submit"
+                        className="tw-bg-green-500 hover:tw-bg-green-600 tw-text-white tw-font-bold tw-py-3 tw-rounded-xl tw-w-full tw-transition tw-duration-200 tw-disabled:tw-opacity-50 tw-disabled:tw-cursor-not-allowed"
+                        disabled={loading}>
+                    {loading ? (
+                        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                            <CircularProgress size={24} color="inherit" />
+                        </Box>
+                    ) : (
+                        "Validar código"
+                    )}
+                </button>
+            </form>
+        </>
     );
 }
 
@@ -562,64 +560,65 @@ const ChangePasswordForm = ({ callback, callback2, email, username }: ChangeProp
     };
 
     return(
-        <form   onSubmit={submitRecoverPassword}
-                className=" tw-px-10 tw-shadow-2xl
-                            tw-rounded tw-bg-white"
-                >
-            <h1 className=" tw-mb-4 tw-grow
-                            tw-text-center tw-text-xl">
-                Cambiar contraseña
-            </h1>
-            <div className="tw-flex tw-flex-col tw-gap-3">
-                <Input
-                    label={"Nueva contraseña"}
-                    type={"password"}
-                    value={newPassword}
-                    id={"new_password"}
-                    name={"new_password"}
-                    onChange={e => handleNewPasswordChanhe(e)}
-                    center={true}
-                    classname="tw-justify-between tw-gap-2"/>
-                <Input
-                    label={"Confirmar contraseña"}
-                    type={"password"}
-                    value={conPassword}
-                    id={"confirm_password"}
-                    name={"confirm_password"}
-                    onChange={e => handleConPasswordChanhe(e)}
-                    center={true}
-                    classname="tw-justify-between tw-gap-2"/>
-            </div>
-            <div className="tw-shadow tw-mb-3">
-                Requerimientos de la contraseña:
-                <p className={`${newPassword.length >= min && newPassword.length <= max ? 'tw-text-green-400' : 'tw-text-red-400'}`}>
-                    {newPassword.length >= min && newPassword.length <= max ?
-                    '✓' : 'X'} Entre 6 y 16 caracteres
-                </p>
-                <p className={`${hasNumber ? 'tw-text-green-400' : 'tw-text-red-400'}`}>
-                    {hasNumber ? '✓' : 'X'} Al menos un número
-                </p>
-                <p className={`${hasSpecialChar ? 'tw-text-green-400' : 'tw-text-red-400'}`}>
-                    {hasSpecialChar ? '✓' : 'X'} Al menos un caracter especia
-                </p>
-                <p className={`${noHasSpace ? 'tw-text-green-400' : 'tw-text-red-400'}`}>
-                    {noHasSpace ? '✓' : 'X'} No espacios
-                </p>
-            </div>
-            <button type="submit"
-                    className=' tw-bg-green-500 hover:tw-bg-green-300
-                                tw-py-2 tw-my-4
-                                tw-text-white tw-font-bold
-                                tw-rounded
-                                tw-w-full
-                                tw-grow'>
-                {loading ?
-                    <Box sx={{ display: 'flex' }}>
-                        <CircularProgress />
-                    </Box>
-                :   <p>Enviar</p>
-                }
-            </button>
-        </form>
+        <>
+            <h1 className="tw-text-3xl tw-font-bold tw-mb-2 tw-text-green-700">Nueva contraseña</h1>
+            <p className="tw-mb-8 tw-text-gray-600 tw-text-center">Crea una nueva contraseña segura para tu cuenta</p>
+            <form onSubmit={submitRecoverPassword} className="tw-w-full tw-max-w-md tw-space-y-5">
+                <div>
+                    <Input
+                        label={"Nueva contraseña"}
+                        type={"password"}
+                        value={newPassword}
+                        id={"new_password"}
+                        name={"new_password"}
+                        onChange={e => handleNewPasswordChanhe(e)}
+                        center={true}
+                        classname="tw-justify-between tw-gap-2"/>
+                </div>
+                <div>
+                    <Input
+                        label={"Confirmar contraseña"}
+                        type={"password"}
+                        value={conPassword}
+                        id={"confirm_password"}
+                        name={"confirm_password"}
+                        onChange={e => handleConPasswordChanhe(e)}
+                        center={true}
+                        classname="tw-justify-between tw-gap-2"/>
+                </div>
+                <div className="tw-bg-gray-50 tw-p-4 tw-rounded-xl tw-mb-4">
+                    <h3 className="tw-font-semibold tw-text-gray-700 tw-mb-3">Requerimientos de la contraseña:</h3>
+                    <div className="tw-space-y-2">
+                        <p className={`tw-flex tw-items-center tw-gap-2 ${newPassword.length >= min && newPassword.length <= max ? 'tw-text-green-600' : 'tw-text-red-500'}`}>
+                            <span>{newPassword.length >= min && newPassword.length <= max ? '✓' : '✗'}</span>
+                            Entre 6 y 16 caracteres
+                        </p>
+                        <p className={`tw-flex tw-items-center tw-gap-2 ${hasNumber ? 'tw-text-green-600' : 'tw-text-red-500'}`}>
+                            <span>{hasNumber ? '✓' : '✗'}</span>
+                            Al menos un número
+                        </p>
+                        <p className={`tw-flex tw-items-center tw-gap-2 ${hasSpecialChar ? 'tw-text-green-600' : 'tw-text-red-500'}`}>
+                            <span>{hasSpecialChar ? '✓' : '✗'}</span>
+                            Al menos un caracter especial
+                        </p>
+                        <p className={`tw-flex tw-items-center tw-gap-2 ${noHasSpace ? 'tw-text-green-600' : 'tw-text-red-500'}`}>
+                            <span>{noHasSpace ? '✓' : '✗'}</span>
+                            Sin espacios
+                        </p>
+                    </div>
+                </div>
+                <button type="submit"
+                        className="tw-bg-green-500 hover:tw-bg-green-600 tw-text-white tw-font-bold tw-py-3 tw-rounded-xl tw-w-full tw-transition tw-duration-200 tw-disabled:tw-opacity-50 tw-disabled:tw-cursor-not-allowed"
+                        disabled={loading}>
+                    {loading ? (
+                        <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                            <CircularProgress size={24} color="inherit" />
+                        </Box>
+                    ) : (
+                        "Cambiar contraseña"
+                    )}
+                </button>
+            </form>
+        </>
     );
 }

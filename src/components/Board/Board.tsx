@@ -88,6 +88,10 @@ export const Board = () => {
                     const temp = padre.percents.find((e: Percentages) => e.year === percentageItem.year);
                     if (temp) {
                         temp.progress += progresoPeso > 0 ? progresoPeso : 0;
+                        if (temp.progress > 1) {
+                            console.warn('Progreso mayor a 100% detectado:', temp.progress, temp, item);
+                            temp.progress = 1;
+                        }
                         temp.progress = parseFloat(temp.progress.toFixed(2));
                         temp.financial_execution += financiado;
                     } else {

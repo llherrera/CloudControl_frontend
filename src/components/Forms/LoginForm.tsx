@@ -85,10 +85,11 @@ export const LoginForm = () => {
 
     return (
         <form className='   tw-rounded
+                            tw-pt-8
                             tw-flex tw-flex-col
                             tw-px-10 tw-mx-6
                             tw-bg-[#FCFCFE]
-                            tw-shadow-2xl'
+                            tw-shadow-lg'
             onSubmit={handleSubmit}>
             <p className='tw-font-montserrat'>Usuario</p>
             <input type="text"
