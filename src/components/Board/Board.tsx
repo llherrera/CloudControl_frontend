@@ -10,10 +10,193 @@ import { useAppDispatch, useAppSelector } from '@/store';
 import { thunkGetPDTid } from '@/store/plan/thunks';
 import { setCalcDone } from '@/store/plan/planSlice';
 
+// Variable global para controlar el debug
+declare global {
+    interface Window {
+        debugCalcProgress: boolean;
+        debugNodeOpen: boolean;
+    }
+}
+
+// Inicializar variables de debug
+if (typeof window !== 'undefined') {
+    window.debugCalcProgress = false;
+    window.debugNodeOpen = false;
+}
+
+// Función para activar/desactivar debug desde consola
+const setupDebugCommands = () => {
+    if (typeof window !== 'undefined') {
+        // Comando para activar debug de cálculo de progreso
+        (window as any).debugProgress = () => {
+            window.debugCalcProgress = !window.debugCalcProgress;
+            console.log(`🔍 Debug de cálculo de progreso: ${window.debugCalcProgress ? 'ACTIVADO' : 'DESACTIVADO'}`);
+            return window.debugCalcProgress;
+        };
+
+        // Comando para activar debug de apertura de nodos
+        (window as any).debugNodes = () => {
+            window.debugNodeOpen = !window.debugNodeOpen;
+            console.log(`🔍 Debug de apertura de nodos: ${window.debugNodeOpen ? 'ACTIVADO' : 'DESACTIVADO'}`);
+            return window.debugNodeOpen;
+        };
+
+        // Comando para ver datos actuales
+        (window as any).showDebugData = () => {
+            const unitNode = localStorage.getItem('UnitNode');
+            const yearDeta = localStorage.getItem('YearDeta');
+            console.log('📊 Datos de debug actuales:');
+            console.log('UnitNode:', unitNode ? JSON.parse(unitNode) : 'No disponible');
+            console.log('YearDeta:', yearDeta ? JSON.parse(yearDeta) : 'No disponible');
+        };
+
+        // Comando para buscar información detallada de un nodo específico
+        (window as any).debugNode = (nodeId: string) => {
+            const unitNode = localStorage.getItem('UnitNode');
+            const yearDeta = localStorage.getItem('YearDeta');
+            
+            if (!unitNode || !yearDeta) {
+                console.log('❌ No hay datos disponibles');
+                return;
+            }
+            
+            const pesosNodo = JSON.parse(unitNode);
+            const detalleAnno = JSON.parse(yearDeta);
+            
+            // Buscar el nodo específico
+            const nodo = pesosNodo.find((n: NodesWeight) => n.id_node === nodeId);
+            const detalles = detalleAnno.filter((d: YearDetail) => d.id_node === nodeId);
+            
+            if (!nodo) {
+                console.log(`❌ Nodo ${nodeId} no encontrado`);
+                return;
+            }
+            
+            console.log(`🔍 Información detallada del nodo ${nodeId} (${nodo.name || 'Sin nombre'}):`);
+            console.log('📋 Datos del nodo:', nodo);
+            
+            // Mostrar detalles originales por año
+            if (detalles.length > 0) {
+                console.log('📊 Detalles originales por año:');
+                detalles.forEach((detalle: YearDetail) => {
+                    const progreso = detalle.physical_programming !== 0 ? 
+                        detalle.physical_execution / detalle.physical_programming : -1;
+                    const progresoFinal = progreso > 1 ? 1 : progreso;
+                    
+                    console.log(`  📅 Año ${detalle.year}:`);
+                    console.log(`    📈 Programación física: ${detalle.physical_programming}`);
+                    console.log(`    ✅ Ejecución física: ${detalle.physical_execution}`);
+                    console.log(`    💰 Ejecución financiera: ${detalle.financial_execution}`);
+                    console.log(`    ➗ Cálculo: ${detalle.physical_execution} / ${detalle.physical_programming} = ${progreso}`);
+                    console.log(`    ✅ Progreso final: ${parseFloat(progresoFinal.toFixed(2))} (${(progresoFinal * 100).toFixed(1)}%)`);
+                });
+            }
+            
+            // Mostrar progresos calculados
+            if (nodo.percents && nodo.percents.length > 0) {
+                console.log('📈 Progresos calculados:');
+                nodo.percents.forEach((p: Percentages) => {
+                    console.log(`  📅 Año ${p.year}: ${(p.progress * 100).toFixed(1)}%`);
+                });
+            }
+
+            // Mostrar proceso de cálculo si es un nodo padre
+            if (nodo.percents && nodo.percents.length > 0) {
+                console.log('🔍 Proceso de cálculo del progreso agregado:');
+                
+                nodo.percents.forEach((p: Percentages) => {
+                    const year = p.year;
+                    console.log(`  📅 Año ${year}:`);
+                    
+                    // Buscar hermanos del mismo padre
+                    const hermanos = pesosNodo.filter((n: NodesWeight) => n.parent === nodo.parent);
+                    const hermanosConProg = hermanos.filter((n: NodesWeight) => {
+                        const p = n.percents?.find((e: Percentages) => e.year === year);
+                        return p && p.physical_programming > 0;
+                    });
+                    
+                    console.log(`    👥 Total hermanos: ${hermanos.length}`);
+                    console.log(`    ✅ Hermanos con programación: ${hermanosConProg.length}`);
+                    
+                    if (hermanosConProg.length > 0) {
+                        console.log(`    📋 Hermanos con programación:`);
+                        hermanosConProg.forEach((h: NodesWeight) => {
+                            const prog = h.percents?.find((e: Percentages) => e.year === year);
+                            if (prog) {
+                                console.log(`      - ${h.id_node} (${h.name || 'Sin nombre'}): ${(prog.progress * 100).toFixed(1)}%`);
+                            }
+                        });
+                        
+                        const pesoAjustado = 100 / hermanosConProg.length;
+                        console.log(`    ⚖️ Peso ajustado: ${pesoAjustado}% (100 / ${hermanosConProg.length})`);
+                        
+                        // Mostrar contribución de cada hermano
+                        console.log(`    📊 Contribución de cada hermano:`);
+                        hermanosConProg.forEach((h: NodesWeight) => {
+                            const prog = h.percents?.find((e: Percentages) => e.year === year);
+                            if (prog) {
+                                const contribucion = prog.progress * (pesoAjustado / 100);
+                                console.log(`      - ${h.id_node}: ${(prog.progress * 100).toFixed(1)}% × ${(pesoAjustado/100).toFixed(3)} = ${(contribucion * 100).toFixed(1)}%`);
+                            }
+                        });
+                        
+                        // Calcular progreso total esperado
+                        const progresoTotal = hermanosConProg.reduce((sum: number, h: NodesWeight) => {
+                            const prog = h.percents?.find((e: Percentages) => e.year === year);
+                            return sum + (prog ? prog.progress * (pesoAjustado / 100) : 0);
+                        }, 0);
+                        
+                        console.log(`    ✅ Progreso total esperado: ${(progresoTotal * 100).toFixed(1)}%`);
+                        console.log(`    📈 Progreso actual del nodo: ${(p.progress * 100).toFixed(1)}%`);
+                    }
+                });
+            }
+
+            // Mostrar información de nodos hijos si los tiene
+            const hijos = pesosNodo.filter((n: NodesWeight) => n.parent === nodeId);
+            if (hijos.length > 0) {
+                console.log('👶 Nodos hijos:');
+                hijos.forEach((hijo: NodesWeight) => {
+                    console.log(`  - ${hijo.id_node} (${hijo.name || 'Sin nombre'})`);
+                    if (hijo.percents && hijo.percents.length > 0) {
+                        hijo.percents.forEach((p: Percentages) => {
+                            console.log(`    📅 Año ${p.year}: ${(p.progress * 100).toFixed(1)}%`);
+                        });
+                    }
+                });
+            }
+
+            // Mostrar información del nodo padre si existe
+            if (nodo.parent) {
+                const padre = pesosNodo.find((n: NodesWeight) => n.id_node === nodo.parent);
+                if (padre) {
+                    console.log('👨 Nodo padre:');
+                    console.log(`  - ${padre.id_node} (${padre.name || 'Sin nombre'})`);
+                    if (padre.percents && padre.percents.length > 0) {
+                        padre.percents.forEach((p: Percentages) => {
+                            console.log(`    📅 Año ${p.year}: ${(p.progress * 100).toFixed(1)}%`);
+                        });
+                    }
+                }
+            }
+        };
+
+        console.log('🚀 Comandos de debug disponibles:');
+        console.log('  debugProgress() - Activar/desactivar debug de cálculo de progreso');
+        console.log('  debugNodes() - Activar/desactivar debug de apertura de nodos');
+        console.log('  showDebugData() - Mostrar datos actuales de debug');
+        console.log('  debugNode("ID_NODO") - Mostrar información detallada de un nodo específico');
+    }
+};
+
 export const Board = () => {
     const dispatch = useAppDispatch();
     const { id_plan } = useAppSelector(store => store.content);
     const { plan, loadingPlan } = useAppSelector(store => store.plan);
+
+    useEffect(() => {
+        setupDebugCommands();
+    }, []);
 
     useEffect(() => {
         if (plan) return;
@@ -35,28 +218,60 @@ export const Board = () => {
     }, []);
 
     const calcProgress = ( res: [NodesWeight[], YearDetail[]] ) => {
+        if (window.debugCalcProgress) {
+            console.log('🔄 Iniciando cálculo de progreso...');
+            console.log('📥 Datos de entrada:', res);
+        }
+
         let pesosNodo = res[0];
         let detalleAnno = res[1];
 
-        console.log('🚀 INICIANDO CÁLCULO DE PROGRESO');
-        console.log('📊 Datos iniciales:', { 
-            totalNodos: pesosNodo.length, 
-            totalDetalles: detalleAnno.length 
-        });
-
         // Primera pasada: calcular progreso físico y financiero para cada nodo
-        console.log('\n📈 PRIMERA PASADA: Calculando progreso por nodo');
+        if (window.debugCalcProgress) {
+            console.log('📊 Primera pasada: Calculando progreso físico y financiero...');
+        }
+
         detalleAnno.forEach((item: YearDetail) => {
             let progreso = 0;
             let progresoFinan = 0;
-            if (item.physical_programming !== 0)
+            
+            if (window.debugCalcProgress) {
+                console.log(`🔍 Calculando progreso para nodo ${item.id_node}:`);
+                console.log(`  📊 Datos originales:`, {
+                    physical_programming: item.physical_programming,
+                    physical_execution: item.physical_execution,
+                    financial_execution: item.financial_execution,
+                    year: item.year
+                });
+            }
+            
+            if (item.physical_programming !== 0) {
                 progreso = item.physical_execution / item.physical_programming;
-            else
+                if (window.debugCalcProgress) {
+                    console.log(`  ➗ Cálculo: ${item.physical_execution} / ${item.physical_programming} = ${progreso}`);
+                }
+            } else {
                 progreso = -1;
-            if (progreso > 1)
+                if (window.debugCalcProgress) {
+                    console.log(`  ⚠️ Sin programación física, progreso = -1`);
+                }
+            }
+            
+            if (progreso > 1) {
+                if (window.debugCalcProgress) {
+                    console.log(`  📈 Progreso > 1, limitando a 1 (era: ${progreso})`);
+                }
                 progreso = 1;
+            }
+            
             progreso = parseFloat(progreso.toFixed(2));
             progresoFinan = item.financial_execution /1000000;
+            
+            if (window.debugCalcProgress) {
+                console.log(`  ✅ Progreso final: ${progreso} (${(progreso * 100).toFixed(1)}%)`);
+                console.log(`  💰 Financiado (en millones): ${progresoFinan}`);
+            }
+            
             let peso = pesosNodo.find(
                 (peso: NodesWeight) => peso.id_node === item.id_node
             );
@@ -70,37 +285,35 @@ export const Board = () => {
                         financial_execution: progresoFinan
                     }
                 );
-                console.log(`  📋 Nodo ${item.id_node} (${peso.name || 'Sin nombre'}):`, {
-                    año: item.year,
-                    programación: item.physical_programming,
-                    ejecución: item.physical_execution,
-                    progreso: progreso,
-                    ejecuciónFinanciera: progresoFinan
-                });
+
+                if (window.debugCalcProgress) {
+                    console.log(`  📈 Nodo ${item.id_node} (${peso.name || 'Sin nombre'}):`, {
+                        year: item.year,
+                        physical_programming: item.physical_programming,
+                        physical_execution: item.physical_execution,
+                        progress: progreso,
+                        financial_execution: progresoFinan,
+                        calculation: `${item.physical_execution} / ${item.physical_programming} = ${progreso}`
+                    });
+                }
             }
         })
 
         // Segunda pasada: recalcular pesos y progreso agregado
-        console.log('\n⚖️ SEGUNDA PASADA: Recalculando pesos y progreso agregado');
+        if (window.debugCalcProgress) {
+            console.log('⚖️ Segunda pasada: Recalculando pesos y progreso agregado...');
+        }
+
         pesosNodo.forEach((item: NodesWeight) => {
             const { percents, parent } = item;
             if (percents && parent) {
-                console.log(`\n🔍 PROCESANDO NODO: ${item.id_node} (${item.name || 'Sin nombre'})`);
-                console.log(`   📍 Padre: ${parent}`);
-                
                 percents.forEach((percentageItem: Percentages) => {
                     const year = percentageItem.year;
-                    console.log(`   📅 Año ${year}:`);
-                    
                     let padre = pesosNodo.find((e: NodesWeight) => e.id_node === parent);
-                    if (!padre) {
-                        console.log(`   ❌ Padre ${parent} no encontrado`);
-                        return;
-                    }
+                    if (!padre) return;
                     
                     // Obtener todos los hermanos del mismo padre
                     const hermanos = pesosNodo.filter(n => n.parent === parent);
-                    console.log(`   👥 Hermanos encontrados: ${hermanos.length}`);
                     
                     // Contar cuántos hermanos tienen programación en este año
                     const hermanosConProg = hermanos.filter(n => {
@@ -109,21 +322,30 @@ export const Board = () => {
                     });
                     
                     const numMetasProgramadas = hermanosConProg.length;
-                    console.log(`   ✅ Metas programadas en ${year}: ${numMetasProgramadas}`);
+                    
+                    if (window.debugCalcProgress) {
+                        console.log(`  🔍 Procesando nodo ${item.id_node} (${item.name || 'Sin nombre'}) para año ${year}:`);
+                        console.log(`    👥 Total hermanos: ${hermanos.length}`);
+                        console.log(`    ✅ Hermanos con programación: ${numMetasProgramadas}`);
+                        console.log(`    📋 Hermanos con programación:`, hermanosConProg.map(h => `${h.id_node} (${h.name || 'Sin nombre'})`));
+                    }
                     
                     // Si no hay metas programadas, no hacer nada
                     if (numMetasProgramadas === 0) {
-                        console.log(`   ⚠️ No hay metas programadas en ${year}, saltando...`);
+                        if (window.debugCalcProgress) {
+                            console.log(`    ⚠️ No hay metas programadas para el año ${year}`);
+                        }
                         return;
                     }
                     
                     // Calcular el peso ajustado: 100 / número de metas programadas
                     const pesoAjustado = 100 / numMetasProgramadas;
-                    console.log(`   ⚖️ Peso ajustado: 100 / ${numMetasProgramadas} = ${pesoAjustado.toFixed(2)}%`);
                     
                     // Solo procesar si este nodo tiene programación
                     if (percentageItem.physical_programming === 0) {
-                        console.log(`   ⚠️ Nodo ${item.id_node} no tiene programación en ${year}, saltando...`);
+                        if (window.debugCalcProgress) {
+                            console.log(`    ⚠️ Nodo ${item.id_node} no tiene programación física`);
+                        }
                         return;
                     }
                     
@@ -131,12 +353,12 @@ export const Board = () => {
                     progresoPeso = parseFloat(progresoPeso.toFixed(2));
                     let financiado = percentageItem.financial_execution;
                     
-                    console.log(`   📊 Cálculo progreso ponderado:`, {
-                        progresoOriginal: percentageItem.progress,
-                        pesoAjustado: pesoAjustado,
-                        progresoPonderado: progresoPeso,
-                        ejecuciónFinanciera: financiado
-                    });
+                    if (window.debugCalcProgress) {
+                        console.log(`    ⚖️ Peso ajustado: ${pesoAjustado}%`);
+                        console.log(`    📊 Progreso original: ${percentageItem.progress}`);
+                        console.log(`    📈 Progreso ponderado: ${progresoPeso}`);
+                        console.log(`    💰 Financiado: ${financiado}`);
+                    }
                     
                     padre.percents = padre.percents ? padre.percents : [];
                     const temp = padre.percents.find((e: Percentages) => e.year === percentageItem.year);
@@ -149,37 +371,38 @@ export const Board = () => {
                         }
                         temp.progress = parseFloat(temp.progress.toFixed(2));
                         temp.financial_execution += financiado;
-                        
-                        console.log(`   🔄 Actualizando progreso del padre:`, {
-                            progresoAnterior: progresoAnterior,
-                            incremento: progresoPeso,
-                            progresoNuevo: temp.progress,
-                            ejecuciónFinancieraTotal: temp.financial_execution
-                        });
+
+                        if (window.debugCalcProgress) {
+                            console.log(`    🔄 Padre ${padre.id_node} (${padre.name || 'Sin nombre'}):`);
+                            console.log(`      📊 Progreso anterior: ${progresoAnterior}`);
+                            console.log(`      📈 Progreso actualizado: ${temp.progress}`);
+                            console.log(`      💰 Financiado acumulado: ${temp.financial_execution}`);
+                        }
                     } else {
-                        const nuevoProgreso = progresoPeso > 1 ? 1 : progresoPeso;
                         padre.percents.push({
-                            progress : nuevoProgreso,
+                            progress : progresoPeso > 1 ? 1 : progresoPeso,
                             year: percentageItem.year,
                             physical_programming: 1,
                             financial_execution: financiado
                         });
-                        
-                        console.log(`   ➕ Creando nuevo progreso para el padre:`, {
-                            progreso: nuevoProgreso,
-                            año: percentageItem.year,
-                            ejecuciónFinanciera: financiado
-                        });
+
+                        if (window.debugCalcProgress) {
+                            console.log(`    ➕ Nuevo registro para padre ${padre.id_node} (${padre.name || 'Sin nombre'}):`);
+                            console.log(`      📈 Progreso inicial: ${progresoPeso > 1 ? 1 : progresoPeso}`);
+                            console.log(`      💰 Financiado inicial: ${financiado}`);
+                        }
                     }
                 })
             }
         })
-        
-        console.log('\n✅ CÁLCULO COMPLETADO');
-        console.log('💾 Guardando datos en localStorage...');
+
+        if (window.debugCalcProgress) {
+            console.log('✅ Cálculo de progreso completado');
+            console.log('📊 Resultado final:', pesosNodo);
+        }
+
         localStorage.setItem('UnitNode', JSON.stringify(pesosNodo));
         dispatch(setCalcDone(true));
-        console.log('🎉 Proceso finalizado exitosamente');
     }
 
     return (

@@ -40,6 +40,12 @@ export const NodesList = ( props : IdProps ) => {
     }, [yearSelect, nodes, calcDone]);
 
     const getProgress = () => {
+        if (window.debugNodeOpen) {
+            console.log('📊 Calculando progreso para nodos actuales...');
+            console.log('📋 Nodos a procesar:', nodes.map(n => ({id: n.id_node, name: n.name})));
+            console.log('📅 Año seleccionado:', yearSelect);
+        }
+
         const pesosStr = localStorage.getItem('UnitNode');
         if (pesosStr == undefined) return 0;
         let pesosNodo = [];
@@ -48,6 +54,11 @@ export const NodesList = ( props : IdProps ) => {
         } catch (error) {
             pesosNodo = [];
         }
+
+        if (window.debugNodeOpen) {
+            console.log('📥 Datos de pesos cargados:', pesosNodo);
+        }
+
         let progreso = [] as number[];
         let programacion = [] as number[];
         let financiacion = [] as number[];
@@ -57,6 +68,10 @@ export const NodesList = ( props : IdProps ) => {
         nodes_s.sort((a,b) => a.id_node < b.id_node ? -1 : 1);
         nodes_s.sort((a,b) => a.id_node.length - b.id_node.length);
 
+        if (window.debugNodeOpen) {
+            console.log('🔍 Nodos filtrados y ordenados:', nodes_s.map(n => ({id: n.id_node, name: n.name})));
+        }
+
         nodes_s.forEach((item: NodesWeight) => {
             const { percents } = item;
             if (percents) {
@@ -65,21 +80,55 @@ export const NodesList = ( props : IdProps ) => {
                         progreso.push(percentages.progress);
                         programacion.push(percentages.physical_programming);
                         financiacion.push(percentages.financial_execution);
+
+                        if (window.debugNodeOpen) {
+                            console.log(`📈 Nodo ${item.id_node} (${item.name || 'Sin nombre'}):`, {
+                                year: percentages.year,
+                                progress: percentages.progress,
+                                physical_programming: percentages.physical_programming,
+                                financial_execution: percentages.financial_execution
+                            });
+                        }
                     }
                 });
             }else {
                 progreso.push(-1);
                 programacion.push(-1);
                 financiacion.push(-1);
+
+                if (window.debugNodeOpen) {
+                    console.log(`⚠️ Nodo ${item.id_node} (${item.name || 'Sin nombre'}): Sin datos de progreso`);
+                }
             }
         });
         const weights = nodes_s.map((item: NodesWeight) => item.weight);
         dispatch(setProgressNodes(progreso));
         dispatch(setFinancial(financiacion));
         setPesos(weights);
+
+        if (window.debugNodeOpen) {
+            console.log('✅ Progreso calculado:', {
+                progreso: progreso,
+                programacion: programacion,
+                financiacion: financiacion,
+                weights: weights
+            });
+        }
     };
 
     const handleButton = ( index: number ) => {
+        if (window.debugNodeOpen) {
+            console.log('🚪 Abriendo nodo:', {
+                index: index,
+                nodeId: nodes[index].id_node,
+                nodeName: nodes[index].name,
+                nodeDescription: nodes[index].description,
+                currentLevel: levels[indexLevel].name,
+                currentLevelIndex: indexLevel,
+                isLastLevel: indexLevel === levels.length - 1
+            });
+        }
+
         let name = [nodes[index].name, levels[indexLevel].name];
         let newRoot = [...rootTree];
         newRoot.push(name);
@@ -88,10 +137,27 @@ export const NodesList = ( props : IdProps ) => {
             dispatch(setParent(nodes[index].id_node));
             dispatch(incrementLevelIndex(indexLevel+1));
             dispatch(thunkGetNodes({id_level: nodes[index].id_level+1, parent:nodes[index].id_node}));
+            
+            if (window.debugNodeOpen) {
+                console.log('📂 Navegando a subnivel:', {
+                    newParent: nodes[index].id_node,
+                    newLevel: nodes[index].id_level + 1,
+                    newLevelIndex: indexLevel + 1,
+                    breadcrumb: newRoot
+                });
+            }
         } else {
             dispatch(setCalcDone(false));
             dispatch(setNode(nodes[index]));
             navigate(`/pdt/PlanIndicativo/Meta`, {state: {idPDT: props.id, idNodo: nodes[index].id_node}});
+            
+            if (window.debugNodeOpen) {
+                console.log('🎯 Navegando a meta específica:', {
+                    targetNode: nodes[index].id_node,
+                    targetName: nodes[index].name,
+                    navigationState: {idPDT: props.id, idNodo: nodes[index].id_node}
+                });
+            }
         }
     };
 
