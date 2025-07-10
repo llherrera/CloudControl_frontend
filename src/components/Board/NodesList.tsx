@@ -11,6 +11,12 @@ import { NodeInterface, NodesWeight, Percentages, IdProps } from '@/interfaces';
 import { Spinner } from '@/assets/icons';
 import { decode, notify } from "@/utils";
 
+declare global {
+  interface Window {
+    _hasProgramming?: boolean[];
+  }
+}
+
 export const NodesList = ( props : IdProps ) => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
