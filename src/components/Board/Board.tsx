@@ -264,72 +264,36 @@ export const Board = () => {
     }, []);
 
     const calcProgress = ( res: [NodesWeight[], YearDetail[]] ) => {
-        if (window.debugCalcProgress) {
-            console.log('🔄 Iniciando cálculo de progreso...');
-            console.log('📥 Datos de entrada:', res);
-        }
-
         let pesosNodo = res[0];
         let detalleAnno = res[1];
 
-        // Función para obtener todos los nodos padre de un nodo dado
-        const getParentNodes = (nodeId: string): string[] => {
-            const parents: string[] = [];
-            const parts = nodeId.split('.');
-            
-            // Construir todos los nodos padre posibles
-            for (let i = parts.length - 1; i > 0; i--) {
-                const parentId = parts.slice(0, i).join('.');
-                parents.push(parentId);
-            }
-            
-            return parents;
-        };
-
-        // Función para asegurar que existan todos los nodos padre necesarios
-        const ensureParentNodesExist = () => {
-            const allNodeIds = new Set<string>();
-            
-            // Agregar todos los nodos existentes
-            pesosNodo.forEach(node => allNodeIds.add(node.id_node));
-            
-            // Agregar todos los nodos padre necesarios
-            pesosNodo.forEach(node => {
-                const parents = getParentNodes(node.id_node);
-                parents.forEach(parentId => allNodeIds.add(parentId));
-            });
-            
-            // Crear nodos padre faltantes
-            allNodeIds.forEach(nodeId => {
-                if (!pesosNodo.find(n => n.id_node === nodeId)) {
-                    const parts = nodeId.split('.');
-                    const parent = parts.length > 1 ? parts.slice(0, -1).join('.') : null;
-                    
-                    const newNode: NodesWeight = {
-                        id_node: nodeId,
-                        name: `Nodo ${nodeId}`,
+        // --- NUEVO: Completar nodos intermedios faltantes ---
+        // 1. Obtener todos los nodos existentes por id_node
+        const idSet = new Set(pesosNodo.map(n => n.id_node));
+        // 2. Buscar nodos con patrón (id).x.y y agregar los intermedios si faltan
+        const nuevosNodos: NodesWeight[] = [];
+        pesosNodo.forEach(nodo => {
+            const partes = nodo.id_node.split('.');
+            for (let i = 1; i < partes.length; i++) {
+                const idIntermedio = partes.slice(0, i).join('.');
+                if (!idSet.has(idIntermedio)) {
+                    idSet.add(idIntermedio);
+                    nuevosNodos.push({
+                        id_node: idIntermedio,
+                        name: '',
+                        parent: i > 1 ? partes.slice(0, i - 1).join('.') : null,
                         weight: 0,
-                        parent: parent,
-                        percents: []
-                    };
-                    
-                    pesosNodo.push(newNode);
-                    
-                    if (window.debugCalcProgress) {
-                        console.log(`➕ Nodo padre creado: ${nodeId} (padre de: ${parent})`);
-                    }
+                        percents: [],
+                    } as NodesWeight);
                 }
-            });
-        };
-
-        // Asegurar que existan todos los nodos padre
-        ensureParentNodesExist();
+            }
+        });
+        if (nuevosNodos.length > 0) {
+            pesosNodo = [...pesosNodo, ...nuevosNodos];
+        }
+        // --- FIN NUEVO ---
 
         // Primera pasada: calcular progreso físico y financiero para cada nodo
-        if (window.debugCalcProgress) {
-            console.log('📊 Primera pasada: Calculando progreso físico y financiero...');
-        }
-
         detalleAnno.forEach((item: YearDetail) => {
             let progreso = 0;
             let progresoFinan = 0;
@@ -424,8 +388,8 @@ export const Board = () => {
                     });
                     
                     // Contar cuántos hermanos tienen datos en este año (con o sin programación)
-                    const hermanosConDatos = pesosNodo.filter((n: NodesWeight) => n.parent === parent).filter((n: NodesWeight) => {
-                        const p = n.percents?.find((e: Percentages) => e.year === year);
+                    const hermanosConDatos = hermanos.filter(n => {
+                        const p = n.percents?.find(e => e.year === year);
                         return p !== undefined;
                     });
                     
