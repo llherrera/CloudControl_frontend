@@ -62,26 +62,23 @@ export const NodesList = ( props : IdProps ) => {
         let progreso = [] as number[];
         let programacion = [] as number[];
         let financiacion = [] as number[];
+        let hasProgramming = [] as boolean[];
         
-        // Usar directamente los nodos que se muestran en la UI (nodes)
-        // en lugar de filtrar desde pesosNodo
         if (window.debugNodeOpen) {
             console.log('🔍 Usando nodos de la UI:', nodes.map(n => ({id: n.id_node, name: n.name})));
         }
 
-        // Para cada nodo que se muestra en la UI, buscar sus datos en pesosNodo
         nodes.forEach((item: NodeInterface) => {
-            // Buscar el nodo correspondiente en pesosNodo
             const nodoConDatos = pesosNodo.find((n: NodesWeight) => n.id_node === item.id_node);
             
             if (nodoConDatos && nodoConDatos.percents) {
-                // Buscar datos para el año seleccionado
                 const datosAnio = nodoConDatos.percents.find((p: Percentages) => p.year === yearSelect);
                 
                 if (datosAnio) {
                     progreso.push(datosAnio.progress);
                     programacion.push(datosAnio.physical_programming);
                     financiacion.push(datosAnio.financial_execution);
+                    hasProgramming.push(datosAnio.physical_programming > 0);
 
                     if (window.debugNodeOpen) {
                         console.log(`📈 Nodo ${item.id_node} (${item.name || 'Sin nombre'}):`, {
@@ -92,20 +89,20 @@ export const NodesList = ( props : IdProps ) => {
                         });
                     }
                 } else {
-                    // No hay datos para este año
                     progreso.push(-1);
                     programacion.push(-1);
                     financiacion.push(-1);
+                    hasProgramming.push(false);
 
                     if (window.debugNodeOpen) {
                         console.log(`⚠️ Nodo ${item.id_node} (${item.name || 'Sin nombre'}): Sin datos para el año ${yearSelect}`);
                     }
                 }
             } else {
-                // No hay datos del nodo en pesosNodo
                 progreso.push(-1);
                 programacion.push(-1);
                 financiacion.push(-1);
+                hasProgramming.push(false);
 
                 if (window.debugNodeOpen) {
                     console.log(`⚠️ Nodo ${item.id_node} (${item.name || 'Sin nombre'}): Sin datos de progreso`);
@@ -113,18 +110,20 @@ export const NodesList = ( props : IdProps ) => {
             }
         });
         
-        // Usar los pesos de los nodos de la UI
         const weights = nodes.map((item: NodeInterface) => item.weight);
         dispatch(setProgressNodes(progreso));
         dispatch(setFinancial(financiacion));
         setPesos(weights);
+        // Guardar info de programación para el año en window para usar en colorClass
+        window._hasProgramming = hasProgramming;
 
         if (window.debugNodeOpen) {
             console.log('✅ Progreso calculado:', {
                 progreso: progreso,
                 programacion: programacion,
                 financiacion: financiacion,
-                weights: weights
+                weights: weights,
+                hasProgramming: hasProgramming
             });
         }
     };
@@ -188,14 +187,18 @@ export const NodesList = ( props : IdProps ) => {
         dispatch(thunkUpdateWeight({ids: ids, weights: pesos}));
     };
 
+    // Modificar colorClass y colorClass_ para usar hasProgramming
     const colorClass = (index: number) => {
         const progress = progressNodes[index] ?? -1;
         const progressPercent = parseInt((progress * 100).toString());
+        const hasProg = window._hasProgramming ? window._hasProgramming[index] : false;
         
         if (progress < 0) {
             return 'tw-border-gray-400 group-hover:tw-border-gray-200'; // Sin datos
-        } else if (progressPercent === 0) {
-            return 'tw-border-gray-400 group-hover:tw-border-gray-200'; // 0% - gris
+        } else if (!hasProg) {
+            return 'tw-border-gray-400 group-hover:tw-border-gray-200'; // No hay metas programadas para el año
+        } else if (progressPercent === 0 && hasProg) {
+            return 'tw-border-redColory group-hover:tw-border-red-200'; // Programado pero 0%
         } else if (progressPercent < colorimeter[0]) {
             return 'tw-border-redColory group-hover:tw-border-red-200';
         } else if (progressPercent < colorimeter[1]) {
@@ -210,11 +213,14 @@ export const NodesList = ( props : IdProps ) => {
     const colorClass_ = (index: number) => {
         const progress = progressNodes[index] ?? -1;
         const progressPercent = parseInt((progress * 100).toString());
+        const hasProg = window._hasProgramming ? window._hasProgramming[index] : false;
         
         if (progress < 0) {
             return 'tw-bg-gray-400 group-hover:tw-bg-gray-200'; // Sin datos
-        } else if (progressPercent === 0) {
-            return 'tw-bg-gray-400 group-hover:tw-bg-gray-200'; // 0% - gris
+        } else if (!hasProg) {
+            return 'tw-bg-gray-400 group-hover:tw-bg-gray-200'; // No hay metas programadas para el año
+        } else if (progressPercent === 0 && hasProg) {
+            return 'tw-bg-redColory group-hover:tw-bg-red-200'; // Programado pero 0%
         } else if (progressPercent < colorimeter[0]) {
             return 'tw-bg-redColory group-hover:tw-bg-red-200';
         } else if (progressPercent < colorimeter[1]) {
