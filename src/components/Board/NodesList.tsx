@@ -175,29 +175,43 @@ export const NodesList = ( props : IdProps ) => {
         dispatch(thunkUpdateWeight({ids: ids, weights: pesos}));
     };
 
-    const colorClass = (index: number) => (
-        parseInt( ((progressNodes[index]??0)*100).toString()) < 0 ?
-        'tw-border-gray-400 group-hover:tw-border-gray-200' :
-        parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[0] ?
-        'tw-border-redColory group-hover:tw-border-red-200' :
-        parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[1] ?
-        'tw-border-yellowColory group-hover:tw-border-yellow-200':
-        parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[2] ?
-        'tw-border-greenColory group-hover:tw-border-green-200':
-        'tw-border-blueColory group-hover:tw-border-blue-200'
-    );
+    const colorClass = (index: number) => {
+        const progress = progressNodes[index] ?? -1;
+        const progressPercent = parseInt((progress * 100).toString());
+        
+        if (progress < 0) {
+            return 'tw-border-gray-400 group-hover:tw-border-gray-200'; // Sin datos
+        } else if (progressPercent === 0) {
+            return 'tw-border-gray-400 group-hover:tw-border-gray-200'; // 0% - gris
+        } else if (progressPercent < colorimeter[0]) {
+            return 'tw-border-redColory group-hover:tw-border-red-200';
+        } else if (progressPercent < colorimeter[1]) {
+            return 'tw-border-yellowColory group-hover:tw-border-yellow-200';
+        } else if (progressPercent < colorimeter[2]) {
+            return 'tw-border-greenColory group-hover:tw-border-green-200';
+        } else {
+            return 'tw-border-blueColory group-hover:tw-border-blue-200';
+        }
+    };
 
-    const colorClass_ = (index: number) => (
-        parseInt( ((progressNodes[index]??0)*100).toString()) < 0 ?
-        'tw-bg-gray-400 group-hover:tw-bg-gray-200' :
-        parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[0] ?
-        'tw-bg-redColory group-hover:tw-bg-red-200' :
-        parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[1] ?
-        'tw-bg-yellowColory group-hover:tw-bg-yellow-200' :
-        parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[2] ?
-        'tw-bg-greenColory group-hover:tw-bg-green-200' :
-        'tw-bg-blueColory group-hover:tw-bg-blue-200'
-    );
+    const colorClass_ = (index: number) => {
+        const progress = progressNodes[index] ?? -1;
+        const progressPercent = parseInt((progress * 100).toString());
+        
+        if (progress < 0) {
+            return 'tw-bg-gray-400 group-hover:tw-bg-gray-200'; // Sin datos
+        } else if (progressPercent === 0) {
+            return 'tw-bg-gray-400 group-hover:tw-bg-gray-200'; // 0% - gris
+        } else if (progressPercent < colorimeter[0]) {
+            return 'tw-bg-redColory group-hover:tw-bg-red-200';
+        } else if (progressPercent < colorimeter[1]) {
+            return 'tw-bg-yellowColory group-hover:tw-bg-yellow-200';
+        } else if (progressPercent < colorimeter[2]) {
+            return 'tw-bg-greenColory group-hover:tw-bg-green-200';
+        } else {
+            return 'tw-bg-blueColory group-hover:tw-bg-blue-200';
+        }
+    };
 
     const handleClickResult = () => {
         dispatch(setCalcDone(false));

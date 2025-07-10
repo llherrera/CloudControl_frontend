@@ -115,11 +115,18 @@ const setupDebugCommands = () => {
                         return p && p.physical_programming > 0;
                     });
                     
+                    // Contar cuántos hermanos tienen datos en este año (con o sin programación)
+                    const hermanosConDatos = pesosNodo.filter((n: NodesWeight) => n.parent === nodo.parent).filter((n: NodesWeight) => {
+                        const p = n.percents?.find((e: Percentages) => e.year === year);
+                        return p !== undefined;
+                    });
+                    
                     console.log(`    👥 Total hermanos: ${hermanos.length}`);
                     console.log(`    ✅ Hermanos con programación: ${hermanosConProg.length}`);
+                    console.log(`    📊 Hermanos con datos: ${hermanosConDatos.length}`);
                     
                     if (hermanosConProg.length > 0) {
-                        console.log(`    📋 Hermanos con programación:`);
+                        console.log(`    📋 Hermanos con programación (que contribuyen al progreso):`);
                         hermanosConProg.forEach((h: NodesWeight) => {
                             const prog = h.percents?.find((e: Percentages) => e.year === year);
                             if (prog) {
@@ -148,6 +155,24 @@ const setupDebugCommands = () => {
                         
                         console.log(`    ✅ Progreso total esperado: ${(progresoTotal * 100).toFixed(1)}%`);
                         console.log(`    📈 Progreso actual del nodo: ${(p.progress * 100).toFixed(1)}%`);
+                    } else {
+                        console.log(`    ⚠️ No hay hermanos con programación para el año ${year}`);
+                    }
+                    
+                    // Mostrar hermanos sin programación (para información)
+                    const hermanosSinProg = hermanosConDatos.filter((h: NodesWeight) => {
+                        const prog = h.percents?.find((e: Percentages) => e.year === year);
+                        return prog && prog.physical_programming === 0;
+                    });
+                    
+                    if (hermanosSinProg.length > 0) {
+                        console.log(`    📋 Hermanos sin programación (0% - gris):`);
+                        hermanosSinProg.forEach((h: NodesWeight) => {
+                            const prog = h.percents?.find((e: Percentages) => e.year === year);
+                            if (prog) {
+                                console.log(`      - ${h.id_node} (${h.name || 'Sin nombre'}): ${(prog.progress * 100).toFixed(1)}% [Sin programación]`);
+                            }
+                        });
                     }
                 });
             }
@@ -181,11 +206,32 @@ const setupDebugCommands = () => {
             }
         };
 
-        console.log('🚀 Comandos de debug disponibles:');
-        console.log('  debugProgress() - Activar/desactivar debug de cálculo de progreso');
-        console.log('  debugNodes() - Activar/desactivar debug de apertura de nodos');
-        console.log('  showDebugData() - Mostrar datos actuales de debug');
-        console.log('  debugNode("ID_NODO") - Mostrar información detallada de un nodo específico');
+        // Comando de ayuda para mostrar todas las funciones disponibles
+        (window as any).help = () => {
+            console.log('🚀 Comandos de debug disponibles:');
+            console.log('');
+            console.log('📊 debugProgress()');
+            console.log('   Activa/desactiva el debug del cálculo de progreso');
+            console.log('   Muestra el proceso paso a paso del cálculo de porcentajes');
+            console.log('');
+            console.log('🚪 debugNodes()');
+            console.log('   Activa/desactiva el debug de apertura de nodos');
+            console.log('   Muestra información cuando navegas entre nodos');
+            console.log('');
+            console.log('📋 showDebugData()');
+            console.log('   Muestra los datos actuales almacenados en localStorage');
+            console.log('   Incluye UnitNode y YearDeta');
+            console.log('');
+            console.log('🔍 debugNode("ID_NODO")');
+            console.log('   Muestra información detallada de un nodo específico');
+            console.log('   Ejemplo: debugNode("9284.1.1")');
+            console.log('   Incluye: datos originales, cálculos, hermanos, hijos, padre');
+            console.log('');
+            console.log('❓ help()');
+            console.log('   Muestra esta lista de comandos disponibles');
+            console.log('');
+            console.log('💡 Tip: Ejecuta debugProgress() y luego navega por los nodos para ver el proceso completo');
+        };
     }
 };
 
@@ -251,9 +297,10 @@ export const Board = () => {
                     console.log(`  ➗ Cálculo: ${item.physical_execution} / ${item.physical_programming} = ${progreso}`);
                 }
             } else {
-                progreso = -1;
+                // Si no hay programación física, el progreso es 0%
+                progreso = 0;
                 if (window.debugCalcProgress) {
-                    console.log(`  ⚠️ Sin programación física, progreso = -1`);
+                    console.log(`  ⚠️ Sin programación física, progreso = 0% (sin programación)`);
                 }
             }
             
@@ -293,7 +340,9 @@ export const Board = () => {
                         physical_execution: item.physical_execution,
                         progress: progreso,
                         financial_execution: progresoFinan,
-                        calculation: `${item.physical_execution} / ${item.physical_programming} = ${progreso}`
+                        calculation: item.physical_programming !== 0 ? 
+                            `${item.physical_execution} / ${item.physical_programming} = ${progreso}` : 
+                            'Sin programación → 0%'
                     });
                 }
             }
@@ -321,13 +370,22 @@ export const Board = () => {
                         return p && p.physical_programming > 0;
                     });
                     
+                    // Contar cuántos hermanos tienen datos en este año (con o sin programación)
+                    const hermanosConDatos = hermanos.filter(n => {
+                        const p = n.percents?.find(e => e.year === year);
+                        return p !== undefined;
+                    });
+                    
                     const numMetasProgramadas = hermanosConProg.length;
+                    const numMetasConDatos = hermanosConDatos.length;
                     
                     if (window.debugCalcProgress) {
                         console.log(`  🔍 Procesando nodo ${item.id_node} (${item.name || 'Sin nombre'}) para año ${year}:`);
                         console.log(`    👥 Total hermanos: ${hermanos.length}`);
                         console.log(`    ✅ Hermanos con programación: ${numMetasProgramadas}`);
+                        console.log(`    📊 Hermanos con datos: ${numMetasConDatos}`);
                         console.log(`    📋 Hermanos con programación:`, hermanosConProg.map(h => `${h.id_node} (${h.name || 'Sin nombre'})`));
+                        console.log(`    📋 Hermanos con datos:`, hermanosConDatos.map(h => `${h.id_node} (${h.name || 'Sin nombre'})`));
                     }
                     
                     // Si no hay metas programadas, no hacer nada
@@ -341,7 +399,7 @@ export const Board = () => {
                     // Calcular el peso ajustado: 100 / número de metas programadas
                     const pesoAjustado = 100 / numMetasProgramadas;
                     
-                    // Solo procesar si este nodo tiene programación
+                    // Solo procesar si este nodo tiene programación física
                     if (percentageItem.physical_programming === 0) {
                         if (window.debugCalcProgress) {
                             console.log(`    ⚠️ Nodo ${item.id_node} no tiene programación física`);
@@ -354,7 +412,7 @@ export const Board = () => {
                     let financiado = percentageItem.financial_execution;
                     
                     if (window.debugCalcProgress) {
-                        console.log(`    ⚖️ Peso ajustado: ${pesoAjustado}%`);
+                        console.log(`    ⚖️ Peso ajustado: ${pesoAjustado}% (100 / ${numMetasProgramadas})`);
                         console.log(`    📊 Progreso original: ${percentageItem.progress}`);
                         console.log(`    📈 Progreso ponderado: ${progresoPeso}`);
                         console.log(`    💰 Financiado: ${financiado}`);
