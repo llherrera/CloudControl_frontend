@@ -62,36 +62,47 @@ export const NodesList = ( props : IdProps ) => {
         let progreso = [] as number[];
         let programacion = [] as number[];
         let financiacion = [] as number[];
-        let nodes_s: NodesWeight[] = pesosNodo.filter((itemFull: NodesWeight) =>
-            nodes.some(itemFilter => itemFilter.id_node === itemFull.id_node));
-
-        nodes_s.sort((a,b) => a.id_node < b.id_node ? -1 : 1);
-        nodes_s.sort((a,b) => a.id_node.length - b.id_node.length);
-
+        
+        // Usar directamente los nodos que se muestran en la UI (nodes)
+        // en lugar de filtrar desde pesosNodo
         if (window.debugNodeOpen) {
-            console.log('🔍 Nodos filtrados y ordenados:', nodes_s.map(n => ({id: n.id_node, name: n.name})));
+            console.log('🔍 Usando nodos de la UI:', nodes.map(n => ({id: n.id_node, name: n.name})));
         }
 
-        nodes_s.forEach((item: NodesWeight) => {
-            const { percents } = item;
-            if (percents) {
-                percents.forEach((percentages: Percentages) => {
-                    if (percentages.year === yearSelect) {
-                        progreso.push(percentages.progress);
-                        programacion.push(percentages.physical_programming);
-                        financiacion.push(percentages.financial_execution);
+        // Para cada nodo que se muestra en la UI, buscar sus datos en pesosNodo
+        nodes.forEach((item: NodeInterface) => {
+            // Buscar el nodo correspondiente en pesosNodo
+            const nodoConDatos = pesosNodo.find((n: NodesWeight) => n.id_node === item.id_node);
+            
+            if (nodoConDatos && nodoConDatos.percents) {
+                // Buscar datos para el año seleccionado
+                const datosAnio = nodoConDatos.percents.find((p: Percentages) => p.year === yearSelect);
+                
+                if (datosAnio) {
+                    progreso.push(datosAnio.progress);
+                    programacion.push(datosAnio.physical_programming);
+                    financiacion.push(datosAnio.financial_execution);
 
-                        if (window.debugNodeOpen) {
-                            console.log(`📈 Nodo ${item.id_node} (${item.name || 'Sin nombre'}):`, {
-                                year: percentages.year,
-                                progress: percentages.progress,
-                                physical_programming: percentages.physical_programming,
-                                financial_execution: percentages.financial_execution
-                            });
-                        }
+                    if (window.debugNodeOpen) {
+                        console.log(`📈 Nodo ${item.id_node} (${item.name || 'Sin nombre'}):`, {
+                            year: datosAnio.year,
+                            progress: datosAnio.progress,
+                            physical_programming: datosAnio.physical_programming,
+                            financial_execution: datosAnio.financial_execution
+                        });
                     }
-                });
-            }else {
+                } else {
+                    // No hay datos para este año
+                    progreso.push(-1);
+                    programacion.push(-1);
+                    financiacion.push(-1);
+
+                    if (window.debugNodeOpen) {
+                        console.log(`⚠️ Nodo ${item.id_node} (${item.name || 'Sin nombre'}): Sin datos para el año ${yearSelect}`);
+                    }
+                }
+            } else {
+                // No hay datos del nodo en pesosNodo
                 progreso.push(-1);
                 programacion.push(-1);
                 financiacion.push(-1);
@@ -101,7 +112,9 @@ export const NodesList = ( props : IdProps ) => {
                 }
             }
         });
-        const weights = nodes_s.map((item: NodesWeight) => item.weight);
+        
+        // Usar los pesos de los nodos de la UI
+        const weights = nodes.map((item: NodeInterface) => item.weight);
         dispatch(setProgressNodes(progreso));
         dispatch(setFinancial(financiacion));
         setPesos(weights);
