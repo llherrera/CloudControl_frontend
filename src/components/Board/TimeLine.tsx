@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from "@/store";
 import { selectYear, setCalcDone } from '@/store/plan/planSlice';
 
-import { NodesWeight } from '@/interfaces';
+import { NodesWeight, Percentages } from '@/interfaces';
 import { decode } from "@/utils";
 
 export const TimeLine = () => {
@@ -43,30 +43,50 @@ export const TimeLine = () => {
         if (pesosStr == undefined) pesosStr = '[]';
 
         let pesosNodo = JSON.parse(pesosStr);
+        const padre = parent ? pesosNodo.find((item: NodesWeight) => item.id_node === parent) : undefined;
         let progreso = [] as number[];
-        const nodoss = pesosNodo.filter((item: NodesWeight) => item.parent === parent);
 
-        if (nodoss.length === 0) {
-            setYearsProgress(-1);
-            setYearProgress([-1,-1,-1,-1]);
-            return;
-        }
-        for (let i = 0; i < years.length; i++) {
-            let temp = 0;
-            nodoss.forEach((item: NodesWeight) => {
-                const { percents } = item;
-                if (percents) {
-                    percents.sort((a,b)=>a.year - b.year);
-                    if (percents[i] && typeof percents[i].progress === 'number') {
-                        temp += (percents[i].progress > 0 ? percents[i].progress : 0)*(item.weight/100);
-                    }
+        if (padre && padre.percents) {
+            for (let i = 0; i < years.length; i++) {
+                const p = padre.percents.find((p: Percentages) => p.year === years[i]);
+                if (p && p.progress >= 0) {
+                    const val = Math.ceil(p.progress * 100) / 100;
+                    progreso.push(val);
+                } else {
+                    progreso.push(-1);
                 }
-            });
-            temp = Math.round(temp*100)/100;
-            progreso.push(temp);
+            }
+        } else {
+            // No hay padre: calcular con los nodos actuales
+            // Encuentra los nodos actuales (los que tienen parent === parent actual)
+            const nodoss = pesosNodo.filter((item: NodesWeight) => nodes.some(n => n.id_node === item.id_node));
+            for (let i = 0; i < years.length; i++) {
+                let temp = 0;
+                let totalPeso = 0;
+                let hayProgramadas = false;
+                nodoss.forEach((item: NodesWeight) => {
+                    const { percents, weight } = item;
+                    if (percents) {
+                        const p = percents.find(p => p.year === years[i]);
+                        if (p && p.progress >= 0 && p.physical_programming > 0) {
+                            temp += p.progress * (weight / 100);
+                            totalPeso += weight;
+                            hayProgramadas = true;
+                        }
+                    }
+                });
+                if (!hayProgramadas) {
+                    progreso.push(-1);
+                } else {
+                    const val = Math.ceil(temp * 100) / 100;
+                    progreso.push(val);
+                }
+            }
         }
-        let temp = progreso.reduce((a, b) => a + b, 0);
-        temp = Math.round(temp*100/years.length);
+        // Calcular el promedio de los años (solo los válidos)
+        const validos = progreso.filter(p => p >= 0);
+        let temp = validos.length > 0 ? validos.reduce((a, b) => a + b, 0) / validos.length : -1;
+        temp = temp >= 0 ? Math.ceil(temp * 100) / 100 : -1;
         setYearsProgress(temp);
         setYearProgress(progreso);
     };

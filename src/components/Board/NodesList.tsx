@@ -76,42 +76,31 @@ export const NodesList = ( props : IdProps ) => {
 
         nodes.forEach((item: NodeInterface) => {
             const nodoConDatos = pesosNodo.find((n: NodesWeight) => n.id_node === item.id_node);
-            
+            let datosAnio: Percentages | undefined = undefined;
             if (nodoConDatos && nodoConDatos.percents) {
-                const datosAnio = nodoConDatos.percents.find((p: Percentages) => p.year === yearSelect);
-                
-                if (datosAnio) {
-                    progreso.push(datosAnio.progress);
-                    programacion.push(datosAnio.physical_programming);
-                    financiacion.push(datosAnio.financial_execution);
-                    hasProgramming.push(datosAnio.physical_programming > 0);
-
-                    if (window.debugNodeOpen) {
-                        console.log(`📈 Nodo ${item.id_node} (${item.name || 'Sin nombre'}):`, {
-                            year: datosAnio.year,
-                            progress: datosAnio.progress,
-                            physical_programming: datosAnio.physical_programming,
-                            financial_execution: datosAnio.financial_execution
-                        });
-                    }
-                } else {
-                    progreso.push(-1);
-                    programacion.push(-1);
-                    financiacion.push(-1);
-                    hasProgramming.push(false);
-
-                    if (window.debugNodeOpen) {
-                        console.log(`⚠️ Nodo ${item.id_node} (${item.name || 'Sin nombre'}): Sin datos para el año ${yearSelect}`);
-                    }
-                }
-            } else {
+                datosAnio = nodoConDatos.percents.find((p: Percentages) => p.year === yearSelect);
+            }
+            // Si no hay datos o no hay metas programadas para el año, progreso -1
+            if (!datosAnio || datosAnio.physical_programming === 0) {
                 progreso.push(-1);
                 programacion.push(-1);
                 financiacion.push(-1);
                 hasProgramming.push(false);
-
                 if (window.debugNodeOpen) {
-                    console.log(`⚠️ Nodo ${item.id_node} (${item.name || 'Sin nombre'}): Sin datos de progreso`);
+                    console.log(`⚠️ Nodo ${item.id_node} (${item.name || 'Sin nombre'}): Sin metas programadas para el año ${yearSelect}`);
+                }
+            } else {
+                progreso.push(datosAnio.progress);
+                programacion.push(datosAnio.physical_programming);
+                financiacion.push(datosAnio.financial_execution);
+                hasProgramming.push(true);
+                if (window.debugNodeOpen) {
+                    console.log(`📈 Nodo ${item.id_node} (${item.name || 'Sin nombre'}):`, {
+                        year: datosAnio.year,
+                        progress: datosAnio.progress,
+                        physical_programming: datosAnio.physical_programming,
+                        financial_execution: datosAnio.financial_execution
+                    });
                 }
             }
         });
@@ -200,7 +189,7 @@ export const NodesList = ( props : IdProps ) => {
         const hasProg = window._hasProgramming ? window._hasProgramming[index] : false;
         
         if (progress < 0) {
-            return 'tw-border-gray-400 group-hover:tw-border-gray-200'; // Sin datos
+            return 'tw-border-gray-400 group-hover:tw-border-gray-200'; // Sin datos o sin metas programadas
         } else if (!hasProg) {
             return 'tw-border-gray-400 group-hover:tw-border-gray-200'; // No hay metas programadas para el año
         } else if (progressPercent === 0 && hasProg) {
@@ -222,7 +211,7 @@ export const NodesList = ( props : IdProps ) => {
         const hasProg = window._hasProgramming ? window._hasProgramming[index] : false;
         
         if (progress < 0) {
-            return 'tw-bg-gray-400 group-hover:tw-bg-gray-200'; // Sin datos
+            return 'tw-bg-gray-400 group-hover:tw-bg-gray-200'; // Sin datos o sin metas programadas
         } else if (!hasProg) {
             return 'tw-bg-gray-400 group-hover:tw-bg-gray-200'; // No hay metas programadas para el año
         } else if (progressPercent === 0 && hasProg) {

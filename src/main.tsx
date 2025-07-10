@@ -8,7 +8,7 @@ import { setupStore } from './store';
 import Modal from 'react-modal';
 import App from './App';
 
-import { createTheme } from '@mui/material';
+import { createTheme } from '@mui/material/styles';
 import { ThemeProvider } from '@emotion/react';
 
 declare module '@mui/material/styles' {

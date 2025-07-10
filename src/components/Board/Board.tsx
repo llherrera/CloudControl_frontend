@@ -264,36 +264,19 @@ export const Board = () => {
     }, []);
 
     const calcProgress = ( res: [NodesWeight[], YearDetail[]] ) => {
+        if (window.debugCalcProgress) {
+            console.log('🔄 Iniciando cálculo de progreso...');
+            console.log('📥 Datos de entrada:', res);
+        }
+
         let pesosNodo = res[0];
         let detalleAnno = res[1];
 
-        // --- NUEVO: Completar nodos intermedios faltantes ---
-        // 1. Obtener todos los nodos existentes por id_node
-        const idSet = new Set(pesosNodo.map(n => n.id_node));
-        // 2. Buscar nodos con patrón (id).x.y y agregar los intermedios si faltan
-        const nuevosNodos: NodesWeight[] = [];
-        pesosNodo.forEach(nodo => {
-            const partes = nodo.id_node.split('.');
-            for (let i = 1; i < partes.length; i++) {
-                const idIntermedio = partes.slice(0, i).join('.');
-                if (!idSet.has(idIntermedio)) {
-                    idSet.add(idIntermedio);
-                    nuevosNodos.push({
-                        id_node: idIntermedio,
-                        name: '',
-                        parent: i > 1 ? partes.slice(0, i - 1).join('.') : null,
-                        weight: 0,
-                        percents: [],
-                    } as NodesWeight);
-                }
-            }
-        });
-        if (nuevosNodos.length > 0) {
-            pesosNodo = [...pesosNodo, ...nuevosNodos];
-        }
-        // --- FIN NUEVO ---
-
         // Primera pasada: calcular progreso físico y financiero para cada nodo
+        if (window.debugCalcProgress) {
+            console.log('📊 Primera pasada: Calculando progreso físico y financiero...');
+        }
+
         detalleAnno.forEach((item: YearDetail) => {
             let progreso = 0;
             let progresoFinan = 0;
@@ -328,7 +311,8 @@ export const Board = () => {
                 progreso = 1;
             }
             
-            progreso = parseFloat(progreso.toFixed(2));
+            // Redondear hacia arriba a dos decimales
+            progreso = Math.ceil(progreso * 100) / 100;
             progresoFinan = item.financial_execution /1000000;
             
             if (window.debugCalcProgress) {
@@ -380,35 +364,27 @@ export const Board = () => {
                     
                     // Obtener todos los hermanos del mismo padre
                     const hermanos = pesosNodo.filter(n => n.parent === parent);
-                    
-                    // Contar cuántos hermanos tienen programación en este año
+                    // Solo considerar hermanos con physical_programming > 0 para ese año
                     const hermanosConProg = hermanos.filter(n => {
                         const p = n.percents?.find(e => e.year === year);
                         return p && p.physical_programming > 0;
                     });
-                    
-                    // Contar cuántos hermanos tienen datos en este año (con o sin programación)
-                    const hermanosConDatos = hermanos.filter(n => {
-                        const p = n.percents?.find(e => e.year === year);
-                        return p !== undefined;
-                    });
-                    
                     const numMetasProgramadas = hermanosConProg.length;
-                    const numMetasConDatos = hermanosConDatos.length;
                     
-                    if (window.debugCalcProgress) {
-                        console.log(`  🔍 Procesando nodo ${item.id_node} (${item.name || 'Sin nombre'}) para año ${year}:`);
-                        console.log(`    👥 Total hermanos: ${hermanos.length}`);
-                        console.log(`    ✅ Hermanos con programación: ${numMetasProgramadas}`);
-                        console.log(`    📊 Hermanos con datos: ${numMetasConDatos}`);
-                        console.log(`    📋 Hermanos con programación:`, hermanosConProg.map(h => `${h.id_node} (${h.name || 'Sin nombre'})`));
-                        console.log(`    📋 Hermanos con datos:`, hermanosConDatos.map(h => `${h.id_node} (${h.name || 'Sin nombre'})`));
-                    }
-                    
-                    // Si no hay metas programadas, no hacer nada
                     if (numMetasProgramadas === 0) {
+                        // Asignar -1 al padre para ese año si no existe ya
+                        padre.percents = padre.percents ? padre.percents : [];
+                        const yaExiste = padre.percents.find((e: Percentages) => e.year === year);
+                        if (!yaExiste) {
+                            padre.percents.push({
+                                progress: -1,
+                                year,
+                                physical_programming: 0,
+                                financial_execution: 0
+                            });
+                        }
                         if (window.debugCalcProgress) {
-                            console.log(`    ⚠️ No hay metas programadas para el año ${year}`);
+                            console.log(`    ⚠️ No hay metas programadas para el año ${year}, progreso padre = -1`);
                         }
                         return;
                     }
@@ -425,7 +401,8 @@ export const Board = () => {
                     }
                     
                     let progresoPeso = percentageItem.progress * (pesoAjustado / 100);
-                    progresoPeso = parseFloat(progresoPeso.toFixed(2));
+                    // Redondear hacia arriba a dos decimales
+                    progresoPeso = Math.ceil(progresoPeso * 100) / 100;
                     let financiado = percentageItem.financial_execution;
                     
                     if (window.debugCalcProgress) {
@@ -444,7 +421,7 @@ export const Board = () => {
                         if (temp.progress > 1) {
                             temp.progress = 1;
                         }
-                        temp.progress = parseFloat(temp.progress.toFixed(2));
+                        temp.progress = Math.ceil(temp.progress * 100) / 100;
                         temp.financial_execution += financiado;
 
                         if (window.debugCalcProgress) {

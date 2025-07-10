@@ -159,7 +159,7 @@ export const EvidenceForm = () => {
             }))
             .then((res) => {
                 setLoading(false);
-                if (!res.error) {
+                if (res && !res.type.includes('rejected')) {
                     setData(blankData);
                 }
             });
@@ -278,8 +278,8 @@ export const EvidenceForm = () => {
 
             <p className="tw-mt-4">Ubicacion</p>
             <div className="tw-flex tw-flex-wrap
-                            tw-rounded tw-p-2
-                            tw-border-2 tw-border-gray-400">
+                            tw-rounded tw-p-4 tw-mb-2
+                            tw-border-4 tw-border-blue-400 tw-bg-blue-50 tw-items-center">
                 <div className="tw-flex tw-flex-col">
                     <p>Localidad/Comuna/Corregimiento</p>
                     <select
@@ -323,8 +323,14 @@ export const EvidenceForm = () => {
                         <option value="Todas">Todas</option>
                     </select>
                 </div>
-                <div className="tw-flex tw-ml-5">
+                <div className="tw-flex tw-flex-col tw-ml-5 tw-items-center">
                     <UbicationsPopover/>
+                    {/* Estado de la ubicación */}
+                    {list_points && list_points.length > 0 ? (
+                        <span className="tw-text-green-600 tw-font-semibold tw-mt-2">Ubicación asignada</span>
+                    ) : (
+                        <span className="tw-text-red-600 tw-font-semibold tw-mt-2">Ubicación no asignada</span>
+                    )}
                 </div>
             </div>
 
