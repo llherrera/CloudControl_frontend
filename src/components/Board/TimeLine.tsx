@@ -252,7 +252,7 @@ export const TimeLine = () => {
                 title='Dar click para ver las evidencias del plan indicativo'
                 onClick={handleBtnEvidence}>
             <p className="tw-break-words tw-font-bold tw-z-20">
-                {yearsProgress == undefined || yearsProgress < 0 ? 0 : yearsProgress}%
+                {yearsProgress == undefined || yearsProgress < 0 ? 0 : Math.round(yearsProgress * 100)}%
             </p>
             {plan.fill === 'vertical' ?
                 <div className={`tw-absolute tw-bottom-0 tw-left-0 tw-w-full tw-transition-all ${colorYearsCla_()}`}
