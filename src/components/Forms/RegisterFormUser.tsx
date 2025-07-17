@@ -228,12 +228,14 @@ export const RegisterFormUser = ({ id }: IdProps) => {
                         {[
                             { value: 'funcionario', label: 'Funcionario' },
                             { value: 'planeacion', label: 'Planeación' },
-                            { value: 'sectorialista', label: 'Sectorialista' }
+                            { value: 'sectorialista', label: 'Sectorialista' },
+                            { value: 'ciudadano', label: 'Ciudadano' }
                         ].map((role) => (
                             <Tooltip
                                 title={role.value === 'funcionario' ? `Crea usuarios\nColorimetria\nAñadir o actualizar metas` :
                                     role.value === 'planeacion' ? `Aprueba evidencias\nSube evidencias` :
-                                    `Sube evidencias`
+                                    role.value === 'sectorialista' ? `Sube evidencias` :
+                                    `Visualización`
                                 }
                             >
                                 <button

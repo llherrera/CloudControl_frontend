@@ -151,8 +151,9 @@ export const getServiciosByPlan = async (id_plan: number) => {
     return response.data;
 };
 
-export const addServicio = async (servicio: any) => {
-    const response = await api.post("/misc/servicios", servicio);
+export const addServicio = async (servicio: any, id_plan: number) => {
+    const payload = id_plan ? { ...servicio, id_plan } : servicio;
+    const response = await api.post("/misc/servicios", payload);
     return response.data;
 };
 
@@ -196,5 +197,10 @@ export const redirectionSolicitud = async (id_solicitud: string, oficinaDestino:
     const response = await api.put(`/misc/redirection-solicitud/${id_solicitud}`, {
         oficinaDestino
     });
+    return response.data;
+};
+
+export const addServiciosBulk = async (id_plan: number, servicios: { nombre: string; tipo: 'N/A' | 'Valor' }[]) => {
+    const response = await api.post('/misc/Servicios_edit', { id_plan, servicios });
     return response.data;
 };

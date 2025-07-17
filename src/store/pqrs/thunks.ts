@@ -20,7 +20,8 @@ import { getPQRSsByPlan, getPQRSByRadicado, getPQRSTypes, getPQRSHistoryByRadica
     updateRolUserOffice,
     getUserOfficeById,
     redirectionSolicitud,
-    solveSolicitud} from '@/services/pqrs_api';
+    solveSolicitud,
+    addServiciosBulk } from '@/services/pqrs_api';
 import { log } from 'node:console';
 
 export const thunkGetPQRSs = createAsyncThunk<{}, number, { rejectValue: ErrorBasicInterface }>(
@@ -195,21 +196,24 @@ export const thunkGetAllSolicitudes = createAsyncThunk<{}, { id_plan: string}, {
 export const thunkGetServiciosByPlan = createAsyncThunk<{}, number, { rejectValue: ErrorBasicInterface }>(
     'misc/getServiciosByPlan',
     async (idPlan: number, { rejectWithValue }) => {
+        console.log('[thunkGetServiciosByPlan] idPlan recibido:', idPlan);
         try {
             const res = await getServiciosByPlan(idPlan);
+            console.log('[thunkGetServiciosByPlan] Respuesta exitosa:', res);
             return res;
         } catch (err) {
+            console.error('[thunkGetServiciosByPlan] Error:', err);
             const result = parseErrorAxios(err);
             return rejectWithValue(result);
         }
     }
 );
 
-export const thunkAddServicio = createAsyncThunk<{}, any, { rejectValue: ErrorBasicInterface }>(
+export const thunkAddServicio = createAsyncThunk<{}, { SERVICIO: string, id_plan: number, tipo: 'N/A' | 'Valor' }, { rejectValue: ErrorBasicInterface }>(
     'misc/addServicio',
-    async (servicio, { rejectWithValue }) => {
+    async ({ SERVICIO, id_plan, tipo }, { rejectWithValue }) => {
         try {
-            const res = await addServicio(servicio);
+            const res = await addServicio({ SERVICIO, tipo }, id_plan);
             return res;
         } catch (err) {
             const result = parseErrorAxios(err);
@@ -229,6 +233,23 @@ export const thunkGetOficinasByPlan = createAsyncThunk<{}, number, { rejectValue
             return rejectWithValue(result);
         }
     }
+);
+
+export const thunkAddServiciosBulk = createAsyncThunk<
+  any,
+  { id_plan: number; servicios: { nombre: string; tipo: 'N/A' | 'Valor' }[] },
+  { rejectValue: ErrorBasicInterface }
+>(
+  'misc/addServiciosBulk',
+  async ({ id_plan, servicios }, { rejectWithValue }) => {
+    try {
+      const res = await addServiciosBulk(id_plan, servicios);
+      return res;
+    } catch (err) {
+      const result = parseErrorAxios(err);
+      return rejectWithValue(result);
+    }
+  }
 );
 
 

@@ -4,6 +4,7 @@ import { User } from '@/interfaces';
 import { useDispatch } from 'react-redux';
 import { thunkUpdateUserData, thunkUpdateModulosUsuarioById, thunkUpdateUserRol } from '../../store/pqrs/thunks';
 import { useAppDispatch } from '@/store';
+import { doUpdateUser } from '../../services/api'; // Importar desde services/api
 
 interface UserEditModalProps {
     user: User;
@@ -96,7 +97,7 @@ const UserEditModal: React.FC<UserEditModalProps> = ({ user, onClose, onSave }) 
         setSelectedOffice('');
     };
 
-    const handleSave = () => {
+    const handleSave = async () => {
         if (editedUser.rol === 'funcionario' && !selectedOffice) {
             alert("Office is required for the role of Funcionario.");
             return;
@@ -107,7 +108,15 @@ const UserEditModal: React.FC<UserEditModalProps> = ({ user, onClose, onSave }) 
             office: selectedOffice || 'N/A' // Set office to 'N/A' if not selected
         };
 
-        // Dispatch the thunk to update user data
+        // Actualizar datos principales del usuario (username, lastname, email)
+        try {
+            await doUpdateUser(userToSave.id_user, userToSave.email, userToSave.name, userToSave.lastname);
+        } catch (err: any) {
+            alert('Error actualizando usuario: ' + (err?.message || err));
+            return;
+        }
+
+        // Dispatch the thunk to update user data (office, isActive)
         dispatch(thunkUpdateUserData({
             id_user: userToSave.id_user,
             office: userToSave.office,
@@ -124,21 +133,15 @@ const UserEditModal: React.FC<UserEditModalProps> = ({ user, onClose, onSave }) 
                 MapaDeIntervencion: modulesAccess[5] ? "1" : "0"
             };
         };
-        
         const formattedModules = convertModulesAccessToEndpointFormat(userToSave.modulesAccess);
-
-        // Dispatch the thunk to update user modules
         dispatch(thunkUpdateModulosUsuarioById({
             idUsuario: userToSave.id_user,
             modulos: formattedModules
         }));
-
-        // Aquí puedes añadir el nuevo thunk que acabas de crear
         dispatch(thunkUpdateUserRol({
             id_user: userToSave.id_user,
             rol: userToSave.rol
         }));
-
         onSave(userToSave);
     };
 
@@ -155,8 +158,7 @@ const UserEditModal: React.FC<UserEditModalProps> = ({ user, onClose, onSave }) 
                             value={editedUser.name}
                             onChange={handleChange}
                             className="tw-w-full tw-px-3 tw-py-2 tw-border tw-rounded tw-bg-gray-50 tw-shadow-inner"
-                            placeholder="Nombre"
-                            disabled // Deshabilitar el campo de nombre
+                            placeholder="Usuario"
                         />
                         <input
                             type="text"
@@ -165,13 +167,12 @@ const UserEditModal: React.FC<UserEditModalProps> = ({ user, onClose, onSave }) 
                             onChange={handleChange}
                             className="tw-w-full tw-px-3 tw-py-2 tw-border tw-rounded tw-bg-gray-50 tw-shadow-inner"
                             placeholder="Apellido"
-                            disabled // Deshabilitar el campo de apellido
                         />
                         <input
                             type="email"
                             name="email"
                             value={editedUser.email}
-                            disabled
+                            onChange={handleChange}
                             className="tw-w-full tw-px-3 tw-py-2 tw-border tw-rounded tw-bg-gray-100 tw-shadow-inner"
                             placeholder="Correo Electrónico"
                         />
@@ -182,7 +183,8 @@ const UserEditModal: React.FC<UserEditModalProps> = ({ user, onClose, onSave }) 
                             {[
                                 { value: 'funcionario', label: 'Funcionario' },
                                 { value: 'planeacion', label: 'Planeación' },
-                                { value: 'sectorialista', label: 'Sectorialista' }
+                                { value: 'sectorialista', label: 'Sectorialista' },
+                                { value: 'ciudadano', label: 'Ciudadano' }
                             ].map((role) => (
                                 <button
                                     key={role.value}

@@ -37,7 +37,7 @@ export const LoginForm = () => {
     };
 
     const validateRol = (info: Token) => (
-        (info.rol === "funcionario" || info.rol === 'planeacion' || info.rol === 'sectorialista') ?
+        (info.rol === "funcionario" || info.rol === 'planeacion' || info.rol === 'ciudadano' || info.rol === 'sectorialista') ?
             (dispatch(setIdPlan(info.id_plan)),
                 navigate('/lobby')
             ) : navigate('/')

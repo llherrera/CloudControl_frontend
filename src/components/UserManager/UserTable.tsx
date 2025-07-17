@@ -44,7 +44,7 @@ const UserTable: React.FC<UserTableProps> = ({ users, onEdit }) => {
                             <th className="tw-px-4 tw-py-2 tw-text-center">ID</th>
                             <th className="tw-px-4 tw-py-2 tw-text-center">Oficina</th>
                             <th className="tw-px-4 tw-py-2 tw-text-center">Activo</th>
-                            <th className="tw-px-4 tw-py-2 tw-text-center">Nombre</th>
+                            <th className="tw-px-4 tw-py-2 tw-text-center">Usuario</th>
                             <th className="tw-px-4 tw-py-2 tw-text-center">Apellido</th>
                             <th className="tw-px-4 tw-py-2 tw-text-center">Correo</th>
                             <th className="tw-px-4 tw-py-2 tw-text-center">Rol</th>

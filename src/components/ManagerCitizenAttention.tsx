@@ -2,119 +2,29 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import CitizenRequestForm from './CitizenRequestForm';
 import CitizenRequestSearch from './CitizenRequestSearch';
-import { useAppDispatch } from '@/store';
-import { thunkGetAllSolicitudes, thunkRedirectionSolicitud, thunkSolveSolicitud } from '../store/pqrs/thunks'; // Asegúrate de que la ruta sea correcta
+import { useAppDispatch } from '@/store/store';
+import { thunkGetAllSolicitudes } from '@/store/pqrs/thunks';
+import { thunkRedirectionSolicitud, thunkSolveSolicitud } from '../store/pqrs/thunks'; // Asegúrate de que la ruta sea correcta
 import { thunkAddSolicitud } from '../store/pqrs/thunks';
-
-interface FormData {
-    id?: string;
-    fecha?: string;
-    nombre: string;
-    tipoDocumento: string;
-    documento: string;
-    genero: string;
-    grupoEtario: string;
-    poblacional: string;
-    otroPoblacional?: string;
-    discapacidad: string;
-    otraDiscapacidad?: string;
-    escolaridad: string;
-    otraEscolaridad?: string;
-    nacionalidad: string;
-    telefono?: string;
-    correo?: string;
-    area: string;
-    barrio?: string;
-    comuna?: string;
-    corregimiento?: string;
-    vereda?: string;
-    servicio: string;
-    otroServicio?: string;
-    prioridad: string;
-    tipoAtencion: string;
-    modoAtencion?: string;
-    duracion?: string;
-    exclusividad?: string;
-    tipoUsuario?: string;
-    redireccionar: boolean;
-    oficinaDestino?: string;
-    dependencia?: string;
-    funcionario: string;
-    estado: 'pendiente' | 'en proceso' | 'resuelto';
-    fechaResolucion?: string | null;
-    solicitudPadre?: string;
-    usuarioId?: string;
-    razonRedireccionamiento?: string;
-}
+import { FormData } from '@/interfaces/formInterfaces';
 
 const ManagerCitizenAttention: React.FC = () => {
     const [modo, setModo] = useState('nueva');
     const dispatch = useAppDispatch();
-    const [solicitudes, setSolicitudes] = useState<FormData[]>([
+    const [solicitudes, setSolicitudes] = useState<FormData[]>([]);
+    const id_plan = localStorage.getItem('id_plan') || '';
 
-        {
-            id: '1',
-            fecha: '2023-10-01',
-            nombre: 'Juan Pérez',
-            tipoDocumento: 'Cédula',
-            documento: '123456789',
-            genero: 'Masculino',
-            grupoEtario: 'Adulto',
-            poblacional: 'General',
-            discapacidad: 'Ninguna',
-            escolaridad: 'Universitaria',
-            nacionalidad: 'Colombiana',
-            area: 'Urbano',
-            servicio: 'Salud',
-            prioridad: 'Alta',
-            tipoAtencion: 'Presencial',
-            redireccionar: false,
-            funcionario: 'Funcionario 1',
-            estado: 'pendiente'
-        },
-        {
-            id: '2',
-            fecha: '2023-10-02',
-            nombre: 'María López',
-            tipoDocumento: 'Pasaporte',
-            documento: '987654321',
-            genero: 'Femenino',
-            grupoEtario: 'Joven',
-            poblacional: 'Desplazado',
-            discapacidad: 'Visual',
-            escolaridad: 'Secundaria',
-            nacionalidad: 'Venezolana',
-            area: 'Rural',
-            servicio: 'Educación',
-            prioridad: 'Media',
-            tipoAtencion: 'Llamada telefónica',
-            redireccionar: true,
-            oficinaDestino: 'Oficina 2',
-            funcionario: 'Funcionario 2',
-            estado: 'en proceso'
-        }
-    ]);
-
-
-    const fetchSolicitudes = async () => {
-        const id_plan = localStorage.getItem('id_plan'); // Obtener el id_plan desde localStorage
-        if (!id_plan) {
-            console.error("No se encontró id_plan en localStorage");
-            return;
-        }
+    const fetchSolicitudes = () => {
         dispatch(thunkGetAllSolicitudes({ id_plan }))
             .unwrap()
-            .then((result: any) => {
-                setSolicitudes(result); // Actualiza el estado con las solicitudes obtenidas
-            })
-            .catch((error: any) => {
-                console.error("Error al obtener solicitudes:", error);
+            .then((res: any) => {
+                if (Array.isArray(res)) setSolicitudes(res);
             });
     };
 
     useEffect(() => {
         fetchSolicitudes();
-    }, [dispatch]);
+    }, [id_plan]);
 
     const handleBuscarSolicitudes = () => {
         setModo('buscar'); // Asegúrate de que el modo se actualice a 'buscar'
@@ -177,7 +87,7 @@ const ManagerCitizenAttention: React.FC = () => {
             tipoDocumento: solicitud.tipoDocumento,
             documento: solicitud.documento,
             genero: solicitud.genero,
-            grupo: solicitud.grupoEtario,
+            grupo: solicitud.grupo,
             poblacional: solicitud.poblacional === "Otro" ? solicitud.otroPoblacional : solicitud.poblacional,
             discapacidad: solicitud.discapacidad === "Otro" ? solicitud.otraDiscapacidad : solicitud.discapacidad,
             escolaridad: solicitud.escolaridad === "Otro" ? solicitud.otraEscolaridad : solicitud.escolaridad,

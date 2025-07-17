@@ -1,45 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useAppDispatch, useAppSelector } from '@/store/store';
+import { thunkGetServiciosByPlan, thunkAddServicio, thunkAddSolicitud, thunkAddServiciosBulk } from '@/store/pqrs/thunks';
+import { decode } from '@/utils';
+import { getPDTs } from '@/services/api';
+import { FormData } from '@/interfaces/formInterfaces';
 
-interface FormData {
-    id?: string;
-    fecha?: string;
-    nombre: string;
-    tipoDocumento: string;
-    documento: string;
-    genero: string;
-    grupoEtario: string;
-    poblacional: string;
-    otroPoblacional?: string;
-    discapacidad: string;
-    otraDiscapacidad?: string;
-    escolaridad: string;
-    otraEscolaridad?: string;
-    nacionalidad: string;
-    telefono?: string;
-    correo?: string;
-    area: string;
-    barrio?: string;
-    comuna?: string;
-    corregimiento?: string;
-    vereda?: string;
-    servicio: string;
-    otroServicio?: string;
-    prioridad: string;
-    tipoAtencion: string;
-    modoAtencion?: string;
-    duracion?: string;
-    exclusividad?: string;
-    tipoUsuario?: string;
-    redireccionar: boolean;
-    oficinaDestino?: string;
-    dependencia?: string;
-    funcionario: string;
-    estado: 'pendiente' | 'en proceso' | 'resuelto';
-    fechaResolucion?: string | null;
-    solicitudPadre?: string;
-    usuarioId?: string;
-    razonRedireccionamiento?: string;
-}
 interface CitizenRequestFormProps {
     onNuevaSolicitud: (solicitud: FormData) => void;
 }
@@ -50,7 +15,7 @@ const CitizenRequestForm: React.FC<CitizenRequestFormProps> = ({ onNuevaSolicitu
         tipoDocumento: '',
         documento: '',
         genero: '',
-        grupoEtario: '',
+        grupo: '',
         poblacional: '',
         otroPoblacional: '',
         discapacidad: '',
@@ -83,48 +48,266 @@ const CitizenRequestForm: React.FC<CitizenRequestFormProps> = ({ onNuevaSolicitu
         usuarioId: '',
         razonRedireccionamiento: ''
     });
+    const [errors, setErrors] = useState<{ [key: string]: string }>({});
+    type ServicioConfig = { nombre: string; tipo: 'N/A' | 'Valor' };
+    const [servicios, setServicios] = useState<ServicioConfig[]>([]);
+    const [loadingServicios, setLoadingServicios] = useState(false);
+    const [showConfig, setShowConfig] = useState(false);
+    const [configField, setConfigField] = useState<'servicios'>('servicios');
+    const [editServicios, setEditServicios] = useState<ServicioConfig[]>([]);
+    const [editMode, setEditMode] = useState(false);
+    const [newServicio, setNewServicio] = useState('');
+    const dispatch = useAppDispatch();
 
-    const handleSubmit = (event: React.FormEvent) => {
+    const { token_info } = useAppSelector(store => store.auth);
+
+    const [id, setId] = useState(0);
+    const [user, setUser] = useState('');
+    const [rol, setRol] = useState('');
+    const [idPlan, setIdPlan] = useState(0);
+    const [forcedIdPlan, setForcedIdPlan] = useState<string>('');
+    const [activeIdPlan, setActiveIdPlan] = useState<number>(idPlan);
+    const [planes, setPlanes] = useState<{ id_plan: number, name: string, department: string, description?: string }[]>([]);
+
+    // Estado para el tipo de servicio cuando se selecciona 'Otro'
+    const [otroTipo, setOtroTipo] = useState<'N/A' | 'Valor'>('N/A');
+
+    useEffect(() => {
+        if (token_info?.token !== undefined) {
+            const decoded = decode(token_info.token);
+            setId(decoded.id);
+            setUser(decoded.user);
+            setRol(decoded.rol);
+            setIdPlan(decoded.id_plan);
+            console.log('Token decodificado:', decoded);
+        }
+    }, []);
+
+    useEffect(() => {
+        if (!activeIdPlan) return;
+        setLoadingServicios(true);
+        dispatch(thunkGetServiciosByPlan(activeIdPlan))
+            .unwrap()
+            .then((res: any) => {
+                let lista = Array.isArray(res) ? res : [];
+                // Usar la clave 'SERVICIO' y 'TIPO' en mayúsculas
+                if (lista.length > 0 && typeof lista[0] === 'object') {
+                    lista = lista.map((s: any) => ({ nombre: s.SERVICIO || s.nombre || s.name || s.servicio || s.value || '', tipo: s.TIPO || 'N/A' }));
+                } else {
+                    lista = lista.filter((s: string) => s && s.toLowerCase() !== 'otro').map((nombre: string) => ({ nombre, tipo: 'N/A' }));
+                }
+                setServicios(lista);
+            })
+            .finally(() => setLoadingServicios(false));
+    }, [dispatch, activeIdPlan]);
+
+    useEffect(() => {
+        if (rol === 'admin') {
+            getPDTs().then((res) => setPlanes(res)).catch(() => setPlanes([]));
+        }
+    }, [rol]);
+
+    // Sincronizar editServicios cuando se abre el panel o cambia la lista
+    useEffect(() => {
+        if (showConfig && configField === 'servicios') {
+            setEditServicios(servicios);
+        }
+    }, [showConfig, configField, servicios]);
+
+    const handleEditServicio = (idx: number, value: string) => {
+        setEditServicios(prev => prev.map((s, i) => i === idx ? { ...s, nombre: value } : s));
+    };
+    const handleEditTipoServicio = (idx: number, tipo: 'N/A' | 'Valor') => {
+        setEditServicios(prev => prev.map((s, i) => i === idx ? { ...s, tipo } : s));
+    };
+
+    const handleSaveServicios = async () => {
+        const serviciosLimpios = editServicios.filter(s => s.nombre.trim() !== '');
+        const idPlanToUse = rol === 'admin' ? activeIdPlan : idPlan;
+        setLoadingServicios(true);
+        try {
+            // Enviar el array de objetos {nombre, tipo} al backend
+            await dispatch(thunkAddServiciosBulk({ id_plan: idPlanToUse, servicios: serviciosLimpios })).unwrap();
+            setServicios(serviciosLimpios);
+            setEditMode(false);
+            setShowConfig(false);
+        } catch (err) {
+            alert('No se pudo guardar la lista de servicios.');
+        } finally {
+            setLoadingServicios(false);
+        }
+    };
+
+    const handleAddServicio = () => {
+        const value = newServicio.trim();
+        // Por defecto, tipo 'N/A' al agregar
+        if (value && !editServicios.some(s => s.nombre === value)) {
+            setEditServicios(prev => [...prev, { nombre: value, tipo: 'N/A' }]);
+            // Enviar al backend inmediatamente
+            const idPlanToUse = rol === 'admin' ? activeIdPlan : idPlan;
+            dispatch(thunkAddServicio({ SERVICIO: value, id_plan: idPlanToUse, tipo: 'N/A' }));
+            setNewServicio('');
+        }
+    };
+    const handleDeleteServicio = (idx: number) => {
+        setEditServicios(prev => prev.filter((_, i) => i !== idx));
+    };
+
+    const validate = () => {
+        const newErrors: { [key: string]: string } = {};
+        // Obligatorios
+        if (!formData.documento.trim()) newErrors.documento = 'El documento es obligatorio';
+        else if (!/^\d+$/.test(formData.documento)) newErrors.documento = 'Solo números';
+        else if (formData.documento.length < 5) newErrors.documento = 'Mínimo 5 dígitos';
+
+        if (!formData.tipoDocumento) newErrors.tipoDocumento = 'El tipo de documento es obligatorio';
+        if (!formData.nombre.trim()) newErrors.nombre = 'El nombre es obligatorio';
+        if (!formData.genero) newErrors.genero = 'El género es obligatorio';
+        if (!formData.grupo) newErrors.grupo = 'El grupo etario es obligatorio';
+        if (!formData.poblacional) newErrors.poblacional = 'El grupo poblacional es obligatorio';
+        if (formData.poblacional === 'Otros' && !formData.otroPoblacional?.trim()) newErrors.otroPoblacional = 'Debe especificar el grupo poblacional';
+        if (!formData.discapacidad) newErrors.discapacidad = 'La discapacidad es obligatoria';
+        if (formData.discapacidad === 'Otro' && !formData.otraDiscapacidad?.trim()) newErrors.otraDiscapacidad = 'Debe especificar la discapacidad';
+        if (!formData.escolaridad) newErrors.escolaridad = 'La escolaridad es obligatoria';
+        if (formData.escolaridad === 'Otro' && !formData.otraEscolaridad?.trim()) newErrors.otraEscolaridad = 'Debe especificar la escolaridad';
+        if (!formData.nacionalidad) newErrors.nacionalidad = 'La nacionalidad es obligatoria';
+        if (!formData.area) newErrors.area = 'El área es obligatoria';
+        if (formData.area === 'Urbano' && !formData.barrio) newErrors.barrio = 'El barrio es obligatorio';
+        if (formData.area === 'Rural' && !formData.vereda) newErrors.vereda = 'La vereda es obligatoria';
+        if (!formData.servicio) newErrors.servicio = 'El servicio es obligatorio';
+        if (formData.servicio === 'Otro' && !formData.otroServicio?.trim()) newErrors.otroServicio = 'Debe especificar el servicio';
+        if (!formData.prioridad) newErrors.prioridad = 'La prioridad es obligatoria';
+        if (!formData.tipoAtencion) newErrors.tipoAtencion = 'El tipo de atención es obligatorio';
+        // Validaciones de formato
+        if (formData.correo && !/^\S+@\S+\.\S+$/.test(formData.correo)) newErrors.correo = 'Correo inválido';
+        if (formData.telefono && !/^\d+$/.test(formData.telefono)) newErrors.telefono = 'Solo números';
+        if (formData.telefono && formData.telefono.length < 7) newErrors.telefono = 'Mínimo 7 dígitos';
+        // Redirección
+        if (formData.redireccionar) {
+            if (!formData.razonRedireccionamiento?.trim()) newErrors.razonRedireccionamiento = 'Debe ingresar la razón de redireccionamiento';
+            if (!formData.oficinaDestino) newErrors.oficinaDestino = 'Debe seleccionar la oficina de destino';
+        }
+        return newErrors;
+    };
+
+    const handleSubmit = async (event: React.FormEvent) => {
         event.preventDefault();
-        onNuevaSolicitud(formData);
-        setFormData({
-            nombre: '',
-            tipoDocumento: '',
-            documento: '',
-            genero: '',
-            grupoEtario: '',
-            poblacional: '',
-            otroPoblacional: '',
-            discapacidad: '',
-            otraDiscapacidad: '',
-            escolaridad: '',
-            otraEscolaridad: '',
-            nacionalidad: 'COLOMBIA',
-            telefono: '',
-            correo: '',
-            area: '',
-            barrio: '',
-            comuna: '',
-            corregimiento: '',
-            vereda: '',
-            servicio: '',
-            otroServicio: '',
-            prioridad: 'Baja',
-            tipoAtencion: '',
-            modoAtencion: '',
-            duracion: '',
-            exclusividad: '',
-            tipoUsuario: '',
-            redireccionar: false,
-            oficinaDestino: '',
-            dependencia: '',
-            funcionario: '',
-            estado: 'pendiente',
-            fechaResolucion: null,
-            solicitudPadre: '',
-            usuarioId: '',
-            razonRedireccionamiento: ''
-        });
+        console.log('[CitizenRequestForm] Iniciando envío de solicitud...');
+        
+        const validationErrors = validate();
+        setErrors(validationErrors);
+        if (Object.keys(validationErrors).length > 0) {
+            console.warn('[CitizenRequestForm] Errores de validación encontrados:', validationErrors);
+            return;
+        }
+
+        console.log('[CitizenRequestForm] Datos del formulario antes del procesamiento:', formData);
+
+        // Si el usuario seleccionó 'Otro', agregar el nuevo servicio
+        if (formData.servicio === 'Otro' && formData.otroServicio?.trim()) {
+            const nuevoServicio = formData.otroServicio.trim();
+            console.log('[CitizenRequestForm] Agregando nuevo servicio:', nuevoServicio);
+            try {
+                setLoadingServicios(true);
+                const idPlanToUse = rol === 'admin' ? activeIdPlan : idPlan;
+                // Buscar el tipo del nuevo servicio en la configuración
+                const tipoNuevo = editServicios.find(s => s.nombre === nuevoServicio)?.tipo || 'N/A';
+                await dispatch(thunkAddServicio({ SERVICIO: nuevoServicio, id_plan: idPlanToUse, tipo: tipoNuevo })).unwrap();
+                console.log('[CitizenRequestForm] Nuevo servicio agregado exitosamente');
+                setServicios(prev => [...prev, { nombre: nuevoServicio, tipo: 'N/A' }]);
+                setFormData(prev => ({ ...prev, servicio: nuevoServicio, otroServicio: '' }));
+            } catch (err) {
+                console.error('[CitizenRequestForm] Error al agregar nuevo servicio:', err);
+                setLoadingServicios(false);
+                alert('No se pudo agregar el nuevo servicio.');
+                return;
+            } finally {
+                setLoadingServicios(false);
+            }
+        }
+
+        // Usar thunkAddSolicitud para registrar la solicitud
+        try {
+            console.log('[CitizenRequestForm] Preparando datos para envío...');
+            
+            // Copia limpia del formData
+            const dataToSend = { ...formData };
+            if (!dataToSend.fecha) {
+                dataToSend.fecha = new Date().toISOString().slice(0, 10); // 'YYYY-MM-DD'
+                console.log('[CitizenRequestForm] Fecha asignada:', dataToSend.fecha);
+            }
+            if (dataToSend.solicitudPadre === '') {
+                delete dataToSend.solicitudPadre;
+                console.log('[CitizenRequestForm] Campo solicitudPadre eliminado (vacío)');
+            }
+            // Asignar usuarioId desde el id del token decodificado
+            if (id) {
+                dataToSend.usuarioId = String(id);
+                console.log('[CitizenRequestForm] UsuarioId asignado:', dataToSend.usuarioId);
+            } else {
+                delete dataToSend.usuarioId;
+                console.log('[CitizenRequestForm] UsuarioId eliminado (no disponible)');
+            }
+            // Si el servicio es "Otro", usar el valor de otroServicio como servicio
+            if (dataToSend.servicio === 'Otro' && dataToSend.otroServicio?.trim()) {
+                dataToSend.servicio = dataToSend.otroServicio.trim();
+            }
+            
+            console.log('[CitizenRequestForm] Datos finales a enviar:', dataToSend);
+            console.log('[CitizenRequestForm] Enviando solicitud al backend...');
+            
+            await dispatch(thunkAddSolicitud(dataToSend)).unwrap();
+            console.log('[CitizenRequestForm] Solicitud enviada exitosamente');
+            
+            onNuevaSolicitud(formData);
+            console.log('[CitizenRequestForm] Llamando callback onNuevaSolicitud');
+            
+            setFormData({
+                nombre: '',
+                tipoDocumento: '',
+                documento: '',
+                genero: '',
+                grupo: '',
+                poblacional: '',
+                otroPoblacional: '',
+                discapacidad: '',
+                otraDiscapacidad: '',
+                escolaridad: '',
+                otraEscolaridad: '',
+                nacionalidad: 'COLOMBIA',
+                telefono: '',
+                correo: '',
+                area: '',
+                barrio: '',
+                comuna: '',
+                corregimiento: '',
+                vereda: '',
+                servicio: '',
+                otroServicio: '',
+                prioridad: 'Baja',
+                tipoAtencion: '',
+                modoAtencion: '',
+                duracion: '',
+                exclusividad: '',
+                tipoUsuario: '',
+                redireccionar: false,
+                oficinaDestino: '',
+                dependencia: '',
+                funcionario: '',
+                estado: 'pendiente',
+                fechaResolucion: null,
+                solicitudPadre: '',
+                usuarioId: '',
+                razonRedireccionamiento: ''
+            });
+            setOtroTipo('N/A');
+            console.log('[CitizenRequestForm] Formulario reseteado');
+            setErrors({});
+            console.log('[CitizenRequestForm] Errores limpiados');
+        } catch (err) {
+            console.error('[CitizenRequestForm] Error al enviar solicitud:', err);
+            alert('No se pudo registrar la solicitud.');
+        }
     };
 
     const handleChange = (
@@ -173,10 +356,144 @@ const CitizenRequestForm: React.FC<CitizenRequestFormProps> = ({ onNuevaSolicitu
         }));
     };
 
+    // Determinar el tipo del servicio seleccionado
+    const selectedServicio = servicios.find(s => s.nombre === formData.servicio);
+    const isValorServicio = formData.servicio === 'Otro' ? otroTipo === 'Valor' : selectedServicio?.tipo === 'Valor';
+
     // Uso en el JSX
 
     return (
-        <div className="tw-bg-white tw-p-6 tw-rounded-lg tw-shadow-md">
+        <div className="tw-bg-white tw-p-6 tw-rounded-lg tw-shadow-md tw-relative">
+
+            {/* Panel admin para seleccionar o forzar idPlan en una sola fila */}
+            {rol === 'admin' && (
+                <div className="tw-mb-6 tw-p-4 tw-bg-yellow-50 tw-border tw-border-yellow-300 tw-rounded">
+                    <label className="tw-block tw-font-medium tw-mb-2">Seleccionar o forzar idPlan para la consulta de servicios</label>
+                    <div className="tw-flex tw-gap-2 tw-items-center">
+                        {planes.length > 0 && (
+                            <select
+                                className="tw-p-2 tw-border tw-rounded"
+                                value={activeIdPlan}
+                                onChange={e => setActiveIdPlan(Number(e.target.value))}
+                            >
+                                {planes.map(plan => (
+                                    <option key={plan.id_plan} value={plan.id_plan}>{plan.name} ({plan.department})</option>
+                                ))}
+                            </select>
+                        )}
+                        <input
+                            type="text"
+                            className="tw-p-2 tw-border tw-rounded tw-w-32"
+                            value={forcedIdPlan}
+                            onChange={e => setForcedIdPlan(e.target.value)}
+                            placeholder="Forzar idPlan"
+                        />
+                        <button
+                            className="tw-bg-blue-500 tw-text-white tw-px-4 tw-rounded hover:tw-bg-blue-600"
+                            onClick={() => setActiveIdPlan(Number(forcedIdPlan) || idPlan)}
+                        >
+                            Actualizar
+                        </button>
+                        <span className="tw-text-xs tw-ml-2">Id actual: <span className="tw-font-bold">{activeIdPlan}</span></span>
+                    </div>
+                </div>
+            )}
+            {/* Botón de configuración */}
+            <button
+                type="button"
+                className="tw-absolute tw-top-4 tw-right-4 tw-bg-gray-200 tw-p-2 tw-rounded hover:tw-bg-gray-300"
+                onClick={() => setShowConfig(true)}
+                title="Configuración"
+            >
+                ⚙️
+            </button>
+            {/* Panel de configuración lateral */}
+            {showConfig && (
+                <div className="tw-fixed tw-top-0 tw-right-0 tw-h-full tw-bg-white tw-shadow-lg tw-z-50 tw-w-[400px] tw-p-6 tw-flex tw-flex-col">
+                    <div className="tw-flex tw-justify-between tw-items-center tw-mb-4">
+                        <h3 className="tw-text-lg tw-font-bold">Configuración</h3>
+                        <button onClick={() => setShowConfig(false)} className="tw-text-xl tw-font-bold">×</button>
+                    </div>
+                    <div className="tw-mb-4">
+                        <label className="tw-block tw-font-medium tw-mb-2">Campo a configurar</label>
+                        <select
+                            value={configField}
+                            onChange={e => setConfigField(e.target.value as 'servicios')}
+                            className="tw-w-full tw-p-2 tw-border tw-rounded"
+                        >
+                            <option value="servicios">Servicios</option>
+                        </select>
+                    </div>
+                    {configField === 'servicios' && (
+                        <div>
+                            <div className="tw-flex tw-justify-between tw-items-center tw-mb-2">
+                                <span className="tw-font-medium">Lista de servicios</span>
+                                <button onClick={() => setEditMode(m => !m)} className="tw-text-blue-600 hover:tw-underline tw-text-sm">
+                                    {editMode ? 'Cancelar' : 'Editar'}
+                                </button>
+                            </div>
+                            <ul className="tw-space-y-2">
+                                {editServicios.map((serv, idx) => (
+                                    <li key={idx} className="tw-flex tw-items-center tw-gap-2">
+                                        {editMode ? (
+                                            <>
+                                                <input
+                                                    className="tw-p-1 tw-border tw-rounded tw-w-full"
+                                                    value={serv.nombre}
+                                                    onChange={e => handleEditServicio(idx, e.target.value)}
+                                                />
+                                                <select
+                                                    className="tw-p-1 tw-border tw-rounded"
+                                                    value={serv.tipo}
+                                                    onChange={e => handleEditTipoServicio(idx, e.target.value as 'N/A' | 'Valor')}
+                                                >
+                                                    <option value="N/A">N/A</option>
+                                                    <option value="Valor">Valor</option>
+                                                </select>
+                                                <button
+                                                    className="tw-text-red-500 tw-font-bold tw-ml-2"
+                                                    title="Eliminar"
+                                                    onClick={() => handleDeleteServicio(idx)}
+                                                    type="button"
+                                                >
+                                                    ×
+                                                </button>
+                                            </>
+                                        ) : (
+                                            <span>{`${idx + 1}. ${serv.nombre}`} <span className="tw-text-xs tw-ml-2 tw-bg-gray-200 tw-px-2 tw-rounded">{serv.tipo}</span></span>
+                                        )}
+                                    </li>
+                                ))}
+                            </ul>
+                            {editMode && (
+                                <>
+                                    <div className="tw-flex tw-gap-2 tw-mt-4">
+                                        <input
+                                            className="tw-p-1 tw-border tw-rounded tw-w-full"
+                                            value={newServicio}
+                                            onChange={e => setNewServicio(e.target.value)}
+                                            placeholder="Nuevo servicio"
+                                        />
+                                        <button
+                                            className="tw-bg-blue-500 tw-text-white tw-px-3 tw-rounded hover:tw-bg-blue-600"
+                                            type="button"
+                                            onClick={handleAddServicio}
+                                        >
+                                            Agregar
+                                        </button>
+                                    </div>
+                                    <button
+                                        className="tw-mt-4 tw-bg-green-500 hover:tw-bg-green-600 tw-text-white tw-py-2 tw-px-4 tw-rounded"
+                                        onClick={handleSaveServicios}
+                                    >
+                                        Guardar cambios
+                                    </button>
+                                </>
+                            )}
+                        </div>
+                    )}
+                </div>
+            )}
             <h1 className="tw-text-3xl tw-font-bold tw-text-green-700 tw-mb-4">
                 Formulario Atencion Ciudadana
             </h1>
@@ -192,7 +509,9 @@ const CitizenRequestForm: React.FC<CitizenRequestFormProps> = ({ onNuevaSolicitu
                         value={formData.documento}
                         onChange={handleChange}
                         className="tw-w-full tw-p-2 tw-border tw-rounded"
+                        title="Obligatorio. Solo números. Mínimo 5 dígitos."
                     />
+                    {errors.documento && <span className="tw-text-red-500 tw-text-xs">{errors.documento}</span>}
                 </div>
 
                 <div>
@@ -209,6 +528,7 @@ const CitizenRequestForm: React.FC<CitizenRequestFormProps> = ({ onNuevaSolicitu
                         <option value="Cédula de Extranjera">Cédula de Extranjera</option>
                         <option value="Pasaporte">Pasaporte</option>
                     </select>
+                    {errors.tipoDocumento && <span className="tw-text-red-500 tw-text-xs">{errors.tipoDocumento}</span>}
                 </div>
 
 
@@ -221,6 +541,7 @@ const CitizenRequestForm: React.FC<CitizenRequestFormProps> = ({ onNuevaSolicitu
                         onChange={handleChange}
                         className="tw-w-full tw-p-2 tw-border tw-rounded"
                     />
+                    {errors.nombre && <span className="tw-text-red-500 tw-text-xs">{errors.nombre}</span>}
                 </div>
 
                 <div>
@@ -236,13 +557,14 @@ const CitizenRequestForm: React.FC<CitizenRequestFormProps> = ({ onNuevaSolicitu
                         <option value="Femenino">Femenino</option>
                         <option value="Prefiero no decirlo">Prefiero no decirlo</option>
                     </select>
+                    {errors.genero && <span className="tw-text-red-500 tw-text-xs">{errors.genero}</span>}
                 </div>
 
                 <div>
                     <label className="tw-block tw-font-medium">Grupo Etario<span className="tw-text-red-500">*</span></label>
                     <select
-                        name="grupoEtario"
-                        value={formData.grupoEtario}
+                        name="grupo"
+                        value={formData.grupo}
                         onChange={handleChange}
                         className="tw-w-full tw-p-2 tw-border tw-rounded"
                     >
@@ -253,6 +575,7 @@ const CitizenRequestForm: React.FC<CitizenRequestFormProps> = ({ onNuevaSolicitu
                         <option value="29 a 50 años">29 a 50 años</option>
                         <option value="51 años y mas">51 años y mas</option>
                     </select>
+                    {errors.grupo && <span className="tw-text-red-500 tw-text-xs">{errors.grupo}</span>}
                 </div>
 
                 <div>
@@ -282,6 +605,7 @@ const CitizenRequestForm: React.FC<CitizenRequestFormProps> = ({ onNuevaSolicitu
                             </option>
                         ))}
                     </select>
+                    {errors.poblacional && <span className="tw-text-red-500 tw-text-xs">{errors.poblacional}</span>}
 
                     {/* Campo para especificar "Otros" */}
                     {formData.poblacional === "Otros" && (
@@ -298,6 +622,7 @@ const CitizenRequestForm: React.FC<CitizenRequestFormProps> = ({ onNuevaSolicitu
                                 className="tw-w-full tw-p-2 tw-border tw-rounded"
                                 placeholder="Describa el grupo poblacional"
                             />
+                            {errors.otroPoblacional && <span className="tw-text-red-500 tw-text-xs">{errors.otroPoblacional}</span>}
                         </div>
                     )}
                 </div>
@@ -321,6 +646,7 @@ const CitizenRequestForm: React.FC<CitizenRequestFormProps> = ({ onNuevaSolicitu
                         <option value="Sordoceguera">Sordoceguera</option>
                         <option value="Otro">Otro</option>
                     </select>
+                    {errors.discapacidad && <span className="tw-text-red-500 tw-text-xs">{errors.discapacidad}</span>}
 
                     {formData.discapacidad === "Otro" && (
                         <div className="tw-mt-2">
@@ -336,6 +662,7 @@ const CitizenRequestForm: React.FC<CitizenRequestFormProps> = ({ onNuevaSolicitu
                                 className="tw-w-full tw-p-2 tw-border tw-rounded"
                                 placeholder="Ingrese su discapacidad"
                             />
+                            {errors.otraDiscapacidad && <span className="tw-text-red-500 tw-text-xs">{errors.otraDiscapacidad}</span>}
                         </div>
                     )}
                 </div>
@@ -360,6 +687,7 @@ const CitizenRequestForm: React.FC<CitizenRequestFormProps> = ({ onNuevaSolicitu
                         <option value="Doctorado">Doctorado</option>
                         <option value="Otro">Otro</option>
                     </select>
+                    {errors.escolaridad && <span className="tw-text-red-500 tw-text-xs">{errors.escolaridad}</span>}
 
                     {formData.escolaridad === "Otro" && (
                         <div className="tw-mt-2">
@@ -375,6 +703,7 @@ const CitizenRequestForm: React.FC<CitizenRequestFormProps> = ({ onNuevaSolicitu
                                 className="tw-w-full tw-p-2 tw-border tw-rounded"
                                 placeholder="Ingrese su escolaridad"
                             />
+                            {errors.otraEscolaridad && <span className="tw-text-red-500 tw-text-xs">{errors.otraEscolaridad}</span>}
                         </div>
                     )}
                 </div>
@@ -398,6 +727,7 @@ const CitizenRequestForm: React.FC<CitizenRequestFormProps> = ({ onNuevaSolicitu
                         <option value="ESPAÑA">ESPAÑA</option>
                         <option value="FRANCIA">FRANCIA</option>
                     </select>
+                    {errors.nacionalidad && <span className="tw-text-red-500 tw-text-xs">{errors.nacionalidad}</span>}
                 </div>
             </div>
 
@@ -413,7 +743,9 @@ const CitizenRequestForm: React.FC<CitizenRequestFormProps> = ({ onNuevaSolicitu
                             onChange={handleChange}
                             placeholder="Opcional"
                             className="tw-w-full tw-p-2 tw-border tw-rounded"
+                            title="Solo números. Mínimo 7 dígitos."
                         />
+                        {errors.telefono && <span className="tw-text-red-500 tw-text-xs">{errors.telefono}</span>}
                     </div>
                     <div>
                         <label className="tw-block tw-font-medium">Correo</label>
@@ -423,7 +755,9 @@ const CitizenRequestForm: React.FC<CitizenRequestFormProps> = ({ onNuevaSolicitu
                             onChange={handleChange}
                             placeholder="Opcional"
                             className="tw-w-full tw-p-2 tw-border tw-rounded"
+                            title="Debe ser un correo válido, ejemplo: usuario@dominio.com"
                         />
+                        {errors.correo && <span className="tw-text-red-500 tw-text-xs">{errors.correo}</span>}
                     </div>
                 </div>
             </div>
@@ -445,6 +779,7 @@ const CitizenRequestForm: React.FC<CitizenRequestFormProps> = ({ onNuevaSolicitu
                         <option value="Urbano">Urbano</option>
                         <option value="Rural">Rural</option>
                     </select>
+                    {errors.area && <span className="tw-text-red-500 tw-text-xs">{errors.area}</span>}
                 </div>
                 {formData.area === "Urbano" && (
                     <>
@@ -499,6 +834,7 @@ const CitizenRequestForm: React.FC<CitizenRequestFormProps> = ({ onNuevaSolicitu
                                     <option value="Villa Esperanza">Villa Esperanza</option>
                                 </optgroup>
                             </select>
+                            {errors.barrio && <span className="tw-text-red-500 tw-text-xs">{errors.barrio}</span>}
                         </div>
                     </>
                 )}
@@ -676,6 +1012,7 @@ const CitizenRequestForm: React.FC<CitizenRequestFormProps> = ({ onNuevaSolicitu
                                     <option value="Vega Chiquita">Vega Chiquita</option>
                                 </optgroup>
                             </select>
+                            {errors.vereda && <span className="tw-text-red-500 tw-text-xs">{errors.vereda}</span>}
                         </div>
                     </>
                 )}
@@ -693,19 +1030,24 @@ const CitizenRequestForm: React.FC<CitizenRequestFormProps> = ({ onNuevaSolicitu
                         value={formData.servicio || ""}
                         onChange={handleChange}
                         className="tw-w-full tw-p-2 tw-border tw-rounded"
+                        disabled={loadingServicios}
                     >
                         <option value="">Seleccione...</option>
-                        <option value="Información general">1. De información general</option>
-                        <option value="Vinculación a programas">2. Vinculación a subsidios, programas y/o proyectos</option>
-                        <option value="Cita con alcalde">3. Cita con Alcalde o Jefe de Despacho</option>
-                        <option value="Solicitud de constancias">4. Solicitud de constancias (de residencia, paz y salvo, estratificación, etc)</option>
-                        <option value="Servicios administrativos">5. Información de servicios administrativos</option>
-                        <option value="Trámites">6. Orientación sobre trámites</option>
-                        <option value="Interés particular">7. De interés particular</option>
-                        <option value="Otro">8. Otros</option>
+                        {loadingServicios ? (
+                            <option value="" disabled>Cargando servicios...</option>
+                        ) : (
+                            <>
+                                {servicios.map((servicio, idx) => (
+                                    <option key={servicio.nombre} value={servicio.nombre}>{`${idx + 1}. ${servicio.nombre}`}</option>
+                                ))}
+                                <option value="Otro">Otros</option>
+                            </>
+                        )}
                     </select>
+                    {errors.servicio && <span className="tw-text-red-500 tw-text-xs">{errors.servicio}</span>}
 
                     {formData.servicio === "Otro" && (
+                        <>
                         <input
                             name="otroServicio"
                             value={formData.otroServicio || ""}
@@ -713,6 +1055,34 @@ const CitizenRequestForm: React.FC<CitizenRequestFormProps> = ({ onNuevaSolicitu
                             placeholder="Especifique el servicio"
                             className="tw-mt-2 tw-w-full tw-p-2 tw-border tw-rounded"
                         />
+                        {errors.otroServicio && <span className="tw-text-red-500 tw-text-xs">{errors.otroServicio}</span>}
+                        <div className="tw-mt-2">
+                            <label className="tw-block tw-font-medium">Tipo de servicio</label>
+                            <select
+                                value={otroTipo}
+                                onChange={e => setOtroTipo(e.target.value as 'N/A' | 'Valor')}
+                                className="tw-w-full tw-p-2 tw-border tw-rounded"
+                            >
+                                <option value="N/A">N/A</option>
+                                <option value="Valor">Valor</option>
+                            </select>
+                        </div>
+                        </>
+                    )}
+
+                    {/* Campo de cantidad si el servicio es de tipo Valor */}
+                    {isValorServicio && (
+                        <div className="tw-mt-2">
+                            <label className="tw-block tw-font-medium">Cantidad</label>
+                            <input
+                                type="number"
+                                name="cantidadServicio"
+                                value={formData.cantidadServicio || ''}
+                                onChange={e => setFormData(prev => ({ ...prev, cantidadServicio: Number(e.target.value) }))}
+                                className="tw-w-full tw-p-2 tw-border tw-rounded"
+                                min={1}
+                            />
+                        </div>
                     )}
                 </div>
 
@@ -730,6 +1100,7 @@ const CitizenRequestForm: React.FC<CitizenRequestFormProps> = ({ onNuevaSolicitu
                         <option value="Media">Media</option>
                         <option value="Alta">Alta</option>
                     </select>
+                    {errors.prioridad && <span className="tw-text-red-500 tw-text-xs">{errors.prioridad}</span>}
                 </div>
             </div>
             <div className="tw-grid tw-grid-cols-1 md:tw-grid-cols-5 tw-gap-4 tw-mt-8">
@@ -745,6 +1116,7 @@ const CitizenRequestForm: React.FC<CitizenRequestFormProps> = ({ onNuevaSolicitu
                         <option value="Prioritaria">Prioritaria</option>
                         <option value="General">General</option>
                     </select>
+                    {errors.tipoAtencion && <span className="tw-text-red-500 tw-text-xs">{errors.tipoAtencion}</span>}
                 </div>
 
                 <div>
@@ -829,6 +1201,7 @@ const CitizenRequestForm: React.FC<CitizenRequestFormProps> = ({ onNuevaSolicitu
                     />
                     ¿Redireccionar solicitud?
                 </label>
+                {errors.redireccionar && <span className="tw-text-red-500 tw-text-xs">{errors.redireccionar}</span>}
 
                 {formData.redireccionar && (
                     <div className="tw-mt-2">
@@ -844,6 +1217,7 @@ const CitizenRequestForm: React.FC<CitizenRequestFormProps> = ({ onNuevaSolicitu
                             className="tw-w-full tw-p-2 tw-border tw-rounded"
                             placeholder="Ingrese la razón de redireccionamiento"
                         />
+                        {errors.razonRedireccionamiento && <span className="tw-text-red-500 tw-text-xs">{errors.razonRedireccionamiento}</span>}
                     </div>
                 )}
                 {formData.redireccionar && (
@@ -933,6 +1307,7 @@ const CitizenRequestForm: React.FC<CitizenRequestFormProps> = ({ onNuevaSolicitu
                             <option value="Trabajadores Oficiales">Trabajadores Oficiales</option>
                             <option value="Conductores Contratistas">Conductores Contratistas</option>
                         </select>
+                        {errors.oficinaDestino && <span className="tw-text-red-500 tw-text-xs">{errors.oficinaDestino}</span>}
                     </div>
                 )}
             </div>
