@@ -1006,4 +1006,24 @@ export const updatePlanModulesMask = async (id: number, modules_mask: number) =>
     return response.data;
 }
 
+// Obtener el slogan de un plan
+export const getSloganByPlan = async (id_plan: number) => {
+    const response = await api.get('/plan-territorial/slogan/get', {
+        params: {
+            id_plan,
+        }
+    });
+    return response.data;
+}
+
+
+// Actualizar el slogan de un plan
+export const updateSloganByPlan = async (id_plan: number, slogan: string) => {
+    const response = await api.put(`/plan-territorial/slogan/update`, {
+        id_plan,
+        slogan
+    });
+    return response.data;
+}
+
 export default api;

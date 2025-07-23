@@ -5,7 +5,7 @@ import Modal from 'react-modal';
 import { useAppSelector, useAppDispatch } from '@/store';
 import {
     thunkGetLocations, thunkGetSecretaries,
-    thunkUpdateDeadline
+    thunkUpdateDeadline, thunkGetSloganByPlan, thunkUpdateSloganByPlan
 } from '@/store/plan/thunks';
 import { setIsFullHeight } from "@/store/content/contentSlice";
 
@@ -42,6 +42,9 @@ const SettingPageWrapper = () => {
     const [yearSelect, setYearSelect] = useState<number | undefined>(plan ? plan.deadline ? parseInt(plan.deadline.split('-')[0]) : undefined : undefined);
     const [page, setPage] = useState(pageN ?? 1);
     const [rol, setRol] = useState("");
+    const [slogan, setSlogan] = useState<string>('');
+    const [editSlogan, setEditSlogan] = useState<string>('');
+    const [isEditingSlogan, setIsEditingSlogan] = useState(false);
 
     const contentRef = useRef<HTMLDivElement>(null);
 
@@ -99,6 +102,17 @@ const SettingPageWrapper = () => {
             dispatch(thunkGetLocations(id_plan));
     }, []);
 
+    useEffect(() => {
+        if (id_plan > 0) {
+            dispatch(thunkGetSloganByPlan(id_plan)).then((action: any) => {
+                if (action.payload && typeof action.payload === 'string') {
+                    setSlogan(action.payload);
+                    setEditSlogan(action.payload);
+                }
+            });
+        }
+    }, [id_plan]);
+
     const submitActiveYear = () => {
         if (plan === undefined) return;
         if (yearSelect === undefined) return setModalIsOpen(true);
@@ -111,6 +125,18 @@ const SettingPageWrapper = () => {
         setModalIsOpen(false);
         const date = new Date(years[0] - 1, 1, 1).toISOString();
         dispatch(thunkUpdateDeadline({ id_plan: id_plan, date: date }));
+    };
+
+    const handleSaveSlogan = () => {
+        dispatch(thunkUpdateSloganByPlan({ id_plan, slogan: editSlogan })).then((action: any) => {
+            if (!action.error) {
+                setSlogan(editSlogan);
+                setIsEditingSlogan(false);
+                notify('Slogan actualizado', 'success');
+            } else {
+                notify('Error al actualizar el slogan', 'error');
+            }
+        });
     };
 
     const handleBack = () => navigate(-1);
@@ -291,6 +317,46 @@ const SettingPageWrapper = () => {
                                         </div> :
                                         <p>Ha ocurrido un error</p>
                     }
+                    {/* Sección para editar el slogan del plan indicativo, ahora debajo del resto de paneles */}
+                    {(rol === "admin" || (rol === 'funcionario' && id_plan === plan.id_plan!)) && (
+                        <div className="tw-bg-white tw-rounded tw-shadow tw-p-6 tw-mt-4 tw-mb-8 tw-mx-4 tw-flex tw-flex-col tw-items-center">
+                            <p className="tw-font-bold tw-mb-4 tw-text-xl tw-font-montserrat tw-text-center">Slogan del Plan Indicativo</p>
+                            {!isEditingSlogan ? (
+                                <div className="tw-flex tw-items-center tw-gap-4 tw-justify-center">
+                                    <span className="tw-text-lg tw-font-montserrat tw-text-center">{slogan && slogan !== 'default' ? slogan : <span className="tw-text-gray-400">(Sin slogan personalizado)</span>}</span>
+                                    <button
+                                        className="tw-bg-blue-500 tw-text-white tw-px-3 tw-py-1 tw-rounded hover:tw-bg-blue-700"
+                                        onClick={() => setIsEditingSlogan(true)}
+                                    >
+                                        Editar
+                                    </button>
+                                </div>
+                            ) : (
+                                <div className="tw-flex tw-items-center tw-gap-4 tw-justify-center tw-w-full">
+                                    <input
+                                        className="tw-border tw-rounded tw-px-2 tw-py-1 tw-w-full tw-font-montserrat"
+                                        type="text"
+                                        value={editSlogan}
+                                        onChange={e => setEditSlogan(e.target.value)}
+                                        maxLength={100}
+                                        placeholder="Escribe un slogan para el plan..."
+                                    />
+                                    <button
+                                        className="tw-bg-green-500 tw-text-white tw-px-3 tw-py-1 tw-rounded hover:tw-bg-green-700"
+                                        onClick={handleSaveSlogan}
+                                    >
+                                        Guardar
+                                    </button>
+                                    <button
+                                        className="tw-bg-gray-300 tw-text-black tw-px-3 tw-py-1 tw-rounded hover:tw-bg-gray-400"
+                                        onClick={() => { setIsEditingSlogan(false); setEditSlogan(slogan); }}
+                                    >
+                                        Cancelar
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
             </div>
     );

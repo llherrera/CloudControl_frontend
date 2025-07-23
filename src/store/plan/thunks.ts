@@ -22,7 +22,7 @@ import {getPDTid, addPDT, getLastPDT, getColors, getLevelNodes,
         addProjectsAtPlan, updateProjectById, getCountProjectsByPlan,
         getPlanByUuid, getActionPlans, getActivityActionPlan, updateActionPlan,
         addActionPlan, addActivityActionPlans, updateActivityActionPlans,
-        updatePDTFill, deleteLocation, updatePlanModulesMask
+        updatePDTFill, deleteLocation, updatePlanModulesMask, getSloganByPlan, updateSloganByPlan
     } from '@/services/api';
 
 export const thunkGetPDTid = createAsyncThunk<PDTInterface, number, { rejectValue: ErrorBasicInterface }>(
@@ -555,6 +555,46 @@ export const thunkUpdateModulesMask = createAsyncThunk<
     async (props, { rejectWithValue }) => {
         try {
             await updatePlanModulesMask(props.id_plan, props.modules_mask);
+        } catch (err) {
+            const result = parseErrorAxios(err);
+            return rejectWithValue(result);
+        }
+    }
+);
+
+// Obtener el slogan de un plan
+export const thunkGetSloganByPlan = createAsyncThunk<
+    string,
+    number,
+    { rejectValue: ErrorBasicInterface }
+>(
+    'pdt/getSloganByPlan',
+    async (id_plan, { rejectWithValue }) => {
+        try {
+            const res = await getSloganByPlan(id_plan);
+            return res.slogan;
+        } catch (err) {
+            const result = parseErrorAxios(err);
+            return rejectWithValue(result);
+        }
+    }
+);
+
+// Actualizar el slogan de un plan
+interface UpdateSloganProps {
+    id_plan: number;
+    slogan: string;
+}
+
+export const thunkUpdateSloganByPlan = createAsyncThunk<
+    void,
+    UpdateSloganProps,
+    { rejectValue: ErrorBasicInterface }
+>(
+    'pdt/updateSloganByPlan',
+    async (props, { rejectWithValue }) => {
+        try {
+            await updateSloganByPlan(props.id_plan, props.slogan);
         } catch (err) {
             const result = parseErrorAxios(err);
             return rejectWithValue(result);

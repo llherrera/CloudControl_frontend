@@ -6,7 +6,7 @@ import {
     decrementLevelIndex, setParent, setCalcDone,
     AddRootTree, setZeroLevelIndex
 } from "@/store/plan/planSlice";
-import { thunkGetNodes } from '@/store/plan/thunks';
+import { thunkGetNodes, thunkGetSloganByPlan } from '@/store/plan/thunks';
 import { setMode } from "@/store/content/contentSlice";
 
 import { IdProps } from "@/interfaces";
@@ -33,6 +33,7 @@ export const Content = (props: IdProps) => {
     const [rol, setRol] = useState("");
     const [user, setUser] = useState("");
     const [id, setId] = useState(0);
+    const [slogan, setSlogan] = useState<string>('default');
 
     useEffect(() => {
         if (token_info?.token !== undefined) {
@@ -46,6 +47,21 @@ export const Content = (props: IdProps) => {
     useEffect(() => {
         dispatch(thunkGetNodes({ id_level: levels[indexLevel].id_level!, parent: parent }));
     }, [years, indexLevel]);
+
+    useEffect(() => {
+        if (plan?.id_plan) {
+            const id = Number(plan.id_plan);
+    
+            dispatch(thunkGetSloganByPlan(id)).then((action: any) => {
+                if (action.payload && typeof action.payload === 'string') {
+                    setSlogan(action.payload);
+                }
+            }).catch((error: any) => {
+                // Opcional: puedes decidir si dejas o no este log de error
+            });
+        }
+    }, [plan?.id_plan]);
+    
 
     const handleStartReturn = () => {
         dispatch(AddRootTree([]));
@@ -169,7 +185,7 @@ export const Content = (props: IdProps) => {
                                 tw-bg-white
                                 md:tw-col-span-2">
                     <p className="tw-font-montserrat tw-ml-4 tw-font-bold">
-                        {plan!.name}. ¡Así vamos!
+                        {slogan !== 'default' ? slogan : `${plan!.name}. ¡Así vamos!`}
                     </p>
                     <div className="tw-ml-4 tw-mb-3">
                         {rootTree.length <= 0 ? null :
