@@ -57,6 +57,11 @@ export const Memory = ({ callback }: PropsCallback) => {
 
     if (unit === undefined) return <div>No hay una meta seleccionada</div>;
 
+    useEffect(() => {
+        setValueExecuted(unit.years.find(item => item.year == yearSelect)?.physical_execution??0);
+        setValueFinancial(unit.years.find(item => item.year == yearSelect)?.financial_execution??0);
+    }, []);
+
     return (
         <section className="tw-bg-slate-200
                             tw-border-4 tw-border-double
@@ -142,6 +147,7 @@ export const Memory = ({ callback }: PropsCallback) => {
                                         title='Valor ejecutado'
                                         type="number"
                                         name="executed"
+                                        value={valueExecuted === 0 ? item.physical_execution : valueExecuted}
                                         className="tw-bg-green-300 tw-border tw-border-black tw-px-2 tw-w-1/2"
                                         onChange={handleChangeValue}
                                     />
@@ -152,6 +158,7 @@ export const Memory = ({ callback }: PropsCallback) => {
                                         title='Ejecución financiera'
                                         type="number"
                                         name="financial"
+                                        value={valueFinancial === 0 ? item.financial_execution : valueFinancial}
                                         className="tw-bg-green-300 tw-border tw-border-black tw-px-2 tw-w-1/2"
                                         onChange={handleChangeValue}
                                     />
