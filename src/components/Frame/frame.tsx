@@ -12,6 +12,7 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import { Menu, MenuItem, Badge } from '@mui/material';
 import { Notifications } from '@mui/icons-material';
 
+import { decode } from '@/utils';
 
 import { useAppDispatch, useAppSelector } from '@/store';
 import { thunkLogout } from '@/store/auth/thunks';
@@ -27,7 +28,8 @@ import {
     ChartIcon, MapICon
 } from '@/assets/icons';
 import { FrameProps } from '@/interfaces';
-import { thunkGetAllSolicitudes, thunkGetModulosUsuarioById } from '@/store/pqrs/thunks';
+import { thunkGetAllSolicitudes, thunkGetModulosUsuarioById, } from '@/store/pqrs/thunks';
+import { thunkGetTextFormatByPlan } from '@/store/plan/thunks';
 
 // --- Module Conversion Helpers ---
 interface IModules {
@@ -258,6 +260,55 @@ export const Frame = ({ children }: FrameProps) => {
         navigate(`/gestion-usuarios`);
     };
 
+    const id_plan = localStorage.getItem('id_plan') ?? '';
+
+    // Estado local opcional si no usas Redux
+    const [text, setText] = useState('');
+    const [color, setColor] = useState('#000000');
+    const [size, setSize] = useState('16px');
+    const [weight, setWeight] = useState<'normal' | 'bold' | 'lighter'>('normal');
+    const [align, setAlign] = useState<'left' | 'center' | 'right' | 'justify'>('center');
+
+    useEffect(() => {
+        dispatch(thunkGetTextFormatByPlan(Number(id_plan)));
+    }, [id_plan, dispatch]);
+
+    interface TextFormat {
+        text: string;
+        color: string;
+        size: string;
+        weight: 'normal' | 'bold' | 'lighter';
+        align: 'left' | 'center' | 'right' | 'justify';
+    }
+
+
+
+    useEffect(() => {
+        console.log('[TextConfig] Solicitando configuración para el plan:', id_plan);
+
+        dispatch(thunkGetTextFormatByPlan(Number(id_plan))).then((res) => {
+            console.log('[TextConfig] Respuesta recibida del thunk:', res);
+
+            const payload = res.payload as TextFormat | undefined;
+
+            if (payload) {
+                console.log('[TextConfig] Payload válido:', payload);
+                setText(payload.text || '');
+                setColor(payload.color || '#000000');
+                setSize(payload.size || '16px');
+                setWeight(payload.weight || 'normal');
+                setAlign(payload.align || 'center');
+            } else {
+                console.warn('[TextConfig] Payload inválido o vacío:', res.payload);
+            }
+        }).catch((error) => {
+            console.error('[TextConfig] Error al obtener la configuración:', error);
+        });
+    }, [id_plan, dispatch]);
+
+
+
+
     return (
         <div className='tw-min-h-screen tw-flex tw-flex-col'>
             <header
@@ -311,23 +362,45 @@ export const Frame = ({ children }: FrameProps) => {
                 {/*        BOTÓN DE ADMIN         */}
                 {/* (solo visible en md+ o según rol) */}
                 {/* ============================= */}
-                {localStorage.getItem('rol') === 'admin' && (
-                    <button
-                        onClick={handleAddUser}
-                        className="
-            tw-flex tw-items-center tw-gap-2
-            hover:tw-bg-green-200
-            tw-p-2 tw-rounded-lg
-            tw-text-sm md:tw-text-base
-          "
-                        title="Agregar funcionario al plan"
-                    >
-                        <PersonAddAltIcon sx={{ fontSize: 28, color: '#006400' }} />
-                        <span className="tw-text-[#006400] tw-font-montserrat tw-font-semibold">
-                            Gestión de usuarios
-                        </span>
-                    </button>
-                )}
+                <div className="tw-w-[45%] tw-flex tw-justify-center">
+                    <div className="tw-flex tw-flex-col tw-items-center tw-gap-4 tw-w-full tw-justify-center">
+                        <p
+                            className="tw-font-semibold tw-break-words tw-text-center tw-px-4 tw-py-1 tw-rounded-md tw-shadow-sm"
+                            style={{
+                                color: color,
+                                fontSize: size,
+                                fontWeight: weight,
+                                textAlign: align, 
+                            }}
+                        >
+                            {text || ''}
+                        </p>
+
+
+                        {localStorage.getItem('rol') === 'admin' && (
+                            <button
+                                onClick={handleAddUser}
+                                className="
+                    tw-flex tw-items-center tw-justify-center tw-gap-2
+                    tw-bg-green-100 hover:tw-bg-green-200
+                    tw-text-[#006400]
+                    tw-px-4 tw-py-2
+                    tw-rounded-xl
+                    tw-shadow-md
+                    tw-transition-all tw-duration-200
+                    tw-text-[clamp(0.9rem,2.2vw,1.3rem)]
+                "
+                                title="Agregar funcionario al plan"
+                            >
+                                <PersonAddAltIcon sx={{ fontSize: 24, color: '#006400' }} />
+                                <span className="tw-font-montserrat tw-font-semibold">
+                                    Gestión de usuarios
+                                </span>
+                            </button>
+                        )}
+                    </div>
+                </div>
+
 
                 {/* ============================= */}
                 {/*    DATOS DE USUARIO + ÍCONOS   */}

@@ -67,7 +67,9 @@ export interface NodeFormProps {
 
 export interface FrameProps {
     children: JSX.Element | JSX.Element[];
-}
+    onClose?: () => void; // función opcional sin parámetros ni retorno
+  }
+  
 
 export interface HeaderProps {
     children: JSX.Element | JSX.Element[];

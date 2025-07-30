@@ -10,6 +10,7 @@ import unitReducer from './unit/unitSlice';
 import evidenceReducer from './evidence/evidenceSlice';
 import pqrsReducer from './pqrs/pqrsSlice';
 
+
 export const reducers = {
   auth: authReducer,
   content: contentReducer,
@@ -19,6 +20,7 @@ export const reducers = {
   evidence: evidenceReducer,
   pqrs: pqrsReducer
 };
+
 
 const rootReducer = combineReducers(reducers);
 

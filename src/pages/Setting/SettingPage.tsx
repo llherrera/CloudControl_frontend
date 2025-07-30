@@ -5,7 +5,8 @@ import Modal from 'react-modal';
 import { useAppSelector, useAppDispatch } from '@/store';
 import {
     thunkGetLocations, thunkGetSecretaries,
-    thunkUpdateDeadline, thunkGetSloganByPlan, thunkUpdateSloganByPlan
+    thunkUpdateDeadline, thunkGetSloganByPlan, thunkUpdateSloganByPlan, thunkUpdateTextFormatByPlan,
+    thunkGetTextFormatByPlan
 } from '@/store/plan/thunks';
 import { setIsFullHeight } from "@/store/content/contentSlice";
 
@@ -53,25 +54,25 @@ const SettingPageWrapper = () => {
 
     useEffect(() => {
         if (!divRef.current) return;
-      
+
         const observer = new ResizeObserver((entries) => {
-          for (let entry of entries) {
-            const newHeight = entry.contentRect.height + 5;
-            const windowHeight = window.innerHeight;
-      
-            if (newHeight > windowHeight) {
-                setHeigtComponent(`${newHeight}px`);
-            }else{
-                setHeigtComponent("100vh")
+            for (let entry of entries) {
+                const newHeight = entry.contentRect.height + 5;
+                const windowHeight = window.innerHeight;
+
+                if (newHeight > windowHeight) {
+                    setHeigtComponent(`${newHeight}px`);
+                } else {
+                    setHeigtComponent("100vh")
+                }
             }
-          }
         });
-      
+
         observer.observe(divRef.current);
-      
+
         return () => observer.disconnect();
-      }, []);
-      
+    }, []);
+
     useEffect(() => {
         const checkHeight = () => {
             if (contentRef.current) {
@@ -144,6 +145,76 @@ const SettingPageWrapper = () => {
     const handlePage = (page: number) => {
         setPage(page);
     };
+
+    const [isEditingNavbarTitle, setIsEditingNavbarTitle] = useState(false);
+    const [navbarTitle, setNavbarTitle] = useState('');
+    const [editNavbarTitle, setEditNavbarTitle] = useState('');
+    const [navbarTitleConfig, setNavbarTitleConfig] = useState({
+        color: '#222222',
+        size: '1.5rem',
+        weight: 'bold',
+    });
+
+    const handleSaveNavbarTitle = () => {
+        setNavbarTitle(editNavbarTitle);
+        setIsEditingNavbarTitle(false);
+        // aquí puedes hacer el dispatch para guardar en backend
+    };
+
+    const [titleText, setTitleText] = useState('');
+    const [textColor, setTextColor] = useState('#000000');
+    const [fontSize, setFontSize] = useState('18px');
+    const [fontWeight, setFontWeight] = useState('normal');
+    const [textAlign, setTextAlign] = useState('center');
+
+    const handleSaveTitleConfig = () => {
+        const config = {
+            text: titleText,
+            color: textColor,
+            size: fontSize,
+            weight: fontWeight,
+            align: textAlign,
+        };
+        const formatString = formatTextConfigToString(config);
+        dispatch(thunkUpdateTextFormatByPlan({ id_plan, format: config }));
+    };
+
+    function formatTextConfigToString(config: Record<string, string>): string {
+        return Object.entries(config)
+            .map(([key, value]) => `[${key}: ${value}]`)
+            .join(', ');
+    }
+
+    const idplan = localStorage.getItem('id_plan') ?? '';
+
+
+    useEffect(() => {
+        dispatch(thunkGetTextFormatByPlan(Number(idplan)));
+    }, [id_plan, dispatch]);
+
+    interface TextFormat {
+        text: string;
+        color: string;
+        size: string;
+        weight: 'normal' | 'bold' | 'lighter';
+        align: 'left' | 'center' | 'right' | 'justify';
+    }
+
+    useEffect(() => {
+        dispatch(thunkGetTextFormatByPlan(Number(id_plan))).then((res) => {
+            const payload = res.payload as TextFormat | undefined;
+    
+            if (payload) {
+                setTitleText(payload.text || '');
+                setTextColor(payload.color || '#000000');
+                setFontSize(payload.size || '16px');
+                setFontWeight(payload.weight || 'normal');
+                setTextAlign(payload.align || 'center');
+            }
+        });
+    }, [id_plan, dispatch]);
+    
+
 
 
     return (
@@ -292,7 +363,156 @@ const SettingPageWrapper = () => {
                                         : null
                                     }
                                 </div>
-                            </div> :
+
+                                {(rol === "admin" || (rol === 'funcionario' && id_plan === plan.id_plan!)) && (
+                                    <div className="tw-bg-white tw-rounded tw-shadow tw-p-6 tw-mt-4 tw-mb-8 tw-mx-4 tw-flex tw-flex-col tw-items-center">
+                                        <p className="tw-font-bold tw-mb-4 tw-text-xl tw-font-montserrat tw-text-center">Título del Navbar</p>
+
+                                        {!isEditingNavbarTitle ? (
+                                            <div className="tw-flex tw-flex-col tw-items-center tw-gap-4">
+                                                <span
+                                                    className="tw-font-montserrat tw-text-lg tw-text-center tw-w-full"
+                                                    style={{
+                                                        color: textColor,
+                                                        fontSize: fontSize,
+                                                        fontWeight: fontWeight,
+                                                        textAlign: textAlign as any,
+                                                    }}
+                                                >
+                                                    {titleText || <span className="tw-text-gray-400">(Sin título personalizado)</span>}
+                                                </span>
+                                                <button
+                                                    className="tw-bg-blue-500 tw-text-white tw-px-4 tw-py-1 tw-rounded hover:tw-bg-blue-700"
+                                                    onClick={() => setIsEditingNavbarTitle(true)}
+                                                >
+                                                    Editar
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <div className="tw-w-full tw-flex tw-flex-col tw-gap-4">
+                                                <input
+                                                    type="text"
+                                                    className="tw-border tw-rounded tw-p-2 tw-font-montserrat"
+                                                    value={titleText}
+                                                    onChange={e => setTitleText(e.target.value)}
+                                                    placeholder="Escribe un título para el navbar..."
+                                                    maxLength={60}
+                                                />
+
+                                                <div className="tw-flex tw-flex-wrap tw-gap-2">
+                                                    <label className="tw-flex tw-items-center tw-gap-2">
+                                                        Color:
+                                                        <input
+                                                            type="color"
+                                                            value={textColor}
+                                                            onChange={e => setTextColor(e.target.value)}
+                                                        />
+                                                    </label>
+                                                    <label className="tw-flex tw-items-center tw-gap-2">
+                                                        Tamaño:
+                                                        <select
+                                                            className="tw-border tw-rounded tw-px-1"
+                                                            value={fontSize}
+                                                            onChange={e => setFontSize(e.target.value)}
+                                                        >
+                                                            <option value="14px">Pequeño</option>
+                                                            <option value="18px">Mediano</option>
+                                                            <option value="24px">Grande</option>
+                                                            <option value="32px">Extra Grande</option>
+                                                        </select>
+                                                    </label>
+                                                    <label className="tw-flex tw-items-center tw-gap-2">
+                                                        Peso:
+                                                        <select
+                                                            className="tw-border tw-rounded tw-px-1"
+                                                            value={fontWeight}
+                                                            onChange={e => setFontWeight(e.target.value)}
+                                                        >
+                                                            <option value="lighter">Ligero</option>
+                                                            <option value="normal">Normal</option>
+                                                            <option value="bold">Negrita</option>
+                                                        </select>
+                                                    </label>
+                                                    <label className="tw-flex tw-items-center tw-gap-2">
+                                                        Alineación:
+                                                        <select
+                                                            className="tw-border tw-rounded tw-px-1"
+                                                            value={textAlign}
+                                                            onChange={e => setTextAlign(e.target.value)}
+                                                        >
+                                                            <option value="left">Izquierda</option>
+                                                            <option value="center">Centro</option>
+                                                            <option value="right">Derecha</option>
+                                                        </select>
+                                                    </label>
+                                                </div>
+
+                                                <div className="tw-flex tw-justify-center tw-gap-4">
+                                                    <button
+                                                        className="tw-bg-green-500 tw-text-white tw-px-3 tw-py-1 tw-rounded hover:tw-bg-green-700"
+                                                        onClick={() => {
+                                                            handleSaveTitleConfig();
+                                                            setIsEditingNavbarTitle(false);
+                                                            window.location.reload(); // 🔄 fuerza la recarga de la página
+                                                          }}
+                                                          
+                                                    >
+                                                        Guardar
+                                                    </button>
+                                                    <button
+                                                        className="tw-bg-gray-300 tw-text-black tw-px-3 tw-py-1 tw-rounded hover:tw-bg-gray-400"
+                                                        onClick={() => setIsEditingNavbarTitle(false)}
+                                                    >
+                                                        Cancelar
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+
+                                {/* Sección para editar el slogan del plan indicativo, ahora debajo del resto de paneles */}
+                                {(rol === "admin" || (rol === 'funcionario' && id_plan === plan.id_plan!)) && (
+                                    <div className="tw-bg-white tw-rounded tw-shadow tw-p-6 tw-mt-4 tw-mb-8 tw-mx-4 tw-flex tw-flex-col tw-items-center">
+                                        <p className="tw-font-bold tw-mb-4 tw-text-xl tw-font-montserrat tw-text-center">Slogan del Plan Indicativo</p>
+                                        {!isEditingSlogan ? (
+                                            <div className="tw-flex tw-items-center tw-gap-4 tw-justify-center">
+                                                <span className="tw-text-lg tw-font-montserrat tw-text-center">{slogan && slogan !== 'default' ? slogan : <span className="tw-text-gray-400">(Sin slogan personalizado)</span>}</span>
+                                                <button
+                                                    className="tw-bg-blue-500 tw-text-white tw-px-3 tw-py-1 tw-rounded hover:tw-bg-blue-700"
+                                                    onClick={() => setIsEditingSlogan(true)}
+                                                >
+                                                    Editar
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <div className="tw-flex tw-items-center tw-gap-4 tw-justify-center tw-w-full">
+                                                <input
+                                                    className="tw-border tw-rounded tw-px-2 tw-py-1 tw-w-full tw-font-montserrat"
+                                                    type="text"
+                                                    value={editSlogan}
+                                                    onChange={e => setEditSlogan(e.target.value)}
+                                                    maxLength={100}
+                                                    placeholder="Escribe un slogan para el plan..."
+                                                />
+                                                <button
+                                                    className="tw-bg-green-500 tw-text-white tw-px-3 tw-py-1 tw-rounded hover:tw-bg-green-700"
+                                                    onClick={handleSaveSlogan}
+                                                >
+                                                    Guardar
+                                                </button>
+                                                <button
+                                                    className="tw-bg-gray-300 tw-text-black tw-px-3 tw-py-1 tw-rounded hover:tw-bg-gray-400"
+                                                    onClick={() => { setIsEditingSlogan(false); setEditSlogan(slogan); }}
+                                                >
+                                                    Cancelar
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                            :
                             page === 2 ?
                                 <div>
                                     {((rol === "admin") || ((rol === 'funcionario' || rol === 'planeacion') && id_plan === plan.id_plan!)) ?
@@ -309,54 +529,14 @@ const SettingPageWrapper = () => {
                                         <div>
                                             <UpdateUserForm />
                                         </div> :
-                                    page === 5 ?
-                                        <div>
-                                            {rol === "admin" ?
-                                                <ModulesForm />
-                                                : null}
-                                        </div> :
-                                        <p>Ha ocurrido un error</p>
+                                        page === 5 ?
+                                            <div>
+                                                {rol === "admin" ?
+                                                    <ModulesForm />
+                                                    : null}
+                                            </div> :
+                                            <p>Ha ocurrido un error</p>
                     }
-                    {/* Sección para editar el slogan del plan indicativo, ahora debajo del resto de paneles */}
-                    {(rol === "admin" || (rol === 'funcionario' && id_plan === plan.id_plan!)) && (
-                        <div className="tw-bg-white tw-rounded tw-shadow tw-p-6 tw-mt-4 tw-mb-8 tw-mx-4 tw-flex tw-flex-col tw-items-center">
-                            <p className="tw-font-bold tw-mb-4 tw-text-xl tw-font-montserrat tw-text-center">Slogan del Plan Indicativo</p>
-                            {!isEditingSlogan ? (
-                                <div className="tw-flex tw-items-center tw-gap-4 tw-justify-center">
-                                    <span className="tw-text-lg tw-font-montserrat tw-text-center">{slogan && slogan !== 'default' ? slogan : <span className="tw-text-gray-400">(Sin slogan personalizado)</span>}</span>
-                                    <button
-                                        className="tw-bg-blue-500 tw-text-white tw-px-3 tw-py-1 tw-rounded hover:tw-bg-blue-700"
-                                        onClick={() => setIsEditingSlogan(true)}
-                                    >
-                                        Editar
-                                    </button>
-                                </div>
-                            ) : (
-                                <div className="tw-flex tw-items-center tw-gap-4 tw-justify-center tw-w-full">
-                                    <input
-                                        className="tw-border tw-rounded tw-px-2 tw-py-1 tw-w-full tw-font-montserrat"
-                                        type="text"
-                                        value={editSlogan}
-                                        onChange={e => setEditSlogan(e.target.value)}
-                                        maxLength={100}
-                                        placeholder="Escribe un slogan para el plan..."
-                                    />
-                                    <button
-                                        className="tw-bg-green-500 tw-text-white tw-px-3 tw-py-1 tw-rounded hover:tw-bg-green-700"
-                                        onClick={handleSaveSlogan}
-                                    >
-                                        Guardar
-                                    </button>
-                                    <button
-                                        className="tw-bg-gray-300 tw-text-black tw-px-3 tw-py-1 tw-rounded hover:tw-bg-gray-400"
-                                        onClick={() => { setIsEditingSlogan(false); setEditSlogan(slogan); }}
-                                    >
-                                        Cancelar
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-                    )}
                 </div>
             </div>
     );

@@ -1008,7 +1008,7 @@ export const updatePlanModulesMask = async (id: number, modules_mask: number) =>
 
 // Obtener el slogan de un plan
 export const getSloganByPlan = async (id_plan: number) => {
-    const response = await api.get('/plan-territorial/slogan/get', {
+    const response = await api.get('/plan-territorial/slogan/value', {
         params: {
             id_plan,
         }
@@ -1019,11 +1019,50 @@ export const getSloganByPlan = async (id_plan: number) => {
 
 // Actualizar el slogan de un plan
 export const updateSloganByPlan = async (id_plan: number, slogan: string) => {
-    const response = await api.put(`/plan-territorial/slogan/update`, {
+    const response = await api.put(`/plan-territorial/slogan/value`, {
         id_plan,
         slogan
     });
     return response.data;
 }
+
+// Obtener el mapZoom de un plan
+export const getMapZoomByPlan = async (id_plan: number) => {
+    const response = await api.get('/plan-territorial/map-zoom/value', {
+        params: {
+            id_plan,
+        }
+    });
+    return response.data;
+};
+
+// Actualizar el mapZoom de un plan
+export const updateMapZoomByPlan = async (id_plan: number, mapZoom: string) => {
+    const response = await api.put('/plan-territorial/map-zoom/value', {
+        id_plan,
+        mapZoom
+    });
+    return response.data;
+};
+
+// Obtener configuración de texto de un plan
+export const getTextFormatByPlan = async (id_plan: number) => {
+    const response = await api.get('/plan-territorial/text-format/value', {
+        params: {
+            id_plan,
+        }
+    });
+    return response.data; // devuelve: { format: { ... } }
+};
+
+// Actualizar configuración de texto de un plan
+export const updateTextFormatByPlan = async (id_plan: number, format: Record<string, any>) => {
+    const response = await api.put('/plan-territorial/text-format/value', {
+        id_plan,
+        format
+    });
+    return response.data;
+};
+
 
 export default api;

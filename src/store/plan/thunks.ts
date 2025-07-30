@@ -22,7 +22,11 @@ import {getPDTid, addPDT, getLastPDT, getColors, getLevelNodes,
         addProjectsAtPlan, updateProjectById, getCountProjectsByPlan,
         getPlanByUuid, getActionPlans, getActivityActionPlan, updateActionPlan,
         addActionPlan, addActivityActionPlans, updateActivityActionPlans,
-        updatePDTFill, deleteLocation, updatePlanModulesMask, getSloganByPlan, updateSloganByPlan
+        updatePDTFill, deleteLocation, updatePlanModulesMask, getSloganByPlan, updateSloganByPlan,
+        getMapZoomByPlan,
+        updateMapZoomByPlan,
+        getTextFormatByPlan,
+        updateTextFormatByPlan
     } from '@/services/api';
 
 export const thunkGetPDTid = createAsyncThunk<PDTInterface, number, { rejectValue: ErrorBasicInterface }>(
@@ -601,5 +605,87 @@ export const thunkUpdateSloganByPlan = createAsyncThunk<
         }
     }
 );
+
+// Obtener el mapZoom de un plan
+export const thunkGetMapZoomByPlan = createAsyncThunk<
+    string,
+    number,
+    { rejectValue: ErrorBasicInterface }
+>(
+    'pdt/getMapZoomByPlan',
+    async (id_plan, { rejectWithValue }) => {
+        try {
+            const res = await getMapZoomByPlan(id_plan);
+            return res.mapZoom;
+        } catch (err) {
+            const result = parseErrorAxios(err);
+            return rejectWithValue(result);
+        }
+    }
+);
+
+// Actualizar el mapZoom de un plan
+interface UpdateMapZoomProps {
+    id_plan: number;
+    mapZoom: string;
+}
+
+export const thunkUpdateMapZoomByPlan = createAsyncThunk<
+    void,
+    UpdateMapZoomProps,
+    { rejectValue: ErrorBasicInterface }
+>(
+    'pdt/updateMapZoomByPlan',
+    async (props, { rejectWithValue }) => {
+        try {
+            await updateMapZoomByPlan(props.id_plan, props.mapZoom);
+        } catch (err) {
+            const result = parseErrorAxios(err);
+            return rejectWithValue(result);
+        }
+    }
+);
+
+// Obtener el formato de texto de un plan
+export const thunkGetTextFormatByPlan = createAsyncThunk<
+    Record<string, any>,
+    number,
+    { rejectValue: ErrorBasicInterface }
+>(
+    'pdt/getTextFormatByPlan',
+    async (id_plan, { rejectWithValue }) => {
+        try {
+            const res = await getTextFormatByPlan(id_plan);
+            return res.format; // objeto con las propiedades del texto (color, tamaño, etc.)
+        } catch (err) {
+            const result = parseErrorAxios(err);
+            return rejectWithValue(result);
+        }
+    }
+);
+
+// Actualizar el formato de texto de un plan
+interface UpdateTextFormatProps {
+    id_plan: number;
+    format: Record<string, any>; // o una interfaz más específica si tienes una
+}
+
+export const thunkUpdateTextFormatByPlan = createAsyncThunk<
+    void,
+    UpdateTextFormatProps,
+    { rejectValue: ErrorBasicInterface }
+>(
+    'pdt/updateTextFormatByPlan',
+    async (props, { rejectWithValue }) => {
+        try {
+            await updateTextFormatByPlan(props.id_plan, props.format);
+        } catch (err) {
+            const result = parseErrorAxios(err);
+            return rejectWithValue(result);
+        }
+    }
+);
+
+
 
 export const removePDT = createAction('plan/removePDT')
