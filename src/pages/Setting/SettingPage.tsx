@@ -161,11 +161,7 @@ const SettingPageWrapper = () => {
         // aquí puedes hacer el dispatch para guardar en backend
     };
 
-    const [titleText, setTitleText] = useState('');
-    const [textColor, setTextColor] = useState('#000000');
-    const [fontSize, setFontSize] = useState('18px');
-    const [fontWeight, setFontWeight] = useState('normal');
-    const [textAlign, setTextAlign] = useState('center');
+
 
     const handleSaveTitleConfig = () => {
         const config = {
@@ -179,19 +175,6 @@ const SettingPageWrapper = () => {
         dispatch(thunkUpdateTextFormatByPlan({ id_plan, format: config }));
     };
 
-    function formatTextConfigToString(config: Record<string, string>): string {
-        return Object.entries(config)
-            .map(([key, value]) => `[${key}: ${value}]`)
-            .join(', ');
-    }
-
-    const idplan = localStorage.getItem('id_plan') ?? '';
-
-
-    useEffect(() => {
-        dispatch(thunkGetTextFormatByPlan(Number(idplan)));
-    }, [id_plan, dispatch]);
-
     interface TextFormat {
         text: string;
         color: string;
@@ -200,22 +183,50 @@ const SettingPageWrapper = () => {
         align: 'left' | 'center' | 'right' | 'justify';
     }
 
+    function formatTextConfigToString(config: Record<string, string>): string {
+        return Object.entries(config)
+            .map(([key, value]) => `[${key}: ${value}]`)
+            .join(', ');
+    }
+
+    const idPlan = localStorage.getItem('id_plan') ?? '';
+
+    const [textFormat, setTextFormat] = useState<TextFormat | null>(null);
+
+    const [titleText, setTitleText] = useState('');
+    const [textColor, setTextColor] = useState('#000000');
+    const [fontSize, setFontSize] = useState('16px');
+    const [fontWeight, setFontWeight] = useState<'normal' | 'bold' | 'lighter'>('normal');
+    const [textAlign, setTextAlign] = useState<'left' | 'center' | 'right' | 'justify'>('center');
+
     useEffect(() => {
-        dispatch(thunkGetTextFormatByPlan(Number(id_plan))).then((res) => {
-            const payload = res.payload as TextFormat | undefined;
-    
-            if (payload) {
-                setTitleText(payload.text || '');
-                setTextColor(payload.color || '#000000');
-                setFontSize(payload.size || '16px');
-                setFontWeight(payload.weight || 'normal');
-                setTextAlign(payload.align || 'center');
-            }
-        });
-    }, [id_plan, dispatch]);
-    
+        if (!textFormat && idPlan) {
+            dispatch(thunkGetTextFormatByPlan(Number(idPlan)))
+                .then((res) => {
+                    const payload = res.payload as TextFormat | undefined;
 
+                    if (payload) {
+                        setTextFormat(payload);
+                        setTitleText(payload.text || '');
+                        setTextColor(payload.color || '#000000');
+                        setFontSize(payload.size || '16px');
+                        setFontWeight(payload.weight as 'normal' | 'bold' | 'lighter');
+                        setTextAlign(payload.align as 'left' | 'center' | 'right' | 'justify');
+                    }
+                })
+                .catch((err) => {
+                    console.error('[TextConfig] Error al obtener formato:', err);
+                });
+        }
+    }, [idPlan, dispatch, textFormat]);
 
+    const configString = formatTextConfigToString({
+        text: titleText,
+        color: textColor,
+        size: fontSize,
+        weight: fontWeight,
+        align: textAlign,
+    });
 
     return (
         (plan === null || plan === undefined) ?
@@ -426,7 +437,7 @@ const SettingPageWrapper = () => {
                                                         <select
                                                             className="tw-border tw-rounded tw-px-1"
                                                             value={fontWeight}
-                                                            onChange={e => setFontWeight(e.target.value)}
+                                                            onChange={e => setFontWeight(e.target.value as 'normal' | 'bold' | 'lighter')}
                                                         >
                                                             <option value="lighter">Ligero</option>
                                                             <option value="normal">Normal</option>
@@ -438,7 +449,7 @@ const SettingPageWrapper = () => {
                                                         <select
                                                             className="tw-border tw-rounded tw-px-1"
                                                             value={textAlign}
-                                                            onChange={e => setTextAlign(e.target.value)}
+                                                            onChange={e => setTextAlign(e.target.value as 'left' | 'center' | 'right' | 'justify')}
                                                         >
                                                             <option value="left">Izquierda</option>
                                                             <option value="center">Centro</option>
@@ -454,8 +465,8 @@ const SettingPageWrapper = () => {
                                                             handleSaveTitleConfig();
                                                             setIsEditingNavbarTitle(false);
                                                             window.location.reload(); // 🔄 fuerza la recarga de la página
-                                                          }}
-                                                          
+                                                        }}
+
                                                     >
                                                         Guardar
                                                     </button>

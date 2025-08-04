@@ -260,19 +260,6 @@ export const Frame = ({ children }: FrameProps) => {
         navigate(`/gestion-usuarios`);
     };
 
-    const id_plan = localStorage.getItem('id_plan') ?? '';
-
-    // Estado local opcional si no usas Redux
-    const [text, setText] = useState('');
-    const [color, setColor] = useState('#000000');
-    const [size, setSize] = useState('16px');
-    const [weight, setWeight] = useState<'normal' | 'bold' | 'lighter'>('normal');
-    const [align, setAlign] = useState<'left' | 'center' | 'right' | 'justify'>('center');
-
-    useEffect(() => {
-        dispatch(thunkGetTextFormatByPlan(Number(id_plan)));
-    }, [id_plan, dispatch]);
-
     interface TextFormat {
         text: string;
         color: string;
@@ -281,33 +268,38 @@ export const Frame = ({ children }: FrameProps) => {
         align: 'left' | 'center' | 'right' | 'justify';
     }
 
+    const id_plan = localStorage.getItem('id_plan') ?? '';
 
+    const [textFormat, setTextFormat] = useState<TextFormat | null>(null);
 
     useEffect(() => {
-        console.log('[TextConfig] Solicitando configuración para el plan:', id_plan);
+        if (!textFormat && id_plan) {
+            console.log('[TextConfig] Solicitando configuración para el plan:', id_plan);
 
-        dispatch(thunkGetTextFormatByPlan(Number(id_plan))).then((res) => {
-            console.log('[TextConfig] Respuesta recibida del thunk:', res);
+            dispatch(thunkGetTextFormatByPlan(Number(id_plan)))
+                .then((res) => {
+                    console.log('[TextConfig] Respuesta recibida del thunk:', res);
+                    const payload = res.payload as TextFormat | undefined;
 
-            const payload = res.payload as TextFormat | undefined;
+                    if (payload) {
+                        console.log('[TextConfig] Payload válido:', payload);
+                        setTextFormat(payload);
+                    } else {
+                        console.warn('[TextConfig] Payload inválido o vacío:', res.payload);
+                    }
+                })
+                .catch((error) => {
+                    console.error('[TextConfig] Error al obtener la configuración:', error);
+                });
+        }
+    }, [id_plan, dispatch, textFormat]);
 
-            if (payload) {
-                console.log('[TextConfig] Payload válido:', payload);
-                setText(payload.text || '');
-                setColor(payload.color || '#000000');
-                setSize(payload.size || '16px');
-                setWeight(payload.weight || 'normal');
-                setAlign(payload.align || 'center');
-            } else {
-                console.warn('[TextConfig] Payload inválido o vacío:', res.payload);
-            }
-        }).catch((error) => {
-            console.error('[TextConfig] Error al obtener la configuración:', error);
-        });
-    }, [id_plan, dispatch]);
-
-
-
+    // Puedes acceder a cada parte del objeto así:
+    const text = textFormat?.text || '';
+    const color = textFormat?.color || '#000000';
+    const size = textFormat?.size || '16px';
+    const weight = textFormat?.weight || 'normal';
+    const align = textFormat?.align || 'center';
 
     return (
         <div className='tw-min-h-screen tw-flex tw-flex-col'>
@@ -370,7 +362,7 @@ export const Frame = ({ children }: FrameProps) => {
                                 color: color,
                                 fontSize: size,
                                 fontWeight: weight,
-                                textAlign: align, 
+                                textAlign: align,
                             }}
                         >
                             {text || ''}

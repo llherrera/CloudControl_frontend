@@ -64,7 +64,7 @@ export const HomePage = () => {
                         onClick={() => navigate('/login')}
                         bgColor="tw-bg-greenBtn"
                         className="tw-w-40 tw-h-16 tw-text-lg tw-mx-2 tw-mb-4"/>
-                    <ButtonComponent
+                    {/* <ButtonComponent
                         key={1}
                         inside={false}
                         text={loading ? 'Cargando...' : 'Ciudadano'}
@@ -73,7 +73,7 @@ export const HomePage = () => {
                         bgColor="tw-bg-greenBtn"
                         className={`tw-w-40 tw-h-16 tw-text-lg tw-mx-2 ${loading ? 'tw-opacity-50 tw-cursor-not-allowed' : ''}`}
                         disabled={loading}
-                    />
+                    /> */}
                 </Header>
             </div>
         </div>
