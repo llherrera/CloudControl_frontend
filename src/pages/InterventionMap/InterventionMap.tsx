@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { MapContainer, TileLayer, Marker, Popup, Rectangle, useMap } from 'react-leaflet';
+import { MapContainer, TileLayer, Popup, Rectangle, useMap, CircleMarker } from 'react-leaflet';
 import { Icon } from 'leaflet';
 import { toast } from 'react-toastify';
 
@@ -15,6 +15,8 @@ import MarkerIcon from '@/assets/icons/location.svg';
 import 'react-toastify/dist/ReactToastify.css';
 import 'leaflet/dist/leaflet.css';
 
+const DEFAULT_INDICATOR_COLOR = '#3388ff'; // fallback color (Leaflet default-ish)
+
 export const InterventionMap = () => (
     <Frame>
         <Section />
@@ -25,12 +27,11 @@ const Section = () => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
 
-    const { planLocation, bounding1, bounding2, bounding3, bounding4 } = useAppSelector(store => store.plan);
+    const { planLocation, bounding1, bounding2, bounding3, bounding4, secretaries: planSecretaries } = useAppSelector(store => store.plan);
     const { id_plan, locs, secretary } = useAppSelector(store => store.content);
     const [mapZoom, setMapZoom] = useState<number>(13);
     const [isSavingZoom, setIsSavingZoom] = useState(false);
     const [markers, setMarkers] = useState<JSX.Element[]>([]);
-
 
     const { token_info } = useAppSelector(store => store.auth);
 
@@ -42,8 +43,7 @@ const Section = () => {
             const rolUsuario = decoded.rol || '';
             setIsAdmin(rolUsuario === 'admin');
         }
-    }, []);
-
+    }, [token_info]);
 
     useEffect(() => {
         if (locs.length === 0) {
@@ -51,21 +51,28 @@ const Section = () => {
         } else {
             const markersList = locs.map(loc => {
                 const { lat, lng } = loc;
+
+                // Buscamos la secretaria responsable por nombre (ajusta si usas otro campo)
+                const foundSec = planSecretaries?.find(s => {
+                    // Normalizamos por seguridad (trim & comparar lowercase)
+                    if (!s?.name || !loc?.responsible) return false;
+                    return s.name.trim().toLowerCase() === String(loc.responsible).trim().toLowerCase();
+                });
+
+                const secColor = (foundSec && foundSec.color) ? foundSec.color : DEFAULT_INDICATOR_COLOR;
+
                 return (
-                    <Marker
-                        key={loc.lat + loc.date}
-                        position={[lat, lng]}
-                        icon={new Icon({
-                            iconUrl: MarkerIcon,
-                            iconSize: [25, 41],
-                            iconAnchor: [12, 41],
-                        })}
+                    <CircleMarker
+                        key={String(lat) + String(loc.date)}
+                        center={[lat, lng]}
+                        radius={8}
+                        pathOptions={{ color: secColor, fillColor: secColor, fillOpacity: 1 }}
                     >
                         <Popup>
                             <div className="tw-space-y-1 tw-text-sm">
                                 <div className='tw-flex tw-gap-1'>
                                     <span className='tw-font-bold'>Fecha:</span>
-                                    <span>{loc.date.split('T')[0]}</span>
+                                    <span>{loc.date?.split?.('T')?.[0]}</span>
                                 </div>
                                 <div className='tw-font-bold'>{loc.responsible}</div>
                                 <div className='tw-flex tw-gap-1'>
@@ -95,12 +102,12 @@ const Section = () => {
                                 </div>
                             </div>
                         </Popup>
-                    </Marker>
+                    </CircleMarker>
                 );
             });
             setMarkers(markersList);
         }
-    }, [locs]);
+    }, [locs, planSecretaries]);
 
     useEffect(() => {
         if (id_plan) {
@@ -109,14 +116,9 @@ const Section = () => {
             dispatch(thunkGetMapZoomByPlan(id_plan))
                 .unwrap()
                 .then((zoomStr) => {
-                    console.log('[useEffect] Respuesta de thunkGetMapZoomByPlan:', zoomStr);
-
                     const zoomParsed = parseInt(zoomStr);
-                    console.log('[useEffect] Zoom parseado:', zoomParsed);
-
                     if (!isNaN(zoomParsed)) {
                         setMapZoom(zoomParsed);
-                        console.log('[useEffect] mapZoom actualizado en estado:', zoomParsed);
                     } else {
                         console.warn('[useEffect] zoomParsed no es un número válido:', zoomStr);
                     }
@@ -126,7 +128,7 @@ const Section = () => {
                     toast.error("Error al obtener zoom por defecto");
                 });
         }
-    }, [id_plan]);
+    }, [id_plan, dispatch]);
 
     function ZoomUpdater({ zoom }: { zoom: number }) {
         const map = useMap();
@@ -136,7 +138,7 @@ const Section = () => {
                 map.setZoom(zoom);
                 console.log('[ZoomUpdater] Zoom actualizado dinámicamente a:', zoom);
             }
-        }, [zoom]);
+        }, [zoom, map]);
 
         return null;
     }
@@ -176,7 +178,7 @@ const Section = () => {
                 <div className="tw-w-full tw-h-[60vh] tw-rounded-xl tw-overflow-hidden tw-mt-2">
                     <MapContainer
                         center={[planLocation.lat, planLocation.lng]}
-                        zoom={mapZoom} // este se usará solo al montar
+                        zoom={mapZoom}
                         bounds={[[bounding1, bounding3], [bounding2, bounding4]]}
                         scrollWheelZoom={false}
                         className="tw-w-full tw-h-full"
@@ -192,7 +194,6 @@ const Section = () => {
                             pathOptions={{ color: 'blue', fillOpacity: 0 }}
                         />
                     </MapContainer>
-
                 </div>
 
                 {/* Controles de zoom para admin */}
@@ -238,3 +239,5 @@ const Section = () => {
         </div>
     );
 };
+
+export default Section;

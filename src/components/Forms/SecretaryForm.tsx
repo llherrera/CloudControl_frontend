@@ -10,7 +10,7 @@ export const SecretaryForm = () => {
     const dispatch = useAppDispatch();
     const { secretaries, loadingSecretaries } = useAppSelector(store => store.plan);
     const { id_plan } = useAppSelector(store => store.content);
-    const blankSecretary = { id_plan: id_plan, name: "", email: "", phone: 0 };
+    const blankSecretary: Secretary = { id_plan: id_plan, name: "", email: "", phone: 0, color: "#FFFFFF" };
     const [data, setData] = useState<Secretary[]>(secretaries ?? [blankSecretary]);
 
     // Estado para importación/exportación
@@ -21,10 +21,9 @@ export const SecretaryForm = () => {
 
     // Exportar CSV
     const handleExportCSV = () => {
-        const headers = ["name", "email", "phone"];
-        // Usar los datos actuales del store si existen, si no, el estado local
+        const headers = ["name", "email", "phone", "color"];
         const exportData = secretaries && secretaries.length > 0 ? secretaries : data;
-        const rows = exportData.map(sec => [sec.name, sec.email, sec.phone]);
+        const rows = exportData.map(sec => [sec.name, sec.email, String(sec.phone), sec.color ?? "#FFFFFF"]);
         const csvContent = [headers, ...rows].map(e => e.join(",")).join("\n");
         const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
         const url = URL.createObjectURL(blob);
@@ -38,13 +37,13 @@ export const SecretaryForm = () => {
 
     // Descargar plantilla CSV
     const handleDownloadTemplate = () => {
-        const headers = ["name", "email", "phone"];
+        const headers = ["name", "email", "phone", "color"];
         const examples = [
-            ["Nombre Ejemplo", "correo@ejemplo.com", "3001234567"],
-            ["Ana Torres", "ana.torres@ejemplo.com", "3109876543"],
-            ["Luis Pérez", "luis.perez@ejemplo.com", "3204567890"],
-            ["María Gómez", "maria.gomez@ejemplo.com", "3012345678"],
-            ["Carlos Ruiz", "carlos.ruiz@ejemplo.com", "3156789012"],
+            ["Nombre Ejemplo", "correo@ejemplo.com", "3001234567", "#FFFFFF"],
+            ["Ana Torres", "ana.torres@ejemplo.com", "3109876543", "#FFDD00"],
+            ["Luis Pérez", "luis.perez@ejemplo.com", "3204567890", "#00AAFF"],
+            ["María Gómez", "maria.gomez@ejemplo.com", "3012345678", "#00FF88"],
+            ["Carlos Ruiz", "carlos.ruiz@ejemplo.com", "3156789012", "#000000"],
         ];
         const csvContent = [headers, ...examples].map(e => e.join(",")).join("\n");
         const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
@@ -80,31 +79,37 @@ export const SecretaryForm = () => {
                 return;
             }
 
-            // Verificar que la primera línea sea el header correcto
+            // Cabeceras (lowercase)
             const headers = lines[0].split(',').map(h => h.trim().toLowerCase());
-            const expectedHeaders = ['name', 'email', 'phone'];
-            
-            if (!expectedHeaders.every(header => headers.includes(header))) {
-                notify("El archivo CSV debe tener las columnas: name, email, phone", "error");
+            const requiredHeaders = ['name', 'email', 'phone'];
+            // Validar presencia de los requeridos
+            if (!requiredHeaders.every(header => headers.includes(header))) {
+                notify("El archivo CSV debe tener las columnas: name, email, phone (color es opcional)", "error");
                 return;
             }
+
+            // Mapear índice de cada header
+            const headerIndex = headers.reduce<Record<string, number>>((acc, h, i) => {
+                acc[h] = i;
+                return acc;
+            }, {});
 
             // Parsear las filas de datos
             const importedSecretaries: Secretary[] = [];
             const errors: string[] = [];
+            const colorRegex = /^#([0-9A-Fa-f]{6})$/;
 
             for (let i = 1; i < lines.length; i++) {
                 const values = lines[i].split(',').map(v => v.trim());
                 
-                if (values.length < 3) {
-                    errors.push(`Fila ${i + 1}: Datos incompletos`);
-                    continue;
-                }
-
-                const [name, email, phone] = values;
+                // extraer por indices
+                const name = values[headerIndex['name']] ?? "";
+                const email = values[headerIndex['email']] ?? "";
+                const phone = values[headerIndex['phone']] ?? "";
+                const color = headerIndex['color'] !== undefined ? (values[headerIndex['color']] ?? "") : "";
 
                 // Validaciones
-                if (!name || name === '') {
+                if (!name) {
                     errors.push(`Fila ${i + 1}: Nombre requerido`);
                     continue;
                 }
@@ -120,17 +125,24 @@ export const SecretaryForm = () => {
                     continue;
                 }
 
+                const finalColor = color && colorRegex.test(color) ? color : "#FFFFFF";
+                if (color && !colorRegex.test(color)) {
+                    errors.push(`Fila ${i + 1}: Color inválido, se esperaba formato #RRGGBB. Usando #FFFFFF por defecto.`);
+                    // continue; // opcional: podrías seguir sin abortar
+                }
+
                 importedSecretaries.push({
                     id_plan,
                     name,
                     email,
-                    phone: phoneNumber
+                    phone: phoneNumber,
+                    color: finalColor
                 });
             }
 
             if (errors.length > 0) {
-                notify(`Errores encontrados:\n${errors.join('\n')}`, "error");
-                return;
+                // Mostrar advertencia + seguir si hay filas válidas
+                notify(`Algunos errores:\n${errors.join('\n')}`, "warning");
             }
 
             if (importedSecretaries.length === 0) {
@@ -177,27 +189,56 @@ export const SecretaryForm = () => {
     const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>, index: number) => {
         const { name, value } = event.target;
         const newData = [...data];
-        newData[index] = { ...newData[index], [name]: name === "phone" ? Number(value) : value };
+        // phone -> number, color/name/email -> string
+        newData[index] = { ...newData[index], [name]: name === "phone" ? Number(value) : value } as Secretary;
         setData(newData);
     };
 
     const handleSubmit = async () => {
-        for (const secretary of data) {
-            if (secretary.name === "" || secretary.email === "" || secretary.phone === 0) {
-                return notify("Por favor llene todos los campos", "warning");
+        // Validaciones básicas y normalización sin mutar objetos originales
+        const colorRegex = /^#([0-9A-Fa-f]{6})$/;
+    
+        // Normalizamos creando un nuevo array
+        const normalized = data.map(sec => {
+            // chequeos de validación (puedes mantenerlos o mostrarlos luego)
+            if (!sec.name || sec.name === "" || !sec.email || sec.email === "" || !sec.phone) {
+                // mostramos la validación y devolvemos un objeto placeholder
+                throw new Error("Por favor llene todos los campos de cada secretaria");
             }
-            if (!validateEmail(secretary.email)) {
-                return notify("El correo no es válido", "warning");
+            if (!validateEmail(sec.email)) {
+                throw new Error("El correo de alguna secretaria no es válido");
             }
-        }
-        if (secretaries) {
-            dispatch(thunkUpdateSecretaries({ id_plan, secretaries: data }))
-            .then(() => dispatch(thunkGetSecretaries(id_plan)));
-        } else {
-            dispatch(thunkAddSecretaries({ id_plan, secretaries: data }))
-            .then(() => dispatch(thunkGetSecretaries(id_plan)));
+    
+            const finalColor =
+                typeof sec.color === "string" && colorRegex.test(sec.color)
+                    ? sec.color
+                    : "#000000";
+    
+            return {
+                ...sec,
+                color: finalColor
+            } as Secretary;
+        });
+    
+        // Si prefieres, actualizas el estado local con la versión normalizada
+        setData(normalized);
+    
+        // Enviar la versión normalizada al store (y refrescar)
+        try {
+            if (secretaries) {
+                await dispatch(thunkUpdateSecretaries({ id_plan, secretaries: normalized }));
+                await dispatch(thunkGetSecretaries(id_plan));
+            } else {
+                await dispatch(thunkAddSecretaries({ id_plan, secretaries: normalized }));
+                await dispatch(thunkGetSecretaries(id_plan));
+            }
+            notify("Secretarias guardadas correctamente", "success");
+        } catch (err) {
+            console.error(err);
+            notify("Error al guardar secretarias", "error");
         }
     };
+    
 
     return (
         <div className="tw-flex tw-justify-center tw-items-center tw-min-h-screen">
@@ -209,7 +250,7 @@ export const SecretaryForm = () => {
 
                     <div className="tw-space-y-4">
                         {data.map((secretary, index) => (
-                            <div key={index} className="tw-grid tw-grid-cols-1 md:tw-grid-cols-3 tw-gap-4 tw-items-center tw-border tw-rounded-lg tw-p-4">
+                            <div key={index} className="tw-grid tw-grid-cols-1 md:tw-grid-cols-4 tw-gap-4 tw-items-center tw-border tw-rounded-lg tw-p-4">
                                 <div>
                                     <label className="tw-block tw-text-sm tw-font-semibold text-gray-600">Nombre</label>
                                     <input
@@ -241,6 +282,17 @@ export const SecretaryForm = () => {
                                         type="number"
                                         name="phone"
                                         placeholder="Teléfono"
+                                    />
+                                </div>
+                                <div>
+                                    <label className="tw-block tw-text-sm tw-font-semibold text-gray-600">Color</label>
+                                    <input
+                                        className="tw-w-full tw-mt-1 tw-p-1 tw-rounded tw-border tw-border-gray-300"
+                                        onChange={(e) => handleInputChange(e, index)}
+                                        value={secretary.color ?? "#000000"}
+                                        type="color"
+                                        name="color"
+                                        title="Color (hex #RRGGBB)"
                                     />
                                 </div>
                             </div>
