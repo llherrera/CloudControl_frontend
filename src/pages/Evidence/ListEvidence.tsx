@@ -89,6 +89,9 @@ const Evidence = () => {
                             <p className="tw-text-white">Valor Finaciero</p>
                         </th>
                         <th className="tw-bg-black tw-border">
+                            <p className="tw-text-white">Valor modificado</p>
+                        </th>
+                        <th className="tw-bg-black tw-border">
                             <p className="tw-text-white">Fecha de modificación</p>
                         </th>
                         <th className="tw-bg-black tw-border">

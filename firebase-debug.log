@@ -1,0 +1,71 @@
+[debug] [2025-08-04T20:03:05.737Z] ----------------------------------------------------------------------
+[debug] [2025-08-04T20:03:05.743Z] Command:       C:\nvm4w\nodejs\node.exe C:\Users\inkSh\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy
+[debug] [2025-08-04T20:03:05.744Z] CLI Version:   13.35.1
+[debug] [2025-08-04T20:03:05.744Z] Platform:      win32
+[debug] [2025-08-04T20:03:05.745Z] Node Version:  v20.14.0
+[debug] [2025-08-04T20:03:05.745Z] Time:          Mon Aug 04 2025 15:03:05 GMT-0500 (hora estándar de Colombia)
+[debug] [2025-08-04T20:03:05.745Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-08-04T20:03:06.816Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-08-04T20:03:06.818Z] > authorizing via signed-in user (ever.gonzalez.co@cloudappi.net)
+[debug] [2025-08-04T20:03:06.818Z] [iam] checking project cloudcontrol-51ebb for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2025-08-04T20:03:06.824Z] Checked if tokens are valid: true, expires at: 1754340589820
+[debug] [2025-08-04T20:03:06.825Z] Checked if tokens are valid: true, expires at: 1754340589820
+[debug] [2025-08-04T20:03:06.829Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/cloudcontrol-51ebb:testIamPermissions [none]
+[debug] [2025-08-04T20:03:06.830Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/cloudcontrol-51ebb:testIamPermissions x-goog-quota-user=projects/cloudcontrol-51ebb
+[debug] [2025-08-04T20:03:06.830Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/cloudcontrol-51ebb:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2025-08-04T20:03:07.681Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/cloudcontrol-51ebb:testIamPermissions 200
+[debug] [2025-08-04T20:03:07.682Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/cloudcontrol-51ebb:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2025-08-04T20:03:07.683Z] Checked if tokens are valid: true, expires at: 1754340589820
+[debug] [2025-08-04T20:03:07.684Z] Checked if tokens are valid: true, expires at: 1754340589820
+[debug] [2025-08-04T20:03:07.685Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/cloudcontrol-51ebb [none]
+[debug] [2025-08-04T20:03:08.137Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/cloudcontrol-51ebb 200
+[debug] [2025-08-04T20:03:08.138Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/cloudcontrol-51ebb {"projectId":"cloudcontrol-51ebb","projectNumber":"505159760454","displayName":"CloudControl","name":"projects/cloudcontrol-51ebb","resources":{"hostingSite":"cloudcontrol-51ebb","locationId":"us-central"},"state":"ACTIVE","etag":"1_b248a4fb-1f0e-49bf-9024-6489845d0a8c"}
+[debug] [2025-08-04T20:03:19.489Z] SyntaxError: Unexpected end of JSON input
+    at JSON.parse (<anonymous>)
+    at findDependency (C:\Users\inkSh\AppData\Roaming\npm\node_modules\firebase-tools\lib\frameworks\utils.js:190:23)
+    at prepareFrameworks (C:\Users\inkSh\AppData\Roaming\npm\node_modules\firebase-tools\lib\frameworks\index.js:124:67)
+    at deploy (C:\Users\inkSh\AppData\Roaming\npm\node_modules\firebase-tools\lib\deploy\index.js:76:50)
+    at Command.actionFn (C:\Users\inkSh\AppData\Roaming\npm\node_modules\firebase-tools\lib\commands\deploy.js:136:32)
+    at C:\Users\inkSh\AppData\Roaming\npm\node_modules\firebase-tools\lib\command.js:243:25
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+[error] 
+[error] Error: An unexpected error has occurred.
+[debug] [2025-08-04T21:07:20.706Z] ----------------------------------------------------------------------
+[debug] [2025-08-04T21:07:20.727Z] Command:       C:\nvm4w\nodejs\node.exe C:\Users\inkSh\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js deploy
+[debug] [2025-08-04T21:07:20.728Z] CLI Version:   13.35.1
+[debug] [2025-08-04T21:07:20.729Z] Platform:      win32
+[debug] [2025-08-04T21:07:20.729Z] Node Version:  v20.14.0
+[debug] [2025-08-04T21:07:20.729Z] Time:          Mon Aug 04 2025 16:07:20 GMT-0500 (hora estándar de Colombia)
+[debug] [2025-08-04T21:07:20.730Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-08-04T21:07:21.429Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-08-04T21:07:21.430Z] > authorizing via signed-in user (ever.gonzalez.co@cloudappi.net)
+[debug] [2025-08-04T21:07:21.431Z] [iam] checking project cloudcontrol-51ebb for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2025-08-04T21:07:21.435Z] Checked if tokens are valid: false, expires at: 1754340589820
+[debug] [2025-08-04T21:07:21.435Z] Checked if tokens are valid: false, expires at: 1754340589820
+[debug] [2025-08-04T21:07:21.436Z] > refreshing access token with scopes: []
+[debug] [2025-08-04T21:07:21.439Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2025-08-04T21:07:21.440Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-08-04T21:07:21.954Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2025-08-04T21:07:21.957Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-08-04T21:07:22.065Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/cloudcontrol-51ebb:testIamPermissions [none]
+[debug] [2025-08-04T21:07:22.067Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/cloudcontrol-51ebb:testIamPermissions x-goog-quota-user=projects/cloudcontrol-51ebb
+[debug] [2025-08-04T21:07:22.067Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/cloudcontrol-51ebb:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2025-08-04T21:07:22.727Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/cloudcontrol-51ebb:testIamPermissions 200
+[debug] [2025-08-04T21:07:22.730Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/cloudcontrol-51ebb:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2025-08-04T21:07:22.731Z] Checked if tokens are valid: true, expires at: 1754345240959
+[debug] [2025-08-04T21:07:22.732Z] Checked if tokens are valid: true, expires at: 1754345240959
+[debug] [2025-08-04T21:07:22.733Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/cloudcontrol-51ebb [none]
+[debug] [2025-08-04T21:07:23.172Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/cloudcontrol-51ebb 200
+[debug] [2025-08-04T21:07:23.177Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/cloudcontrol-51ebb {"projectId":"cloudcontrol-51ebb","projectNumber":"505159760454","displayName":"CloudControl","name":"projects/cloudcontrol-51ebb","resources":{"hostingSite":"cloudcontrol-51ebb","locationId":"us-central"},"state":"ACTIVE","etag":"1_b248a4fb-1f0e-49bf-9024-6489845d0a8c"}
+[debug] [2025-08-04T21:07:39.241Z] SyntaxError: Unexpected end of JSON input
+    at JSON.parse (<anonymous>)
+    at findDependency (C:\Users\inkSh\AppData\Roaming\npm\node_modules\firebase-tools\lib\frameworks\utils.js:190:23)
+    at prepareFrameworks (C:\Users\inkSh\AppData\Roaming\npm\node_modules\firebase-tools\lib\frameworks\index.js:125:64)
+    at deploy (C:\Users\inkSh\AppData\Roaming\npm\node_modules\firebase-tools\lib\deploy\index.js:76:50)
+    at Command.actionFn (C:\Users\inkSh\AppData\Roaming\npm\node_modules\firebase-tools\lib\commands\deploy.js:136:32)
+    at C:\Users\inkSh\AppData\Roaming\npm\node_modules\firebase-tools\lib\command.js:243:25
+    at process.processTicksAndRejections (node:internal/process/task_queues:95:5)
+[error] 
+[error] Error: An unexpected error has occurred.

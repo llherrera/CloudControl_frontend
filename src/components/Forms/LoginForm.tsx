@@ -53,7 +53,14 @@ export const LoginForm = () => {
                 const info = decode(res.token);
                 //signInWithEmailAndPassword(auth, info.email, user.password)
                 //.then(() => {
-
+                localStorage.removeItem('id_plan');
+                localStorage.removeItem('textFormat');
+                localStorage.removeItem('titleText');
+                localStorage.removeItem('textColor');
+                localStorage.removeItem('fontSize');                    
+                localStorage.removeItem('fontWeight');                        
+                localStorage.removeItem('textAlign');
+                
                 // Agregar datos a localStorage
                 localStorage.removeItem('id');
                 localStorage.removeItem('rol');

@@ -267,23 +267,34 @@ export const Frame = ({ children }: FrameProps) => {
         weight: 'normal' | 'bold' | 'lighter';
         align: 'left' | 'center' | 'right' | 'justify';
     }
-
+    
     const id_plan = localStorage.getItem('id_plan') ?? '';
-
-    const [textFormat, setTextFormat] = useState<TextFormat | null>(null);
-
+    
+    // 🔁 Leer desde localStorage al iniciar
+    const cachedFormat = localStorage.getItem('textFormat');
+    const initialTextFormat = cachedFormat ? (JSON.parse(cachedFormat) as TextFormat) : null;
+    
+    const [textFormat, setTextFormat] = useState<TextFormat | null>(initialTextFormat);
+    
+    // 📦 Guardar en localStorage cada vez que cambia
+    useEffect(() => {
+        if (textFormat) {
+            localStorage.setItem('textFormat', JSON.stringify(textFormat));
+        }
+    }, [textFormat]);
+    
     useEffect(() => {
         if (!textFormat && id_plan) {
             console.log('[TextConfig] Solicitando configuración para el plan:', id_plan);
-
+    
             dispatch(thunkGetTextFormatByPlan(Number(id_plan)))
                 .then((res) => {
                     console.log('[TextConfig] Respuesta recibida del thunk:', res);
                     const payload = res.payload as TextFormat | undefined;
-
+    
                     if (payload) {
                         console.log('[TextConfig] Payload válido:', payload);
-                        setTextFormat(payload);
+                        setTextFormat(payload); // Esto también actualizará localStorage gracias al otro useEffect
                     } else {
                         console.warn('[TextConfig] Payload inválido o vacío:', res.payload);
                     }
@@ -293,14 +304,14 @@ export const Frame = ({ children }: FrameProps) => {
                 });
         }
     }, [id_plan, dispatch, textFormat]);
-
-    // Puedes acceder a cada parte del objeto así:
+    
+    // 👁️ Puedes seguir accediendo a los valores como antes
     const text = textFormat?.text || '';
     const color = textFormat?.color || '#000000';
     const size = textFormat?.size || '16px';
     const weight = textFormat?.weight || 'normal';
     const align = textFormat?.align || 'center';
-
+    
     return (
         <div className='tw-min-h-screen tw-flex tw-flex-col'>
             <header

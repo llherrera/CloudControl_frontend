@@ -28,16 +28,15 @@ export const Memory = ({ callback }: PropsCallback) => {
         }
     }, [token_info]);
 
-    const handleChangeValue = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        const newData = parseInt(value);
-
+    const handleChangeValue = (name: string, value: string) => {
+        const newData = parseInt(value || "0", 10);    
         if (name === 'executed') {
             setValueExecuted(newData);
         } else if (name === 'financial') {
             setValueFinancial(newData);
         }
     };
+    
 
     const handleSave = () => {
         dispatch(thunkUpdateExecution({
@@ -58,8 +57,8 @@ export const Memory = ({ callback }: PropsCallback) => {
     if (unit === undefined) return <div>No hay una meta seleccionada</div>;
 
     useEffect(() => {
-        setValueExecuted(unit.years.find(item => item.year == yearSelect)?.physical_execution??0);
-        setValueFinancial(unit.years.find(item => item.year == yearSelect)?.financial_execution??0);
+        setValueExecuted(unit.years.find(item => item.year == yearSelect)?.physical_execution ?? 0);
+        setValueFinancial(unit.years.find(item => item.year == yearSelect)?.financial_execution ?? 0);
     }, []);
 
     return (
@@ -144,23 +143,24 @@ export const Memory = ({ callback }: PropsCallback) => {
                                 <div>
                                     <label className="tw-block tw-font-bold tw-mb-1">Valor ejecutado</label>
                                     <input
-                                        title='Valor ejecutado'
-                                        type="number"
+                                        title="Valor ejecutado"
+                                        type="text"
                                         name="executed"
                                         value={valueExecuted === 0 ? item.physical_execution : valueExecuted}
                                         className="tw-bg-green-300 tw-border tw-border-black tw-px-2 tw-w-1/2"
-                                        onChange={handleChangeValue}
+                                        onChange={(e) => handleChangeValue("executed", e.target.value.replace(/[^0-9]/g, ""))}
                                     />
+
                                 </div>
                                 <div>
                                     <label className="tw-block tw-font-bold tw-mb-1 tw-pt-4">Ejecución financiera</label>
                                     <input
-                                        title='Ejecución financiera'
-                                        type="number"
+                                        title="Ejecución financiera"
+                                        type="text"
                                         name="financial"
                                         value={valueFinancial === 0 ? item.financial_execution : valueFinancial}
                                         className="tw-bg-green-300 tw-border tw-border-black tw-px-2 tw-w-1/2"
-                                        onChange={handleChangeValue}
+                                        onChange={(e) => handleChangeValue("financial", e.target.value.replace(/[^0-9]/g, ""))}
                                     />
                                 </div>
                                 <button

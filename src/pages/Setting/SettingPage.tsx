@@ -164,16 +164,26 @@ const SettingPageWrapper = () => {
 
 
     const handleSaveTitleConfig = () => {
-        const config = {
+        const config: TextFormat = {
             text: titleText,
             color: textColor,
             size: fontSize,
             weight: fontWeight,
             align: textAlign,
         };
-        const formatString = formatTextConfigToString(config);
+    
+        // 🔁 Guardar en localStorage
+        localStorage.setItem('textFormat', JSON.stringify(config));
+        localStorage.setItem('titleText', titleText);
+        localStorage.setItem('textColor', textColor);
+        localStorage.setItem('fontSize', fontSize);
+        localStorage.setItem('fontWeight', fontWeight);
+        localStorage.setItem('textAlign', textAlign);
+    
+        // 🧠 Actualizar en el backend
         dispatch(thunkUpdateTextFormatByPlan({ id_plan, format: config }));
     };
+    
 
     interface TextFormat {
         text: string;
@@ -191,42 +201,71 @@ const SettingPageWrapper = () => {
 
     const idPlan = localStorage.getItem('id_plan') ?? '';
 
-    const [textFormat, setTextFormat] = useState<TextFormat | null>(null);
+const [textFormat, setTextFormat] = useState<TextFormat | null>(null);
 
-    const [titleText, setTitleText] = useState('');
-    const [textColor, setTextColor] = useState('#000000');
-    const [fontSize, setFontSize] = useState('16px');
-    const [fontWeight, setFontWeight] = useState<'normal' | 'bold' | 'lighter'>('normal');
-    const [textAlign, setTextAlign] = useState<'left' | 'center' | 'right' | 'justify'>('center');
+const [titleText, setTitleText] = useState(() => localStorage.getItem('titleText') ?? '');
+const [textColor, setTextColor] = useState(() => localStorage.getItem('textColor') ?? '#000000');
+const [fontSize, setFontSize] = useState(() => localStorage.getItem('fontSize') ?? '16px');
+const [fontWeight, setFontWeight] = useState<'normal' | 'bold' | 'lighter'>(() => {
+    const stored = localStorage.getItem('fontWeight');
+    return (stored as 'normal' | 'bold' | 'lighter') ?? 'normal';
+});
+const [textAlign, setTextAlign] = useState<'left' | 'center' | 'right' | 'justify'>(() => {
+    const stored = localStorage.getItem('textAlign');
+    return (stored as 'left' | 'center' | 'right' | 'justify') ?? 'center';
+});
 
-    useEffect(() => {
-        if (!textFormat && idPlan) {
-            dispatch(thunkGetTextFormatByPlan(Number(idPlan)))
-                .then((res) => {
-                    const payload = res.payload as TextFormat | undefined;
+// 🌀 Cargar desde la base si no hay formato ya cargado
+useEffect(() => {
+    if (!textFormat && idPlan) {
+        dispatch(thunkGetTextFormatByPlan(Number(idPlan)))
+            .then((res) => {
+                const payload = res.payload as TextFormat | undefined;
 
-                    if (payload) {
-                        setTextFormat(payload);
-                        setTitleText(payload.text || '');
-                        setTextColor(payload.color || '#000000');
-                        setFontSize(payload.size || '16px');
-                        setFontWeight(payload.weight as 'normal' | 'bold' | 'lighter');
-                        setTextAlign(payload.align as 'left' | 'center' | 'right' | 'justify');
-                    }
-                })
-                .catch((err) => {
-                    console.error('[TextConfig] Error al obtener formato:', err);
-                });
-        }
-    }, [idPlan, dispatch, textFormat]);
+                if (payload) {
+                    setTextFormat(payload);
+                    setTitleText(payload.text || '');
+                    setTextColor(payload.color || '#000000');
+                    setFontSize(payload.size || '16px');
+                    setFontWeight(payload.weight as 'normal' | 'bold' | 'lighter');
+                    setTextAlign(payload.align as 'left' | 'center' | 'right' | 'justify');
+                }
+            })
+            .catch((err) => {
+                console.error('[TextConfig] Error al obtener formato:', err);
+            });
+    }
+}, [idPlan, dispatch, textFormat]);
 
-    const configString = formatTextConfigToString({
-        text: titleText,
-        color: textColor,
-        size: fontSize,
-        weight: fontWeight,
-        align: textAlign,
-    });
+// 🧠 Guardar en localStorage cuando cambien
+useEffect(() => {
+    localStorage.setItem('titleText', titleText);
+}, [titleText]);
+
+useEffect(() => {
+    localStorage.setItem('textColor', textColor);
+}, [textColor]);
+
+useEffect(() => {
+    localStorage.setItem('fontSize', fontSize);
+}, [fontSize]);
+
+useEffect(() => {
+    localStorage.setItem('fontWeight', fontWeight);
+}, [fontWeight]);
+
+useEffect(() => {
+    localStorage.setItem('textAlign', textAlign);
+}, [textAlign]);
+
+// Puedes seguir usando configString como lo tenías:
+const configString = formatTextConfigToString({
+    text: titleText,
+    color: textColor,
+    size: fontSize,
+    weight: fontWeight,
+    align: textAlign,
+});
 
     return (
         (plan === null || plan === undefined) ?
@@ -464,7 +503,7 @@ const SettingPageWrapper = () => {
                                                         onClick={() => {
                                                             handleSaveTitleConfig();
                                                             setIsEditingNavbarTitle(false);
-                                                            window.location.reload(); // 🔄 fuerza la recarga de la página
+                                                            window.location.reload(); // 🔄 Recarga la página
                                                         }}
 
                                                     >

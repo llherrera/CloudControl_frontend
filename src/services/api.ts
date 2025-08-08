@@ -491,14 +491,20 @@ export const getEvidences = async (id_plan: number, page: number) => {
 }
 
 export const getExecutionsToApro = async (id_plan: number, page: number) => {
+    console.log(`[getExecutionsToApro] Solicitando ejecuciones para aprobar`, { id_plan, page });
+
     const response = await api.get("/nodo/ejecucion", {
         params: {
             id_plan: id_plan,
             page: page
         }
     });
+
+    console.log(`[getExecutionsToApro] Respuesta recibida`, response.data);
+
     return response.data;
-}
+};
+
 
 export const getEvidenceCount = async (id_plan: number) => {
     const response = await api.get("/nodo/evidencia-contar", {

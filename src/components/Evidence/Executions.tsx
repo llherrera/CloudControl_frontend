@@ -73,6 +73,9 @@ export const Execution = ({ ex, index }: ExecutedProps) => {
                 {ex.modified_execution}
             </th>
             <th className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
+                {ex.financial_execution}
+            </th>
+            <th className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
                 {ex.financial_value}
             </th>
             <th className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">

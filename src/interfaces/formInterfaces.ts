@@ -121,6 +121,7 @@ export interface ExecutionInterface {
     physical_execution: number;
     modified_execution: number;
     financial_value: number;
+    financial_execution: number;
     modified_date: Date;
     id_user: number;
 }
