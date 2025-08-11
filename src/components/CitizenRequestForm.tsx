@@ -95,7 +95,8 @@ const CitizenRequestForm: React.FC<CitizenRequestFormProps> = ({ onNuevaSolicitu
         console.log("[Servicios] useEffect ejecutado. activeIdPlan:", activeIdPlan);
     
         // Recuperar id_plan de localStorage si no hay activeIdPlan
-        let planIdToUse = activeIdPlan || Number(localStorage.getItem('id_plan'));
+        let planIdToUse = activeIdPlan || idPlan;
+;
     
         if (!planIdToUse) {
             console.warn("[Servicios] No se encontró ni activeIdPlan ni id_plan en localStorage. Se detiene la ejecución.");
