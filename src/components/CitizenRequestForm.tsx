@@ -98,7 +98,7 @@ const CitizenRequestForm: React.FC<CitizenRequestFormProps> = ({ onNuevaSolicitu
 
         if (activeIdPlan === 0) {
             planIdToUse = idPlan;
-            console.log("[Servicios] activeIdPlan es 0, asignando idPlan:");
+            console.log("[Servicios] activeIdPlan es 0, asignando idPlan:", idPlan);
         }
     
         console.log("[Servicios] Iniciando carga de servicios para el plan:", planIdToUse);
