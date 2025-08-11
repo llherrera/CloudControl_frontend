@@ -31,6 +31,9 @@ import { FrameProps } from '@/interfaces';
 import { thunkGetAllSolicitudes, thunkGetModulosUsuarioById, } from '@/store/pqrs/thunks';
 import { thunkGetTextFormatByPlan } from '@/store/plan/thunks';
 
+import VoiceChatWindow from '@/components/ChatAI/VoiceChatWindow';
+
+
 // --- Module Conversion Helpers ---
 interface IModules {
     indicative_plan: boolean;
@@ -267,31 +270,31 @@ export const Frame = ({ children }: FrameProps) => {
         weight: 'normal' | 'bold' | 'lighter';
         align: 'left' | 'center' | 'right' | 'justify';
     }
-    
+
     const id_plan = localStorage.getItem('id_plan') ?? '';
-    
+
     // 🔁 Leer desde localStorage al iniciar
     const cachedFormat = localStorage.getItem('textFormat');
     const initialTextFormat = cachedFormat ? (JSON.parse(cachedFormat) as TextFormat) : null;
-    
+
     const [textFormat, setTextFormat] = useState<TextFormat | null>(initialTextFormat);
-    
+
     // 📦 Guardar en localStorage cada vez que cambia
     useEffect(() => {
         if (textFormat) {
             localStorage.setItem('textFormat', JSON.stringify(textFormat));
         }
     }, [textFormat]);
-    
+
     useEffect(() => {
         if (!textFormat && id_plan) {
             console.log('[TextConfig] Solicitando configuración para el plan:', id_plan);
-    
+
             dispatch(thunkGetTextFormatByPlan(Number(id_plan)))
                 .then((res) => {
                     console.log('[TextConfig] Respuesta recibida del thunk:', res);
                     const payload = res.payload as TextFormat | undefined;
-    
+
                     if (payload) {
                         console.log('[TextConfig] Payload válido:', payload);
                         setTextFormat(payload); // Esto también actualizará localStorage gracias al otro useEffect
@@ -304,14 +307,14 @@ export const Frame = ({ children }: FrameProps) => {
                 });
         }
     }, [id_plan, dispatch, textFormat]);
-    
+
     // 👁️ Puedes seguir accediendo a los valores como antes
     const text = textFormat?.text || '';
     const color = textFormat?.color || '#000000';
     const size = textFormat?.size || '16px';
     const weight = textFormat?.weight || 'normal';
     const align = textFormat?.align || 'center';
-    
+
     return (
         <div className='tw-min-h-screen tw-flex tw-flex-col'>
             <header
@@ -591,6 +594,7 @@ export const Frame = ({ children }: FrameProps) => {
                                 tw-bg-cover
                                 tw-opacity-80`}>
                     <div>
+                        <VoiceChatWindow />
                         {children}
                     </div>
                 </div>
