@@ -92,22 +92,50 @@ const CitizenRequestForm: React.FC<CitizenRequestFormProps> = ({ onNuevaSolicitu
     }, []);
 
     useEffect(() => {
-        if (!activeIdPlan) return;
+        console.log("[Servicios] useEffect ejecutado. activeIdPlan:", activeIdPlan);
+    
+        if (!activeIdPlan) {
+            console.warn("[Servicios] No hay activeIdPlan, se detiene la ejecución.");
+            return;
+        }
+    
+        console.log("[Servicios] Iniciando carga de servicios para el plan:", activeIdPlan);
         setLoadingServicios(true);
+    
         dispatch(thunkGetServiciosByPlan(activeIdPlan))
             .unwrap()
             .then((res: any) => {
+                console.log("[Servicios] Respuesta recibida del thunk:", res);
+    
                 let lista = Array.isArray(res) ? res : [];
+                console.log("[Servicios] Lista inicial (validada como array):", lista);
+    
                 // Usar la clave 'SERVICIO' y 'TIPO' en mayúsculas
-                if (lista.length > 0 && typeof lista[0] === 'object') {
-                    lista = lista.map((s: any) => ({ nombre: s.SERVICIO || s.nombre || s.name || s.servicio || s.value || '', tipo: s.TIPO || 'N/A' }));
+                if (lista.length > 0 && typeof lista[0] === "object") {
+                    console.log("[Servicios] Detectado formato de objetos con claves. Procesando mapeo...");
+                    lista = lista.map((s: any) => ({
+                        nombre: s.SERVICIO || s.nombre || s.name || s.servicio || s.value || "",
+                        tipo: s.TIPO || "N/A"
+                    }));
                 } else {
-                    lista = lista.filter((s: string) => s && s.toLowerCase() !== 'otro').map((nombre: string) => ({ nombre, tipo: 'N/A' }));
+                    console.log("[Servicios] Lista detectada como array de strings. Filtrando y mapeando...");
+                    lista = lista
+                        .filter((s: string) => s && s.toLowerCase() !== "otro")
+                        .map((nombre: string) => ({ nombre, tipo: "N/A" }));
                 }
+    
+                console.log("[Servicios] Lista final procesada:", lista);
                 setServicios(lista);
             })
-            .finally(() => setLoadingServicios(false));
+            .catch((err: any) => {
+                console.error("[Servicios] Error al obtener servicios:", err);
+            })
+            .finally(() => {
+                console.log("[Servicios] Carga de servicios finalizada.");
+                setLoadingServicios(false);
+            });
     }, [dispatch, activeIdPlan]);
+    
 
     useEffect(() => {
         if (rol === 'admin') {
