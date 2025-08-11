@@ -94,15 +94,18 @@ const CitizenRequestForm: React.FC<CitizenRequestFormProps> = ({ onNuevaSolicitu
     useEffect(() => {
         console.log("[Servicios] useEffect ejecutado. activeIdPlan:", activeIdPlan);
     
-        if (!activeIdPlan) {
-            console.warn("[Servicios] No hay activeIdPlan, se detiene la ejecución.");
+        // Recuperar id_plan de localStorage si no hay activeIdPlan
+        let planIdToUse = activeIdPlan || Number(localStorage.getItem('id_plan'));
+    
+        if (!planIdToUse) {
+            console.warn("[Servicios] No se encontró ni activeIdPlan ni id_plan en localStorage. Se detiene la ejecución.");
             return;
         }
     
-        console.log("[Servicios] Iniciando carga de servicios para el plan:", activeIdPlan);
+        console.log("[Servicios] Iniciando carga de servicios para el plan:", planIdToUse);
         setLoadingServicios(true);
     
-        dispatch(thunkGetServiciosByPlan(activeIdPlan))
+        dispatch(thunkGetServiciosByPlan(planIdToUse))
             .unwrap()
             .then((res: any) => {
                 console.log("[Servicios] Respuesta recibida del thunk:", res);
@@ -110,7 +113,6 @@ const CitizenRequestForm: React.FC<CitizenRequestFormProps> = ({ onNuevaSolicitu
                 let lista = Array.isArray(res) ? res : [];
                 console.log("[Servicios] Lista inicial (validada como array):", lista);
     
-                // Usar la clave 'SERVICIO' y 'TIPO' en mayúsculas
                 if (lista.length > 0 && typeof lista[0] === "object") {
                     console.log("[Servicios] Detectado formato de objetos con claves. Procesando mapeo...");
                     lista = lista.map((s: any) => ({
@@ -135,6 +137,7 @@ const CitizenRequestForm: React.FC<CitizenRequestFormProps> = ({ onNuevaSolicitu
                 setLoadingServicios(false);
             });
     }, [dispatch, activeIdPlan]);
+    
     
 
     useEffect(() => {
