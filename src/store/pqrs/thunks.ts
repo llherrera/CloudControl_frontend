@@ -21,7 +21,8 @@ import { getPQRSsByPlan, getPQRSByRadicado, getPQRSTypes, getPQRSHistoryByRadica
     getUserOfficeById,
     redirectionSolicitud,
     solveSolicitud,
-    addServiciosBulk } from '@/services/pqrs_api';
+    addServiciosBulk,
+    buscarSolicitudesPorDocumentoApi, } from '@/services/pqrs_api';
 import { log } from 'node:console';
 
 export const thunkGetPQRSs = createAsyncThunk<{}, number, { rejectValue: ErrorBasicInterface }>(
@@ -323,4 +324,40 @@ export const thunkRedirectionSolicitud = createAsyncThunk<{}, { id_solicitud: st
             return rejectWithValue(result);
         }
     }
+);
+
+export interface SolicitudShort {
+    id: number;
+    nombre: string;
+    tipoDocumento: string;
+    documento: string;
+    genero?: string;
+    grupo?: string;
+    poblacional?: string;
+    discapacidad?: string;
+    escolaridad?: string;
+    nacionalidad?: string;
+    telefono?: string;
+    correo?: string;
+    barrio?: string;
+    comuna?: string;
+    corregimiento?: string;
+    vereda?: string;
+  }
+
+  export const thunkBuscarSolicitudesPorDocumento = createAsyncThunk<
+  SolicitudShort[],           // retorno exitoso
+  string,                     // argumento: documento (string)
+  { rejectValue: ErrorBasicInterface }
+>(
+  'solicitud/buscarPorDocumento',
+  async (documento: string, { rejectWithValue }) => {
+    try {
+      const res = await buscarSolicitudesPorDocumentoApi(documento);
+      return res;
+    } catch (err) {
+      const result = parseErrorAxios(err);
+      return rejectWithValue(result);
+    }
+  }
 );

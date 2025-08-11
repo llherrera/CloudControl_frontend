@@ -195,7 +195,6 @@ export const solveSolicitud = async (id_solicitud: string) => {
 
 export const redirectionSolicitud = async (id_solicitud: string, oficinaDestino: string) => {
     const response = await api.put(`/misc/redirection-solicitud/${id_solicitud}`, {
-        oficinaDestino
     });
     return response.data;
 };
@@ -204,3 +203,29 @@ export const addServiciosBulk = async (id_plan: number, servicios: { nombre: str
     const response = await api.post('/misc/Servicios_edit', { id_plan, servicios });
     return response.data;
 };
+  export interface SolicitudShort {
+    id: number;
+    nombre: string;
+    tipoDocumento: string;
+    documento: string;
+    genero?: string;
+    grupo?: string;
+    poblacional?: string;
+    discapacidad?: string;
+    escolaridad?: string;
+    nacionalidad?: string;
+    telefono?: string;
+    correo?: string;
+    barrio?: string;
+    comuna?: string;
+    corregimiento?: string;
+    vereda?: string;
+  }
+  
+  export const buscarSolicitudesPorDocumentoApi = async (documento: string) => {
+    const response = await api.get('/misc/solicitudes_buscar', {
+      params: { documento },
+    });
+    return response.data as SolicitudShort[];
+  };
+  
