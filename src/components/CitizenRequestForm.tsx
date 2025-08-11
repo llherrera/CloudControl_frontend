@@ -77,9 +77,6 @@ const CitizenRequestForm: React.FC<CitizenRequestFormProps> = ({ onNuevaSolicitu
     // Estado para el tipo de servicio cuando se selecciona 'Otro'
     const [otroTipo, setOtroTipo] = useState<'N/A' | 'Valor'>('N/A');
 
-
-
-
     useEffect(() => {
         if (token_info?.token !== undefined) {
             const decoded = decode(token_info.token);
@@ -94,11 +91,13 @@ const CitizenRequestForm: React.FC<CitizenRequestFormProps> = ({ onNuevaSolicitu
     useEffect(() => {
         console.log("[Servicios] useEffect ejecutado. activeIdPlan:", activeIdPlan);
     
+        const idPlan_user = idPlan || 6031;
+
         let planIdToUse = activeIdPlan;
 
         if (activeIdPlan === 0) {
-            planIdToUse = idPlan;
-            console.log("[Servicios] activeIdPlan es 0, asignando idPlan:", idPlan);
+            planIdToUse = idPlan_user;
+            console.log("[Servicios] activeIdPlan es 0, asignando idPlan:", idPlan_user);
         }
     
         console.log("[Servicios] Iniciando carga de servicios para el plan:", planIdToUse);
