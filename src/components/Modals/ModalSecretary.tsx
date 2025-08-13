@@ -48,28 +48,38 @@ const ModalPDT = ( props: ModalProps ) => {
     const [secretary, setSecretary] = useState<string>('');
     const [indexYear, setIndexYear] = useState<number>(0);
 
+    // traer secretarias cuando cambie el plan
     useEffect(() => {
-        if (id_plan <= 0) return;
-        if (secretaries == undefined)
+        if (!id_plan || id_plan <= 0) return;
+        if (secretaries === undefined) {
             dispatch(thunkGetSecretaries(id_plan));
-    }, []);
+        }
+    }, [id_plan, secretaries, dispatch]);
 
+    // seleccionar la primera secretaria cuando las cargue
     useEffect(() => {
-        if (secretaries == undefined) return;
-        if (secretaries.length > 0)
-            setSecretary(secretaries[0].name);
+        if (!secretaries || secretaries.length === 0) return;
+        setSecretary(prev => prev || secretaries[0].name);
     }, [secretaries]);
 
+    // regenerar reporte cuando cambie secretaria o año
     useEffect(() => {
+        // si secretaria vacía no generar
+        if (!secretary) {
+            setData([]);
+            dispatch(setLoadingReport(false));
+            return;
+        }
         genReport();
-    }, [secretary, indexYear]);
+    }, [secretary, indexYear, years, dispatch]); // years agregado por seguridad
 
     const findRoot = (id: string) => {
-        let root = [] as string[];
+        const root: string[] = [];
         const pesosStr = localStorage.getItem('UnitNode');
         const pesos: NodesWeight[] = pesosStr ? JSON.parse(pesosStr) : [];
-        let ids = id.split('.');
+        const ids = id.split('.');
         if (ids.length !== levels.length + 1) return root;
+
         let ids2 = ids.reduce((acumulator:string[], currentValue: string) => {
             if (acumulator.length === 0) {
                 return [currentValue];
@@ -78,46 +88,66 @@ const ModalPDT = ( props: ModalProps ) => {
                 const concatenado = `${ultimoElemento}.${currentValue}`;
                 return [...acumulator, concatenado];
             }
-        }, []);
+        }, [] as string[]);
         ids2 = ids2.slice(1);
-        ids2.forEach((id) => {
-            const node = pesos.find((item) => item.id_node === id);
-            if (node) {
-                root.push(node.name);
-            }
+        ids2.forEach((idN) => {
+            const node = pesos.find((item) => item.id_node === idN);
+            if (node) root.push(node.name);
         });
         return root;
     };
 
+    const fmtNumberIfPossible = (v: any) => {
+        if (v === undefined || v === null || v === '') return '';
+        const n = Number(String(v).replace(/\s+/g, ''));
+        if (!Number.isFinite(n)) return String(v);
+        return n.toLocaleString();
+    };
+
     const genReport = () => {
+        dispatch(setLoadingReport(true));
         const detalleStr = localStorage.getItem('YearDeta');
-        const detalle = detalleStr ? JSON.parse(detalleStr) : [];
+        const detalle: YearDetail[] = detalleStr ? JSON.parse(detalleStr) : [];
+
         const nodes = detalle.filter((item: YearDetail) =>
             item.responsible === secretary && item.year === years[indexYear]);
-        let data: ReportPDTInterface[] = [];
 
-        nodes.forEach( async (item: YearDetail) => {
-            let percent = (item.physical_execution/item.physical_programming)*100;
-            percent = percent || 0;
-            percent = Math.round(percent*100)/100;
+        let dataLocal: ReportPDTInterface[] = [];
+
+        // usar for..of para evitar problemas con async en forEach
+        for (const item of nodes) {
+            // protección: programación puede ser 0 o indefinida
+            const prog = Number(item.physical_programming) || 0;
+            const exec = Number(item.physical_execution) || 0;
+            let percent = 0;
+            if (prog > 0) {
+                percent = (exec / prog) * 100;
+            } else {
+                // si no hay programación pero hay ejecución, considerar 100% o 0 según criterio
+                percent = exec > 0 ? 100 : 0;
+            }
+            // redondeo a 2 decimales
+            percent = Math.round(percent * 100) / 100;
+
             const root = findRoot(item.id_node);
+
             const item_: ReportPDTInterface = {
-                responsible: item.responsible??'',
+                responsible: item.responsible ?? '',
                 goalCode: item.code,
                 goalDescription: item.description,
-                percentExecuted: [percent],
-                planSpecific: root,
+                percentExecuted: [percent],           // ahora array con un elemento (para el año seleccionado)
+                planSpecific: root,                   // array de strings (nodos)
                 indicator: item.indicator,
                 base: item.base_line,
-                executed: [item.physical_execution],
-                programed: [item.physical_programming]
+                executed: [exec],
+                programed: [prog]
             };
-            data.push(item_);
-        });
-        //data = data.filter((item: ReportPDTInterface) => item.responsible !== secretary);
-        data = sortData(data);
+            dataLocal.push(item_);
+        }
+
+        dataLocal = sortData(dataLocal);
+        setData(dataLocal);
         dispatch(setLoadingReport(false));
-        setData(data);
     };
 
     const handleChangeSecretary = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -131,34 +161,70 @@ const ModalPDT = ( props: ModalProps ) => {
         setIndexYear(index);
     };
 
-    const colorClass = (item: ReportPDTInterface) => (
-        item['percentExecuted'][0] < 0 ? 'tw-bg-gray-400' :
-        item['percentExecuted'][0] < colorimeter[0] ? 'tw-bg-redColory'   :
-        item['percentExecuted'][0] < colorimeter[1] ? 'tw-bg-yellowColory':
-        item['percentExecuted'][0] < colorimeter[2] ? 'tw-bg-greenColory' :
-        'tw-bg-blueColory hover:tw-ring-blue-200'
-    );
+    const colorClass = (item: ReportPDTInterface) => {
+        const raw = item?.percentExecuted?.[0];
+        const value = typeof raw === 'number' ? raw : Number(raw);
+        if (Number.isNaN(value) || value < 0) return 'tw-bg-gray-400';
+        if (value < colorimeter[0]) return 'tw-bg-redColory';
+        if (value < colorimeter[1]) return 'tw-bg-yellowColory';
+        if (value < colorimeter[2]) return 'tw-bg-greenColory';
+        return 'tw-bg-blueColory hover:tw-ring-blue-200';
+    };
 
-    const tableBody = (item: ReportPDTInterface, index: number) =>
-        <tr key={index}>
-            <td className='tw-border tw-p-2'>{item.responsible}</td>
-            <td className='tw-border tw-p-2'>{item.goalCode.replace(/(\.\d+)(?=\.)/, '')}</td>
-            <td className='tw-border tw-p-2'>{item.goalDescription}</td>
-            <td className={`tw-border tw-p-2 tw-text-center ${colorClass(item)}`} >
-                {item['percentExecuted'][0] < 0 ? 0 : item['percentExecuted'][0]}
-            </td>
-            {levels.map((level, index) =>
-                <td className='tw-border tw-p-2'
-                    key={level.name}>
-                    {item['planSpecific'][index]}
+    // mapea planSpecific (array) a partes con fallback
+    const getPlanParts = (planSpecific: string[]) => {
+        // se espera: [Meta, Subprograma, Programa, Sector, Dimension]
+        const parts = planSpecific || [];
+        return {
+            metaFromPlan: parts[0] ?? '',
+            subprograma: parts[1] ?? '',
+            programa: parts[2] ?? '',
+            sector: parts[3] ?? '',
+            dimension: parts[4] ?? ''
+        };
+    };
+
+    const tableBody = (item: ReportPDTInterface, rowIndex: number) => {
+        const plan = getPlanParts(item.planSpecific || []);
+        const percentVal = item?.percentExecuted?.[0];
+        return (
+            <tr key={rowIndex}>
+                <td className='tw-border tw-p-2'>{item.responsible}</td>
+                <td className='tw-border tw-p-2'>{item.goalCode.replace(/(\.\d+)(?=\.)/, '')}</td>
+                <td className='tw-border tw-p-2'>{item.goalDescription}</td>
+                <td className={`tw-border tw-p-2 tw-text-center ${colorClass(item)}`} >
+                    {typeof percentVal === 'number' && !Number.isNaN(percentVal) ? percentVal : (Number(percentVal) || 0)}
                 </td>
-            )}
-            <td className='tw-border tw-p-2'>{item.indicator}</td>
-            <td className='tw-border tw-p-2 tw-text-center'>{item.base}</td>
-            <td className='tw-border tw-p-2 tw-text-center'>{item['programed'][0]}</td>
-            <td className='tw-border tw-p-2 tw-text-center'>{item['executed'][0]}</td>
-        </tr>
-    ;
+
+                {/* niveles: mapeo por nombre de nivel con fallback a posiciones del planSpecific */}
+                {levels.map((level, idx) => {
+                    const keyName = (level.name || '').toLowerCase();
+                    let value = '';
+                    if (keyName.includes('dimension')) value = plan.dimension;
+                    else if (keyName.includes('sector')) value = plan.sector;
+                    else if (keyName.includes('programa') || keyName.includes('program')) value = plan.programa;
+                    else if (keyName.includes('subprograma') || keyName.includes('subprogram')) value = plan.subprograma;
+                    else if (keyName.includes('meta')) value = plan.metaFromPlan;
+                    else {
+                        // fallback: intenta por posición
+                        const fallback = [plan.metaFromPlan, plan.subprograma, plan.programa, plan.sector, plan.dimension];
+                        value = fallback[idx] ?? '';
+                    }
+
+                    return (
+                        <td className='tw-border tw-p-2' key={level.name}>
+                            {value}
+                        </td>
+                    );
+                })}
+
+                <td className='tw-border tw-p-2'>{item.indicator}</td>
+                <td className='tw-border tw-p-2 tw-text-center'>{fmtNumberIfPossible(item.base)}</td>
+                <td className='tw-border tw-p-2 tw-text-center'>{fmtNumberIfPossible(item.programed?.[0])}</td>
+                <td className='tw-border tw-p-2 tw-text-center'>{fmtNumberIfPossible(item.executed?.[0])}</td>
+            </tr>
+        );
+    };
 
     return (
         <Modal  isOpen={props.modalIsOpen}

@@ -8,7 +8,7 @@ import {
     thunkUpdateDeadline, thunkGetSloganByPlan, thunkUpdateSloganByPlan, thunkUpdateTextFormatByPlan,
     thunkGetTextFormatByPlan
 } from '@/store/plan/thunks';
-import { setIsFullHeight } from "@/store/content/contentSlice";
+import { setIdPlan, setIsFullHeight } from "@/store/content/contentSlice";
 
 import {
     Frame, BackBtn, ColorForm, SecretaryForm,
@@ -46,11 +46,25 @@ const SettingPageWrapper = () => {
     const [slogan, setSlogan] = useState<string>('');
     const [editSlogan, setEditSlogan] = useState<string>('');
     const [isEditingSlogan, setIsEditingSlogan] = useState(false);
+    const [id, setId] = useState(0);
+    const [user, setUser] = useState('');
+    const [idPlan, setIdPlan] = useState(0);
 
     const contentRef = useRef<HTMLDivElement>(null);
 
     const divRef = useRef<HTMLDivElement>(null);
     const [HeigtComponent, setHeigtComponent] = useState("100vh");
+
+    useEffect(() => {
+        if (token_info?.token !== undefined) {
+            const decoded = decode(token_info.token);
+            setId(decoded.id);
+            setUser(decoded.user);
+            setRol(decoded.rol);
+            setIdPlan(decoded.id_plan);
+            console.log('Token decodificado:', decoded);
+        }
+    }, []);
 
     useEffect(() => {
         if (!divRef.current) return;
@@ -162,8 +176,7 @@ const SettingPageWrapper = () => {
     };
 
 
-
-    const handleSaveTitleConfig = () => {
+    const handleSaveTitleConfig = async () => {
         const config: TextFormat = {
             text: titleText,
             color: textColor,
@@ -172,17 +185,42 @@ const SettingPageWrapper = () => {
             align: textAlign,
         };
     
-        // 🔁 Guardar en localStorage
-        localStorage.setItem('textFormat', JSON.stringify(config));
-        localStorage.setItem('titleText', titleText);
-        localStorage.setItem('textColor', textColor);
-        localStorage.setItem('fontSize', fontSize);
-        localStorage.setItem('fontWeight', fontWeight);
-        localStorage.setItem('textAlign', textAlign);
+        const now = new Date().toISOString();
+        console.log(`[handleSaveTitleConfig:${now}] Preparando config:`, config, { id_plan });
     
-        // 🧠 Actualizar en el backend
-        dispatch(thunkUpdateTextFormatByPlan({ id_plan, format: config }));
+        try {
+            // 🔁 Guardar en localStorage (log por cada clave para trazabilidad)
+            localStorage.setItem('textFormat', JSON.stringify(config));
+            console.debug(`[handleSaveTitleConfig:${now}] localStorage.setItem textFormat`, config);
+    
+            localStorage.setItem('titleText', titleText);
+            console.debug(`[handleSaveTitleConfig:${now}] localStorage.setItem titleText`, titleText);
+    
+            localStorage.setItem('textColor', textColor);
+            console.debug(`[handleSaveTitleConfig:${now}] localStorage.setItem textColor`, textColor);
+    
+            localStorage.setItem('fontSize', String(fontSize));
+            console.debug(`[handleSaveTitleConfig:${now}] localStorage.setItem fontSize`, fontSize);
+    
+            localStorage.setItem('fontWeight', String(fontWeight));
+            console.debug(`[handleSaveTitleConfig:${now}] localStorage.setItem fontWeight`, fontWeight);
+    
+            localStorage.setItem('textAlign', textAlign);
+            console.debug(`[handleSaveTitleConfig:${now}] localStorage.setItem textAlign`, textAlign);
+    
+            // 🧠 Actualizar en el backend
+            console.log(`[handleSaveTitleConfig:${now}] Llamando thunkUpdateTextFormatByPlan con id_plan=${id_plan}`);
+            const result = await dispatch(thunkUpdateTextFormatByPlan({ id_plan, format: config }));
+            console.log(`[handleSaveTitleConfig:${now}] Resultado del dispatch:`, result);
+    
+            console.info(`[handleSaveTitleConfig:${now}] Configuración guardada correctamente.`);
+        } catch (err) {
+            console.error(`[handleSaveTitleConfig:${now}] Error guardando configuración:`, err);
+            // opcional: notificar al usuario
+            // notify('Error al guardar la configuración'); // descomenta si tienes notify
+        }
     };
+    ;
     
 
     interface TextFormat {
@@ -199,7 +237,7 @@ const SettingPageWrapper = () => {
             .join(', ');
     }
 
-    const idPlan = localStorage.getItem('id_plan') ?? '';
+    const idPlan_localStorage = localStorage.getItem('id_plan') ?? '';
 
 const [textFormat, setTextFormat] = useState<TextFormat | null>(null);
 
