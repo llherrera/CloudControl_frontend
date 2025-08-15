@@ -541,7 +541,7 @@ const configString = formatTextConfigToString({
                                                         onClick={() => {
                                                             handleSaveTitleConfig();
                                                             setIsEditingNavbarTitle(false);
-                                                            window.location.reload(); // 🔄 Recarga la página
+                                                           // window.location.reload(); // 🔄 Recarga la página
                                                         }}
 
                                                     >
