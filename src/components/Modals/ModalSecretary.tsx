@@ -186,42 +186,44 @@ const ModalPDT = ( props: ModalProps ) => {
 
     const tableBody = (item: ReportPDTInterface, rowIndex: number) => {
         const plan = getPlanParts(item.planSpecific || []);
-        const percentVal = item?.percentExecuted?.[0];
         return (
             <tr key={rowIndex}>
-                <td className='tw-border tw-p-2'>{item.responsible}</td>
                 <td className='tw-border tw-p-2'>{item.goalCode.replace(/(\.\d+)(?=\.)/, '')}</td>
                 <td className='tw-border tw-p-2'>{item.goalDescription}</td>
-                <td className={`tw-border tw-p-2 tw-text-center ${colorClass(item)}`} >
-                    {typeof percentVal === 'number' && !Number.isNaN(percentVal) ? percentVal : (Number(percentVal) || 0)}
-                </td>
-
-                {/* niveles: mapeo por nombre de nivel con fallback a posiciones del planSpecific */}
-                {levels.map((level, idx) => {
-                    const keyName = (level.name || '').toLowerCase();
-                    let value = '';
-                    if (keyName.includes('dimension')) value = plan.dimension;
-                    else if (keyName.includes('sector')) value = plan.sector;
-                    else if (keyName.includes('programa') || keyName.includes('program')) value = plan.programa;
-                    else if (keyName.includes('subprograma') || keyName.includes('subprogram')) value = plan.subprograma;
-                    else if (keyName.includes('meta')) value = plan.metaFromPlan;
-                    else {
-                        // fallback: intenta por posición
-                        const fallback = [plan.metaFromPlan, plan.subprograma, plan.programa, plan.sector, plan.dimension];
-                        value = fallback[idx] ?? '';
-                    }
-
+                <td className='tw-border tw-p-2'>{plan.metaFromPlan}</td>
+                <td className='tw-border tw-p-2'>{item.responsible}</td>
+                <td className='tw-border tw-p-2'>{plan.dimension}</td>
+                <td className='tw-border tw-p-2'>{plan.sector}</td>
+                <td className='tw-border tw-p-2'>{plan.programa}</td>
+                <td className='tw-border tw-p-2'>{plan.subprograma}</td>
+                <td className='tw-border tw-p-2'>{item.indicator}</td>
+                <td className='tw-border tw-p-2 tw-text-center'>{fmtNumberIfPossible(item.base)}</td>
+                {years.map((year, index) => (
+                    <td className='tw-border tw-p-2 tw-text-center' key={year}>
+                        {fmtNumberIfPossible(item.programed?.[index] || 0)}
+                    </td>
+                ))}
+                {years.map((year, index) => (
+                    <td className='tw-border tw-p-2 tw-text-center' key={year}>
+                        {fmtNumberIfPossible(item.executed?.[index] || 0)}
+                    </td>
+                ))}
+                {years.map((year, index) => {
+                    const percentVal = item?.percentExecuted?.[index];
+                    const colorClassForYear = () => {
+                        const value = typeof percentVal === 'number' ? percentVal : Number(percentVal);
+                        if (Number.isNaN(value) || value < 0) return 'tw-bg-gray-400';
+                        if (value < colorimeter[0]) return 'tw-bg-redColory';
+                        if (value < colorimeter[1]) return 'tw-bg-yellowColory';
+                        if (value < colorimeter[2]) return 'tw-bg-greenColory';
+                        return 'tw-bg-blueColory hover:tw-ring-blue-200';
+                    };
                     return (
-                        <td className='tw-border tw-p-2' key={level.name}>
-                            {value}
+                        <td className={`tw-border tw-p-2 tw-text-center ${colorClassForYear()}`} key={year}>
+                            {typeof percentVal === 'number' && !Number.isNaN(percentVal) ? percentVal : (Number(percentVal) || 0)}
                         </td>
                     );
                 })}
-
-                <td className='tw-border tw-p-2'>{item.indicator}</td>
-                <td className='tw-border tw-p-2 tw-text-center'>{fmtNumberIfPossible(item.base)}</td>
-                <td className='tw-border tw-p-2 tw-text-center'>{fmtNumberIfPossible(item.programed?.[0])}</td>
-                <td className='tw-border tw-p-2 tw-text-center'>{fmtNumberIfPossible(item.executed?.[0])}</td>
             </tr>
         );
     };
@@ -279,24 +281,31 @@ const ModalPDT = ( props: ModalProps ) => {
                     id="TablaSecretarias">
                 <thead>
                     <tr>
-                        <th className='tw-border tw-bg-gray-400 tw-p-2'>Responsable</th>
-                        <th className='tw-border tw-bg-gray-400 tw-p-2'>Codigo de la meta producto</th>
+                        <th className='tw-border tw-bg-gray-400 tw-p-2'>Código de la meta producto</th>
+                        <th className='tw-border tw-bg-gray-400 tw-p-2'>Meta</th>
                         <th className='tw-border tw-bg-gray-400 tw-p-2'>Descripción Meta producto</th>
-                        <th className='tw-border tw-bg-gray-400 tw-p-2'>% ejecución {years[indexYear]}</th>
-                        {levels.map(level =>
-                            <th className='tw-border tw-bg-gray-400 tw-p-2'
-                                key={level.name}>
-                                {level.name}
-                            </th>
-                        )}
+                        <th className='tw-border tw-bg-gray-400 tw-p-2'>Responsable</th>
+                        <th className='tw-border tw-bg-gray-400 tw-p-2'>Dimension</th>
+                        <th className='tw-border tw-bg-gray-400 tw-p-2'>Sector</th>
+                        <th className='tw-border tw-bg-gray-400 tw-p-2'>Programa</th>
+                        <th className='tw-border tw-bg-gray-400 tw-p-2'>Subprograma</th>
                         <th className='tw-border tw-bg-gray-400 tw-p-2'>Indicador</th>
                         <th className='tw-border tw-bg-gray-400 tw-p-2'>Línea base</th>
-                        <th className='tw-border tw-bg-gray-400 tw-p-2'>
-                            Programado {years[indexYear]}
-                        </th>
-                        <th className='tw-border tw-bg-gray-400 tw-p-2'>
-                            Ejecutado {years[indexYear]}
-                        </th>
+                        {years.map((year) => (
+                            <th className='tw-border tw-bg-gray-400 tw-p-2' key={year}>
+                                Programado {year}
+                            </th>
+                        ))}
+                        {years.map((year) => (
+                            <th className='tw-border tw-bg-gray-400 tw-p-2' key={year}>
+                                Ejecutado {year}
+                            </th>
+                        ))}
+                        {years.map((year) => (
+                            <th className='tw-border tw-bg-gray-400 tw-p-2' key={year}>
+                                % ejecución {year}
+                            </th>
+                        ))}
                     </tr>
                 </thead>
                 <tbody>

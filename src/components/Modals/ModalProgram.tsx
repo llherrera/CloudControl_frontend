@@ -60,11 +60,11 @@ export const ModalProgram = () => {
 
     useEffect(() => {
         const fetch = async () => {
-            if (modalIsOpen)
+            if (modalIsOpen && nodesReport.length > 0 && programs.length > 0)
                 await genReport();
         }
         fetch();
-    }, [programs]);
+    }, [nodesReport]);
 
     const handleProgramBtn = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault();
@@ -97,6 +97,10 @@ export const ModalProgram = () => {
         pesos = pesos.filter((item:NodesWeight)=> nodesReport_.includes(item.id_node) );
         const detalle = detalleStr ? JSON.parse(detalleStr) : [];
         let data: ReportPDTInterface[] = [];
+        
+        console.log('pesos filtrados:', pesos.length);
+        console.log('nodesReport_:', nodesReport_);
+        console.log('detalle:', detalle.length);
 
         await Promise.all(pesos.map(async (peso: NodesWeight) => {
             const { id_node, percents } = peso;
@@ -121,22 +125,25 @@ export const ModalProgram = () => {
             const executed = nodeYears.map((item: YearDetail) => item.physical_execution);
             const programed = nodeYears.map((item: YearDetail) => item.physical_programming);
 
-            const item: ReportPDTInterface = {
-                responsible: nodeYears[0].responsible??'',
-                goalCode: nodeYears[0].code,
-                goalDescription: nodeYears[0].description,
-                percentExecuted: percentages!,
-                planSpecific: root_,
-                indicator: nodeYears[0].indicator,
-                base: nodeYears[0].base_line,
-                executed: executed,
-                programed: programed
-            };
-            data.push(item);
-        }))
-        data = sortData(data);
-        dispatch(setLoadingReport(false));
-        setData(data);
+                         const item: ReportPDTInterface = {
+                 responsible: nodeYears[0].responsible??'',
+                 goalCode: nodeYears[0].code,
+                 goalDescription: nodeYears[0].description,
+                 percentExecuted: percentages!,
+                 planSpecific: root_,
+                 indicator: nodeYears[0].indicator,
+                 base: nodeYears[0].base_line,
+                 executed: executed,
+                 programed: programed
+             };
+             console.log('Item generado:', item);
+             data.push(item);
+                 }))
+         data = sortData(data);
+         console.log('Datos finales generados:', data.length);
+         console.log('Primer item:', data[0]);
+         dispatch(setLoadingReport(false));
+         setData(data);
     };
 
     const handleChangePrograms = (index: number, event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -161,39 +168,58 @@ export const ModalProgram = () => {
         'tw-bg-blueColory hover:tw-ring-blue-200'
     );
 
-    const tableBody = (item: ReportPDTInterface) =>
-        <tr key={item.responsible}>
-            <td className='tw-border tw-p-2'>{item.responsible}</td>
-            <td className='tw-border tw-p-2'>{item.goalCode.replace(/(\.\d+)(?=\.)/, '')}</td>
-            <td className='tw-border tw-p-2'>{item.goalDescription}</td>
-            {years.map((year, index) =>
-                <td key={year}
-                    className={`tw-border tw-p-2 tw-text-center ${coloClass(item, index)} `}>
-                    {item['percentExecuted'][index] < 0 ? 0 : item['percentExecuted'][index]}
-                </td>
-            )}
-            {levels.map((level, index) =>
-                <td className='tw-border tw-p-2'
-                    key={level.name}>
-                    {item['planSpecific'][index]}
-                </td>
-            )}
-            <td className='tw-border tw-p-2'>{item.indicator}</td>
-            <td className='tw-border tw-p-2'>{item.base}</td>
-            {years.map((year, index) =>
-                <td className='tw-border tw-p-2'
-                    key={year}>
-                    {item['programed'][index]}
-                </td>
-            )}
-            {years.map((year, index) =>
-                <td className='tw-border tw-p-2'
-                    key={year+index+1}>
-                    {item['executed'][index]}
-                </td>
-            )}
-        </tr>
-    ;
+    // mapea planSpecific (array) a partes con fallback
+    const getPlanParts = (planSpecific: string[]) => {
+        // se espera: [Dimension, Sector, Programa, Subprograma, Meta]
+        const parts = planSpecific || [];
+        console.log('planSpecific array:', planSpecific);
+        console.log('parts:', parts);
+        const result = {
+            dimension: parts[0] ?? '',
+            sector: parts[1] ?? '',
+            programa: parts[2] ?? '',
+            subprograma: parts[3] ?? '',
+            metaFromPlan: parts[4] ?? ''
+        };
+        console.log('Parsed values:', result);
+        return result;
+    };
+
+    const tableBody = (item: ReportPDTInterface) => {
+        const plan = getPlanParts(item.planSpecific || []);
+        return (
+            <tr key={item.responsible}>
+                <td className='tw-border tw-p-2'>{item.goalCode.replace(/(\.\d+)(?=\.)/, '')}</td>
+                <td className='tw-border tw-p-2'>{item.goalDescription}</td>
+                <td className='tw-border tw-p-2'>{plan.metaFromPlan}</td>
+                <td className='tw-border tw-p-2'>{item.responsible}</td>
+                <td className='tw-border tw-p-2'>{plan.dimension}</td>
+                <td className='tw-border tw-p-2'>{plan.sector}</td>
+                <td className='tw-border tw-p-2'>{plan.programa}</td>
+                <td className='tw-border tw-p-2'>{plan.subprograma}</td>
+                <td className='tw-border tw-p-2'>{item.indicator}</td>
+                <td className='tw-border tw-p-2'>{item.base}</td>
+                {years.map((year, index) =>
+                    <td className='tw-border tw-p-2'
+                        key={year}>
+                        {item['programed'][index]}
+                    </td>
+                )}
+                {years.map((year, index) =>
+                    <td className='tw-border tw-p-2'
+                        key={year+index+1}>
+                        {item['executed'][index]}
+                    </td>
+                )}
+                {years.map((year, index) =>
+                    <td key={year}
+                        className={`tw-border tw-p-2 tw-text-center ${coloClass(item, index)} `}>
+                        {item['percentExecuted'][index] < 0 ? 0 : item['percentExecuted'][index]}
+                    </td>
+                )}
+            </tr>
+        );
+    };
 
     const ModalPDT = () => {
         return (
@@ -233,21 +259,14 @@ export const ModalProgram = () => {
                         ref={tableRef}>
                     <thead>
                         <tr>
+                            <th className='tw-border tw-bg-gray-400 tw-p-2'>Código de la meta producto</th>
+                            <th className='tw-border tw-bg-gray-400 tw-p-2'>Meta</th>
+                            <th className='tw-border tw-bg-gray-400 tw-p-2'>Descripción</th>
                             <th className='tw-border tw-bg-gray-400 tw-p-2'>Responsable</th>
-                            <th className='tw-border tw-bg-gray-400 tw-p-2'>Codigo de la meta producto</th>
-                            <th className='tw-border tw-bg-gray-400 tw-p-2'>Descripción Meta producto</th>
-                            {years.map((year) => (
-                                <th className='tw-border tw-bg-gray-400 tw-p-2' 
-                                    key={year}>
-                                    % ejecución {year}
-                                </th>
-                            ))}
-                            {levels.map((level) => (
-                                <th className='tw-border tw-bg-gray-400 tw-p-2' 
-                                    key={level.name}>
-                                    {level.name}
-                                </th>
-                            ))}
+                            <th className='tw-border tw-bg-gray-400 tw-p-2'>Dimension</th>
+                            <th className='tw-border tw-bg-gray-400 tw-p-2'>Sector</th>
+                            <th className='tw-border tw-bg-gray-400 tw-p-2'>Programa</th>
+                            <th className='tw-border tw-bg-gray-400 tw-p-2'>Subprograma</th>
                             <th className='tw-border tw-bg-gray-400 tw-p-2'>Indicador</th>
                             <th className='tw-border tw-bg-gray-400 tw-p-2'>Línea base</th>
                             {years.map((year) =>
@@ -262,6 +281,12 @@ export const ModalProgram = () => {
                                     Ejecutado {year}
                                 </th>
                             )}
+                            {years.map((year) => (
+                                <th className='tw-border tw-bg-gray-400 tw-p-2' 
+                                    key={year}>
+                                    % ejecución {year}
+                                </th>
+                            ))}
                         </tr>
                     </thead>
                     <tbody>
