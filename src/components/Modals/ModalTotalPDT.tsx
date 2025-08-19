@@ -87,7 +87,6 @@ const ModalPDT: React.FC<ModalPDTProps> = (props) => {
         : [];
 
     const loadingReport: boolean = !!planStore?.loadingReport;
-    const rootTreeRaw = planStore?.rootTree ?? [];
 
     // helper robusto para colorímetro
     const toNumberArray = (input: unknown, fallback: number[] = [30, 60, 90]): number[] => {
@@ -119,57 +118,6 @@ const ModalPDT: React.FC<ModalPDTProps> = (props) => {
         { key: "base", label: "Línea base" },
     ];
 
-    const fallbackDynamicLabels = ["Dimensión", "Sector", "Programa", "Subprograma"];
-
-    // extraer nodos dinámicos desde rootTree
-    type NodeShort = { code?: string; name: string };
-
-    const extractNodes = (raw: any): NodeShort[] => {
-        if (!raw) return [];
-
-        // array de pares
-        if (Array.isArray(raw) && raw.length > 0) {
-            const first = raw[0];
-            if (Array.isArray(first) && first.length >= 2 && typeof first[1] === "string") {
-                return (raw as [string, string][]).map(([code, name]) => ({ code, name }));
-            }
-        }
-
-        // array de objetos
-        if (Array.isArray(raw)) {
-            const nodes: NodeShort[] = [];
-            const visit = (node: any) => {
-                if (!node) return;
-                if (typeof node === "string") {
-                    nodes.push({ name: node });
-                    return;
-                }
-                const name = node.name || node.label || node.title;
-                const code = node.code || node.id;
-                if (typeof name === "string") nodes.push({ code, name });
-                if (Array.isArray(node.children)) node.children.forEach(visit);
-                if (Array.isArray(node.nodes)) node.nodes.forEach(visit);
-                if (Array.isArray(node.items)) node.items.forEach(visit);
-            };
-            (raw as any[]).forEach(visit);
-            if (nodes.length > 0) return nodes;
-        }
-
-        // objeto simple
-        if (typeof raw === "object" && !Array.isArray(raw)) {
-            const nodes: NodeShort[] = [];
-            for (const [k, v] of Object.entries(raw as Record<string, any>)) {
-                if (typeof v === "string") nodes.push({ code: k, name: v });
-                else if (v && typeof v === "object" && (v.name || v.label || v.title)) {
-                    nodes.push({ code: v.code || k, name: v.name || v.label || v.title });
-                }
-            }
-            if (nodes.length > 0) return nodes;
-        }
-
-        return [];
-    };
-    // 🔹 Ahora las dinámicas vienen desde `levels` en vez de rootTreeRaw
     const dynamicHeaders =
         levels.length > 0
             ? levels.map((level, idx) => {
@@ -178,7 +126,13 @@ const ModalPDT: React.FC<ModalPDTProps> = (props) => {
                     .replace(/\s+/g, "_")
                     .replace(/[^a-zA-Z0-9_\-]/g, "")
                     .slice(0, 40);
-                return { key: `dyn-${idx}-${safeId}`, label: level.name };
+
+                const label =
+                    level.name.trim().toLowerCase() === "meta"
+                        ? "Descripción de Meta"
+                        : level.name;
+
+                return { key: `dyn-${idx}-${safeId}`, label };
             })
             : [
                 { key: "dyn-f-0", label: "Dimensión" },
@@ -262,14 +216,33 @@ const ModalPDT: React.FC<ModalPDTProps> = (props) => {
         planParts: ReturnType<typeof getPlanParts>,
         item: ReportPDTInterface2
     ) => {
+    
         const l = label.toLowerCase();
-        if (l.includes("subprogram")) return planParts.subprograma;
-        if (l.includes("program")) return planParts.programa;
-        if (l.includes("sector")) return planParts.sector;
-        if (l.includes("eje") || l.includes("dimen")) return planParts.dimension;
-        if (l.includes("meta")) return planParts.metaFromPlan || item.goalDescription;
+        
+        if (l.includes("eje")) {
+            return planParts.sector;
+        }
+        if (l.includes("subprograma")) {
+            return planParts.subprograma;
+        }
+        if (l.includes("programa")) {
+            return planParts.subprograma;
+        }
+        if (l.includes("sector")) {
+            return planParts.programa;
+        }
+        if (l.includes("eje") || l.includes("dimen")) {
+            return planParts.dimension;
+        }
+        if (l.includes("meta")) {
+            const val = planParts.metaFromPlan || item.goalDescription;
+            return val;
+        }
+    
+        console.log("  Returning default empty string");
         return "";
     };
+    
 
     const tableBody = (item: ReportPDTInterface2) => {
         const plan = getPlanParts(item.planSpecific);
