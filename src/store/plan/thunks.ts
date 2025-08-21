@@ -26,7 +26,9 @@ import {getPDTid, addPDT, getLastPDT, getColors, getLevelNodes,
         getMapZoomByPlan,
         updateMapZoomByPlan,
         getTextFormatByPlan,
-        updateTextFormatByPlan
+        updateTextFormatByPlan,
+        getLevelArrayByPlan,
+        getNodeArrayByPlan
     } from '@/services/api';
 
 export const thunkGetPDTid = createAsyncThunk<PDTInterface, number, { rejectValue: ErrorBasicInterface }>(
@@ -686,6 +688,40 @@ export const thunkUpdateTextFormatByPlan = createAsyncThunk<
     }
 );
 
+// Obtener nodos de un plan
+export const thunkGetNodeArrayByPlan = createAsyncThunk<
+    any[], // o mejor tipado si conoces la estructura de nodes
+    number,
+    { rejectValue: ErrorBasicInterface }
+>(
+    'pdt/getNodeArrayByPlan',
+    async (id_plan, { rejectWithValue }) => {
+        try {
+            const res = await getNodeArrayByPlan(id_plan);
+            return res; // normalmente un array de nodos
+        } catch (err) {
+            const result = parseErrorAxios(err);
+            return rejectWithValue(result);
+        }
+    }
+);
 
+// Obtener niveles de un plan
+export const thunkGetLevelArrayByPlan = createAsyncThunk<
+    any[], // o mejor tipado si conoces la estructura de levels
+    number,
+    { rejectValue: ErrorBasicInterface }
+>(
+    'pdt/getLevelArrayByPlan',
+    async (id_plan, { rejectWithValue }) => {
+        try {
+            const res = await getLevelArrayByPlan(id_plan);
+            return res; // normalmente un array de niveles
+        } catch (err) {
+            const result = parseErrorAxios(err);
+            return rejectWithValue(result);
+        }
+    }
+);
 
 export const removePDT = createAction('plan/removePDT')

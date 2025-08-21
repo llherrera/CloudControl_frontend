@@ -1061,6 +1061,22 @@ export const getTextFormatByPlan = async (id_plan: number) => {
     return response.data; // devuelve: { format: { ... } }
 };
 
+// Obtener arreglo de nodos de un plan
+export const getNodeArrayByPlan = async (id_plan: number) => {
+    const response = await api.get('/misc/nodearray', {
+        params: { idPlan: id_plan },
+    });
+    return response.data; // devuelve: { nodes: [...] } o directamente [...]
+};
+
+// Obtener arreglo de niveles de un plan
+export const getLevelArrayByPlan = async (id_plan: number) => {
+    const response = await api.get('/misc/levelarray', {
+        params: { idPlan: id_plan },
+    });
+    return response.data; // devuelve: { levels: [...] } o directamente [...]
+};
+
 // Actualizar configuración de texto de un plan
 export const updateTextFormatByPlan = async (id_plan: number, format: Record<string, any>) => {
     const response = await api.put('/plan-territorial/text-format/value', {

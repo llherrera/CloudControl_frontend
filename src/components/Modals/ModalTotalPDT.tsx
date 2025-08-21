@@ -13,11 +13,25 @@ import { generalReport } from "@/services/api";
 import { generateExcelYears } from "@/utils";
 
 import {
-    thunkGetLevelsById,
-    thunkGetPDTid,
-    thunkGetLocations,
-    thunkGetSecretaries,
+    thunkGetNodeArrayByPlan,
+    thunkGetLevelArrayByPlan,
 } from "@/store/plan/thunks";
+
+/**
+ * Helper: intenta ordenar niveles por id_level numérico si existe,
+ * si no, devuelve el array tal cual.
+ */
+const normalizeLevelsOrder = (levels: any[]): any[] => {
+    if (!Array.isArray(levels) || levels.length === 0) return [];
+    const hasIdLevel = levels.every((l) => l !== null && l !== undefined && ("id_level" in l));
+    if (!hasIdLevel) return levels;
+    return levels.slice().sort((a, b) => {
+        const ai = Number(a.id_level);
+        const bi = Number(b.id_level);
+        if (Number.isFinite(ai) && Number.isFinite(bi)) return ai - bi;
+        return 0;
+    });
+};
 
 export const ModalTotalPDT: React.FC = (): JSX.Element => {
     const dispatch = useAppDispatch();
@@ -26,22 +40,40 @@ export const ModalTotalPDT: React.FC = (): JSX.Element => {
     const [modalIsOpen, setModalIsOpen] = useState(false);
     const [data, setData] = useState<ReportPDTInterface2[]>([]);
 
+    // local states para niveles y nodos cargados por los thunks
+    const [levelsState, setLevelsState] = useState<any[]>([]);
+    const [nodesState, setNodesState] = useState<any[]>([]);
+
     useEffect(() => {
         if (!id_plan) return;
 
-        dispatch(thunkGetLevelsById(id_plan))
+        // Pedimos niveles con el thunk proporcionado
+        dispatch(thunkGetLevelArrayByPlan(id_plan))
             .unwrap()
             .then((res) => {
-                console.log("✅ Niveles cargados:", res);
+                console.log("✅ Niveles cargados (thunkGetLevelArrayByPlan):", res);
+                const normalized = Array.isArray(res) ? normalizeLevelsOrder(res) : [];
+                setLevelsState(normalized);
             })
             .catch((err) => {
                 console.error("❌ Error cargando niveles:", err);
+                setLevelsState([]);
+            });
+
+        // Pedimos nodos con el thunk proporcionado
+        dispatch(thunkGetNodeArrayByPlan(id_plan))
+            .unwrap()
+            .then((res) => {
+                console.log("✅ Nodos cargados (thunkGetNodeArrayByPlan):", res);
+                setNodesState(Array.isArray(res) ? res : []);
+            })
+            .catch((err) => {
+                console.error("❌ Error cargando nodos:", err);
+                setNodesState([]);
             });
 
         dispatch(setZeroLevelIndex());
     }, [id_plan, dispatch]);
-
-
 
     const handleBtn = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault();
@@ -58,7 +90,14 @@ export const ModalTotalPDT: React.FC = (): JSX.Element => {
 
     return (
         <div>
-            <ModalPDT modalIsOpen={modalIsOpen} callback={setModalIsOpen} data={data} />
+            <ModalPDT
+                modalIsOpen={modalIsOpen}
+                callback={setModalIsOpen}
+                data={data}
+                // paso states locales como props para usar en ModalPDT
+                levelsFromThunk={levelsState}
+                nodesFromThunk={nodesState}
+            />
             <IconButton
                 size="large"
                 color="inherit"
@@ -72,19 +111,27 @@ export const ModalTotalPDT: React.FC = (): JSX.Element => {
     );
 };
 
-const ModalPDT: React.FC<ModalPDTProps> = (props) => {
-    // accedo al store de plan (puede venir en distintos formatos)
+type ModalPDTExtendedProps = ModalPDTProps & {
+    levelsFromThunk?: any[];
+    nodesFromThunk?: any[];
+};
 
+const ModalPDT: React.FC<ModalPDTExtendedProps> = (props) => {
+    // accedo al store de plan (puede venir en distintos formatos)
     const planStore = useAppSelector((s) => (s as any).plan);
 
-    const years: string[] = Array.isArray(planStore?.years)
-        ? (planStore.years as string[])
-        : [];
+    const years: string[] = Array.isArray(planStore?.years) ? (planStore.years as string[]) : [];
 
-    // 🔹 guardamos los levels que vienen del thunk
-    const levels: string[] = Array.isArray(planStore?.levels)
-        ? (planStore.levels as string[])
-        : [];
+    // ahora usamos preferentemente los levels que pasamos desde ModalTotalPDT (levelsFromThunk)
+    const levels: any[] =
+        Array.isArray(props.levelsFromThunk) && props.levelsFromThunk.length > 0
+            ? props.levelsFromThunk
+            : Array.isArray(planStore?.levels)
+                ? (planStore.levels as any[])
+                : [];
+
+    // nodos cargados por thunk (si vienen) - usados como fallback para obtener full_path si item no lo trae
+    const nodes: any[] = Array.isArray(props.nodesFromThunk) ? props.nodesFromThunk : [];
 
     const loadingReport: boolean = !!planStore?.loadingReport;
 
@@ -118,31 +165,28 @@ const ModalPDT: React.FC<ModalPDTProps> = (props) => {
         { key: "base", label: "Línea base" },
     ];
 
+    // Construimos headers dinámicos con índice del nivel (orden proveniente del thunk o store)
     const dynamicHeaders =
         levels.length > 0
-            ? levels.map((level, idx) => {
-                const safeId = String(level.name)
-                    .trim()
+            ? levels.map((level: any, idx: number) => {
+                const rawName = String(level?.name ?? `Nivel ${idx}`).trim();
+                const safeId = rawName
                     .replace(/\s+/g, "_")
                     .replace(/[^a-zA-Z0-9_\-]/g, "")
                     .slice(0, 40);
 
-                const label =
-                    level.name.trim().toLowerCase() === "meta"
-                        ? "Descripción de Meta"
-                        : level.name;
+                const label = rawName.toLowerCase() === "meta" ? "Descripción de Meta" : rawName;
 
-                return { key: `dyn-${idx}-${safeId}`, label };
+                return { key: `dyn-${idx}-${safeId}`, label, levelIndex: idx, rawName };
             })
             : [
-                { key: "dyn-f-0", label: "Dimensión" },
-                { key: "dyn-f-1", label: "Sector" },
-                { key: "dyn-f-2", label: "Programa" },
-                { key: "dyn-f-3", label: "Subprograma" },
+                { key: "dyn-f-0", label: "Dimensión", levelIndex: 0, rawName: "Dimension" },
+                { key: "dyn-f-1", label: "Sector", levelIndex: 1, rawName: "Sector" },
+                { key: "dyn-f-2", label: "Programa", levelIndex: 2, rawName: "Programa" },
+                { key: "dyn-f-3", label: "Subprograma", levelIndex: 3, rawName: "Subprograma" },
             ];
 
     const baseHeaders = [...staticBefore, ...dynamicHeaders, ...staticAfter];
-
 
     // helpers
     const parseCsv = (s?: string): string[] => {
@@ -150,6 +194,24 @@ const ModalPDT: React.FC<ModalPDTProps> = (props) => {
         const matches = s.match(/\[([^\]]*)\]/g);
         if (!matches) return [];
         return matches.map((m) => m.slice(1, -1).trim());
+    };
+
+    // Normaliza la representación del código para mostrar:
+    // elimina el segundo segmento si es solo dígitos.
+    // Ej: "C.23079.1.1.1.1" -> "C.1.1.1.1"
+    const formatGoalCodeDisplay = (code: string | undefined | null) => {
+        if (!code) return "";
+        const parts = String(code).split(".").map(p => p.trim()).filter(p => p !== "");
+        // si no hay al menos 3 segmentos (ej: A.B.C) devolvemos tal cual
+        if (parts.length < 3) return parts.join(".");
+        // si el segundo segmento es sólo dígitos, lo omitimos
+        const second = parts[1];
+        if (/^\d+$/.test(second)) {
+            const out = [parts[0], ...parts.slice(2)].join(".");
+            return out;
+        }
+        // si no es sólo dígitos, devolver original
+        return parts.join(".");
     };
 
     const fmtNumberIfPossible = (v: string | number | undefined) => {
@@ -211,38 +273,108 @@ const ModalPDT: React.FC<ModalPDTProps> = (props) => {
         return 0;
     };
 
-    const valueForDynamic = (
-        label: string,
-        planParts: ReturnType<typeof getPlanParts>,
-        item: ReportPDTInterface2
-    ) => {
-    
-        const l = label.toLowerCase();
-        
-        if (l.includes("eje")) {
-            return planParts.sector;
+    // ---------- Nueva función: extrae el valor del full_path según levelIndex ----------
+    // Reemplaza la función valueForLevel existente por esta
+    const valueForLevel = (levelIndex: number, item: ReportPDTInterface2, rawName?: string) => {
+        const normalize = (s: any) =>
+            (s ?? "")
+                .toString()
+                .toLowerCase()
+                .replace(/\s+/g, " ")
+                .replace(/[^\w\sáéíóúñüÁÉÍÓÚÑÜ-]/g, "") // mantiene tildes y ñ
+                .trim();
+
+        // 1) Primero: tomar full_path directamente del item (varias claves posibles)
+        const fpCandidates = [
+            (item as any).full_path,
+            (item as any).fullPath,
+            (item as any).fullpath,
+            (item as any).fullPathNormalized,
+        ].filter(Boolean);
+
+        if (fpCandidates.length > 0) {
+            const fp = String(fpCandidates[0]);
+            const parts = fp.split(">").map((p) => p.trim()).filter(Boolean);
+            if (levelIndex >= 0 && levelIndex < parts.length) return parts[levelIndex];
         }
-        if (l.includes("subprograma")) {
-            return planParts.subprograma;
+
+        // 2) Si no está en item, intentar buscar nodo en nodes con heurísticas robustas
+        if (Array.isArray(nodes) && nodes.length > 0) {
+            const goalDesc = normalize(item.goalDescription ?? item.plan_description ?? "");
+            const goalCode = String(item.goalCode ?? item.code ?? "").trim();
+
+            // Helper para extraer full_path normalizado de un nodo
+            const nodeFullPath = (n: any) => (n?.full_path ?? n?.fullPath ?? n?.fullpath ?? "").toString();
+
+            // Búsqueda 1: node.full_path termina con goalDescription (caso típico)
+            let nodeFound = nodes.find((n) => {
+                const nfp = normalize(nodeFullPath(n));
+                return goalDesc && nfp.endsWith(goalDesc);
+            });
+
+            // Búsqueda 2: node.node_name === goalDescription
+            if (!nodeFound && goalDesc) {
+                nodeFound = nodes.find((n) => normalize(n.node_name ?? n.name ?? "") === goalDesc);
+            }
+
+            // Búsqueda 3: node.plan_description === goalDescription
+            if (!nodeFound && goalDesc) {
+                nodeFound = nodes.find((n) => normalize(n.plan_description ?? "") === goalDesc);
+            }
+
+            // Búsqueda 4: si hay goalCode, intentar por 'code' o por sufijo
+            if (!nodeFound && goalCode) {
+                nodeFound =
+                    nodes.find((n) => String(n.code) === goalCode) ||
+                    nodes.find((n) => String(n.code).endsWith(goalCode)) ||
+                    nodes.find((n) => String(n.id_node) === goalCode);
+            }
+
+            // Búsqueda 5: comparación por inclusión de tokens
+            if (!nodeFound && goalDesc) {
+                nodeFound = nodes.find((n) => {
+                    const nfp = normalize(nodeFullPath(n));
+                    // si el goalDesc aparece dentro del full_path
+                    return nfp.includes(goalDesc);
+                });
+            }
+
+            if (nodeFound) {
+                const fp = nodeFullPath(nodeFound);
+                const parts = fp.split(">").map((p) => p.trim()).filter(Boolean);
+                if (levelIndex >= 0 && levelIndex < parts.length) return parts[levelIndex];
+            }
         }
-        if (l.includes("programa")) {
-            return planParts.subprograma;
+
+        // 3) Fallback especial para 'Meta' (último nivel)
+        const levelName = (rawName ?? levels[levelIndex]?.name ?? "").toString().toLowerCase();
+        if (levelName === "meta" || levelName.includes("meta")) {
+            const plan = getPlanParts(item.planSpecific);
+            return plan.metaFromPlan || item.goalDescription || "";
         }
-        if (l.includes("sector")) {
-            return planParts.programa;
+
+        // 4) Por último intentar usar planSpecific si trae partes entre []
+        try {
+            const planParts = getPlanParts(item.planSpecific);
+            // intentamos mapear por índice: metaFromPlan=0 en tu parseCsv original es [meta, subprograma, programa, sector, dimension]
+            // aquí devolvemos partes por posición si existen:
+            const possibleArr = [
+                planParts.dimension,
+                planParts.sector,
+                planParts.programa,
+                planParts.subprograma,
+                planParts.metaFromPlan,
+            ].map((x) => (x ?? "").toString()).filter(Boolean);
+            if (levelIndex >= 0 && levelIndex < possibleArr.length) return possibleArr[levelIndex];
+        } catch (e) {
+            /* noop */
         }
-        if (l.includes("eje") || l.includes("dimen")) {
-            return planParts.dimension;
-        }
-        if (l.includes("meta")) {
-            const val = planParts.metaFromPlan || item.goalDescription;
-            return val;
-        }
-    
-        console.log("  Returning default empty string");
+
+        // Si nada funcionó, loguear (temporal) y devolver vacío
+        // Deja estos logs solo durante debugging
+        // console.log("valueForLevel: no match", { levelIndex, levelName, itemGoalCode: item.goalCode, goalDesc: item.goalDescription, itemFullPath: (item as any).full_path, nodesLength: Array.isArray(nodes)? nodes.length : 0 });
         return "";
     };
-    
 
     const tableBody = (item: ReportPDTInterface2) => {
         const plan = getPlanParts(item.planSpecific);
@@ -252,21 +384,16 @@ const ModalPDT: React.FC<ModalPDTProps> = (props) => {
 
         return (
             <tr key={item.goalCode}>
-                {baseHeaders.map((h) => {
-                    if (h.key === "goalCode")
-                        return <td className="tw-border tw-p-2">{item.goalCode}</td>;
-                    if (h.key === "goalDescription")
-                        return <td className="tw-border tw-p-2">{item.goalDescription}</td>;
-                    if (h.key === "metaFromPlan")
-                        return <td className="tw-border tw-p-2">{plan.metaFromPlan}</td>;
-                    if (h.key === "responsible")
-                        return <td className="tw-border tw-p-2">{item.responsible}</td>;
-                    if (h.key === "indicator")
-                        return <td className="tw-border tw-p-2">{item.indicator}</td>;
-                    if (h.key === "base")
-                        return <td className="tw-border tw-p-2">{fmtNumberIfPossible(item.base)}</td>;
-                    if (h.key.startsWith("dyn-")) {
-                        const val = valueForDynamic(h.label, plan, item);
+                {baseHeaders.map((h: any) => {
+                    if (h.key === "goalCode") return <td className="tw-border tw-p-2">{formatGoalCodeDisplay(item.goalCode)}</td>;
+                    if (h.key === "goalDescription") return <td className="tw-border tw-p-2">{item.goalDescription}</td>;
+                    if (h.key === "metaFromPlan") return <td className="tw-border tw-p-2">{plan.metaFromPlan}</td>;
+                    if (h.key === "responsible") return <td className="tw-border tw-p-2">{item.responsible}</td>;
+                    if (h.key === "indicator") return <td className="tw-border tw-p-2">{item.indicator}</td>;
+                    if (h.key === "base") return <td className="tw-border tw-p-2">{fmtNumberIfPossible(item.base)}</td>;
+                    if ((h.key as string).startsWith("dyn-")) {
+                        const li = typeof h.levelIndex === "number" ? h.levelIndex : -1;
+                        const val = li >= 0 ? valueForLevel(li, item, h.rawName) : "";
                         return <td className="tw-border tw-p-2">{val}</td>;
                     }
                     return <td className="tw-border tw-p-2">-</td>;
@@ -311,9 +438,7 @@ const ModalPDT: React.FC<ModalPDTProps> = (props) => {
 
                     <button
                         className="tw-bg-gray-300 hover:tw-bg-gray-200 tw-rounded tw-border tw-border-black tw-px-2 tw-py-1 tw-ml-3"
-                        onClick={() =>
-                            generateExcelYears(props.data, "InformeTotal", levels, years, colorimeter)
-                        }
+                        onClick={() => generateExcelYears(props.data, "InformeTotal", levels, years, colorimeter)}
                     >
                         Exportar
                     </button>
@@ -321,7 +446,7 @@ const ModalPDT: React.FC<ModalPDTProps> = (props) => {
                     <table id="TablaTotal">
                         <thead>
                             <tr>
-                                {baseHeaders.map((h) => (
+                                {baseHeaders.map((h: any) => (
                                     <th key={h.key} className="tw-border tw-bg-gray-400 tw-p-2">
                                         {h.label}
                                     </th>

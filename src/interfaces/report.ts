@@ -19,6 +19,7 @@ export interface ReportPDTInterface {
 }
 
 export interface ReportPDTInterface2 {
+    full_path?: string;
     responsible: string;
     goalCode: string;
     goalDescription: string;
