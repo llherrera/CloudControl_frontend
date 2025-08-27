@@ -57,10 +57,10 @@ export const LoginForm = () => {
                 localStorage.removeItem('textFormat');
                 localStorage.removeItem('titleText');
                 localStorage.removeItem('textColor');
-                localStorage.removeItem('fontSize');                    
-                localStorage.removeItem('fontWeight');                        
+                localStorage.removeItem('fontSize');
+                localStorage.removeItem('fontWeight');
                 localStorage.removeItem('textAlign');
-                
+
                 // Agregar datos a localStorage
                 localStorage.removeItem('id');
                 localStorage.removeItem('rol');
@@ -94,9 +94,7 @@ export const LoginForm = () => {
         <form className='   tw-rounded
                             tw-pt-8
                             tw-flex tw-flex-col
-                            tw-px-10 tw-mx-6
-                            tw-bg-[#FCFCFE]
-                            tw-shadow-lg'
+                            tw-px-10 tw-mx-6'
             onSubmit={handleSubmit}>
             <p className='tw-font-montserrat'>Usuario</p>
             <input type="text"
@@ -110,13 +108,17 @@ export const LoginForm = () => {
                 onChange={handleChange}
                 className='tw-border tw-rounded'
                 required /><br />
-            <button className='tw-bg-greenBtn hover:tw-opacity-50
-                                tw-text-white tw-font-montserrat
-                                tw-rounded tw-h-10'>
-                {authenticating ?
-                    <div className='tw-h-10 tw-flex'><Spinner /></div> :
-                    <p className='tw-font-bold'>Iniciar sesión</p>}
-            </button><br />
+            <button
+                className="tw-bg-[#f59e0b] hover:tw-opacity-75 tw-text-white tw-font-montserrat tw-rounded tw-h-10"
+                aria-disabled={authenticating}
+            >
+                {authenticating ? (
+                    <div className="tw-h-10 tw-flex"><Spinner /></div>
+                ) : (
+                    <p className="tw-font-bold">Iniciar sesión</p>
+                )}
+            </button>
+            <br />
             <div className='tw-mb-10 tw-flex tw-justify-center'>
                 <button type="button"
                     onClick={() => navigate('/contrasena')}

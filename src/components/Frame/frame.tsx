@@ -1,62 +1,236 @@
-import { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button, Divider, IconButton, Typography } from '@mui/material';
-import LogoutIcon from '@mui/icons-material/Logout';
-import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
-import { MdSupportAgent } from 'react-icons/md';
-//import cclogo from '@/assets/images/logo-cc.png';
-//import cclogo from "@/assets/images/ControlLand.png";
-import cclogo from "@/assets/images/ControlLand2.png";
-import NotificationsIcon from '@mui/icons-material/Notifications';
+// -------------------- React y librerías base --------------------
+import { useEffect, useRef, useState } from 'react';       // Hooks de React
+import { useNavigate } from 'react-router-dom';           // Navegación entre rutas
 
-import { Menu, MenuItem, Badge } from '@mui/material';
-import { Notifications } from '@mui/icons-material';
+// -------------------- Componentes de Material UI --------------------
+import { Button, Divider, IconButton, Typography } from '@mui/material';  // Componentes UI básicos
+import { Menu, MenuItem, Badge } from '@mui/material';                    // Menú desplegable, items y badge
+import LogoutIcon from '@mui/icons-material/Logout';                      // Icono de logout
+import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';          // Icono de añadir persona
+import { Notifications } from '@mui/icons-material';                      // Icono de notificaciones
 
-import { decode } from '@/utils';
+// -------------------- Iconos externos --------------------
+import { MdSupportAgent } from 'react-icons/md';                          // Icono de soporte (React Icons)
 
-import { useAppDispatch, useAppSelector } from '@/store';
-import { thunkLogout } from '@/store/auth/thunks';
+// -------------------- Imágenes/Recursos --------------------
+// import cclogo from '@/assets/images/logo-cc.png';                      // Logo alternativo (comentado)
+// import cclogo from "@/assets/images/ControlLand.png";                  // Logo alternativo (comentado)
+import cclogo from "@/assets/images/ControlLand2.png";                    // Logo actual utilizado
+
+// -------------------- Utilidades --------------------
+import { decode } from '@/utils';                                         // Función utilitaria decode
+
+// -------------------- Store: Hooks y slices --------------------
+import { useAppDispatch, useAppSelector } from '@/store';                 // Hooks personalizados Redux
+import { thunkLogout } from '@/store/auth/thunks';                        // Thunk para cerrar sesión
+
 import {
     setLogo, setLogoPlan, setReload, selectOption,
     setProjectPage, setIsFullHeight
-} from '@/store/content/contentSlice';
-import { AddRootTree, setZeroLevelIndex } from "@/store/plan/planSlice";
+} from '@/store/content/contentSlice';                                    // Acciones del slice content
 
-import { NavBar, ButtonComponent } from '@/components';
+import { AddRootTree, setZeroLevelIndex } from "@/store/plan/planSlice";  // Acciones del slice plan
+
+// -------------------- Componentes propios --------------------
+import { NavBar, ButtonComponent } from '@/components';                   // Navbar y botón reutilizable
+
+// -------------------- Iconos propios --------------------
 import {
     ProjectBankIcon, PlanIndicativoIcon, PlanAccionIcon,
     ChartIcon, MapICon
-} from '@/assets/icons';
-import { FrameProps } from '@/interfaces';
-import { thunkGetAllSolicitudes, thunkGetModulosUsuarioById, } from '@/store/pqrs/thunks';
-import { thunkGetTextFormatByPlan } from '@/store/plan/thunks';
+} from '@/assets/icons';                                                  // Conjunto de iconos custom
 
-import VoiceChatWindow from '@/components/ChatAI/VoiceChatWindow';
+// -------------------- Interfaces --------------------
+import { FrameProps } from '@/interfaces';                                // Interface para props de Frame
 
+// -------------------- Thunks adicionales --------------------
+import {
+    thunkGetAllSolicitudes,
+    thunkGetModulosUsuarioById,
+} from '@/store/pqrs/thunks';                                             // Thunks para PQRS
 
-// --- Module Conversion Helpers ---
+import { thunkGetTextFormatByPlan } from '@/store/plan/thunks';           // Thunk para formatos de texto
+
+// -------------------- Otros componentes --------------------
+import VoiceChatWindow from '@/components/ChatAI/VoiceChatWindow';        // Componente de chat de voz con IA
+
+// -------------------- Module Conversion Helpers --------------------
+
+// Interface que define la estructura de los módulos disponibles
 interface IModules {
-    indicative_plan: boolean;
-    action_plan: boolean;
-    project_bank: boolean;
-    poai: boolean;
-    citizen_service: boolean;
-    intervention_map: boolean;
+    indicative_plan: boolean;       // Plan indicativo
+    action_plan: boolean;           // Plan de acción
+    project_bank: boolean;          // Banco de proyectos
+    poai: boolean;                  // POAI
+    citizen_service: boolean;       // Atención al ciudadano
+    intervention_map: boolean;      // Mapa de intervención
 }
 
+// Arreglo que define el orden de los módulos (clave de IModules)
 const moduleOrder: (keyof IModules)[] = [
-    'indicative_plan', 'action_plan', 'project_bank', 'poai', 'citizen_service', 'intervention_map'
+    'indicative_plan',
+    'action_plan',
+    'project_bank',
+    'poai',
+    'citizen_service',
+    'intervention_map'
 ];
 
+// Convierte un número decimal (máscara) en un objeto de tipo IModules
 const decimalToModules = (mask: number | undefined | null): IModules => {
-    const validMask = mask || 0;
-    const binaryString = validMask.toString(2).padStart(moduleOrder.length, '0');
-    const modules: any = {};
+    const validMask = mask || 0;                                    // Si mask es null/undefined, usar 0
+    const binaryString = validMask.toString(2).padStart(moduleOrder.length, '0'); // Convertir a binario con padding
+    const modules: any = {};                                        // Objeto temporal para almacenar módulos
+
+    // Asigna a cada módulo un valor booleano en función del binario
     moduleOrder.forEach((key, index) => {
         modules[key] = binaryString[index] === '1';
     });
-    return modules;
+
+    return modules;                                                 // Devuelve el objeto con los módulos activos
 };
+
+export const Headerbase = () => {
+    const navigate = useNavigate();
+    const dispatch = useAppDispatch();
+  
+    const { url_logo, url_logo_plan } = useAppSelector(store => store.content);
+  
+    const [solicitudes, setSolicitudes] = useState<any[]>([]);
+  
+    // ================== NOTIFICACIONES ==================
+    useEffect(() => {
+      const fetchSolicitudes = async () => {
+        const id_plan = localStorage.getItem('id_plan');
+        if (!id_plan) return;
+        dispatch(thunkGetAllSolicitudes({ id_plan }))
+          .unwrap()
+          .then((result: any) => setSolicitudes(result))
+          .catch(() => setSolicitudes([]));
+      };
+      fetchSolicitudes();
+    }, [dispatch]);
+  
+    // ================== FORMATO DE TEXTO ==================
+    interface TextFormat {
+      text: string;
+      color: string;
+      size: string;
+      weight: 'normal' | 'bold' | 'lighter';
+      align: 'left' | 'center' | 'right' | 'justify';
+    }
+  
+    const id_plan = localStorage.getItem('id_plan') ?? '';
+    const cachedFormat = localStorage.getItem('textFormat');
+    const initialTextFormat = cachedFormat ? JSON.parse(cachedFormat) as TextFormat : null;
+    const [textFormat, setTextFormat] = useState<TextFormat | null>(initialTextFormat);
+  
+    useEffect(() => {
+      if (!textFormat && id_plan) {
+        dispatch(thunkGetTextFormatByPlan(Number(id_plan)))
+          .then((res) => {
+            const payload = res.payload as TextFormat | undefined;
+            if (payload) setTextFormat(payload);
+          });
+      }
+    }, [id_plan, dispatch, textFormat]);
+  
+    const text = textFormat?.text || '';
+    const color = textFormat?.color || '#000000';
+    const size = textFormat?.size || '16px';
+    const weight = textFormat?.weight || 'normal';
+    const align = textFormat?.align || 'center';
+  
+    // ================== ACCIONES ==================
+    const handleBtn = () => {
+      dispatch(thunkLogout())
+        .unwrap()
+        .then(() => {
+          dispatch(setReload(true));
+          navigate('/');
+        });
+    };
+  
+    const handleAddUser = () => navigate(`/gestion-usuarios`);
+  
+    return (
+      <header
+        className="
+          tw-bg-white tw-drop-shadow-xl
+          tw-flex tw-flex-col md:tw-flex-row tw-items-center
+          md:tw-justify-between
+          tw-py-2 tw-px-4
+          tw-gap-4 md:tw-gap-0
+        "
+      >
+        {/* ============================= */}
+        {/*   LOGOS                       */}
+        {/* ============================= */}
+        <div className="tw-flex tw-items-center tw-gap-4 tw-overflow-x-auto">
+          <img src={cclogo} alt="ControlLand" className="tw-h-[60px] sm:tw-h-[80px] md:tw-h-[100px]" />
+          {url_logo && <img src={url_logo} alt="Municipio" className="tw-h-[60px] sm:tw-h-[80px] md:tw-h-[100px]" />}
+          {url_logo_plan && <img src={url_logo_plan} alt="Plan" className="tw-h-[60px] sm:tw-h-[80px] md:tw-h-[100px]" />}
+        </div>
+  
+        {/* ============================= */}
+        {/* TEXTO DEL PLAN + ADMIN BTN   */}
+        {/* ============================= */}
+        <div className="tw-w-[45%] tw-flex tw-justify-center">
+          <div className="tw-flex tw-flex-col tw-items-center tw-gap-4 tw-w-full tw-justify-center">
+            <p
+              className="tw-font-semibold tw-text-center tw-px-4 tw-py-1 tw-rounded-md tw-shadow-sm"
+              style={{ color, fontSize: size, fontWeight: weight, textAlign: align }}
+            >
+              {text}
+            </p>
+            {localStorage.getItem('rol') === 'admin' && (
+              <button
+                onClick={handleAddUser}
+                className="tw-flex tw-items-center tw-gap-2 tw-bg-green-100 hover:tw-bg-green-200
+                           tw-text-[#006400] tw-px-4 tw-py-2 tw-rounded-xl tw-shadow-md
+                           tw-transition-all tw-duration-200 tw-text-[clamp(0.9rem,2.2vw,1.3rem)]"
+              >
+                <PersonAddAltIcon sx={{ fontSize: 24, color: '#006400' }} />
+                <span className="tw-font-montserrat tw-font-semibold">Gestión de usuarios</span>
+              </button>
+            )}
+          </div>
+        </div>
+  
+        {/* ============================= */}
+        {/* DATOS USUARIO + ICONOS        */}
+        {/* ============================= */}
+        <div className="tw-flex tw-items-center tw-gap-4 tw-flex-wrap tw-justify-end tw-w-full md:tw-w-auto">
+          <div className="tw-flex tw-flex-col tw-bg-green-50 tw-p-3 tw-rounded-md tw-shadow-md">
+            <span className="tw-text-sm sm:tw-text-base tw-text-[#006400] tw-font-semibold">
+              Usuario: <span className="tw-font-normal">{localStorage.getItem('user')}</span>
+            </span>
+            <span className="tw-text-sm sm:tw-text-base tw-text-[#006400] tw-font-semibold">
+              Rol: <span className="tw-font-normal">{localStorage.getItem('rol')}</span>
+            </span>
+            {localStorage.getItem('rol') === 'funcionario' && (
+              <span className="tw-text-sm sm:tw-text-base tw-text-[#006400] tw-font-semibold">
+                Oficina: <span className="tw-font-normal">{localStorage.getItem('office')}</span>
+              </span>
+            )}
+          </div>
+  
+          {localStorage.getItem('rol') === 'funcionario' && (
+            <IconButton title="Notificaciones">
+              <Badge badgeContent={solicitudes.length} color="error">
+                <Notifications sx={{ fontSize: 28, color: '#333' }} />
+              </Badge>
+            </IconButton>
+          )}
+  
+          <IconButton onClick={handleBtn} title="Cerrar sesión">
+            <LogoutIcon sx={{ color: '#006400', fontSize: 28 }} />
+          </IconButton>
+        </div>
+      </header>
+    );
+  };
+  
 
 export const Frame = ({ children }: FrameProps) => {
     const navigate = useNavigate();
@@ -319,7 +493,7 @@ export const Frame = ({ children }: FrameProps) => {
         <div className='tw-min-h-screen tw-flex tw-flex-col'>
             <header
                 className="
-        tw-bg-header tw-drop-shadow-xl
+        tw-bg-white tw-drop-shadow-xl
         tw-flex tw-flex-col md:tw-flex-row tw-items-center
         md:tw-justify-between
         tw-py-2 tw-px-4
@@ -382,20 +556,19 @@ export const Frame = ({ children }: FrameProps) => {
                             {text || ''}
                         </p>
 
-
                         {localStorage.getItem('rol') === 'admin' && (
                             <button
                                 onClick={handleAddUser}
                                 className="
-                    tw-flex tw-items-center tw-justify-center tw-gap-2
-                    tw-bg-green-100 hover:tw-bg-green-200
-                    tw-text-[#006400]
-                    tw-px-4 tw-py-2
-                    tw-rounded-xl
-                    tw-shadow-md
-                    tw-transition-all tw-duration-200
-                    tw-text-[clamp(0.9rem,2.2vw,1.3rem)]
-                "
+                        tw-flex tw-items-center tw-justify-center tw-gap-2
+                        tw-bg-green-100 hover:tw-bg-green-200
+                        tw-text-[#006400]
+                        tw-px-4 tw-py-2
+                        tw-rounded-xl
+                        tw-shadow-md
+                        tw-transition-all tw-duration-200
+                        tw-text-[clamp(0.9rem,2.2vw,1.3rem)]
+                    "
                                 title="Agregar funcionario al plan"
                             >
                                 <PersonAddAltIcon sx={{ fontSize: 24, color: '#006400' }} />
@@ -407,7 +580,6 @@ export const Frame = ({ children }: FrameProps) => {
                     </div>
                 </div>
 
-
                 {/* ============================= */}
                 {/*    DATOS DE USUARIO + ÍCONOS   */}
                 {/* ============================= */}
@@ -415,16 +587,16 @@ export const Frame = ({ children }: FrameProps) => {
                     {/* Caja con Usuario / Rol / Oficina */}
                     <div
                         className="
-            tw-flex tw-flex-col tw-items-start tw-gap-2
-            tw-bg-green-50 tw-p-3 tw-rounded-md tw-shadow-md
-            tw-w-full sm:tw-w-auto
-          "
+                tw-flex tw-flex-col tw-items-start tw-gap-2
+                tw-bg-green-50 tw-p-3 tw-rounded-md tw-shadow-md
+                tw-w-full sm:tw-w-auto
+            "
                     >
                         <div
                             className="
-              tw-flex tw-flex-col sm:tw-flex-row
-              tw-gap-2 sm:tw-gap-4
-            "
+                    tw-flex tw-flex-col sm:tw-flex-row
+                    tw-gap-2 sm:tw-gap-4
+                "
                         >
                             <span className="tw-font-montserrat tw-text-sm sm:tw-text-base tw-text-[#006400] tw-font-semibold">
                                 Usuario:{' '}
@@ -473,6 +645,7 @@ export const Frame = ({ children }: FrameProps) => {
                     </IconButton>
                 </div>
             </header>
+
             <div className='tw-flex tw-flex-col xl:tw-flex-row tw-flex-grow'>
                 <NavBar>
                     <>
@@ -486,9 +659,9 @@ export const Frame = ({ children }: FrameProps) => {
                                     dispatch(setZeroLevelIndex());
                                     navigate('/pdt/PlanIndicativo', { replace: true });
                                 }}
-                                icon={<PlanIndicativoIcon color={index === 0 ? logocolor : textcolor} />}
-                                bgColor={0 === index ? `tw-bg-${textcolor}` : `tw-bg-${bgcolor}`}
-                                textColor={0 === index ? `tw-text-${bgcolor}` : `tw-text-${textcolor}`}
+                                icon={<PlanIndicativoIcon color={index === 0 ? "#41a95b" : "#ffffff"} />}
+                                bgColor={index === 0 ? "tw-bg-gray-200" : "tw-bg-[#143955]"}
+                                textColor={index === 0 ? "tw-text-[#143955]" : "tw-text-white"}
                             />
                         )}
                     </>
@@ -503,9 +676,9 @@ export const Frame = ({ children }: FrameProps) => {
                                     dispatch(setZeroLevelIndex());
                                     navigate('/PlanIndicativo/Plan-accion', { replace: true });
                                 }}
-                                icon={<PlanAccionIcon color={index === 1 ? logocolor : textcolor} />}
-                                bgColor={1 === index ? `tw-bg-${textcolor}` : `tw-bg-${bgcolor}`}
-                                textColor={1 === index ? `tw-text-${bgcolor}` : `tw-text-${textcolor}`}
+                                icon={<PlanAccionIcon color={index === 1 ? "#41a95b" : "#ffffff"} />}
+                                bgColor={index === 1 ? "tw-bg-gray-200" : "tw-bg-[#143955]"}
+                                textColor={index === 1 ? "tw-text-[#143955]" : "tw-text-white"}
                             />
                         )}
                     </>
@@ -521,9 +694,9 @@ export const Frame = ({ children }: FrameProps) => {
                                     dispatch(setZeroLevelIndex());
                                     navigate('/PlanIndicativo/Banco-proyectos', { replace: true });
                                 }}
-                                icon={<ProjectBankIcon color={index === 2 ? logocolor : textcolor} />}
-                                bgColor={2 === index ? `tw-bg-${textcolor}` : `tw-bg-${bgcolor}`}
-                                textColor={2 === index ? `tw-text-${bgcolor}` : `tw-text-${textcolor}`}
+                                icon={<ProjectBankIcon color={index === 2 ? "#41a95b" : "#ffffff"} />}
+                                bgColor={index === 2 ? "tw-bg-gray-200" : "tw-bg-[#143955]"}
+                                textColor={index === 2 ? "tw-text-[#143955]" : "tw-text-white"}
                             />
                         )}
                     </>
@@ -538,9 +711,9 @@ export const Frame = ({ children }: FrameProps) => {
                                     dispatch(setZeroLevelIndex());
                                     navigate('/PlanIndicativo/POAI', { replace: true });
                                 }}
-                                icon={<ChartIcon color={index === 3 ? logocolor : textcolor} />}
-                                bgColor={3 === index ? `tw-bg-${textcolor}` : `tw-bg-${bgcolor}`}
-                                textColor={3 === index ? `tw-text-${bgcolor}` : `tw-text-${textcolor}`}
+                                icon={<ChartIcon color={index === 3 ? "#41a95b" : "#ffffff"} />}
+                                bgColor={index === 3 ? "tw-bg-gray-200" : "tw-bg-[#143955]"}
+                                textColor={index === 3 ? "tw-text-[#143955]" : "tw-text-white"}
                             />
                         )}
                     </>
@@ -553,9 +726,9 @@ export const Frame = ({ children }: FrameProps) => {
                                     dispatch(selectOption(4));
                                     navigate("/AtencionCiudadana");
                                 }}
-                                icon={<MdSupportAgent color={index === 4 ? logocolor : textcolor} size={64} />}
-                                bgColor={4 === index ? `tw-bg-${textcolor}` : `tw-bg-${bgcolor}`}
-                                textColor={4 === index ? `tw-text-${bgcolor}` : `tw-text-${textcolor}`}
+                                icon={<MdSupportAgent color={index === 4 ? "#41a95b" : "#ffffff"} size={64} />}
+                                bgColor={index === 4 ? "tw-bg-gray-200" : "tw-bg-[#143955]"}
+                                textColor={index === 4 ? "tw-text-[#143955]" : "tw-text-white"}
                             />
                         )}
                     </>
@@ -570,29 +743,22 @@ export const Frame = ({ children }: FrameProps) => {
                                     dispatch(setZeroLevelIndex());
                                     navigate('/PlanIndicativo/Mapa', { replace: true });
                                 }}
-                                icon={<MapICon color={index === 5 ? logocolor : textcolor} />}
-                                bgColor={5 === index ? `tw-bg-${textcolor}` : `tw-bg-${bgcolor}`}
-                                textColor={5 === index ? `tw-text-${bgcolor}` : `tw-text-${textcolor}`}
+                                icon={<MapICon color={index === 5 ? "#41a95b" : "#ffffff"} />}
+                                bgColor={index === 5 ? "tw-bg-gray-200" : "tw-bg-[#143955]"}
+                                textColor={index === 5 ? "tw-text-[#143955]" : "tw-text-white"}
                             />
                         )}
                     </>
-
-                    {/*<ButtonComponent
-                        inside={false}
-                        text='PQRS'
-                        onClick={() => {
-                            dispatch(selectOption(5));
-                            navigate('/PQRS', {replace: true});
-                        }}
-                        bgColor="tw-bg-greenBtn"
-                        icon={<PQRSIcon color='white'/>}/>*/}
                 </NavBar>
-                <div ref={contentRef}
+                <div
+                    ref={contentRef}
                     className={`${isFullHeight ? 'tw-h-[calc(100vh-100px)]' : ''} 
-                                tw-w-full tw-border
-                                tw-bg-[url('/src/assets/images/bg-pi-1.png')]
-                                tw-bg-cover
-                                tw-opacity-80`}>
+              tw-w-full tw-border
+              tw-bg-gradient-to-b 
+              tw-from-[#06283b] 
+              tw-via-[#1f4f63] 
+              tw-to-[#dbeff6]`}
+                >
                     <div>
                         <VoiceChatWindow />
                         {children}

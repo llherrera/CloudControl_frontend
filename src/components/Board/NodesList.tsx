@@ -3,8 +3,10 @@ import { useNavigate } from "react-router-dom";
 
 import { useAppSelector, useAppDispatch } from "@/store";
 import { thunkGetNodes, thunkUpdateWeight } from '@/store/plan/thunks';
-import { incrementLevelIndex, setParent, setProgressNodes, setCalcDone,
-        setFinancial, AddRootTree } from '@/store/plan/planSlice';
+import {
+    incrementLevelIndex, setParent, setProgressNodes, setCalcDone,
+    setFinancial, AddRootTree
+} from '@/store/plan/planSlice';
 import { setNode } from "@/store/content/contentSlice";
 
 import { NodeInterface, NodesWeight, Percentages, IdProps } from '@/interfaces';
@@ -12,12 +14,12 @@ import { Spinner } from '@/assets/icons';
 import { decode, notify } from "@/utils";
 
 declare global {
-  interface Window {
-    _hasProgramming?: boolean[];
-  }
+    interface Window {
+        _hasProgramming?: boolean[];
+    }
 }
 
-export const NodesList = ( props : IdProps ) => {
+export const NodesList = (props: IdProps) => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
 
@@ -25,7 +27,7 @@ export const NodesList = ( props : IdProps ) => {
     const { nodes, yearSelect, levels, indexLevel, progressNodes, calcDone,
         colorimeter, loadingNodes, rootTree, plan } = useAppSelector(store => store.plan);
     const { mode } = useAppSelector(store => store.content);
-    const [ pesos, setPesos ] = useState<number[]>(nodes.map((item: NodeInterface) => item.weight));
+    const [pesos, setPesos] = useState<number[]>(nodes.map((item: NodeInterface) => item.weight));
 
     const [rol, setRol] = useState("");
     const [id, setId] = useState(0);
@@ -48,7 +50,7 @@ export const NodesList = ( props : IdProps ) => {
     const getProgress = () => {
         if (window.debugNodeOpen) {
             console.log('📊 Calculando progreso para nodos actuales...');
-            console.log('📋 Nodos a procesar:', nodes.map(n => ({id: n.id_node, name: n.name})));
+            console.log('📋 Nodos a procesar:', nodes.map(n => ({ id: n.id_node, name: n.name })));
             console.log('📅 Año seleccionado:', yearSelect);
         }
 
@@ -69,9 +71,9 @@ export const NodesList = ( props : IdProps ) => {
         let programacion = [] as number[];
         let financiacion = [] as number[];
         let hasProgramming = [] as boolean[];
-        
+
         if (window.debugNodeOpen) {
-            console.log('🔍 Usando nodos de la UI:', nodes.map(n => ({id: n.id_node, name: n.name})));
+            console.log('🔍 Usando nodos de la UI:', nodes.map(n => ({ id: n.id_node, name: n.name })));
         }
 
         nodes.forEach((item: NodeInterface) => {
@@ -104,7 +106,7 @@ export const NodesList = ( props : IdProps ) => {
                 }
             }
         });
-        
+
         const weights = nodes.map((item: NodeInterface) => item.weight);
         dispatch(setProgressNodes(progreso));
         dispatch(setFinancial(financiacion));
@@ -123,7 +125,7 @@ export const NodesList = ( props : IdProps ) => {
         }
     };
 
-    const handleButton = ( index: number ) => {
+    const handleButton = (index: number) => {
         if (window.debugNodeOpen) {
             console.log('🚪 Abriendo nodo:', {
                 index: index,
@@ -140,11 +142,11 @@ export const NodesList = ( props : IdProps ) => {
         let newRoot = [...rootTree];
         newRoot.push(name);
         dispatch(AddRootTree(newRoot));
-        if ( indexLevel !== levels.length-1 ) {
+        if (indexLevel !== levels.length - 1) {
             dispatch(setParent(nodes[index].id_node));
-            dispatch(incrementLevelIndex(indexLevel+1));
-            dispatch(thunkGetNodes({id_level: nodes[index].id_level+1, parent:nodes[index].id_node}));
-            
+            dispatch(incrementLevelIndex(indexLevel + 1));
+            dispatch(thunkGetNodes({ id_level: nodes[index].id_level + 1, parent: nodes[index].id_node }));
+
             if (window.debugNodeOpen) {
                 console.log('📂 Navegando a subnivel:', {
                     newParent: nodes[index].id_node,
@@ -156,19 +158,19 @@ export const NodesList = ( props : IdProps ) => {
         } else {
             dispatch(setCalcDone(false));
             dispatch(setNode(nodes[index]));
-            navigate(`/pdt/PlanIndicativo/Meta`, {state: {idPDT: props.id, idNodo: nodes[index].id_node}});
-            
+            navigate(`/pdt/PlanIndicativo/Meta`, { state: { idPDT: props.id, idNodo: nodes[index].id_node } });
+
             if (window.debugNodeOpen) {
                 console.log('🎯 Navegando a meta específica:', {
                     targetNode: nodes[index].id_node,
                     targetName: nodes[index].name,
-                    navigationState: {idPDT: props.id, idNodo: nodes[index].id_node}
+                    navigationState: { idPDT: props.id, idNodo: nodes[index].id_node }
                 });
             }
         }
     };
 
-    const handleUpdateWeight = ( index: number, e: React.ChangeEvent<HTMLInputElement> ) => {
+    const handleUpdateWeight = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
         const value = parseInt(e.target.value);
         const newNodes = [...pesos];
         newNodes[index] = value;
@@ -179,7 +181,7 @@ export const NodesList = ( props : IdProps ) => {
         const acmu = pesos.reduce((a, b) => a + b, 0);
         if (acmu !== 100) return notify('La suma de los pesos debe ser 100', 'warning');
         const ids = nodes.map((item) => item.id_node);
-        dispatch(thunkUpdateWeight({ids: ids, weights: pesos}));
+        dispatch(thunkUpdateWeight({ ids: ids, weights: pesos }));
     };
 
     // Modificar colorClass y colorClass_ para usar hasProgramming
@@ -187,7 +189,7 @@ export const NodesList = ( props : IdProps ) => {
         const progress = progressNodes[index] ?? -1;
         const progressPercent = parseInt((progress * 100).toString());
         const hasProg = window._hasProgramming ? window._hasProgramming[index] : false;
-        
+
         if (progress < 0) {
             return 'tw-border-gray-400 group-hover:tw-border-gray-200'; // Sin datos o sin metas programadas
         } else if (!hasProg) {
@@ -209,7 +211,7 @@ export const NodesList = ( props : IdProps ) => {
         const progress = progressNodes[index] ?? -1;
         const progressPercent = parseInt((progress * 100).toString());
         const hasProg = window._hasProgramming ? window._hasProgramming[index] : false;
-        
+
         if (progress < 0) {
             return 'tw-bg-gray-400 group-hover:tw-bg-gray-200'; // Sin datos o sin metas programadas
         } else if (!hasProg) {
@@ -235,71 +237,71 @@ export const NodesList = ( props : IdProps ) => {
     const HandleShowList = () => loadingNodes ?
         <Spinner />
         : <>
-        <ul className={`${indexLevel === levels.length-1 ?
-                        'tw-flex tw-flex-row tw-flex-wrap':
-                        'tw-flex-col tw-flex-wrap'} tw-overflow-hidden tw-mt-4`} >
-            {nodes.map((item: NodeInterface, index: number) =>
-                <div className="tw-my-2 tw-ml-12 tw-py-1 tw-flex tw-transition hover:tw-scale-110 tw-group"
-                    key={item.id_node}>
-                    <button className={`${plan.shape === 'radial' ? 'tw-rounded-full tw-overflow-hidden tw-scale-[1.2]' : 'tw-rounded'} tw-border-4 tw-bg-transparent
+            <ul className={`${indexLevel === levels.length - 1 ?
+                'tw-flex tw-flex-row tw-flex-wrap' :
+                'tw-flex-col tw-flex-wrap'} tw-overflow-hidden tw-mt-4`} >
+                {nodes.map((item: NodeInterface, index: number) =>
+                    <div className="tw-my-2 tw-ml-12 tw-py-1 tw-flex tw-transition hover:tw-scale-110 tw-group"
+                        key={item.id_node}>
+                        <button className={`${plan.shape === 'radial' ? 'tw-rounded-full tw-overflow-hidden tw-scale-[1.2]' : 'tw-rounded'} tw-border-4 tw-bg-transparent
                                         ${colorClass(index)}
                                         tw-ml-3 tw-z-10
                                         tw-w-12 tw-h-12
                                         tw-font-bold tw-overflow-hidden
                                         tw-relative`}
-                            onClick={ () => handleButton(index)}
-                            title={`${item.description} ${(indexLevel !== levels.length-1 || item.code == null) ? '' : `\n${item.code.replace(/(\.\d+)(?=\.)/, '')}\n${item.responsible}`}`}>
-                        <div className='tw-absolute tw-inset-0 tw-z-20
+                            onClick={() => handleButton(index)}
+                            title={`${item.description} ${(indexLevel !== levels.length - 1 || item.code == null) ? '' : `\n${item.code.replace(/(\.\d+)(?=\.)/, '')}\n${item.responsible}`}`}>
+                            <div className='tw-absolute tw-inset-0 tw-z-20
                                         tw-rounded-full tw-bg-transparent tw-text-black
                                         tw-flex tw-justify-center tw-items-center'>
-                            { Math.round( ((progressNodes[index] === undefined || progressNodes[index] < 0 ? 0 : progressNodes[index])*100))}%
-                        </div>
-                        {plan.fill === 'vertical' ?
-                            <div className={`tw-absolute tw-bottom-0 tw-left-0 tw-w-full tw-transition-all ${colorClass_(index)}`}
-                                style={{
-                                    height: `${ parseInt( ((progressNodes[index] === undefined || progressNodes[index] < 0 ? 0 : progressNodes[index])*100).toString())}%`,
-                                }}
-                            /> :
-                        plan.fill === 'radial' ?
-                            <div className={`tw-absolute tw-inset-0
+                                {Math.round(((progressNodes[index] === undefined || progressNodes[index] < 0 ? 0 : progressNodes[index]) * 100))}%
+                            </div>
+                            {plan.fill === 'vertical' ?
+                                <div className={`tw-absolute tw-bottom-0 tw-left-0 tw-w-full tw-transition-all ${colorClass_(index)}`}
+                                    style={{
+                                        height: `${parseInt(((progressNodes[index] === undefined || progressNodes[index] < 0 ? 0 : progressNodes[index]) * 100).toString())}%`,
+                                    }}
+                                /> :
+                                plan.fill === 'radial' ?
+                                    <div className={`tw-absolute tw-inset-0
                                             ${colorClass_(index)}
                                             tw-text-black tw-z-10`}
-                                style={{
-                                    maskImage: `conic-gradient(from 0deg at 50% 50%, blue 0deg,
-                                                blue ${parseInt( ((progressNodes[index] === undefined || progressNodes[index] < 0 ? 0 : progressNodes[index])*100).toString())/100*360}deg,
+                                        style={{
+                                            maskImage: `conic-gradient(from 0deg at 50% 50%, blue 0deg,
+                                                blue ${parseInt(((progressNodes[index] === undefined || progressNodes[index] < 0 ? 0 : progressNodes[index]) * 100).toString()) / 100 * 360}deg,
                                                 transparent 0deg)`,
-                                }}
-                            /> :
-                            plan.fill === 'completo' ?
-                                <div className={`tw-absolute tw-bottom-0 tw-left-0 tw-w-full tw-h-full tw-transition-all ${colorClass_(index)}`}/>
-                            : null
-                        }
-                    </button>
-                    {indexLevel !== levels.length-1 ?
-                    <button className={`${colorClass_(index)}
+                                        }}
+                                    /> :
+                                    plan.fill === 'completo' ?
+                                        <div className={`tw-absolute tw-bottom-0 tw-left-0 tw-w-full tw-h-full tw-transition-all ${colorClass_(index)}`} />
+                                        : null
+                            }
+                        </button>
+                        {indexLevel !== levels.length - 1 ?
+                            <button className={`${colorClass_(index)}
                                         tw-h-8 tw-my-2 tw-w-2/3
                                         tw-rounded-r-lg
                                         tw-text-white tw-font-bold tw-text-center
                                         tw-font-montserrat`}
-                            onClick={ () => handleButton(index)}
-                            title={item.description}>
-                        <p className='tw-truncate group-hover:tw-text-black'>
-                            {item.name}
-                        </p>
-                    </button>
-                    :null}
-                    {rol === 'admin' || (rol === 'funcionario' && id === props.id) ?
-                        <input  className={`tw-px-2 tw-mx-2 tw-w-16
+                                onClick={() => handleButton(index)}
+                                title={item.description}>
+                                <p className="tw-truncate tw-text-black tw-text-left tw-pl-2">
+                                    {item.name}
+                                </p>
+                            </button>
+                            : null}
+                        {rol === 'admin' || (rol === 'funcionario' && id === props.id) ?
+                            <input className={`tw-px-2 tw-mx-2 tw-w-16
                                             tw-border tw-rounded
                                             ${mode ? '' : 'tw-hidden'}`}
                                 type='number'
                                 placeholder='peso'
-                                value={ isNaN(pesos[index]) ? 0 : pesos[index]}
-                                onChange={e => handleUpdateWeight(index, e)}/>
-                    :null}
-                </div>
-            )}
-            {/*mode && (rol === 'admin' || (rol === 'funcionario' && id === props.id)) ?
+                                value={isNaN(pesos[index]) ? 0 : pesos[index]}
+                                onChange={e => handleUpdateWeight(index, e)} />
+                            : null}
+                    </div>
+                )}
+                {/*mode && (rol === 'admin' || (rol === 'funcionario' && id === props.id)) ?
             <div className='tw-flex tw-justify-center'>
                 <button className='tw-px-2 tw-mx-2
                                     tw-bg-greenBtn tw-text-white
@@ -310,25 +312,25 @@ export const NodesList = ( props : IdProps ) => {
                 </button>
             </div>
             : null*/}
-        </ul>
-        {indexLevel === levels.length-1 ?
-        <div className='tw-flex tw-justify-center tw-mx-3
+            </ul>
+            {indexLevel === levels.length - 1 ?
+                <div className='tw-flex tw-justify-center tw-mx-3
                         tw-border-t tw-border-slate-500'>
-            <button
-                title="Metas de resultado"
-                className=' tw-mx-2 tw-p-2 tw-mt-2
+                    <button
+                        title="Metas de resultado"
+                        className=' tw-mx-2 tw-p-2 tw-mt-2
                             tw-bg-redBtn hover:tw-bg-red-200
                             tw-rounded-full
                             tw-font-bold tw-text-white'
-                onClick={() => handleClickResult()}>
-                Metas de resultado
-            </button>
-        </div>
-        :null}
+                        onClick={() => handleClickResult()}>
+                        Metas de resultado
+                    </button>
+                </div>
+                : null}
         </>
-    ;
+        ;
 
     return <div>
-        {nodes.length === 0 ? null : <HandleShowList/>}
+        {nodes.length === 0 ? null : <HandleShowList />}
     </div>
 }

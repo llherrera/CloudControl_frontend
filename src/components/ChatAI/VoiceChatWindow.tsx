@@ -202,7 +202,7 @@ export default function VoiceChatWindow() {
       `}</style>
 
       <button
-        className="tw-fixed tw-right-6 tw-bottom-6 tw-z-50 tw-flex tw-items-center tw-gap-3 tw-px-4 tw-py-3 tw-rounded-full tw-shadow-lg tw-bg-blue-600 tw-text-white tw-font-semibold"
+        className="tw-fixed tw-right-2 tw-bottom-2 tw-z-50 tw-flex tw-items-center tw-gap-3 tw-px-4 tw-py-3 tw-rounded-full tw-shadow-lg tw-bg-[#143955] tw-text-white tw-font-bold tw-text-sm "
         onClick={() => {
           setOpen(true);
           setMinimized(false);

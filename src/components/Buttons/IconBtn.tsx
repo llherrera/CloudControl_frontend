@@ -3,46 +3,52 @@ import { ArrowBackIos, Settings, Close,
     EditNote, Share } from '@mui/icons-material';
 
 import { BackBtnProps } from "@/interfaces";
-
-export const BackBtn = ({handle, id, className}: BackBtnProps) => {
+export const BackBtn = ({ handle, id, className }: BackBtnProps) => {
     return (
-        <IconButton aria-label="delete"
-                    size="small"
-                    color="secondary"
-                    onClick={handle}
-                    title="Regresar"
-                    key={id}>
-            <ArrowBackIos className={className}/>
-        </IconButton>
+      <IconButton
+        aria-label="regresar"
+        size="small"
+        onClick={handle}
+        title="Regresar"
+        key={id}
+        className={`tw-bg-white tw-border tw-border-white tw-rounded hover:tw-bg-gray-100 ${className}`}
+      >
+        <ArrowBackIos className="tw-text-white" />
+      </IconButton>
     );
-}
-
-export const DoubleBackBtn = ({handle, id}: BackBtnProps) => {
+  };
+  
+  export const DoubleBackBtn = ({ handle, id }: BackBtnProps) => {
     return (
-        <IconButton aria-label="delete"
-                    size="small"
-                    color="secondary"
-                    onClick={handle}
-                    title="Regresar al inicio"
-                    key={id}>
-            <ArrowBackIos/>
-            <ArrowBackIos className="tw--translate-x-4"/>
-        </IconButton>
+      <IconButton
+        aria-label="regresar al inicio"
+        size="small"
+        onClick={handle}
+        title="Regresar al inicio"
+        key={id}
+        className="tw-bg-white tw-border tw-border-white tw-rounded hover:tw-bg-gray-100"
+      >
+        <ArrowBackIos className="tw-text-white" />
+        <ArrowBackIos className="tw-text-white tw--translate-x-4" />
+      </IconButton>
     );
-}
-
-export const SettingsBtn = ({handle, id}: BackBtnProps) => {
+  };
+  
+  export const SettingsBtn = ({ handle, id }: BackBtnProps) => {
     return (
-        <IconButton aria-label="delete"
-                    size="small"
-                    color="inherit"
-                    onClick={handle}
-                    title="Configuración"
-                    key={id}>
-            <Settings/>
-        </IconButton>
+      <IconButton
+        aria-label="configuración"
+        size="small"
+        onClick={handle}
+        title="Configuración"
+        key={id}
+        className="tw-bg-white tw-border tw-border-white tw-rounded hover:tw-bg-gray-100"
+      >
+        <Settings className="tw-text-white" />
+      </IconButton>
     );
-}
+  };
+  
 
 export const HvBtn = ({link}:{link:string}) => {
     return (
@@ -56,18 +62,20 @@ export const HvBtn = ({link}:{link:string}) => {
     );
 }
 
-export const ShareBtn = ({handle, id, className}: BackBtnProps) => {
+export const ShareBtn = ({ handle, id, className }: BackBtnProps) => {
     return (
-        <IconButton aria-label="delete"
-                    size="small"
-                    color="inherit"
-                    onClick={handle}
-                    title="Compartir"
-                    key={id}>
-            <Share className={className}/>
-        </IconButton>
+      <IconButton
+        aria-label="share"
+        size="small"
+        onClick={handle}
+        title="Compartir"
+        key={id}
+        className={`tw-bg-white tw-border tw-border-white tw-rounded hover:tw-bg-gray-100 ${className}`}
+      >
+        <Share className="tw-text-white" />
+      </IconButton>
     );
-}
+  };
 
 export const CloseBtn = ({handle, id}: BackBtnProps) => {
     return (

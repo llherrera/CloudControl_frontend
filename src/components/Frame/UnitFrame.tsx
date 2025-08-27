@@ -9,10 +9,10 @@ export const UnitFrame = ({children}: UnitFrameProps) => {
         url_logo_plan } = useAppSelector(store => store.content);
 
     return (
-        <div className="tw-container tw-mx-auto tw-my-3
-                        tw-bg-gray-200
-                        tw-border-8 
-                        tw-border-gray-400 tw-rounded-md ">
+        <div className="tw-container tw-w-full
+ tw-mx-auto tw-my-3
+                        tw-border-2
+                        tw-border-white tw-rounded-md ">
             <div className='tw-flex tw-justify-between
                             tw-mb-4
                             tw-shadow-2xl
