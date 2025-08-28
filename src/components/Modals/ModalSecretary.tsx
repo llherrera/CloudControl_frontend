@@ -426,7 +426,7 @@ const ModalPDT = (props: ModalProps) => {
             {loadingReport ? (
                 <Spinner />
             ) : (
-                <div>
+                <div className="tw-z-20">
                     <div className="tw-absolute tw-top-0 tw-right-0">
                         <button className=" tw-px-2" onClick={() => props.callback(false)}>
                             <p className="tw-text-xl tw-text-[#626d75] tw-font-bold">X</p>
