@@ -5,8 +5,8 @@ import ManagerCitizenAttention from '@/components/ManagerCitizenAttention'; // I
 export const AtencionCiudadanaPage: React.FC = () => {
     return (
         <Frame>
-            <div style={{ margin: '5% 20%' }}>
-                <ManagerCitizenAttention /> {/* Use the new component */}
+            <div className="tw-w-[90%] tw-m-[5%]">
+                <ManagerCitizenAttention />
             </div>
         </Frame>
     );

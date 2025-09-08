@@ -231,4 +231,5 @@ export interface FormData {
     razonRedireccionamiento?: string;
     cantidadServicio?: number;
     tipo?: 'N/A' | 'Valor';
+    Ticket_ID?: string | number;
 }

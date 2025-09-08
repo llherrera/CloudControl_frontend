@@ -127,7 +127,7 @@ const ManagerCitizenAttention: React.FC = () => {
 
 
     return (
-        <div className="tw-bg-gray-100 tw-p-6 tw-rounded-lg tw-shadow-md">
+        <div className="tw-bg-gray-100 tw-p-6 tw-rounded-lg tw-shadow-md tw-w-full">
             <div className="tw-flex tw-justify-center tw-gap-4 tw-mb-6">
                 <button
                     onClick={() => setModo("nueva")}
@@ -136,7 +136,7 @@ const ManagerCitizenAttention: React.FC = () => {
                         : "tw-bg-white tw-border tw-text-green-600"
                         }`}
                 >
-                    Nueva Solicitud
+                    Nueva Solicituds
                 </button>
                 <button
                     onClick={handleBuscarSolicitudes}

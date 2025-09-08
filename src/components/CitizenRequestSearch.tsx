@@ -70,6 +70,9 @@ export const CitizenRequestSearch: React.FC<Props> = ({
         oficina: oficinaDefault, // Establecer el valor por defecto desde localStorage
     });
     const [resultados, setResultados] = useState<FormData[]>([]);
+    // Paginación
+    const [pageSize, setPageSize] = useState<number | 'all'>(10);
+    const [currentPage, setCurrentPage] = useState<number>(1);
 
     // Estado de detalle
     const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -94,6 +97,8 @@ export const CitizenRequestSearch: React.FC<Props> = ({
             arr = arr.filter((s) => s.servicio.toLowerCase().includes(v));
         }
         setResultados(arr);
+        // Al cambiar filtros/solicitudes, resetear a la primera página
+        setCurrentPage(1);
     }, [solicitudes, filtros]);
 
     const handleChangeFiltro = (
@@ -119,71 +124,81 @@ export const CitizenRequestSearch: React.FC<Props> = ({
     if (expandedId) {
         const sol = solicitudes.find((s) => s.id === expandedId)!;
         detalleSolicitud = (
-            <div className="tw-bg-white tw-p-6 tw-rounded-lg tw-shadow-md tw-mt-6">
-                
-                <div className="tw-bg-white tw-p-6 tw-rounded-lg tw-shadow-md tw-mt-6">
-
-                    <h3 className="tw-text-3xl tw-font-bold tw-mb-6 tw-text-gray-800">
-                        Detalle de la Solicitud #{sol.id}
-                    </h3>
-
-                    <div className="tw-space-y-4 tw-text-base tw-text-gray-700 tw-bg-white tw-p-6 tw-rounded-2xl tw-shadow">
-                        <p><span className="tw-font-semibold">Fecha:</span> {sol.fecha}</p>
-
-                        {sol.oficinaDestino && (
-                            <p>
-                                <span className="tw-font-semibold">Oficina Destino:</span> {sol.oficinaDestino}
-                            </p>
-                        )}
-
-                        <p><span className="tw-font-semibold">Nombre:</span> {sol.nombre}</p>
-                        <p><span className="tw-font-semibold">Documento:</span> {sol.tipoDocumento} {sol.documento}</p>
-                        <p><span className="tw-font-semibold">Género:</span> {sol.genero}</p>
-                        <p><span className="tw-font-semibold">Grupo etario:</span> {sol.grupo}</p>
-                        <p><span className="tw-font-semibold">Poblacional:</span> {sol.poblacional}</p>
-                        <p><span className="tw-font-semibold">Discapacidad:</span> {sol.discapacidad}</p>
-                        <p><span className="tw-font-semibold">Escolaridad:</span> {sol.escolaridad}</p>
-                        <p><span className="tw-font-semibold">Nacionalidad:</span> {sol.nacionalidad}</p>
-                        <p>
-                            <span className="tw-font-semibold">Ubicación:</span>{" "}
-                            {[sol.barrio, sol.comuna, sol.corregimiento, sol.vereda]
-                                .filter(Boolean)
-                                .join(", ")}
-                        </p>
-                        <p><span className="tw-font-semibold">Servicio:</span> {sol.servicio}</p>
-                        <p><span className="tw-font-semibold">Prioridad:</span> {sol.prioridad}</p>
-                        <p><span className="tw-font-semibold">Tipo Atención:</span> {sol.tipoAtencion}</p>
-                        <p><span className="tw-font-semibold">Dependencia:</span> {sol.dependencia}</p>
-                        <p><span className="tw-font-semibold">Funcionario:</span> {sol.funcionario}</p>
-                        <p><span className="tw-font-semibold">Estado:</span> {sol.estado}</p>
-                        <p><span className="tw-font-semibold">Fecha Resolución:</span> {sol.fechaResolucion || "—"}</p>
-
-                        {/* Nuevos campos */}
-                        {sol.modoAtencion && (
-                            <p><span className="tw-font-semibold">Modo de Atención:</span> {sol.modoAtencion}</p>
-                        )}
-
-                        {sol.duracion && (
-                            <p><span className="tw-font-semibold">Duración (minutos):</span> {sol.duracion}</p>
-                        )}
-
-                        {sol.exclusividad && (
-                            <p><span className="tw-font-semibold">Exclusividad:</span> {sol.exclusividad}</p>
-                        )}
-
-                        {sol.tipoUsuario && (
-                            <p><span className="tw-font-semibold">Tipo de Usuario:</span> {sol.tipoUsuario}</p>
-                        )}
-
-                        {sol.razonRedireccionamiento && (
-                            <p><span className="tw-font-semibold">Razón de Redireccionamiento:</span> {sol.razonRedireccionamiento}</p>
-                        )}
-                        {sol.cantidadServicio !== undefined && sol.cantidadServicio !== null && (
-                            <p><span className="tw-font-semibold">Cantidad de Servicio:</span> {sol.cantidadServicio}</p>
-                        )}
+            <div className="tw-bg-white tw-p-6 tw-rounded-2xl tw-shadow-md tw-mt-6">
+                <div className="tw-flex tw-items-start tw-justify-between tw-mb-6">
+                    <div>
+                        <h3 className="tw-text-3xl tw-font-bold tw-text-gray-800">Solicitud #{sol.Ticket_ID ?? 'N/A'}</h3>
+                        <div className="tw-mt-2 tw-flex tw-flex-wrap tw-items-center tw-gap-2">
+                            <span className="tw-text-sm tw-text-gray-500">Fecha:</span>
+                            <span className="tw-text-sm tw-font-medium tw-text-gray-700">{sol.fecha ? formatearFecha(sol.fecha) : 'N/A'}</span>
+                            <span className="tw-h-4 tw-w-px tw-bg-gray-300" />
+                            <span className="tw-text-sm tw-text-gray-500">Estado:</span>
+                            <span className={`tw-text-xs tw-font-semibold tw-px-2 tw-py-1 tw-rounded-full ${sol.estado === 'resuelto' ? 'tw-bg-green-100 tw-text-green-700' : sol.estado === 'en proceso' ? 'tw-bg-yellow-100 tw-text-yellow-700' : 'tw-bg-red-100 tw-text-red-700'}`}>{sol.estado || 'N/A'}</span>
+                            {sol.prioridad && (
+                                <>
+                                    <span className="tw-h-4 tw-w-px tw-bg-gray-300" />
+                                    <span className="tw-text-sm tw-text-gray-500">Prioridad:</span>
+                                    <span className="tw-text-xs tw-font-semibold tw-px-2 tw-py-1 tw-rounded-full tw-bg-blue-100 tw-text-blue-700">{sol.prioridad}</span>
+                                </>
+                            )}
+                        </div>
                     </div>
+                    {sol.oficinaDestino && (
+                        <div className="tw-text-right">
+                            <div className="tw-text-xs tw-text-gray-500">Oficina destino</div>
+                            <div className="tw-text-sm tw-font-semibold tw-text-gray-700">{sol.oficinaDestino}</div>
+                        </div>
+                    )}
                 </div>
 
+                <div className="tw-grid tw-grid-cols-1 lg:tw-grid-cols-3 tw-gap-4">
+                    <div className="tw-bg-white tw-border tw-rounded-xl tw-p-4 tw-shadow-sm">
+                        <div className="tw-text-sm tw-font-semibold tw-text-gray-600 tw-mb-3">Ciudadano</div>
+                        <div className="tw-space-y-2 tw-text-sm tw-text-gray-700">
+                            <div><span className="tw-text-gray-500">Nombre:</span> <span className="tw-font-medium">{sol.nombre || 'N/A'}</span></div>
+                            <div><span className="tw-text-gray-500">Documento:</span> <span className="tw-font-medium">{[sol.documento].filter(Boolean).join(' ') || 'N/A'}</span></div>
+                            <div className="tw-grid tw-grid-cols-2 tw-gap-2">
+                                <div><span className="tw-text-gray-500">Género:</span> <span className="tw-font-medium">{sol.genero || 'N/A'}</span></div>
+                                <div><span className="tw-text-gray-500">Grupo etario:</span> <span className="tw-font-medium">{sol.grupo || 'N/A'}</span></div>
+                                <div><span className="tw-text-gray-500">Poblacional:</span> <span className="tw-font-medium">{sol.poblacional || 'N/A'}</span></div>
+                                <div><span className="tw-text-gray-500">Discapacidad:</span> <span className="tw-font-medium">{sol.discapacidad || 'N/A'}</span></div>
+                                <div><span className="tw-text-gray-500">Escolaridad:</span> <span className="tw-font-medium">{sol.escolaridad || 'N/A'}</span></div>
+                                <div><span className="tw-text-gray-500">Nacionalidad:</span> <span className="tw-font-medium">{sol.nacionalidad || 'N/A'}</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="tw-bg-white tw-border tw-rounded-xl tw-p-4 tw-shadow-sm">
+                        <div className="tw-text-sm tw-font-semibold tw-text-gray-600 tw-mb-3">Ubicación</div>
+                        <div className="tw-space-y-2 tw-text-sm tw-text-gray-700">
+                            <div className="tw-grid tw-grid-cols-2 tw-gap-2">
+                                <div><span className="tw-text-gray-500">Barrio:</span> <span className="tw-font-medium">{sol.barrio || 'N/A'}</span></div>
+                                <div><span className="tw-text-gray-500">Comuna:</span> <span className="tw-font-medium">{sol.comuna || 'N/A'}</span></div>
+                                <div><span className="tw-text-gray-500">Corregimiento:</span> <span className="tw-font-medium">{sol.corregimiento || 'N/A'}</span></div>
+                                <div><span className="tw-text-gray-500">Vereda:</span> <span className="tw-font-medium">{sol.vereda || 'N/A'}</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="tw-bg-white tw-border tw-rounded-xl tw-p-4 tw-shadow-sm">
+                        <div className="tw-text-sm tw-font-semibold tw-text-gray-600 tw-mb-3">Solicitud</div>
+                        <div className="tw-space-y-2 tw-text-sm tw-text-gray-700">
+                            <div className="tw-grid tw-grid-cols-2 tw-gap-2">
+                                <div><span className="tw-text-gray-500">Servicio:</span> <span className="tw-font-medium">{sol.servicio || 'N/A'}</span></div>
+                                <div><span className="tw-text-gray-500">Cantidad:</span> <span className="tw-font-medium">{(sol as any).cantidadServicio ?? 'N/A'}</span></div>
+                                <div><span className="tw-text-gray-500">Tipo atención:</span> <span className="tw-font-medium">{sol.tipoAtencion || 'N/A'}</span></div>
+                                <div><span className="tw-text-gray-500">Dependencia:</span> <span className="tw-font-medium">{sol.dependencia || 'N/A'}</span></div>
+                                <div><span className="tw-text-gray-500">Funcionario:</span> <span className="tw-font-medium">{sol.funcionario || 'N/A'}</span></div>
+                                <div><span className="tw-text-gray-500">Fecha resolución:</span> <span className="tw-font-medium">{sol.fechaResolucion ? formatearFecha(sol.fechaResolucion) : '—'}</span></div>
+                                <div><span className="tw-text-gray-500">Modo atención:</span> <span className="tw-font-medium">{(sol as any).modoAtencion || 'N/A'}</span></div>
+                                <div><span className="tw-text-gray-500">Duración (min):</span> <span className="tw-font-medium">{(sol as any).duracion || (sol as any).duracionAtencion || 'N/A'}</span></div>
+                                <div><span className="tw-text-gray-500">Exclusividad:</span> <span className="tw-font-medium">{(sol as any).exclusividad || 'N/A'}</span></div>
+                                <div><span className="tw-text-gray-500">Tipo usuario:</span> <span className="tw-font-medium">{(sol as any).tipoUsuario || 'N/A'}</span></div>
+                                <div className="tw-col-span-2"><span className="tw-text-gray-500">Razón redireccionamiento:</span> <span className="tw-font-medium">{(sol as any).razonRedireccionamiento || 'N/A'}</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
                 {/* Acciones */}
                 <div className="tw-mt-6 tw-space-y-4">
@@ -305,9 +320,7 @@ export const CitizenRequestSearch: React.FC<Props> = ({
                                         if (sol.id) {
                                             console.log('[CitizenRequestSearch] Marcar como resuelta: id', sol.id);
                                             await onResolve(sol.id);
-                                            // Actualizar localmente el estado de la solicitud a 'resuelto'
                                             setSolicitudes(prev => prev.map(s => s.id === sol.id ? { ...s, estado: 'resuelto' } : s));
-                                            console.log('[CitizenRequestSearch] Estado local actualizado a resuelto para id', sol.id);
                                             setExpandedId(null);
                                             setShouldRedirect(false);
                                             setNuevaOficina("");
@@ -327,7 +340,6 @@ export const CitizenRequestSearch: React.FC<Props> = ({
                                                 setExpandedId(null);
                                                 setShouldRedirect(false);
                                                 setNuevaOficina("");
-                                                // refreshSolicitudes();
                                             }
                                         }}
                                         className="tw-flex-1 tw-bg-green-500 hover:tw-bg-green-600 tw-text-white tw-px-4 tw-py-2 tw-rounded"
@@ -351,20 +363,23 @@ export const CitizenRequestSearch: React.FC<Props> = ({
         return d.toLocaleDateString('es-CO', { year: 'numeric', month: '2-digit', day: '2-digit' });
     }
 
-    // Agrupar y ordenar solicitudes por fecha y por id descendente
-    const solicitudesAgrupadas = resultados.reduce((acc: Record<string, FormData[]>, solicitud) => {
-        const fecha = solicitud.fecha || 'Sin fecha';
-        if (!acc[fecha]) acc[fecha] = [];
-        acc[fecha].push(solicitud);
-        return acc;
-    }, {});
-    // Ordenar fechas de más reciente a más vieja
-    const fechasOrdenadas = Object.keys(solicitudesAgrupadas).sort((a, b) => {
-        // Manejar fechas vacías o inválidas
-        if (a === 'Sin fecha') return 1;
-        if (b === 'Sin fecha') return -1;
-        return new Date(b).getTime() - new Date(a).getTime();
+    // Ordenar resultados por fecha (desc) y por id (desc)
+    const sortedResultados = resultados.slice().sort((a, b) => {
+        const da = a.fecha ? new Date(a.fecha).getTime() : -Infinity;
+        const db = b.fecha ? new Date(b.fecha).getTime() : -Infinity;
+        if (db !== da) return db - da;
+        const idA = Number(a.id) || 0;
+        const idB = Number(b.id) || 0;
+        return idB - idA;
     });
+
+    // Calcular paginación
+    const totalItems = sortedResultados.length;
+    const totalPages = pageSize === 'all' ? 1 : Math.max(1, Math.ceil(totalItems / pageSize));
+    const safeCurrentPage = Math.min(currentPage, totalPages);
+    const startIndex = pageSize === 'all' ? 0 : (safeCurrentPage - 1) * pageSize;
+    const endIndex = pageSize === 'all' ? totalItems : startIndex + pageSize;
+    const pagedResultados = pageSize === 'all' ? sortedResultados : sortedResultados.slice(startIndex, endIndex);
 
     // Vista de lista agrupada
     if (detalleSolicitud) {
@@ -533,69 +548,107 @@ export const CitizenRequestSearch: React.FC<Props> = ({
                 )}
             </div>
 
-            {/* Lista agrupada por fecha */}
-            <div className="tw-space-y-8">
-                {fechasOrdenadas.map(fecha => (
-                    <div key={fecha}>
-                        <div className="tw-font-bold tw-text-lg tw-mb-2 tw-text-gray-700">
-                            {formatearFecha(fecha)}
-                        </div>
-                        <div className="tw-grid lg:tw-grid-cols-2 tw-gap-6">
-                            {solicitudesAgrupadas[fecha]
-                                .slice()
-                                .sort((a, b) => {
-                                    // Ordenar por id descendente (más reciente primero)
-                                    const idA = Number(a.id) || 0;
-                                    const idB = Number(b.id) || 0;
-                                    return idB - idA;
-                                })
-                                .map((s) => {
-                                    const borderColor =
-                                        s.estado === "pendiente"
-                                            ? "tw-border-yellow-500"
-                                            : s.prioridad === "Alta"
-                                                ? "tw-border-red-500"
-                                                : s.prioridad === "Media"
-                                                    ? "tw-border-orange-500"
-                                                    : "tw-border-green-500";
+            {/* Controles de paginación y tamaño de página */}
+            <div className="tw-flex tw-items-center tw-justify-between tw-mb-4 tw-gap-4">
+                <div className="tw-flex tw-items-center tw-gap-2">
+                    <span className="tw-text-sm tw-text-gray-600">Mostrar</span>
+                    <select
+                        className="tw-p-2 tw-border tw-rounded"
+                        value={pageSize === 'all' ? 'all' : String(pageSize)}
+                        onChange={(e) => {
+                            const v = e.target.value;
+                            if (v === 'all') {
+                                setPageSize('all');
+                                setCurrentPage(1);
+                            } else {
+                                const n = Number(v) as 10 | 50 | 100;
+                                setPageSize(n);
+                                setCurrentPage(1);
+                            }
+                        }}
+                    >
+                        <option value="10">10</option>
+                        <option value="50">50</option>
+                        <option value="100">100</option>
+                        <option value="all">Todos</option>
+                    </select>
+                    <span className="tw-text-sm tw-text-gray-600">registros</span>
+                </div>
+                <div className="tw-text-sm tw-text-gray-600">
+                    {totalItems === 0 ? 'Sin resultados' : `Mostrando ${pageSize === 'all' ? 1 : startIndex + 1}-${pageSize === 'all' ? totalItems : Math.min(endIndex, totalItems)} de ${totalItems}`}
+                </div>
+                <div className="tw-flex tw-items-center tw-gap-2">
+                    <button
+                        className="tw-px-3 tw-py-2 tw-border tw-rounded tw-text-sm disabled:tw-opacity-50"
+                        onClick={() => setCurrentPage(1)}
+                        disabled={safeCurrentPage <= 1}
+                    >
+                        « Primero
+                    </button>
+                    <button
+                        className="tw-px-3 tw-py-2 tw-border tw-rounded tw-text-sm disabled:tw-opacity-50"
+                        onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                        disabled={safeCurrentPage <= 1}
+                    >
+                        ‹ Anterior
+                    </button>
+                    <span className="tw-text-sm tw-text-gray-700">{safeCurrentPage} / {totalPages}</span>
+                    <button
+                        className="tw-px-3 tw-py-2 tw-border tw-rounded tw-text-sm disabled:tw-opacity-50"
+                        onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                        disabled={safeCurrentPage >= totalPages}
+                    >
+                        Siguiente ›
+                    </button>
+                    <button
+                        className="tw-px-3 tw-py-2 tw-border tw-rounded tw-text-sm disabled:tw-opacity-50"
+                        onClick={() => setCurrentPage(totalPages)}
+                        disabled={safeCurrentPage >= totalPages}
+                    >
+                        Último »
+                    </button>
+                </div>
+            </div>
 
-                                    return (
-                                        <div
-                                            key={s.id}
-                                            onClick={() => setExpandedId(s.id || null)}
-                                            className={`tw-border ${borderColor} tw-rounded-2xl tw-shadow-sm tw-p-5 tw-transition hover:tw-shadow-md tw-cursor-pointer`}
-                                        >
-                                            <div className="tw-flex tw-justify-between tw-items-center tw-mb-2">
-                                                <h5 className="tw-font-semibold tw-text-lg">
-                                                    Solicitud #{s.id}
-                                                </h5>
-                                                <span className="tw-text-sm tw-text-gray-500">
-                                                    {formatearFecha(s.fecha || '')}
-                                                </span>
-                                            </div>
-                                            <div className="tw-flex tw-gap-4 tw-flex-wrap tw-text-sm">
-                                                <p>
-                                                    <strong>Nombre:</strong> {s.nombre}
-                                                </p>
-                                                <p>
-                                                    <strong>Servicio:</strong> {s.servicio}
-                                                </p>
-                                                {s.cantidadServicio !== undefined && s.cantidadServicio !== null && (
-                                                    <p><strong>Cantidad:</strong> {s.cantidadServicio}</p>
-                                                )}
-                                                <p>
-                                                    <strong>Prioridad:</strong> {s.prioridad}
-                                                </p>
-                                                <p>
-                                                    <strong>Estado:</strong> {s.estado}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    );
-                                })}
-                        </div>
-                    </div>
-                ))}
+            {/* Tabla de resultados */}
+            <div className="tw-overflow-auto">
+                <table className="tw-min-w-full tw-border tw-rounded-2xl tw-overflow-hidden">
+                    <thead className="tw-bg-gray-50">
+                        <tr>
+                            <th className="tw-text-left tw-text-xs tw-font-semibold tw-text-gray-600 tw-px-4 tw-py-2">Ticket</th>
+                            <th className="tw-text-left tw-text-xs tw-font-semibold tw-text-gray-600 tw-px-4 tw-py-2">Fecha</th>
+                            <th className="tw-text-left tw-text-xs tw-font-semibold tw-text-gray-600 tw-px-4 tw-py-2">Documento</th>
+                            <th className="tw-text-left tw-text-xs tw-font-semibold tw-text-gray-600 tw-px-4 tw-py-2">Nombre</th>
+                            <th className="tw-text-left tw-text-xs tw-font-semibold tw-text-gray-600 tw-px-4 tw-py-2">Servicio</th>
+                            <th className="tw-text-left tw-text-xs tw-font-semibold tw-text-gray-600 tw-px-4 tw-py-2">Cantidad</th>
+                            <th className="tw-text-left tw-text-xs tw-font-semibold tw-text-gray-600 tw-px-4 tw-py-2">Prioridad</th>
+                            <th className="tw-text-left tw-text-xs tw-font-semibold tw-text-gray-600 tw-px-4 tw-py-2">Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {pagedResultados.map((s) => (
+                            <tr
+                                key={s.id}
+                                onClick={() => setExpandedId(s.id || null)}
+                                className="hover:tw-bg-gray-50 tw-cursor-pointer"
+                            >
+                                <td className="tw-border-t tw-px-4 tw-py-2">{s.Ticket_ID ?? 'N/A'}</td>
+                                <td className="tw-border-t tw-px-4 tw-py-2">{s.fecha ? formatearFecha(s.fecha) : 'N/A'}</td>
+                                <td className="tw-border-t tw-px-4 tw-py-2">{s.documento || 'N/A'}</td>
+                                <td className="tw-border-t tw-px-4 tw-py-2">{s.nombre || 'N/A'}</td>
+                                <td className="tw-border-t tw-px-4 tw-py-2">{s.servicio || 'N/A'}</td>
+                                <td className="tw-border-t tw-px-4 tw-py-2">{s.cantidadServicio ?? 'N/A'}</td>
+                                <td className="tw-border-t tw-px-4 tw-py-2">{s.prioridad || 'N/A'}</td>
+                                <td className="tw-border-t tw-px-4 tw-py-2">{s.estado || 'N/A'}</td>
+                            </tr>
+                        ))}
+                        {pagedResultados.length === 0 && (
+                            <tr>
+                                <td className="tw-text-center tw-text-sm tw-text-gray-500 tw-px-4 tw-py-6" colSpan={9}>No hay resultados</td>
+                            </tr>
+                        )}
+                    </tbody>
+                </table>
             </div>
         </div>
     );
