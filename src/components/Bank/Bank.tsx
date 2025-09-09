@@ -10,7 +10,7 @@ import { Check, Gavel, CloudDownload } from '@mui/icons-material';
 import {
     DrawerMenu, ListItemComp, BackBtn,
     DropdownC
-} from '@/components';
+} from '@/components/Citizen';
 import { getCountProjectsByPlan } from "@/services/api";
 import { getEnvironment } from "@/utils";
 

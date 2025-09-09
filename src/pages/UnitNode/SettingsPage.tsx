@@ -6,7 +6,7 @@ import { thunkGetSecretaries } from '@/store/plan/thunks';
 import { thunkGetUnit, thunkAddUnit, thunkUpdateUnit } from '@/store/unit/thunks';
 import { setUnit } from '@/store/unit/unitSlice';
 
-import { BackBtn, UnitFrame, Input, SelectInput } from '@/components';
+import { BackBtn, UnitFrame, Input, SelectInput } from '@/components/Citizen';
 import { UnitInterface, YearInterface } from '@/interfaces';
 import { Spinner } from "@/assets/icons";
 

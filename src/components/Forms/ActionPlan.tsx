@@ -1,7 +1,7 @@
 import { Fragment, useEffect, useState } from "react";
 import { Box, CircularProgress, List, ListItem, Tooltip, Button, Zoom } from '@mui/material';
 import InfoIcon from '@mui/icons-material/Info';
-import { InputLabel, InputTable, CloseBtn } from "@/components";
+import { InputLabel, InputTable, CloseBtn } from "@/components/Citizen";
 
 import { useAppSelector, useAppDispatch } from '@/store';
 import { thunkAddActionPlan, thunkAddActivityActionPlan, thunkUpdateActionPlan, thunkUpdateActivityActionPlan } from '@/store/plan/thunks';

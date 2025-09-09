@@ -9,7 +9,7 @@ import { decode } from '@/utils';
 import { useAppSelector, useAppDispatch } from '@/store';
 import { thunkGetMapZoomByPlan, thunkUpdateMapZoomByPlan } from '@/store/plan/thunks';
 
-import { BackBtn, Frame, SecretarySelect } from '@/components';
+import { BackBtn, Frame, SecretarySelect } from '@/components/Citizen';
 
 import 'react-toastify/dist/ReactToastify.css';
 import 'leaflet/dist/leaflet.css';

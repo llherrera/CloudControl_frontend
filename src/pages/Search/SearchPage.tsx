@@ -8,7 +8,7 @@ import { thunkGetEvidence } from '@/store/evidence/thunks';
 import { thunkGetUnit } from "@/store/unit/thunks";
 import { setIdPlan } from "@/store/content/contentSlice";
 
-import { Header, UnitFrame, HvBtn, ShowEvidence, UnitResultInfo } from "@/components";
+import { Header, UnitFrame, HvBtn, ShowEvidence, UnitResultInfo } from "@/components/Citizen";
 import { validateUUID, notify, getYears } from "@/utils";
 import { UnitNodeResultInterface } from "@/interfaces";
 import { getUnitNodeResult } from "@/services/api";

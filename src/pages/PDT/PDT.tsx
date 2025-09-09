@@ -12,7 +12,7 @@ import { resetPlan } from "@/store/plan/planSlice";
 import { getPDTs } from "@/services/api";
 import { PDTInterface, PDTPageProps } from "@/interfaces";
 import { decode } from "@/utils";
-import { BackBtn, Header } from "@/components";
+import { BackBtn, Header } from "@/components/Citizen";
 
 /*
   PDT Page - ahora con el mismo estilo visual que HomePage / LoginPage:

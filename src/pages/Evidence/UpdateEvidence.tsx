@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { setEvidence } from "@/store/evidence/evidenceSlice";
 
-import { EvidenceForm, BackBtn } from "@/components";
+import { EvidenceForm, BackBtn } from "@/components/Citizen";
 
 export const UpdateEvidence = () => {
     const dispatch = useAppDispatch();

@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { Input, Select, SelectDept, BackBtn } from "@/components";
+import { Input, Select, SelectDept, BackBtn } from "@/components/Citizen";
 import { PDTInterface } from "@/interfaces";
 
 import { useAppDispatch, useAppSelector } from '@/store';

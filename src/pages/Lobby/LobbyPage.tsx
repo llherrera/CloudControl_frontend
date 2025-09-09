@@ -10,7 +10,7 @@ import {
 } from '@/assets/icons';
 
 // Importación de componentes comunes
-import { Header, ButtonComponent, BackBtn } from '@/components';
+import { Header, ButtonComponent, BackBtn } from '@/components/Citizen';
 
 // Importación de hooks y acciones de Redux
 import { useAppDispatch, useAppSelector } from '@/store';

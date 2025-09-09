@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 
 import { useAppSelector } from "@/store";
 
-import { Input, BackBtn } from "@/components";
+import { Input, BackBtn } from "@/components/Citizen";
 import { doRegister, doUpdateUser, doChangePassword, getUser,
     sendCodeToEmail, validateCode, sendChangePassword } from "@/services/api";
 import { RegisterInterface, IdProps } from "@/interfaces";

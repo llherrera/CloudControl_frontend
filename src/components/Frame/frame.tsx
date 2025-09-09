@@ -32,7 +32,7 @@ import {
 import { AddRootTree, setZeroLevelIndex } from "@/store/plan/planSlice";  // Acciones del slice plan
 
 // -------------------- Componentes propios --------------------
-import { NavBar, ButtonComponent } from '@/components';                   // Navbar y botón reutilizable
+import { NavBar, ButtonComponent } from '@/components/Citizen';                   // Navbar y botón reutilizable
 
 // -------------------- Iconos propios --------------------
 import {

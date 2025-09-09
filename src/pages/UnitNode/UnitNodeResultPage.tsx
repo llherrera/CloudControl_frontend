@@ -10,7 +10,7 @@ import { AddRootTree, setZeroLevelIndex } from "@/store/plan/planSlice";
 import { decode } from "@/utils";
 import { getUnitNodeResult } from "@/services/api";
 import { BackBtn, DoubleBackBtn, UnitFrame,
-    ModalShare, NodeResultForm, UnitResultInfo } from "@/components";
+    ModalShare, NodeResultForm, UnitResultInfo } from "@/components/Citizen";
 import { UnitNodeResultInterface } from "@/interfaces";
 
 export const UnitNodeResultPage = () => {

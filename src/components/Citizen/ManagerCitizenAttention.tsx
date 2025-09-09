@@ -4,8 +4,8 @@ import CitizenRequestForm from './CitizenRequestForm';
 import CitizenRequestSearch from './CitizenRequestSearch';
 import { useAppDispatch } from '@/store/store';
 import { thunkGetAllSolicitudes } from '@/store/pqrs/thunks';
-import { thunkRedirectionSolicitud, thunkSolveSolicitud } from '../store/pqrs/thunks'; // Asegúrate de que la ruta sea correcta
-import { thunkAddSolicitud } from '../store/pqrs/thunks';
+import { thunkRedirectionSolicitud, thunkSolveSolicitud } from '../../store/pqrs/thunks'; // Asegúrate de que la ruta sea correcta
+import { thunkAddSolicitud } from '../../store/pqrs/thunks';
 import { FormData } from '@/interfaces/formInterfaces';
 
 const ManagerCitizenAttention: React.FC = () => {

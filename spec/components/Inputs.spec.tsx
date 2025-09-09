@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 
-import { FileInput, FileFinancialInput, FilePhysicalInput, Input, Select } from '@/components';
+import { FileInput, FileFinancialInput, FilePhysicalInput, Input, Select } from '@/components/Citizen';
 /*
 describe('FileInput', () => {
   it('should render successfully', () => {

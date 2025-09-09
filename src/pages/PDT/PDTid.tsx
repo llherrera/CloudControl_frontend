@@ -9,7 +9,7 @@ import { thunkUpdateYears, thunkGetLevelsById, thunkGetColors } from "@/store/pl
 import { incrementLevelIndex } from "@/store/plan/planSlice";
 
 // Importación de componentes reutilizables
-import { LevelForm, Board, Frame } from "@/components";
+import { LevelForm, Board, Frame } from "@/components/Citizen";
 
 // Utilidad que calcula los años a partir de una fecha
 import { getYears } from "@/utils";

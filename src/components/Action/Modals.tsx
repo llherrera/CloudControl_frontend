@@ -6,7 +6,7 @@ import { ImportExport, Delete, Add, FormatListBulleted, Edit,
 
 import { ShowPlanOrForm, ActivityForm, BackBtn, UpdateActivityForm,
     ActivitieasPlansFileInput
- } from "@/components";
+ } from "@/components/Citizen";
 import { ModalProps, PropsModalActionPlan } from "@/interfaces";
 import { generateActionPlanExcel } from "@/utils";
 

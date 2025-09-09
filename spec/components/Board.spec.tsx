@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 
-import { TimeLine, NodesList, Graph } from '@/components';
+import { TimeLine, NodesList, Graph } from '@/components/Citizen';
 import { Content } from '@/components/Board/Content';
 /*
 describe('Content', () => {

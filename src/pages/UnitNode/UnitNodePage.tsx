@@ -16,7 +16,7 @@ import { decode, notify } from "@/utils";
 import {
     ShowEvidence, BackBtn, DoubleBackBtn, SettingsBtn,
     HvBtn, UnitFrame, ModalShare
-} from "@/components";
+} from "@/components/Citizen";
 import { Spinner } from "@/assets/icons";
 
 export const UnitNodePage = () => {

@@ -1,6 +1,6 @@
 import React from 'react';
-import { Frame } from '@/components';
-import ManagerCitizenAttention from '@/components/ManagerCitizenAttention'; // Import the new component
+import { Frame } from '@/components/Citizen';
+import ManagerCitizenAttention from '@/components/Citizen/ManagerCitizenAttention'; // Import the new component
 
 export const AtencionCiudadanaPage: React.FC = () => {
     return (

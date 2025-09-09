@@ -3,7 +3,7 @@ import { render, screen } from '@testing-library/react';
 import { 
     BackBtn,
     ButtonComponent,
-    ButtonPlan } from '@/components';
+    ButtonPlan } from '@/components/Citizen';
 /*
 describe('BackBtn', () => {
     it('should render successfully', () => {

@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { Header, BackBtn } from "@/components";
+import { Header, BackBtn } from "@/components/Citizen";
 
 export const NotFoundPage = () => {
     const navigate = useNavigate();

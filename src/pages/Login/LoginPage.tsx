@@ -8,7 +8,7 @@
 import React from "react";
 
 // Import del formulario de login (componente reutilizable).
-import { LoginForm } from "@/components";
+import { LoginForm } from "@/components/Citizen";
 
 // Import del Header específico (tú lo importabas desde "@/components/Header").
 import { Header } from "@/components/Header";

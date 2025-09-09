@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { Frame, PQRSButton } from '@/components';
+import { Frame, PQRSButton } from '@/components/Citizen';
 
 export const PQRSPage = () => {
     const navigate = useNavigate();

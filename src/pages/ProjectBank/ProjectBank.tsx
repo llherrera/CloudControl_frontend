@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import { useAppDispatch, useAppSelector } from "@/store";
 import { thunkUpdateYears, thunkGetLevelsById } from "@/store/plan/thunks";
 
-import { Frame, Bank } from "@/components";
+import { Frame, Bank } from "@/components/Citizen";
 import { getYears } from "@/utils";
 
 export const ProjectBank = () => {

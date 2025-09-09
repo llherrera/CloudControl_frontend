@@ -5,7 +5,7 @@ import { useAppSelector, useAppDispatch } from "@/store";
 import { thunkGetEvidenceCount, thunkGetExecutionsToApro } from "@/store/evidence/thunks";
 import { resetEvidence } from "@/store/evidence/evidenceSlice";
 
-import { Frame, BackBtn, Execution } from "@/components";
+import { Frame, BackBtn, Execution } from "@/components/Citizen";
 import { decode } from "@/utils";
 
 export const ListEvidence = () => {

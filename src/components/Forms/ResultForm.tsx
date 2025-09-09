@@ -6,7 +6,7 @@ import { useAppSelector, useAppDispatch } from '@/store';
 import { thunkAddUnitNodeResult, thunkUpdateUnitNodeResult } from '@/store/unit/thunks';
 
 import { NodeInterface, UnitInfoProps, UnitNodeResultInterface } from '@/interfaces';
-import { Input, CloseBtn } from '@/components';
+import { Input, CloseBtn } from '@/components/Citizen';
 import { notify } from "@/utils";
 
 export const NodeResultForm = ({unit}: UnitInfoProps) => {

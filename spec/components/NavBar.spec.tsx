@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 
-import { NavBar } from '@/components';
+import { NavBar } from '@/components/Citizen';
 /*
 describe('NavBar', () => {
   it('should render successfully', () => {

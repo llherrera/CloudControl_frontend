@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { Input, BackBtn } from "@/components";
+import { Input, BackBtn } from "@/components/Citizen";
 import { doRegister } from "@/services/api";
 import { RegisterInterface, IdProps } from "@/interfaces";
 import { validateEmail, notify, parseErrorAxios } from "@/utils";

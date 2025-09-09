@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 
-import { InfoPopover, LocationPopover } from "@/components";
+import { InfoPopover, LocationPopover } from "@/components/Citizen";
 import {
   Plus,
   Minus,

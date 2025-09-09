@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-import { Frame, Options, BackBtn } from '@/components';
+import { Frame, Options, BackBtn } from '@/components/Citizen';
 //import cclogo from "@/assets/images/ControlLand.png";
 import cclogo from "@/assets/images/ControlLand2.png";
 

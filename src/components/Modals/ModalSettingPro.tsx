@@ -6,7 +6,7 @@ import { Grid, List, ListItem, Typography, Box,
 import { useAppSelector, useAppDispatch } from "@/store";
 import { thunkUpdateProjects } from "@/store/plan/thunks";
 
-import { SettingsBtn, LevelsSelect, SearchTerm, CloseBtn } from "@/components";
+import { SettingsBtn, LevelsSelect, SearchTerm, CloseBtn } from "@/components/Citizen";
 import { NodeInterface, Project, PropsModalSettingProy,
     ModalProps2, ListNode } from "@/interfaces";
 import { doProjectToNodes, getNodesProject, getListNodes } from "@/services/api";

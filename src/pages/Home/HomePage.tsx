@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 /* Imports de componentes e íconos */
-import { ButtonComponent, Header } from "@/components";
+import { ButtonComponent, Header } from "@/components/Citizen";
 import funcLogo from "@/assets/icons/Funcionario.svg";
 import citiLogo from "@/assets/icons/Ciudadanos.svg";
 

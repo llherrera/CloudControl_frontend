@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 
-import { EvidenceDetail, MyEvidence } from '@/components';
+import { EvidenceDetail, MyEvidence } from '@/components/Citizen';
 /*
 describe('EvidenceDetail', () => {
   it('should render successfully', () => {

@@ -5,7 +5,7 @@ import { thunkGetProjects, thunkGetCountProjects,
     thunkGetSecretaries } from '@/store/plan/thunks';
 
 import { Box, Button, CircularProgress } from '@mui/material';
-import { ProjectForm } from '@/components';
+import { ProjectForm } from '@/components/Citizen';
 import { ModalSettingPro } from '../Modals';
 import { decode } from "@/utils";
 

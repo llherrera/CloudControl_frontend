@@ -41,19 +41,42 @@ export const CitizenRequestSearch: React.FC<Props> = ({
             setUser(decoded.user);
             setRol(decoded.rol);
             setIdPlan(decoded.id_plan);
+
+            if (decoded.id_plan) {
+                setActiveIdPlan(String(decoded.id_plan));
+                localStorage.setItem('id_plan', String(decoded.id_plan)); // opcional, para persistir
+            }
+    
+
             console.log('Token decodificado:', decoded);
         }
     }, [token_info]);
 
     useEffect(() => {
-        if (!activeIdPlan) return;
+        if (!activeIdPlan) {
+            console.log("No hay activeIdPlan, no se hace petición");
+            return;
+        }
+    
+        console.log("Ejecutando thunkGetAllSolicitudes con id_plan:", activeIdPlan);
+    
         dispatch(thunkGetAllSolicitudes({ id_plan: activeIdPlan }))
             .unwrap()
             .then((res: any) => {
-                console.log('Solicitudes recibidas del thunk:', res);
-                if (Array.isArray(res)) setSolicitudes(res);
+                console.log("✅ Respuesta exitosa del thunk:", res);
+    
+                if (Array.isArray(res)) {
+                    console.log("Es un array, se setean las solicitudes");
+                    setSolicitudes(res);
+                } else {
+                    console.log("No es un array la respuesta, valor recibido:", res);
+                }
+            })
+            .catch((err: any) => {
+                console.error("❌ Error al obtener solicitudes:", err);
             });
     }, [dispatch, activeIdPlan]);
+    
 
     useEffect(() => {
         if (rol === 'admin') {
@@ -623,6 +646,7 @@ export const CitizenRequestSearch: React.FC<Props> = ({
                             <th className="tw-text-left tw-text-xs tw-font-semibold tw-text-gray-600 tw-px-4 tw-py-2">Cantidad</th>
                             <th className="tw-text-left tw-text-xs tw-font-semibold tw-text-gray-600 tw-px-4 tw-py-2">Prioridad</th>
                             <th className="tw-text-left tw-text-xs tw-font-semibold tw-text-gray-600 tw-px-4 tw-py-2">Estado</th>
+                            <th className="tw-text-left tw-text-xs tw-font-semibold tw-text-gray-600 tw-px-4 tw-py-2">Detalles</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -640,6 +664,14 @@ export const CitizenRequestSearch: React.FC<Props> = ({
                                 <td className="tw-border-t tw-px-4 tw-py-2">{s.cantidadServicio ?? 'N/A'}</td>
                                 <td className="tw-border-t tw-px-4 tw-py-2">{s.prioridad || 'N/A'}</td>
                                 <td className="tw-border-t tw-px-4 tw-py-2">{s.estado || 'N/A'}</td>
+                                <td className="tw-p-3 tw-text-center">
+                                    <button
+                                        onClick={() => setExpandedId(s.id!)}
+                                        className="tw-bg-blue-500 tw-text-white tw-px-3 tw-py-1 tw-rounded hover:tw-bg-blue-600"
+                                    >
+                                        Ver detalle
+                                    </button>
+                                </td>
                             </tr>
                         ))}
                         {pagedResultados.length === 0 && (

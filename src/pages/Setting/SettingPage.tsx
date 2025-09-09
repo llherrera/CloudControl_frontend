@@ -15,7 +15,7 @@ import {
     UploadLogoCity, UploadLogoPlan, LocationsFormPage,
     FileInput, FileFinancialInput, FilePhysicalInput,
     FileUnitInput, DrawerMenu, ListItemComp, UpdateUserForm, ModulesForm
-} from '@/components';
+} from '@/components/Citizen';
 import { decode, notify } from "@/utils";
 
 import { Button, Tooltip, Zoom } from '@mui/material';

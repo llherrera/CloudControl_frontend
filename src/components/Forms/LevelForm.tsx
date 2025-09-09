@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useAppDispatch } from "@/store";
 import { thunkAddLevel } from "@/store/plan/thunks";
 
-import { Input, FileInput, BackBtn } from "@/components";
+import { Input, FileInput, BackBtn } from "@/components/Citizen";
 import { LevelInterface, LevelFormProps } from "@/interfaces";
 import { getToken, decode } from "@/utils";
 

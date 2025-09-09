@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { notify, convertLocations } from '@/utils';
 import { EvidenceInterface, LocationInterface } from "@/interfaces";
-import { UbicationsPopover, ModalSpinner, BackBtn } from "@/components";
+import { UbicationsPopover, ModalSpinner, BackBtn } from "@/components/Citizen";
 
 import { useAppSelector, useAppDispatch } from "@/store";
 import {

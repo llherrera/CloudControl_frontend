@@ -18,7 +18,7 @@ import { IdProps } from "@/interfaces";
 import {
     NodeForm, NodesList, TimeLine, Graph, BackBtn,
     DoubleBackBtn, SettingsBtn
-} from "@/components";
+} from "@/components/Citizen";
 
 // Importación de librerías externas
 import IconButton from "@mui/material/IconButton";
