@@ -34,7 +34,7 @@ export const BackBtn = ({ handle, id, className }: BackBtnProps) => {
     );
   };
   
-  export const SettingsBtn = ({ handle, id }: BackBtnProps) => {
+  export const SettingsBtn = ({ handle, id, color = "white" }: BackBtnProps) => {
     return (
       <IconButton
         aria-label="configuración"
@@ -44,10 +44,11 @@ export const BackBtn = ({ handle, id, className }: BackBtnProps) => {
         key={id}
         className="tw-bg-white tw-border tw-border-white tw-rounded hover:tw-bg-gray-100"
       >
-        <Settings className="tw-text-white" />
+        <Settings className={`tw-text-${color}`} />
       </IconButton>
     );
   };
+  
   
 
 export const HvBtn = ({link}:{link:string}) => {

@@ -29,10 +29,10 @@ import {
     setProjectPage, setIsFullHeight
 } from '@/store/content/contentSlice';                                    // Acciones del slice content
 
-import { AddRootTree, setZeroLevelIndex } from "@/store/plan/planSlice";  // Acciones del slice plan
+import { AddRootTree, setCalcDone, setZeroLevelIndex } from "@/store/plan/planSlice";  // Acciones del slice plan
 
 // -------------------- Componentes propios --------------------
-import { NavBar, ButtonComponent } from '@/components/Citizen';                   // Navbar y botón reutilizable
+import { NavBar, ButtonComponent, SettingsBtn } from '@/components/Citizen';                   // Navbar y botón reutilizable
 
 // -------------------- Iconos propios --------------------
 import {
@@ -93,144 +93,144 @@ const decimalToModules = (mask: number | undefined | null): IModules => {
 export const Headerbase = () => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
-  
+
     const { url_logo, url_logo_plan } = useAppSelector(store => store.content);
-  
+
     const [solicitudes, setSolicitudes] = useState<any[]>([]);
-  
+
     // ================== NOTIFICACIONES ==================
     useEffect(() => {
-      const fetchSolicitudes = async () => {
-        const id_plan = localStorage.getItem('id_plan');
-        if (!id_plan) return;
-        dispatch(thunkGetAllSolicitudes({ id_plan }))
-          .unwrap()
-          .then((result: any) => setSolicitudes(result))
-          .catch(() => setSolicitudes([]));
-      };
-      fetchSolicitudes();
+        const fetchSolicitudes = async () => {
+            const id_plan = localStorage.getItem('id_plan');
+            if (!id_plan) return;
+            dispatch(thunkGetAllSolicitudes({ id_plan }))
+                .unwrap()
+                .then((result: any) => setSolicitudes(result))
+                .catch(() => setSolicitudes([]));
+        };
+        fetchSolicitudes();
     }, [dispatch]);
-  
+
     // ================== FORMATO DE TEXTO ==================
     interface TextFormat {
-      text: string;
-      color: string;
-      size: string;
-      weight: 'normal' | 'bold' | 'lighter';
-      align: 'left' | 'center' | 'right' | 'justify';
+        text: string;
+        color: string;
+        size: string;
+        weight: 'normal' | 'bold' | 'lighter';
+        align: 'left' | 'center' | 'right' | 'justify';
     }
-  
+
     const id_plan = localStorage.getItem('id_plan') ?? '';
     const cachedFormat = localStorage.getItem('textFormat');
     const initialTextFormat = cachedFormat ? JSON.parse(cachedFormat) as TextFormat : null;
     const [textFormat, setTextFormat] = useState<TextFormat | null>(initialTextFormat);
-  
+
     useEffect(() => {
-      if (!textFormat && id_plan) {
-        dispatch(thunkGetTextFormatByPlan(Number(id_plan)))
-          .then((res) => {
-            const payload = res.payload as TextFormat | undefined;
-            if (payload) setTextFormat(payload);
-          });
-      }
+        if (!textFormat && id_plan) {
+            dispatch(thunkGetTextFormatByPlan(Number(id_plan)))
+                .then((res) => {
+                    const payload = res.payload as TextFormat | undefined;
+                    if (payload) setTextFormat(payload);
+                });
+        }
     }, [id_plan, dispatch, textFormat]);
-  
+
     const text = textFormat?.text || '';
     const color = textFormat?.color || '#000000';
     const size = textFormat?.size || '16px';
     const weight = textFormat?.weight || 'normal';
     const align = textFormat?.align || 'center';
-  
+
     // ================== ACCIONES ==================
     const handleBtn = () => {
-      dispatch(thunkLogout())
-        .unwrap()
-        .then(() => {
-          dispatch(setReload(true));
-          navigate('/');
-        });
+        dispatch(thunkLogout())
+            .unwrap()
+            .then(() => {
+                dispatch(setReload(true));
+                navigate('/');
+            });
     };
-  
+
     const handleAddUser = () => navigate(`/gestion-usuarios`);
-  
+
     return (
-      <header
-        className="
+        <header
+            className="
           tw-bg-white tw-drop-shadow-xl
           tw-flex tw-flex-col md:tw-flex-row tw-items-center
           md:tw-justify-between
           tw-py-2 tw-px-4
           tw-gap-4 md:tw-gap-0
         "
-      >
-        {/* ============================= */}
-        {/*   LOGOS                       */}
-        {/* ============================= */}
-        <div className="tw-flex tw-items-center tw-gap-4 tw-overflow-x-auto">
-          <img src={cclogo} alt="ControlLand" className="tw-h-[60px] sm:tw-h-[80px] md:tw-h-[100px]" />
-          {url_logo && <img src={url_logo} alt="Municipio" className="tw-h-[60px] sm:tw-h-[80px] md:tw-h-[100px]" />}
-          {url_logo_plan && <img src={url_logo_plan} alt="Plan" className="tw-h-[60px] sm:tw-h-[80px] md:tw-h-[100px]" />}
-        </div>
-  
-        {/* ============================= */}
-        {/* TEXTO DEL PLAN + ADMIN BTN   */}
-        {/* ============================= */}
-        <div className="tw-w-[45%] tw-flex tw-justify-center">
-          <div className="tw-flex tw-flex-col tw-items-center tw-gap-4 tw-w-full tw-justify-center">
-            <p
-              className="tw-font-semibold tw-text-center tw-px-4 tw-py-1 tw-rounded-md tw-shadow-sm"
-              style={{ color, fontSize: size, fontWeight: weight, textAlign: align }}
-            >
-              {text}
-            </p>
-            {localStorage.getItem('rol') === 'admin' && (
-              <button
-                onClick={handleAddUser}
-                className="tw-flex tw-items-center tw-gap-2 tw-bg-green-100 hover:tw-bg-green-200
+        >
+            {/* ============================= */}
+            {/*   LOGOS                       */}
+            {/* ============================= */}
+            <div className="tw-flex tw-items-center tw-gap-4 tw-overflow-x-auto">
+                <img src={cclogo} alt="ControlLand" className="tw-h-[60px] sm:tw-h-[80px] md:tw-h-[100px]" />
+                {url_logo && <img src={url_logo} alt="Municipio" className="tw-h-[60px] sm:tw-h-[80px] md:tw-h-[100px]" />}
+                {url_logo_plan && <img src={url_logo_plan} alt="Plan" className="tw-h-[60px] sm:tw-h-[80px] md:tw-h-[100px]" />}
+            </div>
+
+            {/* ============================= */}
+            {/* TEXTO DEL PLAN + ADMIN BTN   */}
+            {/* ============================= */}
+            <div className="tw-w-[45%] tw-flex tw-justify-center">
+                <div className="tw-flex tw-flex-col tw-items-center tw-gap-4 tw-w-full tw-justify-center">
+                    <p
+                        className="tw-font-semibold tw-text-center tw-px-4 tw-py-1 tw-rounded-md tw-shadow-sm"
+                        style={{ color, fontSize: size, fontWeight: weight, textAlign: align }}
+                    >
+                        {text}
+                    </p>
+                    {localStorage.getItem('rol') === 'admin' && (
+                        <button
+                            onClick={handleAddUser}
+                            className="tw-flex tw-items-center tw-gap-2 tw-bg-green-100 hover:tw-bg-green-200
                            tw-text-[#006400] tw-px-4 tw-py-2 tw-rounded-xl tw-shadow-md
                            tw-transition-all tw-duration-200 tw-text-[clamp(0.9rem,2.2vw,1.3rem)]"
-              >
-                <PersonAddAltIcon sx={{ fontSize: 24, color: '#006400' }} />
-                <span className="tw-font-montserrat tw-font-semibold">Gestión de usuarios</span>
-              </button>
-            )}
-          </div>
-        </div>
-  
-        {/* ============================= */}
-        {/* DATOS USUARIO + ICONOS        */}
-        {/* ============================= */}
-        <div className="tw-flex tw-items-center tw-gap-4 tw-flex-wrap tw-justify-end tw-w-full md:tw-w-auto">
-          <div className="tw-flex tw-flex-col tw-bg-green-50 tw-p-3 tw-rounded-md tw-shadow-md">
-            <span className="tw-text-sm sm:tw-text-base tw-text-[#006400] tw-font-semibold">
-              Usuario: <span className="tw-font-normal">{localStorage.getItem('user')}</span>
-            </span>
-            <span className="tw-text-sm sm:tw-text-base tw-text-[#006400] tw-font-semibold">
-              Rol: <span className="tw-font-normal">{localStorage.getItem('rol')}</span>
-            </span>
-            {localStorage.getItem('rol') === 'funcionario' && (
-              <span className="tw-text-sm sm:tw-text-base tw-text-[#006400] tw-font-semibold">
-                Oficina: <span className="tw-font-normal">{localStorage.getItem('office')}</span>
-              </span>
-            )}
-          </div>
-  
-          {localStorage.getItem('rol') === 'funcionario' && (
-            <IconButton title="Notificaciones">
-              <Badge badgeContent={solicitudes.length} color="error">
-                <Notifications sx={{ fontSize: 28, color: '#333' }} />
-              </Badge>
-            </IconButton>
-          )}
-  
-          <IconButton onClick={handleBtn} title="Cerrar sesión">
-            <LogoutIcon sx={{ color: '#006400', fontSize: 28 }} />
-          </IconButton>
-        </div>
-      </header>
+                        >
+                            <PersonAddAltIcon sx={{ fontSize: 24, color: '#006400' }} />
+                            <span className="tw-font-montserrat tw-font-semibold">Gestión de usuarios</span>
+                        </button>
+                    )}
+                </div>
+            </div>
+
+            {/* ============================= */}
+            {/* DATOS USUARIO + ICONOS        */}
+            {/* ============================= */}
+            <div className="tw-flex tw-items-center tw-gap-4 tw-flex-wrap tw-justify-end tw-w-full md:tw-w-auto">
+                <div className="tw-flex tw-flex-col tw-bg-green-50 tw-p-3 tw-rounded-md tw-shadow-md">
+                    <span className="tw-text-sm sm:tw-text-base tw-text-[#006400] tw-font-semibold">
+                        Usuario: <span className="tw-font-normal">{localStorage.getItem('user')}</span>
+                    </span>
+                    <span className="tw-text-sm sm:tw-text-base tw-text-[#006400] tw-font-semibold">
+                        Rol: <span className="tw-font-normal">{localStorage.getItem('rol')}</span>
+                    </span>
+                    {localStorage.getItem('rol') === 'funcionario' && (
+                        <span className="tw-text-sm sm:tw-text-base tw-text-[#006400] tw-font-semibold">
+                            Oficina: <span className="tw-font-normal">{localStorage.getItem('office')}</span>
+                        </span>
+                    )}
+                </div>
+
+                {localStorage.getItem('rol') === 'funcionario' && (
+                    <IconButton title="Notificaciones">
+                        <Badge badgeContent={solicitudes.length} color="error">
+                            <Notifications sx={{ fontSize: 28, color: '#333' }} />
+                        </Badge>
+                    </IconButton>
+                )}
+
+                <IconButton onClick={handleBtn} title="Cerrar sesión">
+                    <LogoutIcon sx={{ color: '#006400', fontSize: 28 }} />
+                </IconButton>
+            </div>
+        </header>
     );
-  };
-  
+};
+
 
 export const Frame = ({ children }: FrameProps) => {
     const navigate = useNavigate();
@@ -432,6 +432,15 @@ export const Frame = ({ children }: FrameProps) => {
                 navigate('/');
             });
     };
+
+    // Navegar a configuración
+    const handleSettings = (page: number = 0) => {
+        dispatch(setCalcDone(false));
+        navigate(`/pdt/PlanIndicativo/configuracion`, {
+            state: { pageN: page }
+        });
+    };
+
 
     const handleAddUser = () => {
         navigate(`/gestion-usuarios`);
@@ -635,14 +644,32 @@ export const Frame = ({ children }: FrameProps) => {
                         </IconButton>
                     )}
 
-                    {/* Ícono de cerrar sesión */}
-                    <IconButton
-                        onClick={handleBtn}
-                        title="Cerrar sesión"
-                        className="tw-self-center"
-                    >
-                        <LogoutIcon sx={{ color: '#006400', fontSize: 28 }} />
-                    </IconButton>
+                    {/* Ícono de configuración + cerrar sesión */}
+                    <div className="tw-flex tw-items-center tw-gap-2">
+                        {/* Botón de configuración (condicional como en Content) */}
+                        {(() => {
+                            const rol = localStorage.getItem('rol');
+                            const idPlanStorage = Number(localStorage.getItem('id_plan'));
+                            const idPlanProp = plan?.id_plan;
+
+                            return (
+                                rol === 'admin' ||
+                                    ((rol === 'funcionario' || rol === 'planeacion') && idPlanStorage === idPlanProp) ? (
+                                    <SettingsBtn handle={() => handleSettings(1)} color="green" id={plan?.id_plan ?? 0} />
+                                ) : null
+                            );
+                        })()}
+
+                        {/* Botón de cerrar sesión */}
+                        <IconButton
+                            onClick={handleBtn}
+                            title="Cerrar sesión"
+                            className="tw-self-center"
+                        >
+                            <LogoutIcon sx={{ color: '#006400', fontSize: 28 }} />
+                        </IconButton>
+                    </div>
+
                 </div>
             </header>
 

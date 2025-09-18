@@ -4,8 +4,9 @@ import {
     LocationInterface,
     PDTInterface,
     ExecutionInterface,
-    NodeInterface, 
-    UnitNodeResultInterface} from "./formInterfaces";
+    NodeInterface,
+    UnitNodeResultInterface
+} from "./formInterfaces";
 
 export interface IdProps {
     id: number;
@@ -13,9 +14,11 @@ export interface IdProps {
 
 export interface BackBtnProps {
     className?: string;
-    handle: (param: any) => void;
-    id: number;
+    handle: (param?: any) => void; // opcional porque no todos los botones envían param
+    id?: number;                   // opcional, solo CloseBtn lo usa de verdad
+    color?: string;                // nuevo parámetro opcional para el color del icono
 }
+
 
 export interface GraphProps {
     dataValues: number[];
@@ -68,8 +71,8 @@ export interface NodeFormProps {
 export interface FrameProps {
     children: JSX.Element | JSX.Element[];
     onClose?: () => void; // función opcional sin parámetros ni retorno
-  }
-  
+}
+
 
 export interface HeaderProps {
     children: JSX.Element | JSX.Element[];
@@ -82,11 +85,11 @@ export interface InputProps {
     name: string;
     value?: string | number;
     placeholder?: string;
-    onChange: (e: React.ChangeEvent<HTMLInputElement>, index:(number | void)) => void;
+    onChange: (e: React.ChangeEvent<HTMLInputElement>, index: (number | void)) => void;
     isRequired?: boolean;
     classname?: string;
     center: boolean;
-    errors?: {[key: string]: string};
+    errors?: { [key: string]: string };
 }
 
 export interface SelectInputProps {
@@ -94,7 +97,7 @@ export interface SelectInputProps {
     id: string;
     name: string;
     value?: string | number;
-    onChange: (e: React.ChangeEvent<HTMLSelectElement>, index:(number | void)) => void;
+    onChange: (e: React.ChangeEvent<HTMLSelectElement>, index: (number | void)) => void;
     isRequired?: boolean;
     disabled?: boolean;
     classname?: string;
@@ -204,7 +207,7 @@ export interface PropsModalSettingProy {
 }
 
 export interface PlotOpt {
-    [key:string]:{}
+    [key: string]: {}
 }
 
 export interface PropsMessage {
@@ -229,7 +232,7 @@ export interface PropsInputLabel {
     id: string;
     value?: string | number;
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    errors: {[key: string]: string};
+    errors: { [key: string]: string };
     className?: string;
 }
 
@@ -238,7 +241,7 @@ export interface PropsInputTable {
     type: string;
     value?: string | number;
     onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    errors: {[key: string]: string};
+    errors: { [key: string]: string };
     className?: string;
 }
 
