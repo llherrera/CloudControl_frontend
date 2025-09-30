@@ -3,16 +3,28 @@ import * as Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
 import parse, { DOMNode } from 'html-react-parser';
 
-import { useAppSelector } from "@/store";
+import { DataGrid, GridColDef } from '@mui/x-data-grid';
+
+import { marked } from "marked";
+import DOMPurify from "dompurify";
+
+import { useAppDispatch, useAppSelector } from "@/store";
 import { chatModel } from "@/services/chat.api";
 import { getMyPronts, addPront, deleteProntById } from "@/services/api";
 import { ModalProps, PlotOpt, ProntProps } from "@/interfaces";
 
-import { FormControl, OutlinedInput, InputAdornment, Box, Select,
-    SelectChangeEvent, MenuItem, InputLabel, IconButton,
-    CircularProgress, ListItemText, styled, InputBase } from '@mui/material';
+import {
+  FormControl, OutlinedInput, InputAdornment, Box, Select,
+  SelectChangeEvent, MenuItem, InputLabel, IconButton,
+  CircularProgress, ListItemText, styled, InputBase
+} from '@mui/material';
 import { Send, Save, Delete } from '@mui/icons-material';
 import { notify } from "@/utils";
+
+import { unwrapResult } from "@reduxjs/toolkit";
+import { thunkFetchChatbot } from "@/store/pqrs/thunks";
+
+import { decode } from '@/utils';
 
 type MsgFrom = "user" | "app";
 interface Message {
@@ -22,48 +34,85 @@ interface Message {
   time: number;
 }
 
+import { useMemo } from "react";
+
 const BootstrapInput = styled(InputBase)(({ theme }) => ({
-    'label + &': {
-        marginTop: theme.spacing(3),
+  'label + &': {
+    marginTop: theme.spacing(3),
+  },
+  '& .MuiInputBase-input': {
+    borderRadius: 4,
+    position: 'relative',
+    border: '1px solid #ffffff',
+    fontSize: 16,
+    padding: '10px 26px 10px 12px',
+    transition: theme.transitions.create(['border-color', 'box-shadow']),
+    fontFamily: [
+      '-apple-system',
+      'BlinkMacSystemFont',
+      '"Segoe UI"',
+      'Roboto',
+      '"Helvetica Neue"',
+      'Arial',
+      'sans-serif',
+      '"Apple Color Emoji"',
+      '"Segoe UI Emoji"',
+      '"Segoe UI Symbol"',
+    ].join(','),
+    '&:focus': {
+      borderRadius: 4,
+      borderColor: '#FFFFFF',
+      boxShadow: '0 0 0 0.2rem rgba(255, 255, 255, 1)',
     },
-    '& .MuiInputBase-input': {
-        borderRadius: 4,
-        position: 'relative',
-        border: '1px solid #ffffff',
-        fontSize: 16,
-        padding: '10px 26px 10px 12px',
-        transition: theme.transitions.create(['border-color', 'box-shadow']),
-        fontFamily: [
-            '-apple-system',
-            'BlinkMacSystemFont',
-            '"Segoe UI"',
-            'Roboto',
-            '"Helvetica Neue"',
-            'Arial',
-            'sans-serif',
-            '"Apple Color Emoji"',
-            '"Segoe UI Emoji"',
-            '"Segoe UI Symbol"',
-        ].join(','),
-        '&:focus': {
-            borderRadius: 4,
-            borderColor: '#FFFFFF',
-            boxShadow: '0 0 0 0.2rem rgba(255, 255, 255, 1)',
-        },
-    },
+  },
 }));
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
 const MenuProps = {
-    PaperProps: {
-        style: {
-            maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
-        },
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
     },
+  },
 };
 
 export default function VoicesChatWindow() {
+  const dispatch = useAppDispatch();
+
+  const { token_info } = useAppSelector(store => store.auth);
+
+  const [id, setId] = useState(0);
+  const [user, setUser] = useState('');
+  const [rol, setRol] = useState('');
+  const [idPlan, setIdPlan] = useState(0);
+
+  useEffect(() => {
+    if (token_info?.token !== undefined) {
+      const decoded = decode(token_info.token);
+      setId(decoded.id);
+      setUser(decoded.user);
+      setRol(decoded.rol);
+      setIdPlan(Number(localStorage.getItem('id_plan')) || 0);
+      console.log('Token decodificado:', decoded);
+    }
+  }, []);
+
+
+  interface ChatbotResponse {
+    originalText: string;
+    idPlan: number;
+    idUser?: number | null;
+    generatedSql: string;
+    execution: {
+      executed: boolean;
+      reason: string | null;
+    };
+    rows: any[];
+    explanation: string;
+  }
+
+
   const [open, setOpen] = useState(false);
   const [minimized, setMinimized] = useState(false);
   const [maximized, setMaximized] = useState(false);
@@ -100,9 +149,9 @@ export default function VoicesChatWindow() {
   // Efectos del ModalAi
   useEffect(() => {
     try {
-        getMyPronts().then(res => setPronts(res['result']));
+      getMyPronts().then(res => setPronts(res['result']));
     } catch (error) {
-        notify('Algo salió mal al descargar tus mensajes guardados', 'error');
+      notify('Algo salió mal al descargar tus mensajes guardados', 'error');
     }
   }, [reload]);
 
@@ -111,7 +160,7 @@ export default function VoicesChatWindow() {
 
   useEffect(() => {
     if (messagesContainerRef.current) {
-        messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
+      messagesContainerRef.current.scrollTop = messagesContainerRef.current.scrollHeight;
     }
   }, [conversations]);
 
@@ -146,7 +195,7 @@ export default function VoicesChatWindow() {
     return () => {
       try {
         recognitionRef.current?.stop?.();
-      } catch (e) {}
+      } catch (e) { }
     };
   }, []);
 
@@ -157,38 +206,38 @@ export default function VoicesChatWindow() {
   const replaceChartPlaceholder = (domNode: DOMNode, i: number) => {
     const option = plotOpts[i];
     if ('attribs' in domNode && domNode.attribs?.id === 'chart-replace') {
-        if (option?.series && Array.isArray(option.series) && option.series.length > 0) {
-            return (
-                <HighchartsReact
-                    highcharts={Highcharts}
-                    options={option}
-                    ref={chartComponentRef}
-                    containerProps={{ style: {width: '100%'} }}
-                />
-            );
-        }
+      if (option?.series && Array.isArray(option.series) && option.series.length > 0) {
+        return (
+          <HighchartsReact
+            highcharts={Highcharts}
+            options={option}
+            ref={chartComponentRef}
+            containerProps={{ style: { width: '100%' } }}
+          />
+        );
+      }
     }
   };
 
   const savePront = async (text: string) => {
     try {
-        await addPront(text);
-        setReload(!reload);
-        notify('Mensaje guardado', 'success');
+      await addPront(text);
+      setReload(!reload);
+      notify('Mensaje guardado', 'success');
     } catch (error) {
-        notify('Algo salió mal al guardar el mensaje', 'error');
+      notify('Algo salió mal al guardar el mensaje', 'error');
     }
   };
 
   const deletePront = async (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, id: number) => {
     e.stopPropagation();
     try {
-        await deleteProntById(id);
-        const newList = pronts.filter(p => p.id_input != id);
-        setPronts(newList);
-        setReload(!reload);
+      await deleteProntById(id);
+      const newList = pronts.filter(p => p.id_input != id);
+      setPronts(newList);
+      setReload(!reload);
     } catch (error) {
-        notify('Algo salió mal al borrar el mensaje', 'error');
+      notify('Algo salió mal al borrar el mensaje', 'error');
     }
   };
 
@@ -227,106 +276,200 @@ export default function VoicesChatWindow() {
   // Nueva función de envío que usa la API del ModalAi
   const request = async (msg: string) => {
     try {
-        setInput('');
-        setAiLoading(true);
-        
-        console.log('🔍 Enviando mensaje:', msg);
-        console.log('🔍 ID del plan:', id_plan);
-        console.log('🔍 Conversaciones previas:', conversations);
-        
-        const messagesToSend = [
-            ...conversations,
-            `${msg}. Para el plan con id: ${id_plan}.`
-        ];
-        
-        console.log('🔍 Mensajes a enviar:', messagesToSend);
-        
-        const response = await chatModel(messagesToSend);
-        
-        console.log('✅ Respuesta recibida:', response);
-        
-        let res = response['res'];
-        let opt = response['options'];
-        
-        console.log('✅ Respuesta procesada - res:', res);
-        console.log('✅ Respuesta procesada - options:', opt);
-        
-        setConversations([...conversations, msg, res]);
-        setPlotOpts([...plotOpts, null, opt]);
-        
-        // También actualizar el sistema de mensajes para compatibilidad
-        const userMsg = pushMessage(msg, "user");
-        const aiMsg = pushMessage(res, "app");
+      setInput('');
+      setAiLoading(true);
+
+      console.log('🔍 Enviando mensaje:', msg);
+      console.log('🔍 ID del plan:', id_plan);
+      console.log('🔍 Conversaciones previas:', conversations);
+
+      const messagesToSend = [
+        ...conversations,
+        `${msg}. Para el plan con id: ${id_plan}.`
+      ];
+
+      console.log('🔍 Mensajes a enviar:', messagesToSend);
+
+      const response = await chatModel(messagesToSend);
+
+      console.log('✅ Respuesta recibida:', response);
+
+      let res = response['res'];
+      let opt = response['options'];
+
+      console.log('✅ Respuesta procesada - res:', res);
+      console.log('✅ Respuesta procesada - options:', opt);
+
+      setConversations([...conversations, msg, res]);
+      setPlotOpts([...plotOpts, null, opt]);
+
+      // También actualizar el sistema de mensajes para compatibilidad
+      const userMsg = pushMessage(msg, "user");
+      const aiMsg = pushMessage(res, "app");
     } catch (error: any) {
-        console.error('❌ Error completo:', error);
-        console.error('❌ Error response:', error.response);
-        console.error('❌ Error data:', error.response?.data);
-        console.error('❌ Error message:', error.message);
-        console.error('❌ Error status:', error.response?.status);
-        
-        let resTemp = 'Ha ocurrido un error, vuelva a intentar con una petición diferente.';
-        
-        if (error.response?.data?.msg) {
-            resTemp = error.response.data.msg;
-        } else if (error.response?.data?.message) {
-            resTemp = error.response.data.message;
-        } else if (error.message) {
-            resTemp = `Error: ${error.message}`;
-        }
-        
-        setInput(msg);
-        setConversations([...conversations, msg, resTemp]);
-        setPlotOpts([...plotOpts, null, null]);
-        
-        // También actualizar el sistema de mensajes para compatibilidad
-        const userMsg = pushMessage(msg, "user");
-        const errorMsg = pushMessage(resTemp, "app");
-        
-        // Mostrar notificación de error
-        notify(resTemp, 'error');
+      console.error('❌ Error completo:', error);
+      console.error('❌ Error response:', error.response);
+      console.error('❌ Error data:', error.response?.data);
+      console.error('❌ Error message:', error.message);
+      console.error('❌ Error status:', error.response?.status);
+
+      let resTemp = 'Ha ocurrido un error, vuelva a intentar con una petición diferente.';
+
+      if (error.response?.data?.msg) {
+        resTemp = error.response.data.msg;
+      } else if (error.response?.data?.message) {
+        resTemp = error.response.data.message;
+      } else if (error.message) {
+        resTemp = `Error: ${error.message}`;
+      }
+
+      setInput(msg);
+      setConversations([...conversations, msg, resTemp]);
+      setPlotOpts([...plotOpts, null, null]);
+
+      // También actualizar el sistema de mensajes para compatibilidad
+      const userMsg = pushMessage(msg, "user");
+      const errorMsg = pushMessage(resTemp, "app");
+
+      // Mostrar notificación de error
+      notify(resTemp, 'error');
     } finally {
-        setAiLoading(false);
+      setAiLoading(false);
     }
   };
 
-  async function sendToAI(userMsg: Message) {
-    const typingMsg = pushMessage("…", "app");
+  // Si sendToAI usa dispatch internamente, defínela aquí para que tenga acceso a dispatch.
+  async function sendToAI(userMsg: Message, idPlanParam: number, idUserParam?: number | null) {
+    const typingMsg = pushMessage("…", "app"); // placeholder visible en messages
     setAiLoading(true);
-
+  
     try {
-      const conversation = [...messagesRef.current, userMsg].map((m) => ({
-        role: m.from === "user" ? "user" : "assistant",
-        content: m.text,
-      }));
-
-      const resp = await fetch("/api/ai", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: conversation }),
-      });
-
-      if (!resp.ok) {
-        const txt = await resp.text();
-        throw new Error(txt || `Status ${resp.status}`);
+      const action = await dispatch(
+        thunkFetchChatbot({
+          text: userMsg.text,
+          idPlan: idPlanParam,
+          idUser: idUserParam ?? null,
+        })
+      );
+  
+      console.log("Resultado bruto de dispatch(thunkFetchChatbot):", action);
+      const data = (action as any).payload as ChatbotResponse;
+      console.log("Payload recibido del chatbot:", data);
+      console.log("Rows recibidas (si hay):", data?.rows);
+  
+      // 1) Actualiza messages: reemplazar typingMsg por la explicación
+      const aiText = data?.explanation ?? "(sin explicación)";
+      setMessages(prev =>
+        prev.map(m => (m.id === typingMsg.id ? { ...m, text: aiText, time: Date.now() } : m))
+      );
+  
+      // 2) Si hay rows, guardamos solo en plotOpts como tabla (NO en el texto)
+      let tableObject: { type: 'table'; rows: any[] } | null = null;
+      const maxRowsToShow = 20;
+      if (Array.isArray(data?.rows) && data.rows.length > 0) {
+        tableObject = { type: 'table', rows: data.rows.slice(0, maxRowsToShow) };
       }
-
-      const data = await resp.json();
-      const aiText = (data?.text as string) || (data?.response as string) || "(sin respuesta)";
-
-      setMessages((prev) => prev.map((m) => (m.id === typingMsg.id ? { ...m, text: aiText, time: Date.now() } : m)));
+  
+      // 3) conversations → solo explicación
+      setConversations(prev => [...prev, userMsg.text, aiText]);
+  
+      // 4) plotOpts → null para user, tableObject (o null) para asistente
+      setPlotOpts(prev => [...prev, null, tableObject]);
+  
     } catch (err: any) {
       console.error("Error al llamar a la IA:", err);
-      setMessages((prev) => prev.map((m) => (m.id === typingMsg.id ? { ...m, text: `Error: ${err?.message || err}` } : m)));
+      // Reemplazar typingMsg por mensaje de error
+      setMessages(prev =>
+        prev.map(m => (m.id === typingMsg.id ? { ...m, text: `Error: ${err?.message || err}`, time: Date.now() } : m))
+      );
+  
+      // También actualiza conversations y plotOpts coherentemente
+      setConversations(prev => [...prev, userMsg.text, `Error: ${err?.message || err}`]);
+      setPlotOpts(prev => [...prev, null, null]);
     } finally {
       setAiLoading(false);
     }
   }
+  
 
+
+  // --- Aquí está la función handleSend actualizada ---
   function handleSend() {
     if (!input.trim()) return;
-    // Usar la nueva función request que integra con la API del ModalAi
-    void request(input);
+
+    // Construir el mensaje del usuario
+    const userMsg: Message = {
+      id: String(Date.now()),    // <-- id como string
+      text: input.trim(),
+      from: "user",
+      time: Date.now(),
+    };
+
+    // Agregar el mensaje a la UI inmediatamente
+    setMessages((prev) => [...prev, userMsg]);
+
+    // Limpiar input
+    setInput("");
+
+    // Llamar a la función que despacha el thunk, pasando idPlan e id (id es idUser)
+    // Usamos void para silenciar la promesa en handlers sin await
+    void sendToAI(userMsg, idPlan, id);
   }
+
+  function rowsToMarkdownTable(rows: any[]): string {
+    if (!rows || rows.length === 0) return "No hay resultados.";
+
+    // Cabeceras (todas las keys del primer objeto)
+    const headers = Object.keys(rows[0]);
+
+    // Cabecera Markdown
+    const headerLine = `| ${headers.join(" | ")} |`;
+    const separatorLine = `| ${headers.map(() => "---").join(" | ")} |`;
+
+    // Filas
+    const rowsLines = rows.map(row =>
+      "| " +
+      headers
+        .map(h => {
+          const v = row[h];
+          if (v === null || v === undefined) return "";
+          // Escapar pipes y nuevas líneas para no romper la tabla
+          return String(v).replace(/\|/g, "\\|").replace(/\n/g, " ");
+        })
+        .join(" | ") +
+      " |"
+    );
+
+    return [headerLine, separatorLine, ...rowsLines].join("\n");
+  }
+
+
+  // Preprocesar conversaciones: Markdown -> HTML -> sanitized HTML -> parsed React nodes
+  const parsedConversations = useMemo(() => {
+    return conversations.map((c, i) => {
+      // 1) Convertir Markdown a HTML
+      // marked.parse puede estar tipado como string | Promise<string> en algunos entornos.
+      // Forzamos a string explícitamente (es seguro: marked.parse es síncrono en el navegador).
+      const rawHtml = marked.parse(String(c || "")) as string;
+
+      // 2) Sanitizar (DOMPurify.sanitize puede estar tipado como string | Promise<string>)
+      // Forzamos a string de forma explícita.
+      const sanitized = DOMPurify.sanitize(rawHtml, { ADD_ATTR: ["target"] }) as string;
+
+      // Ahora cleanHtml es definitivamente string (TS ya no se queja)
+      const cleanHtml: string = sanitized;
+
+      // 3) Parsear HTML a React nodes aplicando replaceChartPlaceholder
+      const nodes = parse(cleanHtml, {
+        replace: (domNode: DOMNode) => {
+          return replaceChartPlaceholder(domNode, i) ?? undefined;
+        },
+      });
+
+      return nodes as React.ReactNode;
+    });
+  }, [conversations, plotOpts]);
+
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.key === "Enter") {
@@ -495,52 +638,71 @@ export default function VoicesChatWindow() {
                 <div className="tw-text-center tw-text-sm tw-text-gray-400 tw-mt-6">Empieza la conversación — escribe o usa el micrófono</div>
               )}
 
-              {conversations.map((c, i) =>
-                <div key={i} className={`tw-flex ${i % 2 === 1 ? 'tw-justify-end' : 'tw-justify-start'}`}>
-                  <div
-                    className={`tw-max-w-[78%] tw-p-3 tw-rounded-xl tw-shadow-sm tw-text-sm tw-leading-relaxed
-                      ${i % 2 === 1 ? 'tw-bg-blue-600 tw-text-white tw-rounded-br-none' : 'tw-bg-gray-100 tw-text-gray-900 tw-rounded-bl-none'}
-                    `}
-                    style={{ overflow: 'visible' }}
-                  >
-                    {i % 2 === 1 ? null :
-                      <div className="tw-inline-block tw-rounded tw-px-2 tw-mb-2 tw-bg-white tw-text-black tw-text-xs">
-                        Cloud-i:
+              {parsedConversations.map((node, i) => {
+                const isAssistant = i % 2 === 1;
+                const plot = plotOpts[i] as any;
+
+                return (
+                  <div key={i} className={`tw-flex ${isAssistant ? 'tw-justify-end' : 'tw-justify-start'}`}>
+                    <div className={`tw-max-w-[78%] tw-p-3 ... ${isAssistant ? 'tw-bg-blue-600 tw-text-white tw-rounded-br-none' : 'tw-bg-gray-100 tw-text-gray-900 tw-rounded-bl-none'}`} style={{ overflow: 'visible' }}>
+                      {!isAssistant && (
+                        <div className="tw-inline-block ...">Cloud-i:</div>
+                      )}
+
+                      <div ref={(el) => (messageRefs.current[`conv-${i}`] = el)} className="scroll-viewport" style={{ maxWidth: "100%", overflowX: "auto", overflowY: 'hidden' }}>
+                        <div className={`msg-text-inner ...`}>
+                          {/* 1) Mostrar siempre la explicación (node) */}
+                          {node}
+
+                          {/* 2) Si plotOpts indica tabla, mostrar DataGrid **debajo** del node */}
+                          {plot && plot.type === 'table' && Array.isArray(plot.rows) && plot.rows.length > 0 && (
+                            (() => {
+                              const rows = plot.rows as any[];
+                              const columns: GridColDef[] = Object.keys(rows[0]).map((key) => ({
+                                field: key,
+                                headerName: key,
+                                width: 150,
+                                sortable: true,
+                              }));
+                              const gridRows = rows.map((r, idx) => {
+                                const idField = r.id ?? r.id_node ?? r.id_secretary ?? idx;
+                                return { id: idField, ...r };
+                              });
+
+                              return (
+                                <div style={{ marginTop: 12, width: '100%' }}>
+                                  <div style={{ height: Math.min(400, 70 + gridRows.length * 40), width: '100%' }}>
+                                    <DataGrid
+                                      rows={gridRows}
+                                      columns={columns}
+                                      initialState={{ pagination: { paginationModel: { pageSize: 5, page: 0 } } }}
+                                      pageSizeOptions={[5, 10, 20]}
+                                      disableRowSelectionOnClick
+                                      autoHeight
+                                      density="compact"
+                                    />
+                                  </div>
+                                </div>
+                              );
+                            })()
+                          )}
+                        </div>
                       </div>
-                    }
-                    <div
-                      ref={(el) => (messageRefs.current[`conv-${i}`] = el)}
-                      className="scroll-viewport"
-                      style={{ maxWidth: "100%", overflowX: "auto", overflowY: 'hidden' }}
-                    >
-                      <div
-                        className={`msg-text-inner tw-inline-block tw-align-middle tw-pr-2 tw-break-words ${scrollingIds[`conv-${i}`] && listening ? 'scroll-anim' : ''}`}
-                        style={
-                          scrollingIds[`conv-${i}`] && listening
-                            ? { whiteSpace: "nowrap", display: 'inline-block' }
-                            : { whiteSpace: "normal", display: 'inline-block' }
-                        }
-                      >
-                        {parse(c, { replace: doc => replaceChartPlaceholder(doc, i) })}
-                      </div>
+
+                      {isAssistant ? (
+                        <div className="tw-flex tw-justify-end tw-mt-2">
+                          <IconButton size="small" title="Guardar pront" onClick={() => savePront(conversations[i])} className="tw-text-white hover:tw-bg-blue-700">
+                            <Save sx={{ fontSize: 16, color: '#FFFFFF' }} />
+                          </IconButton>
+                        </div>
+                      ) : null}
                     </div>
-                    {i % 2 === 1 ?
-                      <div className="tw-flex tw-justify-end tw-mt-2">
-                        <IconButton
-                          size="small"
-                          title="Guardar pront"
-                          onClick={() => savePront(c)}
-                          className="tw-text-white hover:tw-bg-blue-700"
-                        >
-                          <Save sx={{ fontSize: 16, color: '#FFFFFF' }} />
-                        </IconButton>
-                      </div>
-                      : null
-                    }
                   </div>
-                </div>
-              )}
-              
+                );
+              })}
+
+
+
               {aiLoading ?
                 <div className="tw-animate-pulse tw-flex tw-space-x-4">
                   <div className="tw-rounded-full tw-bg-slate-700 tw-h-10 tw-w-10"></div>
@@ -563,101 +725,101 @@ export default function VoicesChatWindow() {
               {/* Controles de mensajes predeterminados y guardados */}
               <div className="tw-flex tw-justify-center tw-mb-2 tw-gap-2">
                 <FormControl sx={{
-                    width: '45%',
-                    borderBlockColor: 'white',
-                    color: 'white',
+                  width: '45%',
+                  borderBlockColor: 'white',
+                  color: 'white',
                 }} variant="standard">
-                    <InputLabel id='inputs' sx={{color: 'black', fontSize: '12px'}}>
-                        Mensajes predeterminados
-                    </InputLabel>
-                    <Select
-                        labelId="inputs"
-                        id="demo-simple-select"
-                        value={pront1}
-                        label="Input"
-                        sx={{color: 'black', fontSize: '12px'}}
-                        onChange={handleSelectChange}
-                        input={<BootstrapInput/>}>
-                        <MenuItem value="">
-                            <em></em>
-                        </MenuItem>
-                        <MenuItem value={`Seleccionar las 5 ejecuciones físicas con mayor valor ejecutado en el año ${years[0]}`}>
-                            {`Seleccionar las 5 ejecuciones físicas con mayor valor ejecutado en el año ${years[0]}`}
-                        </MenuItem>
-                        <MenuItem value={`Seleccionar la mayor ejecución financiera entre todos los años`}>
-                            {`Seleccionar la mayor ejecución financiera entre todos los años`}
-                        </MenuItem>
-                        <MenuItem value={`Seleccionar la secretaría que tenga menos ejecutado financieramente en el año ${years[1]}`}>
-                            {`Seleccionar la secretaría que tenga menos ejecutado financieramente en el año ${years[1]}`}
-                        </MenuItem>
-                        <MenuItem value={`Secretaría con menor ejecución financiera`}>
-                            {`Secretaría con menor ejecución financiera`}
-                        </MenuItem>
-                        <MenuItem value={`Secretaría con menor ejecución financiera mayor a cero`}>
-                            {`Secretaría con menor ejecución financiera mayor a cero`}
-                        </MenuItem>
-                        <MenuItem value={`Seleccionar las 5 primeras ejecuciones ordenadas de mayor a menor en el ${years[0]}`}>
-                            {`Seleccionar las 5 primeras ejecuciones ordenadas de mayor a menor en el ${years[0]}`}
-                        </MenuItem>
-                        <MenuItem value={`Seleccionar las 10 primeras ejecuciones ordenadas de mayor a menor`}>
-                            {`Seleccionar las 10 primeras ejecuciones ordenadas de mayor a menor`}
-                        </MenuItem>
-                        <MenuItem value={`Seleccionar las 10 primeras ejecuciones ordenadas de menor a mayor`}>
-                            {`Seleccionar las 10 primeras ejecuciones ordenadas de menor a mayor`}
-                        </MenuItem>
-                        <MenuItem value={`Seleccionar las 10 primeras ejecuciones financieras ordenadas de mayor a menor en el ${years[1]}`}>
-                            {`Seleccionar las 10 primeras ejecuciones financieras ordenadas de mayor a menor en el ${years[1]}`}
-                        </MenuItem>
-                        <MenuItem value={`Seleccionar todas las ejecuciones de la secretaría de las TIC`}>
-                            {`Seleccionar todas las ejecuciones de la secretaría de las TIC`}
-                        </MenuItem>
-                    </Select>
+                  <InputLabel id='inputs' sx={{ color: 'black', fontSize: '12px' }}>
+                    Mensajes predeterminados
+                  </InputLabel>
+                  <Select
+                    labelId="inputs"
+                    id="demo-simple-select"
+                    value={pront1}
+                    label="Input"
+                    sx={{ color: 'black', fontSize: '12px' }}
+                    onChange={handleSelectChange}
+                    input={<BootstrapInput />}>
+                    <MenuItem value="">
+                      <em></em>
+                    </MenuItem>
+                    <MenuItem value={`Seleccionar las 5 ejecuciones físicas con mayor valor ejecutado en el año ${years[0]}`}>
+                      {`Seleccionar las 5 ejecuciones físicas con mayor valor ejecutado en el año ${years[0]}`}
+                    </MenuItem>
+                    <MenuItem value={`Seleccionar la mayor ejecución financiera entre todos los años`}>
+                      {`Seleccionar la mayor ejecución financiera entre todos los años`}
+                    </MenuItem>
+                    <MenuItem value={`Seleccionar la secretaría que tenga menos ejecutado financieramente en el año ${years[1]}`}>
+                      {`Seleccionar la secretaría que tenga menos ejecutado financieramente en el año ${years[1]}`}
+                    </MenuItem>
+                    <MenuItem value={`Secretaría con menor ejecución financiera`}>
+                      {`Secretaría con menor ejecución financiera`}
+                    </MenuItem>
+                    <MenuItem value={`Secretaría con menor ejecución financiera mayor a cero`}>
+                      {`Secretaría con menor ejecución financiera mayor a cero`}
+                    </MenuItem>
+                    <MenuItem value={`Seleccionar las 5 primeras ejecuciones ordenadas de mayor a menor en el ${years[0]}`}>
+                      {`Seleccionar las 5 primeras ejecuciones ordenadas de mayor a menor en el ${years[0]}`}
+                    </MenuItem>
+                    <MenuItem value={`Seleccionar las 10 primeras ejecuciones ordenadas de mayor a menor`}>
+                      {`Seleccionar las 10 primeras ejecuciones ordenadas de mayor a menor`}
+                    </MenuItem>
+                    <MenuItem value={`Seleccionar las 10 primeras ejecuciones ordenadas de menor a mayor`}>
+                      {`Seleccionar las 10 primeras ejecuciones ordenadas de menor a mayor`}
+                    </MenuItem>
+                    <MenuItem value={`Seleccionar las 10 primeras ejecuciones financieras ordenadas de mayor a menor en el ${years[1]}`}>
+                      {`Seleccionar las 10 primeras ejecuciones financieras ordenadas de mayor a menor en el ${years[1]}`}
+                    </MenuItem>
+                    <MenuItem value={`Seleccionar todas las ejecuciones de la secretaría de las TIC`}>
+                      {`Seleccionar todas las ejecuciones de la secretaría de las TIC`}
+                    </MenuItem>
+                  </Select>
                 </FormControl>
                 <FormControl sx={{
-                    width: '45%',
-                    borderBlockColor: 'white',
-                    color: 'white',
+                  width: '45%',
+                  borderBlockColor: 'white',
+                  color: 'white',
                 }} variant="standard">
-                    <InputLabel id='MyPronts' sx={{color: 'black', fontSize: '12px'}}>
-                        Mensajes guardados
-                    </InputLabel>
-                    <Select
-                        labelId="MyPronts"
-                        id="demo-simple-select"
-                        value={pront2}
-                        label="Pront"
-                        sx={{color: 'black', fontSize: '12px'}}
-                        onChange={handleProntSelect}
-                        input={<BootstrapInput/>}
-                        MenuProps={MenuProps}
-                        renderValue={selected =>
-                            <div>
-                                <IconButton
-                                    size="small"
-                                    title="Borrar pront"
-                                    edge="end">
-                                    <Delete sx={{color: '#000000', fontSize: 16}}/>
-                                </IconButton>
-                                <span>{selected}</span>
-                            </div>
-                        }
-                    >
-                        <MenuItem value="">
-                            <em>Escoger</em>
-                        </MenuItem>
-                        {pronts.length > 0 && pronts.map(p =>
-                            <MenuItem key={p.id_input} value={p.input}>
-                                <ListItemText primary={p.input}/>
-                                <IconButton
-                                    size="small"
-                                    title="Borrar pront"
-                                    onClick={e => deletePront(e, p.id_input)}
-                                    edge="end">
-                                    <Delete sx={{color: '#000000', fontSize: 16}}/>
-                                </IconButton>
-                            </MenuItem>
-                        )}
-                    </Select>
+                  <InputLabel id='MyPronts' sx={{ color: 'black', fontSize: '12px' }}>
+                    Mensajes guardados
+                  </InputLabel>
+                  <Select
+                    labelId="MyPronts"
+                    id="demo-simple-select"
+                    value={pront2}
+                    label="Pront"
+                    sx={{ color: 'black', fontSize: '12px' }}
+                    onChange={handleProntSelect}
+                    input={<BootstrapInput />}
+                    MenuProps={MenuProps}
+                    renderValue={selected =>
+                      <div>
+                        <IconButton
+                          size="small"
+                          title="Borrar pront"
+                          edge="end">
+                          <Delete sx={{ color: '#000000', fontSize: 16 }} />
+                        </IconButton>
+                        <span>{selected}</span>
+                      </div>
+                    }
+                  >
+                    <MenuItem value="">
+                      <em>Escoger</em>
+                    </MenuItem>
+                    {pronts.length > 0 && pronts.map(p =>
+                      <MenuItem key={p.id_input} value={p.input}>
+                        <ListItemText primary={p.input} />
+                        <IconButton
+                          size="small"
+                          title="Borrar pront"
+                          onClick={e => deletePront(e, p.id_input)}
+                          edge="end">
+                          <Delete sx={{ color: '#000000', fontSize: 16 }} />
+                        </IconButton>
+                      </MenuItem>
+                    )}
+                  </Select>
                 </FormControl>
               </div>
 

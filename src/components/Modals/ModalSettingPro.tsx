@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import Modal from 'react-modal';
-import { Grid, List, ListItem, Typography, Box,
+import { List, ListItem, Typography, Box,
     styled, Paper, Button, CircularProgress } from '@mui/material';
+import Grid from '@mui/material/Grid';
 
 import { useAppSelector, useAppDispatch } from "@/store";
 import { thunkUpdateProjects } from "@/store/plan/thunks";
@@ -157,8 +158,10 @@ const SettingView = (props: ModalProps2) => {
                 X
             </button>
             <Box sx={{ flexGrow: 1, padding: 2, height: '100%' }}>
-                <Grid container spacing={{ xs: 2, md: 3 }} sx={{ height: '100%' }}>
-                    <Grid item xs={4}>
+                { /* Type workaround for Grid typings in this project */ }
+                {(() => { const GridAny = Grid as unknown as any; return (
+                <GridAny container spacing={{ xs: 2, md: 3 }} sx={{ height: '100%' }}>
+                    <GridAny item xs={4}>
                         <Item style={{maxHeight: '100%', overflow: 'auto'}}>
                             <Typography variant="h6">Información del proyecto</Typography>
                             <div className="tw-relative tw-h-5/6">
@@ -237,17 +240,17 @@ const SettingView = (props: ModalProps2) => {
                                 </button>
                             </div>
                         </Item>
-                    </Grid>
+                    </GridAny>
 
-                    <Grid item xs={4}>
+                    <GridAny item xs={4}>
                         <Item style={{maxHeight: '100%', overflow: 'auto'}}>
                             <Typography variant="h6">Escoger metas</Typography>
                             <LevelsSelect callback={handleSelectChange}/>
                             <SearchTerm callback={handleSelectChange}/>
                         </Item>
-                    </Grid>
+                    </GridAny>
 
-                    <Grid item xs={4}>
+                    <GridAny item xs={4}>
                         <Item style={{maxHeight: '100%', overflow: 'auto'}}>
                             <Typography variant="h6">Metas seleccionadas</Typography>
                             <List>
@@ -263,8 +266,9 @@ const SettingView = (props: ModalProps2) => {
                                 )}
                             </List>
                         </Item>
-                    </Grid>
-                </Grid>
+                    </GridAny>
+                </GridAny>
+                ); })()}
 
                 <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 2 }}>
                     {loading ?

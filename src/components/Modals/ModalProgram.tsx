@@ -296,8 +296,8 @@ const ModalPDT: React.FC<ModalPDTExtendedProps> = (props) => {
 
         // 2) intentar en nodes (heurísticas)
         if (Array.isArray(nodes) && nodes.length > 0) {
-            const goalDesc = normalize(item.goalDescription ?? item.plan_description ?? "");
-            const goalCode = String(item.goalCode ?? item.code ?? "").trim();
+            const goalDesc = normalize(item.goalDescription ?? (item as any).plan_description ?? "");
+            const goalCode = String(item.goalCode ?? (item as any).code ?? "").trim();
 
             const nodeFullPath = (n: any) => (n?.full_path ?? n?.fullPath ?? n?.fullpath ?? "").toString();
 
@@ -314,14 +314,14 @@ const ModalPDT: React.FC<ModalPDTExtendedProps> = (props) => {
 
             // búsqueda 3: node.plan_description === goalDescription
             if (!nodeFound && goalDesc) {
-                nodeFound = nodes.find((n) => normalize(n.plan_description ?? "") === goalDesc);
+                nodeFound = nodes.find((n) => normalize((n as any).plan_description ?? "") === goalDesc);
             }
 
             // búsqueda 4: por code o id_node (igual o sufijo)
             if (!nodeFound && goalCode) {
                 nodeFound =
-                    nodes.find((n) => String(n.code) === goalCode) ||
-                    nodes.find((n) => String(n.code).endsWith(goalCode)) ||
+                    nodes.find((n) => String((n as any).code) === goalCode) ||
+                    nodes.find((n) => String((n as any).code).endsWith(goalCode)) ||
                     nodes.find((n) => String(n.id_node) === goalCode);
             }
 
@@ -332,7 +332,7 @@ const ModalPDT: React.FC<ModalPDTExtendedProps> = (props) => {
 
             if (nodeFound) {
                 const fp = nodeFullPath(nodeFound);
-                const parts = fp.split(">").map((p) => p.trim()).filter(Boolean);
+            const parts = fp.split(">").map((p: string) => p.trim()).filter(Boolean);
                 if (levelIndex >= 0 && levelIndex < parts.length) return parts[levelIndex];
             }
         }
@@ -465,7 +465,7 @@ const ModalPDT: React.FC<ModalPDTExtendedProps> = (props) => {
         );
     };
 
-    const dataToShow = Array.isArray(filteredData)
+        const dataToShow = Array.isArray(filteredData)
         ? filteredData.slice().sort((a, b) => compareGoalCodes(a.goalCode, b.goalCode))
         : [];
 
@@ -508,7 +508,10 @@ const ModalPDT: React.FC<ModalPDTExtendedProps> = (props) => {
                         <button
                             className="tw-bg-gray-300 hover:tw-bg-gray-200 tw-rounded tw-border tw-border-black tw-px-2 tw-py-1"
                             onClick={() =>
-                                generateExcelYears(filteredData, "InformeProgramas", levels, years, colorimeter)
+                                (() => {
+                                    const yearsAsNumbers = years.map((y: string) => Number(y)).filter((n) => Number.isFinite(n)) as number[];
+                                    return generateExcelYears(filteredData, "InformeProgramas", levels, yearsAsNumbers, colorimeter);
+                                })()
                             }
                         >
                             Exportar

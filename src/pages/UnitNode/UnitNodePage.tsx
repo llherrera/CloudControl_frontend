@@ -104,14 +104,6 @@ export const UnitNodePage = () => {
         navigate(-1);
     };
 
-    const handleBack = () => {
-        let newRoot = rootTree;
-        newRoot = newRoot.slice(0, -1);
-        dispatch(AddRootTree(newRoot));
-        dispatch(resetEvidence());
-        dispatch(resetUnit());
-        navigate(-1);
-    };
 
     const UploadBtn = () => (
         <div>
@@ -368,7 +360,6 @@ export const UnitNodePage = () => {
 
                     <div className="tw-flex tw-w-full tw-m-4 tw-pl-8">
                         <DoubleBackBtn handle={handleStartReturn} id={id_plan} />
-                        <BackBtn handle={handleBack} id={id_plan} />
                         {rol === 'admin' || (rol === 'funcionario' && id === id_plan) ?
                             <SettingsBtn handle={handleSettings} id={id_plan} />
                             : null

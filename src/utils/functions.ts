@@ -154,94 +154,143 @@ export const generateExcel = (
 
 }
 
-export const generateExcelYears = (
+export const generateExcelYears = async (
   data: ReportPDTInterface2[],
   name: string,
   levels: LevelInterface[],
   years: number[],
-  color: number[]) => {
+  color: number[],
+  returnBuffer?: boolean // nuevo parámetro opcional
+): Promise<ArrayBuffer | void> => {
   const workbook = new ExcelJS.Workbook();
-  const worksheet = workbook.addWorksheet('Reporte');
+  const worksheet = workbook.addWorksheet("Reporte");
+
+  const strip = (s: string) => (s ?? "").toString().trim();
+
+  const parseListLike = (val: any): string[] => {
+    if (Array.isArray(val)) return val.map(v => strip(v));
+    if (val == null) return [];
+    const s = strip(val);
+    if (s === "") return [];
+    if (s.includes("][")) {
+      const trimmed = s.replace(/^\[+/, "").replace(/\]+$/, "");
+      return trimmed.split("][").map(x => x.trim());
+    }
+    if (/^\[.*\]$/.test(s) && s.includes(",")) {
+      const inner = s.replace(/^\[/, "").replace(/\]$/, "");
+      return inner.split(",").map(x => x.trim());
+    }
+    if (s.includes(",")) {
+      return s.split(",").map(x => x.trim());
+    }
+    return [s.replace(/^\[+/, "").replace(/\]+$/, "").trim()];
+  };
+
+  const toNumberSafe = (val: any): number => {
+    if (val == null) return 0;
+    if (typeof val === "number") return Number.isFinite(val) ? val : 0;
+    let s = String(val).replace(/[\[\]]/g, "").trim().replace(/[^\d\.\-]/g, "");
+    const n = parseFloat(s);
+    return Number.isNaN(n) ? 0 : n;
+  };
 
   worksheet.columns = [
-    { header: 'Responsable', key: 'responsable', width: 20 },
-    { header: 'Codigo de la meta producto', key: 'codigo_meta', width: 20 },
-    { header: 'Descripción Meta producto', key: 'descripcion_meta', width: 20 },
-    ...years.map(y => ({ header: `% ejecución ${y}`, key: `ejecucion_${y}`, width: 20 })),
-    ...levels.map((l, i) => ({ header: l.name, key: `nivel_${i}`, with: 20 })),
-    { header: 'Indicador', key: 'indicador', width: 20 },
-    { header: 'Linea base', key: 'linea_base', width: 20 },
-    ...years.map(y => ({ header: `Programado ${y}`, key: `programado_${y}`, width: 20 })),
-    ...years.map(y => ({ header: `Ejecutado ${y}`, key: `ejecutado_${y}`, width: 20 })),
+    { header: "Responsable", key: "responsable", width: 30 },
+    { header: "Codigo de la meta producto", key: "codigo_meta", width: 20 },
+    { header: "Descripción Meta producto", key: "descripcion_meta", width: 40 },
+    ...years.map(y => ({ header: `% ejecución ${y}`, key: `ejecucion_${y}`, width: 18 })),
+    ...levels.map((l, i) => ({ header: l.name, key: `nivel_${i}`, width: 30 })),
+    { header: "Indicador", key: "indicador", width: 30 },
+    { header: "Linea base", key: "linea_base", width: 18 },
+    ...years.map(y => ({ header: `Programado ${y}`, key: `programado_${y}`, width: 18 })),
+    ...years.map(y => ({ header: `Ejecutado ${y}`, key: `ejecutado_${y}`, width: 18 })),
   ];
 
-  worksheet.getRow(1).fill = {
-    type: 'pattern',
-    pattern: 'solid',
-    fgColor: { argb: 'FFD9D9D9' },
-  };
+  const headerRow = worksheet.getRow(1);
+  headerRow.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFD9D9D9" } };
+  headerRow.border = { top: { style: "thin" }, left: { style: "thin" }, bottom: { style: "thin" }, right: { style: "thin" } };
 
-  worksheet.getRow(1).border = {
-    top: { style: 'thin' },
-    left: { style: 'thin' },
-    bottom: { style: 'thin' },
-    right: { style: 'thin' }
-  };
+  data.forEach(d => {
+    const percentArrRaw = Array.isArray(d.percentExecuted)
+      ? d.percentExecuted.map(String)
+      : typeof d.percentExecuted === "string"
+      ? parseListLike(d.percentExecuted)
+      : [];
 
-  data.forEach((d: ReportPDTInterface2) => {
-    let tempEjecPor = years.map((y, i) => ({
-      [`ejecucion_${y}`]: parseFloat(d.percentExecuted.split(',')[i]) < 0 ? 0 : d.percentExecuted[i]
-    }));
-    const ejecPor_ = tempEjecPor.reduce((acc, curr) => ({ ...acc, ...curr }), {});
+    const programedArrRaw = Array.isArray(d.programed) ? d.programed.map(String) : parseListLike(d.programed);
+    const executedArrRaw = Array.isArray(d.executed) ? d.executed.map(String) : parseListLike(d.executed);
 
-    let tempLevels = d.planSpecific.split(',').map((d_, i) => ({ [`nivel_${i}`]: d_ }));
-    const levels_ = tempLevels.reduce((acc, curr) => ({ ...acc, ...curr }), {});
+    const levelsParsed = parseListLike(d.planSpecific);
 
-    let tempPro = years.map((y, i) => ({ [`programado_${y}`]: d.programed[i] }));
-    const pro_ = tempPro.reduce((acc, curr) => ({ ...acc, ...curr }), {});
+    const ejecPorObj = years.reduce<Record<string, number>>((acc, y, i) => {
+      acc[`ejecucion_${y}`] = Math.max(0, toNumberSafe(percentArrRaw[i] ?? ""));
+      return acc;
+    }, {});
 
-    let tempEjec = years.map((y, i) => ({ [`ejecutado_${y}`]: d.executed[i] }));
-    const ejec_ = tempEjec.reduce((acc, curr) => ({ ...acc, ...curr }), {});
+    const nivelObj = levels.map((_, i) => ({ [`nivel_${i}`]: levelsParsed[i] ?? "" })).reduce((a, c) => ({ ...a, ...c }), {});
+
+    const proObj = years.reduce<Record<string, number>>((acc, y, i) => {
+      acc[`programado_${y}`] = toNumberSafe(programedArrRaw[i] ?? "");
+      return acc;
+    }, {});
+
+    const ejecObj = years.reduce<Record<string, number>>((acc, y, i) => {
+      acc[`ejecutado_${y}`] = toNumberSafe(executedArrRaw[i] ?? "");
+      return acc;
+    }, {});
 
     const row = worksheet.addRow({
-      responsable: d.responsible,
-      codigo_meta: d.goalCode,
-      descripcion_meta: d.goalDescription,
-      ...ejecPor_,
-      ...levels_,
-      indicador: d.indicator,
-      linea_base: d.base,
-      ...pro_,
-      ...ejec_
+      responsable: d.responsible ?? "",
+      codigo_meta: d.goalCode ?? "",
+      descripcion_meta: d.goalDescription ?? "",
+      ...ejecPorObj,
+      ...nivelObj,
+      indicador: d.indicator ?? "",
+      linea_base: d.base ?? "",
+      ...proObj,
+      ...ejecObj,
     });
 
     years.forEach((y, i) => {
-      const ejecCell = row.getCell(`ejecucion_${y}`);
+      const key = `ejecucion_${y}`;
+      const col = worksheet.getColumn(key);
+      if (!col || !col.number) return;
+      const cell = row.getCell(col.number);
+      const value = toNumberSafe(percentArrRaw[i] ?? "");
 
-      const ternary3 = parseFloat(d.percentExecuted.split(',')[i]) < color[2] ? 'FF119432' : 'FF008DCC';
-      const ternary2 = parseFloat(d.percentExecuted.split(',')[i]) < color[1] ? 'FFFCC623' : ternary3;
-      const ternaty = parseFloat(d.percentExecuted.split(',')[i]) < color[0] ? 'FFFE1700' : ternary2;
+      const fg =
+        value < (color[0] ?? Number.NEGATIVE_INFINITY)
+          ? "FFFE1700"
+          : value < (color[1] ?? Number.NEGATIVE_INFINITY)
+          ? "FFFCC623"
+          : value < (color[2] ?? Number.NEGATIVE_INFINITY)
+          ? "FF119432"
+          : "FF008DCC";
 
-      ejecCell.fill = {
-        type: 'pattern',
-        pattern: 'solid',
-        fgColor: {
-          argb: `${parseFloat(d.percentExecuted.split(',')[i]) < 0 ? 'FF9CA3AF' : ternaty}`
-        },
-      };
+      cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: fg } };
+      cell.value = value;
     });
   });
 
-  workbook.xlsx.writeBuffer().then((buffer) => {
-    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  // Si returnBuffer es true, retorna el ArrayBuffer
+  if (returnBuffer) {
+    return workbook.xlsx.writeBuffer();
+  }
+
+  // Si no, genera descarga automática
+  workbook.xlsx.writeBuffer().then(buffer => {
+    const blob = new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" });
     const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
+    const a = document.createElement("a");
     a.href = url;
     a.download = `${name}.xlsx`;
     a.click();
+    URL.revokeObjectURL(url);
+  }).catch(err => {
+    console.error("Error generando Excel:", err);
   });
+};
 
-}
 
 export const generateActionPlanExcel = (actionPlan: ActionPlan) => {
   const workbook = new ExcelJS.Workbook();

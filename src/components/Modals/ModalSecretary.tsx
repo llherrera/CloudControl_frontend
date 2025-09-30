@@ -54,7 +54,7 @@ const normalizeLevelsOrder = (levels: any[]): any[] => {
 // Formatea el goalCode para mostrar: elimina el segundo segmento si es solo dígitos
 const formatGoalCodeDisplay = (code: string | undefined | null) => {
     if (!code) return "";
-    const parts = String(code).split(".").map((p) => p.trim()).filter((p) => p !== "");
+        const parts = String(code).split(".").map((p: string) => p.trim()).filter((p: string) => p !== "");
     if (parts.length < 3) return parts.join(".");
     const second = parts[1];
     if (/^\d+$/.test(second)) {
@@ -287,7 +287,7 @@ const ModalPDT = (props: ModalProps) => {
         ].filter(Boolean);
         if (fpCandidates.length > 0) {
             const fp = String(fpCandidates[0]);
-            const parts = fp.split(">").map((p) => p.trim()).filter(Boolean);
+            const parts = fp.split(">").map((p: string) => p.trim()).filter(Boolean);
             if (levelIndex >= 0 && levelIndex < parts.length) return parts[levelIndex];
         }
 
@@ -329,7 +329,7 @@ const ModalPDT = (props: ModalProps) => {
 
             if (nodeFound) {
                 const fp = nodeFullPath(nodeFound);
-                const parts = fp.split(">").map((p) => p.trim()).filter(Boolean);
+                const parts = fp.split(">").map((p: string) => p.trim()).filter((s: string) => s.length > 0);
                 if (levelIndex >= 0 && levelIndex < parts.length) return parts[levelIndex];
             }
         }

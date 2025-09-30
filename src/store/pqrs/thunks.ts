@@ -22,7 +22,9 @@ import { getPQRSsByPlan, getPQRSByRadicado, getPQRSTypes, getPQRSHistoryByRadica
     redirectionSolicitud,
     solveSolicitud,
     addServiciosBulk,
-    buscarSolicitudesPorDocumentoApi, } from '@/services/pqrs_api';
+    fetchChatbotApi,
+    buscarSolicitudesPorDocumentoApi,
+    uploadPoaiExcel, } from '@/services/pqrs_api';
 import { log } from 'node:console';
 
 export const thunkGetPQRSs = createAsyncThunk<{}, number, { rejectValue: ErrorBasicInterface }>(
@@ -354,6 +356,54 @@ export interface SolicitudShort {
   async (documento: string, { rejectWithValue }) => {
     try {
       const res = await buscarSolicitudesPorDocumentoApi(documento);
+      return res;
+    } catch (err) {
+      const result = parseErrorAxios(err);
+      return rejectWithValue(result);
+    }
+  }
+);
+
+export interface ChatbotResponse {
+    originalText: string;
+    idPlan: number;
+    idUser?: number | null;
+    generatedSql: string;
+    execution: {
+      executed: boolean;
+      reason: string | null;
+    };
+    rows: any[];
+    explanation: string;
+  }
+  
+
+export const thunkFetchChatbot = createAsyncThunk<
+  ChatbotResponse, // retorno exitoso
+  { text: string; idPlan: number; idUser?: number | null }, // argumento
+  { rejectValue: ErrorBasicInterface }
+>(
+  "chatbot/fetch",
+  async ({ text, idPlan, idUser }, { rejectWithValue }) => {
+    try {
+      const res = await fetchChatbotApi(text, idPlan, idUser);
+      return res;
+    } catch (err) {
+      const result = parseErrorAxios(err);
+      return rejectWithValue(result);
+    }
+  }
+);
+
+export const thunkUploadPoaiExcel = createAsyncThunk<
+  { idPlan: number; msg: string; path: string },
+  { idPlan: number; file: File },
+  { rejectValue: ErrorBasicInterface }
+>(
+  "poai/uploadExcel",
+  async ({ idPlan, file }, { rejectWithValue }) => {
+    try {
+      const res = await uploadPoaiExcel(idPlan, file);
       return res;
     } catch (err) {
       const result = parseErrorAxios(err);

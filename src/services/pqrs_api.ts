@@ -229,3 +229,47 @@ export const addServiciosBulk = async (id_plan: number, servicios: { nombre: str
     return response.data as SolicitudShort[];
   };
   
+  export interface ChatbotResponse {
+    originalText: string;
+    idPlan: number;
+    idUser?: number | null;
+    generatedSql: string;
+    execution: {
+      executed: boolean;
+      reason: string | null;
+    };
+    rows: any[];
+    explanation: string;
+  }
+  
+// Función para llamar al backend
+export const fetchChatbotApi = async (
+    text: string,
+    idPlan: number,
+    idUser?: number | null
+  ): Promise<ChatbotResponse> => {
+    const response = await api.get("/misc/chatbot", {
+      params: {
+        text,
+        idPlan,
+        ...(idUser ? { idUser } : {}), // incluir solo si existe
+      },
+    });
+    return response.data as ChatbotResponse;
+  };  
+
+  // función para enviar Excel al backend
+export const uploadPoaiExcel = async (idPlan: number, file: File) => {
+    const formData = new FormData();
+    formData.append("excelFile", file); // debe coincidir con multer
+    formData.append("idPlan", String(idPlan));
+  
+    const response = await api.post("/misc/uploadexcel", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+  
+    return response.data; // { idPlan, msg, path }
+  };
+  

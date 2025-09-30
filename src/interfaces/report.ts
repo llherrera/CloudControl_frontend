@@ -7,6 +7,7 @@ export interface InitialStateReportInterface {
 }
 
 export interface ReportPDTInterface {
+    years?: string[];
     responsible: string;
     goalCode: string;
     goalDescription: string;
@@ -25,6 +26,7 @@ export interface ReportPDTInterface2 {
     goalDescription: string;
     percentExecuted: string;
     planSpecific: string;
+    years?: string[];
     indicator: string;
     base: number;
     executed: string;
