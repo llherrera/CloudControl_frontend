@@ -77,12 +77,12 @@ export const LobbyPage = () => {
 
     // Descripciones de cada módulo
     const moduleExplanations: Record<string, string> = {
-        PlanIndicativo: 'Permite consultar y gestionar el Plan Indicativo...',
-        PlanDeAccion: 'Acceso al Plan de Acción...',
-        BancoDeProyectos: 'Consulta y gestión del Banco de Proyectos...',
-        POAI: 'Permite acceder al POAI...',
-        AtencionCiudadana: 'Módulo para la atención ciudadana...',
-        MapaDeIntervencion: 'Visualiza en un mapa las intervenciones...'
+        PlanIndicativo: 'Permite consultar, crear y hacer seguimiento al Plan Indicativo institucional, definiendo objetivos estratégicos, metas de mediano plazo y sus indicadores de cumplimiento. Facilita la articulación con el Plan de Desarrollo y el monitoreo del avance de los compromisos establecidos por cada dependencia.',
+        PlanDeAccion: 'Brinda acceso a la gestión detallada del Plan de Acción anual. En este módulo se pueden registrar actividades, responsables, cronogramas, recursos asignados y niveles de avance, asegurando el cumplimiento de las metas institucionales y el control de los resultados operativos.',
+        BancoDeProyectos: 'Facilita la consulta, formulación, evaluación y seguimiento de los proyectos que integran el Banco de Proyectos institucional. Permite gestionar las fichas técnicas, los estudios de viabilidad, las fuentes de financiación y el estado de ejecución de cada iniciativa.',
+        POAI: 'Permite acceder al Programa Anual de Inversiones (POAI), donde se consolidan los proyectos priorizados y su respectiva asignación presupuestal. Este módulo apoya la planeación financiera y el seguimiento de la ejecución de recursos, garantizando la coherencia con el Plan de Desarrollo.',
+        AtencionCiudadana: 'Módulo orientado a la gestión de peticiones, quejas, reclamos, sugerencias y denuncias (PQRSD). Facilita el registro, seguimiento y respuesta oportuna a los requerimientos ciudadanos, fortaleciendo la transparencia institucional y la participación ciudadana.',
+        MapaDeIntervencion: 'Ofrece una visualización geográfica de las intervenciones, proyectos y actividades ejecutadas por la entidad. A través de mapas interactivos, permite identificar las zonas de cobertura, los avances físicos y las áreas de impacto, optimizando la toma de decisiones territoriales.'
     };
 
     // --- Efectos de inicialización ---
