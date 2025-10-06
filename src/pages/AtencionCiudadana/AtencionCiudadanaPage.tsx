@@ -5,7 +5,8 @@ import ManagerCitizenAttention from '@/components/Citizen/ManagerCitizenAttentio
 export const AtencionCiudadanaPage: React.FC = () => {
     return (
         <Frame>
-            <div className="tw-w-[90%] tw-m-[5%]">
+            <h2 className="tw-text-xl tw-font-bold tw-mx-[5%] tw-text-white tw-my-10">Atención Ciudadana</h2>
+            <div className="tw-w-[90%] tw-mx-[5%]">
                 <ManagerCitizenAttention />
             </div>
         </Frame>

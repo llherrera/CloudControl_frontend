@@ -104,7 +104,7 @@ const POAINodesTable: React.FC = (): JSX.Element => {
 
   return (
     <div className="tw-p-4">
-      <h2 className="tw-text-xl tw-font-bold tw-mb-4 tw-text-gray-800">
+      <h2 className="tw-text-xl tw-font-bold tw-mb-4 tw-text-white">
         Nodos - POAI
       </h2>
 
