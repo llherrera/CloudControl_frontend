@@ -99,19 +99,28 @@ export default function VoicesChatWindow() {
   }, []);
 
 
+  interface FileMeta {
+    fileName: string;
+    mimeType: string;
+    fileSize: number;
+  }
+  
   interface ChatbotResponse {
     originalText: string;
     idPlan: number;
     idUser?: number | null;
-    generatedSql: string;
-    execution: {
+    generatedSql?: string; // opcional, si aplica
+    execution?: {
       executed: boolean;
       reason: string | null;
     };
-    rows: any[];
-    explanation: string;
+    rows?: any[]; // opcional, podría contener resultados tabulares
+    explanation?: string; // opcional
+    fileSent?: boolean; // nuevo
+    fileMeta?: FileMeta; // nuevo
+    naturalLanguageResponse?: string; // nuevo
+    llmResponseParsed?: any; // nuevo, puede ser objeto o array según respuesta LLM
   }
-
 
   const [open, setOpen] = useState(false);
   const [minimized, setMinimized] = useState(false);
@@ -340,10 +349,15 @@ export default function VoicesChatWindow() {
 
   // Si sendToAI usa dispatch internamente, defínela aquí para que tenga acceso a dispatch.
   async function sendToAI(userMsg: Message, idPlanParam: number, idUserParam?: number | null) {
-    const typingMsg = pushMessage("…", "app"); // placeholder visible en messages
+    const typingMsg = pushMessage("…", "app"); // placeholder visible
     setAiLoading(true);
   
+    console.log("🟢 [sendToAI] Iniciando envío al servicio de IA...");
+    console.log("📤 Mensaje del usuario:", userMsg);
+    console.log("📦 Parámetros:", { idPlanParam, idUserParam });
+  
     try {
+      console.log("⏳ [sendToAI] Ejecutando thunkFetchChatbot...");
       const action = await dispatch(
         thunkFetchChatbot({
           text: userMsg.text,
@@ -352,46 +366,82 @@ export default function VoicesChatWindow() {
         })
       );
   
-      console.log("Resultado bruto de dispatch(thunkFetchChatbot):", action);
       const data = (action as any).payload as ChatbotResponse;
-      console.log("Payload recibido del chatbot:", data);
-      console.log("Rows recibidas (si hay):", data?.rows);
+      console.log("🧩 [sendToAI] Payload recibido:", data);
   
-      // 1) Actualiza messages: reemplazar typingMsg por la explicación
-      const aiText = data?.explanation ?? "(sin explicación)";
+      let aiText = data?.naturalLanguageResponse ?? "(sin explicación)";
+      let tableObject: { type: 'table'; rows: any[] } | null = null;
+  
+      // 1️⃣ Preferir llmResponseParsed si existe
+      let parsedContent: any = data?.llmResponseParsed ?? null;
+  
+      // 2️⃣ Si no hay llmResponseParsed, buscar JSON embebido en el texto
+      if (!parsedContent) {
+        const jsonMatch = aiText.match(/```json\s*([\s\S]*?)```/);
+        if (jsonMatch) {
+          try {
+            parsedContent = JSON.parse(jsonMatch[1]);
+            aiText = aiText.replace(jsonMatch[0], "").trim();
+            console.log("🧹 [sendToAI] Texto limpio después de eliminar JSON embebido:", aiText);
+          } catch (e) {
+            console.warn("⚠️ [sendToAI] No se pudo parsear JSON embebido:", e);
+          }
+        }
+      }
+  
+      // 3️⃣ Determinar si se debe mostrar tabla o solo texto
+      if (parsedContent) {
+        // Si es un array de objetos → tabla
+        if (Array.isArray(parsedContent) && parsedContent.every(item => typeof item === 'object')) {
+          tableObject = { type: 'table', rows: parsedContent };
+        }
+        // Si es objeto → convertir a filas para tabla
+        else if (typeof parsedContent === 'object' && parsedContent !== null) {
+          const keys = Object.keys(parsedContent);
+          // Mostrar como tabla solo si tiene varias claves
+          if (keys.length > 1) {
+            const rows = keys.map(key => ({
+              clave: key,
+              valor: typeof parsedContent[key] === 'object'
+                ? JSON.stringify(parsedContent[key], null, 2)
+                : parsedContent[key]
+            }));
+            tableObject = { type: 'table', rows };
+          } else {
+            // Solo mostrar texto enriquecido si es 1 clave
+            aiText += `\n\n${JSON.stringify(parsedContent[keys[0]], null, 2)}`;
+          }
+        }
+        console.log("📊 [sendToAI] tableObject generado:", tableObject);
+      }
+  
+      // 4️⃣ Actualiza mensajes en el chat
       setMessages(prev =>
         prev.map(m => (m.id === typingMsg.id ? { ...m, text: aiText, time: Date.now() } : m))
       );
+      console.log("💬 [sendToAI] Mensaje IA actualizado en el chat.");
   
-      // 2) Si hay rows, guardamos solo en plotOpts como tabla (NO en el texto)
-      let tableObject: { type: 'table'; rows: any[] } | null = null;
-      const maxRowsToShow = 20;
-      if (Array.isArray(data?.rows) && data.rows.length > 0) {
-        tableObject = { type: 'table', rows: data.rows.slice(0, maxRowsToShow) };
-      }
-  
-      // 3) conversations → solo explicación
+      // 5️⃣ Guardar conversación y tabla
       setConversations(prev => [...prev, userMsg.text, aiText]);
-  
-      // 4) plotOpts → null para user, tableObject (o null) para asistente
       setPlotOpts(prev => [...prev, null, tableObject]);
+      console.log("🗂️ [sendToAI] Conversación y tabla actualizadas:", tableObject);
   
     } catch (err: any) {
-      console.error("Error al llamar a la IA:", err);
-      // Reemplazar typingMsg por mensaje de error
-      setMessages(prev =>
-        prev.map(m => (m.id === typingMsg.id ? { ...m, text: `Error: ${err?.message || err}`, time: Date.now() } : m))
-      );
+      console.error("❌ [sendToAI] Error al llamar a la IA:", err);
   
-      // También actualiza conversations y plotOpts coherentemente
+      setMessages(prev =>
+        prev.map(m =>
+          m.id === typingMsg.id ? { ...m, text: `Error: ${err?.message || err}`, time: Date.now() } : m
+        )
+      );
       setConversations(prev => [...prev, userMsg.text, `Error: ${err?.message || err}`]);
       setPlotOpts(prev => [...prev, null, null]);
     } finally {
+      console.log("🏁 [sendToAI] Finalizando ejecución.");
       setAiLoading(false);
     }
   }
   
-
 
   // --- Aquí está la función handleSend actualizada ---
   function handleSend() {
