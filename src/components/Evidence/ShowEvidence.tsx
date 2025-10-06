@@ -36,45 +36,45 @@ export const ShowEvidence = ({ evi, handleEvidence }: ShowEvidenceProps) => {
   return (
     <>
       <tr>
-        <th className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
+        <th className="tw-bg-white tw-px-2 tw-rounded tw-my-1 tw-border tw-border-gray-600">
           {evi.date.split('T')[0]}
         </th>
-        <th className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black tw-hidden lg:tw-table-cell">
+        <th className="tw-bg-white tw-px-2 tw-rounded tw-my-1 tw-border tw-border-gray-600 tw-hidden lg:tw-table-cell">
           {evi.activitiesDesc}
         </th>
-        <th className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black tw-hidden lg:tw-table-cell">
+        <th className="tw-bg-white tw-px-2 tw-rounded tw-my-1 tw-border tw-border-gray-600 tw-hidden lg:tw-table-cell">
           {evi.commune}
         </th>
-        <th className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black tw-hidden md:tw-table-cell">
+        <th className="tw-bg-white tw-px-2 tw-rounded tw-my-1 tw-border tw-border-gray-600 tw-hidden md:tw-table-cell">
           {evi.neighborhood}
         </th>
-        <th className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black tw-hidden md:tw-table-cell">
+        <th className="tw-bg-white tw-px-2 tw-rounded tw-my-1 tw-border tw-border-gray-600 tw-hidden md:tw-table-cell">
           {evi.unit}
         </th>
-        <th className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black tw-hidden md:tw-table-cell">
+        <th className="tw-bg-white tw-px-2 tw-rounded tw-my-1 tw-border tw-border-gray-600 tw-hidden md:tw-table-cell">
           {evi.amount}
         </th>
-        <th className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
+        <th className="tw-bg-white tw-px-2 tw-rounded tw-my-1 tw-border tw-border-gray-600">
           {evi.benefited_population}
         </th>
-        <th className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
+        <th className="tw-bg-white tw-px-2 tw-rounded tw-my-1 tw-border tw-border-gray-600">
           {evi.benefited_population_number}
         </th>
-        <th className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black tw-hidden md:tw-table-cell">
+        <th className="tw-bg-white tw-px-2 tw-rounded tw-my-1 tw-border tw-border-gray-600 tw-hidden md:tw-table-cell">
           {evi.date_file.split('T')[0]}
         </th>
-        <th className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
+        <th className="tw-bg-white tw-px-2 tw-rounded tw-my-1 tw-border tw-border-gray-600">
           <a href={evi.file_link} target="_blank" rel="noopener noreferrer">Visitar</a>
         </th>
-        {rol === 'admin' || (rol === 'funcionario' && id === id_plan) ? 
-        <th className="tw-bg-red-200 tw-rounded tw-my-1 tw-border tw-border-black">
-          <button
-            className="tw-bg-red-500 tw-text-white tw-px-2 tw-py-1 tw-rounded hover:tw-bg-red-700"
-            onClick={() => setShowModal(true)}
+        {rol === 'admin' || (rol === 'funcionario' && id === id_plan) ?
+          <th className="tw-bg-red-200 tw-rounded tw-px-2 tw-my-1 tw-border tw-border-gray-600">
+            <button
+              className="tw-bg-red-500 tw-text-white tw-p-1 tw-rounded tw-transition tw-duration-150 hover:tw-bg-red-700 active:tw-bg-red-800 active:tw-scale-95 "
+              onClick={() => setShowModal(true)}
             >
-            Eliminar
-          </button>
-        </th> : null
+              Eliminar
+            </button>
+          </th> : null
         }
       </tr>
 
