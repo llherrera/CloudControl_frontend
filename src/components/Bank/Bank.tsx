@@ -139,10 +139,9 @@ export const Bank = () => {
             </div>
             <div className="sm:tw-ml-2 md:tw-ml-40 tw-mr-2 xl:tw-ml-40
                     tw-mt-24 md:tw-mt-0">
-                <div className="tw-flex tw-justify-between tw-mt-1">
+                <div className="tw-flex tw-justify-start tw-text-white tw-items-center tw-mt-1">
                     <BackBtn handle={handleBack} id={id_plan} />
-                    <p className="tw-bg-white tw-mb-1 tw-rounded tw-p-1 tw-font-bold">{title}</p>
-                    <div></div>
+                    <p className="tw-mb-1 tw-rounded tw-p-1 tw-font-bold">{title}</p>
                 </div>
                 {projectPage === 0 ? <InfoPage /> :
                     projectPage === 1 ? <DocsPage /> :

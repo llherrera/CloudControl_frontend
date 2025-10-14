@@ -17,8 +17,8 @@ export const Header = ( {children, infoPanel, columns = 2, rightPanel}: HeaderWi
     return (
         <main className={`tw-mx-4 md:tw-mx-auto tw-grid ${gridColsClass} tw-items-center tw-h-[100%]`}>
             <div className="tw-border-r md:tw-border-black
-                            tw-pr-4 tw-m-6
-                            tw-flex tw-justify-center md:tw-justify-end">
+                            tw-p-4 tw-m-6
+                            tw-flex tw-justify-center md:tw-justify-center">
                 <img src={cclogo} className="tw-w-28 md:tw-w-[220px]" />
             </div>
             <div className="tw-flex tw-flex-row tw-items-center tw-gap-4 tw-justify-center">
@@ -32,7 +32,7 @@ export const Header = ( {children, infoPanel, columns = 2, rightPanel}: HeaderWi
                 )}
             </div>
             {rightPanel && (
-                <div className="tw-flex tw-items-start tw-justify-center">
+                <div className="tw-flex tw-items-center tw-justify-center">
                     {rightPanel}
                 </div>
             )}

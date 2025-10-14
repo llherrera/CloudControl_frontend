@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MdSupportAgent } from 'react-icons/md';
+import cclogo from "@/assets/images/ControlLand2.png";
 
 // Importación de íconos personalizados
 import {
@@ -179,21 +180,173 @@ export const LobbyPage = () => {
 
     return (
         // Contenedor full-screen con el degradado solicitado
-        <div className="tw-min-h-screen tw-w-screen tw-h-screen tw-flex tw-flex-col tw-items-center tw-justify-center 
-                        tw-bg-gradient-to-b tw-from-[#06283b] tw-via-[#1f4f63] tw-to-[#dbeff6]">
+        <div className="tw-h-[100svh] tw-w-screen tw-flex tw-flex-col tw-items-center tw-justify-center 
+                tw-bg-gradient-to-b tw-from-[#06283b] tw-via-[#1f4f63] tw-to-[#dbeff6] 
+                tw-overflow-hidden">
 
-            {/* Card principal */}
-            <div className="tw-w-[95%] tw-h-auto tw-mx-2 tw-my-4 tw-p-4 tw-bg-white tw-rounded-2xl tw-shadow-lg 
-                            tw-flex tw-flex-col md:tw-flex-row tw-items-start tw-justify-start
-                            md:tw-w-[80%] md:tw-h-[85%] md:tw-mx-4 md:tw-my-4 md:tw-p-8">
+            {/* Card principal Blanca*/}
+            <div className="tw-w-[95%] tw-h-[95%] tw-mx-2 tw-my-4 tw-p-4 tw-bg-white tw-rounded-2xl tw-shadow-lg 
+                    tw-flex tw-flex-col tw-justify-start tw-items-between 
+                    md:tw-w-[70%] md:tw-h-[70%] md:tw-mx-4 md:tw-my-auto md:tw-p-8 ">
 
-                {/* Header con botón atrás y descripción */}
-                <Header columns={3} rightPanel={(
+                {/* ======================================================= */}
+                {/* ROW 1: Botón Volver */}
+                {/* ======================================================= */}
+                <div className="tw-flex tw-flex-col  tw-items-start  md:tw-mb-20">
+                    <div>
+                        <BackBtn handle={() => navigate(-1)} id={0} />
+                    </div>
+                </div>
+
+                {/* ======================================================= */}
+                {/* ROW 2: Logo y Módulos */}
+                {/* ======================================================= */}
+                <div className="tw-w-full tw-grid tw-grid-cols-1 tw-gap-2  tw-justify-center tw-items-center md:tw-grid-cols-3 sm:tw-mb-20">
+
+                    {/* Columna 1 (Logo - Centrado Verticalmente) */}
+                    <div className="tw-flex tw-border-r md:tw-border-black tw-flex-col tw-justify-center tw-items-center">
+                        <img src={cclogo} className="tw-w-28 md:tw-w-[220px]" />
+                    </div>
+
+                    {/* Columna 2 (Grid de Módulos - Ocupa 2 de 3 columnas en MD+) */}
+                    <div className="tw-col-span-1 tw-ml-12 md:tw-col-span-2 tw-flex tw-flex-col tw-justify-center">
+                        <div className="tw-grid tw-grid-cols-1 sm:tw-grid-cols-2 tw-gap-6">
+                            {Object.values(modulos).every(v => !v) ? (
+                                <div className="tw-col-span-2 tw-text-center tw-text-red-600 tw-font-semibold tw-p-8">
+                                    No tienes módulos disponibles para este plan.
+                                </div>
+                            ) : (
+                                <>
+                                    {/* ... Botones de Módulos (PlanIndicativo, PlanDeAccion, etc.) ... */}
+                                    {/* Plan Indicativo */}
+                                    {modulos.PlanIndicativo && (
+                                        <div key="PlanIndicativo"
+                                            onMouseEnter={() => setSelectedModuleInfo(moduleExplanations.PlanIndicativo)}
+                                            onMouseLeave={() => setSelectedModuleInfo("")}>
+                                            <ButtonComponent
+                                                inside={false}
+                                                text='Plan indicativo'
+                                                icon={<PlanIndicativoIcon color='white' />}
+                                                onClick={() => {
+                                                    dispatch(AddRootTree([]));
+                                                    dispatch(selectOption(0));
+                                                    navigate(`/pdt/PlanIndicativo`);
+                                                }}
+                                                bgColor="tw-bg-[#012947]"
+                                                className="tw-w-16 tw-h-16 tw-text-[8px] tw-font-bold"
+                                            />
+                                        </div>
+                                    )}
+                                    {/* Plan de Acción */}
+                                    {modulos.PlanDeAccion && (
+                                        <div key="PlanDeAccion"
+                                            onMouseEnter={() => setSelectedModuleInfo(moduleExplanations.PlanDeAccion)}
+                                            onMouseLeave={() => setSelectedModuleInfo("")}>
+                                            <ButtonComponent
+                                                inside={false}
+                                                text='Plan de acción'
+                                                icon={<PlanAccionIcon color='white' />}
+                                                onClick={() => {
+                                                    dispatch(selectOption(1));
+                                                    navigate('/PlanIndicativo/Plan-accion');
+                                                }}
+                                                bgColor="tw-bg-[#012947]"
+                                                className="tw-w-16 tw-h-16 tw-text-[8px] tw-font-bold"
+                                            />
+                                        </div>
+                                    )}
+                                    {/* Banco de Proyectos */}
+                                    {modulos.BancoDeProyectos && (
+                                        <div key="BancoDeProyectos"
+                                            onMouseEnter={() => setSelectedModuleInfo(moduleExplanations.BancoDeProyectos)}
+                                            onMouseLeave={() => setSelectedModuleInfo("")}>
+                                            <ButtonComponent
+                                                inside={false}
+                                                text='Banco de proyectos'
+                                                icon={<ProjectBankIcon color='white' />}
+                                                onClick={() => {
+                                                    dispatch(selectOption(2));
+                                                    dispatch(setProjectPage(5));
+                                                    navigate('/PlanIndicativo/Banco-proyectos');
+                                                }}
+                                                bgColor="tw-bg-[#012947]"
+                                                className="tw-w-16 tw-h-16 tw-text-[8px] tw-font-bold"
+                                            />
+                                        </div>
+                                    )}
+                                    {/* POAI */}
+                                    {modulos.POAI && (
+                                        <div key="POAI"
+                                            onMouseEnter={() => setSelectedModuleInfo(moduleExplanations.POAI)}
+                                            onMouseLeave={() => setSelectedModuleInfo("")}>
+                                            <ButtonComponent
+                                                inside={false}
+                                                text='POAI'
+                                                icon={<ChartIcon color='white' />}
+                                                onClick={() => {
+                                                    dispatch(selectOption(3));
+                                                    navigate('/PlanIndicativo/POAI');
+                                                }}
+                                                bgColor="tw-bg-[#012947]"
+                                                className="tw-w-16 tw-h-16 tw-text-[8px] tw-font-bold"
+                                            />
+                                        </div>
+                                    )}
+                                    {/* Atención Ciudadana */}
+                                    {modulos.AtencionCiudadana && (
+                                        <div key="AtencionCiudadana"
+                                            onMouseEnter={() => setSelectedModuleInfo(moduleExplanations.AtencionCiudadana)}
+                                            onMouseLeave={() => setSelectedModuleInfo("")}>
+                                            <ButtonComponent
+                                                inside={false}
+                                                text="Atención Ciudadana"
+                                                icon={<MdSupportAgent color="white" size={64} />}
+                                                onClick={() => {
+                                                    dispatch(selectOption(4));
+                                                    navigate("/AtencionCiudadana");
+                                                }}
+                                                bgColor="tw-bg-[#012947]"
+                                                className="tw-w-16 tw-h-16 tw-text-[8px] tw-font-bold"
+                                            />
+                                        </div>
+                                    )}
+                                    {/* Mapa de Intervención */}
+                                    {modulos.MapaDeIntervencion && (
+                                        <div key="MapaDeIntervencion"
+                                            onMouseEnter={() => setSelectedModuleInfo(moduleExplanations.MapaDeIntervencion)}
+                                            onMouseLeave={() => setSelectedModuleInfo("")}>
+                                            <ButtonComponent
+                                                inside={false}
+                                                text='Mapa de intervención'
+                                                icon={<MapICon color='white' />}
+                                                onClick={() => {
+                                                    dispatch(selectOption(5));
+                                                    navigate('/PlanIndicativo/Mapa');
+                                                }}
+                                                bgColor="tw-bg-[#012947]"
+                                                className="tw-w-16 tw-h-16 tw-text-[8px] tw-font-bold"
+                                            />
+                                        </div>
+                                    )}
+                                </>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                {/* ======================================================= */}
+                {/* ROW 3: Descripción */}
+                {/* ======================================================= */}
+                <div className="tw-w-[550px] tw-h-full tw-flex tw-justify-center tw-pt-4 tw-mx-auto tw-items-center
+                tw-hidden sm:tw-block">
+                    <div>
+                    </div>
                     <div
-                        className="tw-bg-gray-100 tw-p-3 tw-rounded-xl tw-shadow-md 
-                               tw-min-w-[180px] tw-text-black tw-mx-auto 
-                               tw-text-center tw-text-base tw-transition-all 
-                               tw-duration-500 tw-ease-in-out tw-whitespace-normal tw-break-words"
+                        className="tw-p-3 tw-mx-auto tw-my-auto
+    tw-text-base tw-text-black tw-text-center tw-break-words
+    tw-bg-gray-100 tw-rounded-xl tw-shadow-md
+    tw-transition-all tw-duration-500 tw-ease-in-out
+                           "
                         style={{
                             opacity: 1,
                             transition: 'opacity 0.5s, transform 0.5s',
@@ -201,150 +354,19 @@ export const LobbyPage = () => {
                         }}
                     >
                         {selectedModuleInfo ? (
-                            <>
-                                <h3 className="tw-font-bold tw-text-lg tw-mb-2">
-                                    {selectedModuleInfo}
-                                </h3>
-                            </>
+                            <h3 className="tw-font-bold tw-text-lg tw-mb-2">{selectedModuleInfo}</h3>
                         ) : (
                             <span className="tw-text-black tw-opacity-60">
                                 Selecciona un módulo para ver su descripción.
                             </span>
                         )}
                     </div>
-
-                )}>
-
-                    {/* Botón volver */}
-                    <div className="tw-flex tw-flex-col tw-items-start">
-                        <div className="tw-mb-4">
-                            <BackBtn handle={() => navigate(-1)} id={0} />
-                        </div>
+                    <div>
                     </div>
+                </div>
 
-                    {/* Grid de módulos */}
-                    <div className="tw-grid tw-grid-cols-1 sm:tw-grid-cols-2 tw-gap-2 tw-justify-center tw-items-center">
-                        {Object.values(modulos).every(v => !v) ? (
-                            <div className="tw-col-span-2 tw-text-center tw-text-red-600 tw-font-semibold tw-p-8">
-                                No tienes módulos disponibles para este plan.
-                            </div>
-                        ) : (
-                            <>
-                                {/* Plan Indicativo */}
-                                {modulos.PlanIndicativo && (
-                                    <div key="PlanIndicativo"
-                                        onMouseEnter={() => setSelectedModuleInfo(moduleExplanations.PlanIndicativo)}
-                                        onMouseLeave={() => setSelectedModuleInfo("")}>
-                                        <ButtonComponent
-                                            inside={false}
-                                            text='Plan indicativo'
-                                            icon={<PlanIndicativoIcon color='white' />}
-                                            onClick={() => {
-                                                dispatch(AddRootTree([]));
-                                                dispatch(selectOption(0));
-                                                navigate(`/pdt/PlanIndicativo`);
-                                            }}
-                                            bgColor="tw-bg-[#012947]"
-                                            className="tw-w-16 tw-h-16 tw-text-[8px] tw-font-bold"
-                                        />
-                                    </div>
-                                )}
-                                {/* Plan de Acción */}
-                                {modulos.PlanDeAccion && (
-                                    <div key="PlanDeAccion"
-                                        onMouseEnter={() => setSelectedModuleInfo(moduleExplanations.PlanDeAccion)}
-                                        onMouseLeave={() => setSelectedModuleInfo("")}>
-                                        <ButtonComponent
-                                            inside={false}
-                                            text='Plan de acción'
-                                            icon={<PlanAccionIcon color='white' />}
-                                            onClick={() => {
-                                                dispatch(selectOption(1));
-                                                navigate('/PlanIndicativo/Plan-accion');
-                                            }}
-                                            bgColor="tw-bg-[#012947]"
-                                            className="tw-w-16 tw-h-16 tw-text-[8px] tw-font-bold"
-                                        />
-                                    </div>
-                                )}
-                                {/* Banco de Proyectos */}
-                                {modulos.BancoDeProyectos && (
-                                    <div key="BancoDeProyectos"
-                                        onMouseEnter={() => setSelectedModuleInfo(moduleExplanations.BancoDeProyectos)}
-                                        onMouseLeave={() => setSelectedModuleInfo("")}>
-                                        <ButtonComponent
-                                            inside={false}
-                                            text='Banco de proyectos'
-                                            icon={<ProjectBankIcon color='white' />}
-                                            onClick={() => {
-                                                dispatch(selectOption(2));
-                                                dispatch(setProjectPage(5));
-                                                navigate('/PlanIndicativo/Banco-proyectos');
-                                            }}
-                                            bgColor="tw-bg-[#012947]"
-                                            className="tw-w-16 tw-h-16 tw-text-[8px] tw-font-bold"
-                                        />
-                                    </div>
-                                )}
-                                {/* POAI */}
-                                {modulos.POAI && (
-                                    <div key="POAI"
-                                        onMouseEnter={() => setSelectedModuleInfo(moduleExplanations.POAI)}
-                                        onMouseLeave={() => setSelectedModuleInfo("")}>
-                                        <ButtonComponent
-                                            inside={false}
-                                            text='POAI'
-                                            icon={<ChartIcon color='white' />}
-                                            onClick={() => {
-                                                dispatch(selectOption(3));
-                                                navigate('/PlanIndicativo/POAI');
-                                            }}
-                                            bgColor="tw-bg-[#012947]"
-                                            className="tw-w-16 tw-h-16 tw-text-[8px] tw-font-bold"
-                                        />
-                                    </div>
-                                )}
-                                {/* Atención Ciudadana */}
-                                {modulos.AtencionCiudadana && (
-                                    <div key="AtencionCiudadana"
-                                        onMouseEnter={() => setSelectedModuleInfo(moduleExplanations.AtencionCiudadana)}
-                                        onMouseLeave={() => setSelectedModuleInfo("")}>
-                                        <ButtonComponent
-                                            inside={false}
-                                            text="Atención Ciudadana"
-                                            icon={<MdSupportAgent color="white" size={64} />}
-                                            onClick={() => {
-                                                dispatch(selectOption(4));
-                                                navigate("/AtencionCiudadana");
-                                            }}
-                                            bgColor="tw-bg-[#012947]"
-                                            className="tw-w-16 tw-h-16 tw-text-[8px] tw-font-bold"
-                                        />
-                                    </div>
-                                )}
-                                {/* Mapa de Intervención */}
-                                {modulos.MapaDeIntervencion && (
-                                    <div key="MapaDeIntervencion"
-                                        onMouseEnter={() => setSelectedModuleInfo(moduleExplanations.MapaDeIntervencion)}
-                                        onMouseLeave={() => setSelectedModuleInfo("")}>
-                                        <ButtonComponent
-                                            inside={false}
-                                            text='Mapa de intervención'
-                                            icon={<MapICon color='white' />}
-                                            onClick={() => {
-                                                dispatch(selectOption(5));
-                                                navigate('/PlanIndicativo/Mapa');
-                                            }}
-                                            bgColor="tw-bg-[#012947]"
-                                            className="tw-w-16 tw-h-16 tw-text-[8px] tw-font-bold"
-                                        />
-                                    </div>
-                                )}
-                            </>
-                        )}
-                    </div>
-                </Header>
             </div>
         </div>
+
     );
 }

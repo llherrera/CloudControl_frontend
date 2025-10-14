@@ -38,7 +38,7 @@ export const ButtonComponent = (props: BtnProps) => {
                                tw-ml-3
                                tw-font-montserrat tw-font-bold
                                tw-self-center
-                               tw-hidden md:tw-block"
+                               sm:tw-block tw-break-words tw-max-w-full"
                 >
                     {props.text}
                 </p>

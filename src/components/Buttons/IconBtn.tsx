@@ -11,9 +11,9 @@ export const BackBtn = ({ handle, id, className }: BackBtnProps) => {
         onClick={handle}
         title="Regresar"
         key={id}
-        className={`tw-bg-white tw-border tw-border-white tw-rounded hover:tw-bg-gray-100 ${className}`}
+        className={`tw-bg-grey tw-border tw-border-grey tw-rounded hover:tw-bg-gray-100 ${className}`}
       >
-        <ArrowBackIos className="tw-text-white" />
+        <ArrowBackIos className="tw-text-grey" />
       </IconButton>
     );
   };
