@@ -62,7 +62,7 @@ export const ProjectList = () => {
                         </Box> :
                         <button
                             onClick={() => handleForm()}
-                            className='tw-bg-blueBar hover:tw-bg-blueColory tw-p-2 tw-mb-2 tw-rounded tw-mt-2'>
+                            className='tw-bg-blueBar hover:tw-bg-blueColory tw-p-2 tw-mb-2 tw-rounded tw-mt-1'>
                             {seeForm ? 'Ver listado de proyectos' : 'Definir proyectos'}
                         </button>
                         }

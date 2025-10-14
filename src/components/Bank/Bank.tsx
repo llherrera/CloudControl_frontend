@@ -97,8 +97,8 @@ export const Bank = () => {
 
     return (
         <div ref={contentRef}>
-            <div ref={divRef}>
-                <DrawerMenu height={HeigtComponent}>
+            <div ref={divRef} className="md:tw-flex tw-gap-1 tw-items-start">
+                <div className="tw-bg-white tw-m-4 tw-gap-1 md:tw-w-1/5 tw-bg-blue-200 tw-p-2 tw-rounded-lg">
                     <ListItemComp
                         page={projectPage}
                         index={0}
@@ -135,20 +135,20 @@ export const Bank = () => {
                         setPage={() => handlePage(5)}
                         setTitle={() => handleTitle('Proyectos')}
                         title='Proyectos' />
-                </DrawerMenu>
-            </div>
-            <div className="sm:tw-ml-2 md:tw-ml-40 tw-mr-2 xl:tw-ml-40
-                    tw-mt-24 md:tw-mt-0">
-                <div className="tw-flex tw-justify-start tw-text-white tw-items-center tw-mt-1">
-                    <BackBtn handle={handleBack} id={id_plan} />
-                    <p className="tw-mb-1 tw-rounded tw-p-1 tw-font-bold">{title}</p>
                 </div>
-                {projectPage === 0 ? <InfoPage /> :
-                    projectPage === 1 ? <DocsPage /> :
-                        projectPage === 2 ? <RulesPage /> :
-                            projectPage === 3 ? <MGAWEB /> :
-                                projectPage === 4 ? <PresentationPage /> :
-                                    <ProjectList />}
+                <div className="sm:tw-ml-2 md:tw-ml-2 tw-mr-2  md:tw-w-4/5 xl:tw-ml-2
+                        tw-mt-2 md:tw-mt-0">
+                    <div className="tw-flex tw-justify-start tw-text-white tw-items-center tw-mt-1">
+                        <BackBtn handle={handleBack} id={id_plan} />
+                        <p className="tw-mb-1 tw-rounded tw-p-1 tw-font-bold">{title}</p>
+                    </div>
+                    {projectPage === 0 ? <InfoPage /> :
+                        projectPage === 1 ? <DocsPage /> :
+                            projectPage === 2 ? <RulesPage /> :
+                                projectPage === 3 ? <MGAWEB /> :
+                                    projectPage === 4 ? <PresentationPage /> :
+                                        <ProjectList />}
+                </div>
             </div>
         </div>
     );
@@ -195,7 +195,7 @@ const InfoPage = () => {
                         className="tw-m-auto tw-block tw-shadow-2xl" /> <br />
                 </div>
                 <div>
-                    <h1 className="tw-font-bold tw-text-xl">Gestión BPIM</h1>
+                    <h1 className="tw-font-bold tw-text-x tw-pb-2">Gestión BPIM</h1>
                     <div className="tw-border tw-rounded
                                     tw-px-4 tw-py-2">
                         <h1 className="tw-font-bold tw-text-xl">

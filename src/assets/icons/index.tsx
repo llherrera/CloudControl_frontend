@@ -34,21 +34,22 @@ export const MapICon = ( {color}: IconProps ) => {
     return (
         <Map style={{
             fill: color,
-            fontSize: '60px'
+            fontSize: '45px'
          }}/>
     )
 }
 
 export const CheckICon = ( {color}: IconProps ) => {
     return (
-        <Check style={{ fill: color }}/>
+        <Check style={{ fill: color, 
+        }}/>
     )
 }
 
 export const PlanIndicativoIcon = ( {color}: IconProps ) => {
     return (
         <SvgIcon sx={{
-            fontSize: '60px'
+            fontSize: '45px'
         }}>
         <svg 
             width="100" 
@@ -134,7 +135,7 @@ export const MapaIcon = ( {color}: IconProps ) => {
 export const PlanAccionIcon = ( {color}: IconProps ) => {
     return (
         <SvgIcon sx={{
-            fontSize: '60px'
+            fontSize: '40px'
         }}>
         <svg 
             width="46" 
@@ -326,16 +327,17 @@ export const LocationIcon = ( {color}: IconProps ) => {
     )
 }
 
-export const PQRSIcon = ( {color}: IconProps ) => {
+export const PQRSIcon = ( {color}: IconProps  ) => {
     return (
         <SupportAgent style={{ fill: color }}/>
     )
 }
 
+
 export const ChartIcon = ( {color}: IconProps ) => {
     return (
         <SvgIcon sx={{
-            fontSize: '80px'
+            fontSize: '50px'
         }}>
             <svg
                 fill={color}
@@ -352,7 +354,7 @@ export const ChartIcon = ( {color}: IconProps ) => {
 export const ProjectBankIcon = ( {color}: IconProps ) => {
     return (
         <SvgIcon sx={{
-            fontSize: '80px',
+            fontSize: '50px',
             transform: 'translateX(7px)'
         }}>
             <svg

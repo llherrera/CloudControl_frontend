@@ -753,7 +753,7 @@ export const Frame = ({ children }: FrameProps) => {
                                     dispatch(selectOption(4));
                                     navigate("/AtencionCiudadana");
                                 }}
-                                icon={<MdSupportAgent color={index === 4 ? "#41a95b" : "#ffffff"} size={64} />}
+                                icon={<MdSupportAgent color={index === 4 ? "#41a95b" : "#ffffff"} size={80} />}
                                 bgColor={index === 4 ? "tw-bg-gray-200" : "tw-bg-[#143955]"}
                                 textColor={index === 4 ? "tw-text-[#143955]" : "tw-text-white"}
                             />

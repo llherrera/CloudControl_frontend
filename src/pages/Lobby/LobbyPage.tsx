@@ -185,9 +185,9 @@ export const LobbyPage = () => {
                 tw-overflow-hidden">
 
             {/* Card principal Blanca*/}
-            <div className="tw-w-[95%] tw-h-[95%] tw-mx-2 tw-my-4 tw-p-4 tw-bg-white tw-rounded-2xl tw-shadow-lg 
+            <div className="tw-w-[95%] tw-h-[80%] tw-mx-2 tw-my-4 tw-p-4 tw-bg-white tw-rounded-2xl tw-shadow-lg 
                     tw-flex tw-flex-col tw-justify-start tw-items-between 
-                    md:tw-w-[70%] md:tw-h-[70%] md:tw-mx-4 md:tw-my-auto md:tw-p-8 ">
+                    md:tw-w-[70%] xl:tw-h-[90%] lg:tw-h-[80%] md:tw-mx-4 md:tw-my-auto md:tw-p-8 ">
 
                 {/* ======================================================= */}
                 {/* ROW 1: Botón Volver */}
@@ -233,7 +233,7 @@ export const LobbyPage = () => {
                                                     navigate(`/pdt/PlanIndicativo`);
                                                 }}
                                                 bgColor="tw-bg-[#012947]"
-                                                className="tw-w-16 tw-h-16 tw-text-[8px] tw-font-bold"
+                                                className="tw-w-16 tw-h-16 tw-text-[24px] tw-font-bold "
                                             />
                                         </div>
                                     )}

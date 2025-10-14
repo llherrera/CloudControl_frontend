@@ -34,11 +34,12 @@ export const ButtonComponent = (props: BtnProps) => {
             {props.inside ? null : (
                 /* #012947 Texto adicional al lado del botón (visible solo en pantallas medianas en adelante) */
                 <p
-                    className="tw-text-[12px]
+                    className="tw-text-base md:tw-text-lg 
                                tw-ml-3
                                tw-font-montserrat tw-font-bold
                                tw-self-center
-                               sm:tw-block tw-break-words tw-max-w-full"
+                               sm:tw-block tw-break-words tw-max-w-full
+                               "
                 >
                     {props.text}
                 </p>
