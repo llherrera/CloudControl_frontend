@@ -1,44 +1,25 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Modal from "react-modal";
 
 import { useAppSelector, useAppDispatch } from "@/store";
-import { setLoadingReport } from "@/store/plan/planSlice";
-import { thunkGetSecretaries, thunkGetLevelArrayByPlan, thunkGetNodeArrayByPlan } from "@/store/plan/thunks";
+import { setLoadingReport, setZeroLevelIndex } from "@/store/plan/planSlice";
+import {
+    thunkGetNodeArrayByPlan,
+    thunkGetLevelArrayByPlan,
+} from "@/store/plan/thunks";
 
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
 import IconButton from "@mui/material/IconButton";
 import { Spinner } from "@/assets/icons";
 
-import { generateExcel, sortData } from "@/utils";
-import {
-    ReportPDTInterface,
-    YearDetail,
-    ModalProps,
-    NodesWeight,
-} from "@/interfaces";
+import { ReportPDTInterface2, ModalPDTProps } from "@/interfaces";
+import { generalReport } from "@/services/api";
+import { generateExcelYears } from "@/utils";
 
-export const ModalSecretary = () => {
-    const [modalIsOpen, setModalIsOpen] = useState(false);
-    return (
-        <div>
-            <ModalPDT modalIsOpen={modalIsOpen} callback={setModalIsOpen} />
-            <IconButton
-                aria-label="delete"
-                size="large"
-                color="secondary"
-                title="Generar reporte por Secretarias"
-                className=" tw-transition hover:tw--translate-y-1 hover:tw-scale-[1.4]"
-                onClick={() => setModalIsOpen(true)}
-            >
-                <LibraryBooksIcon />
-            </IconButton>
-        </div>
-    );
-};
+/* ---------------------------
+   helpers (sin cambios lógicos)
+   --------------------------- */
 
-/* ----------------- Helpers compartibles ----------------- */
-
-// Normaliza/ordena niveles por id_level si es posible
 const normalizeLevelsOrder = (levels: any[]): any[] => {
     if (!Array.isArray(levels) || levels.length === 0) return [];
     const hasIdLevel = levels.every((l) => l !== null && l !== undefined && "id_level" in l);
@@ -51,10 +32,19 @@ const normalizeLevelsOrder = (levels: any[]): any[] => {
     });
 };
 
-// Formatea el goalCode para mostrar: elimina el segundo segmento si es solo dígitos
+const parseCsv = (s?: string): string[] => {
+    if (!s) return [];
+    const matches = s.match(/\[([^\]]*)\]/g);
+    if (!matches) return [];
+    return matches.map((m) => m.slice(1, -1).trim());
+};
+
 const formatGoalCodeDisplay = (code: string | undefined | null) => {
     if (!code) return "";
-        const parts = String(code).split(".").map((p: string) => p.trim()).filter((p: string) => p !== "");
+    const parts = String(code)
+        .split(".")
+        .map((p: string) => p.trim())
+        .filter((p: string) => p !== "");
     if (parts.length < 3) return parts.join(".");
     const second = parts[1];
     if (/^\d+$/.test(second)) {
@@ -63,353 +53,398 @@ const formatGoalCodeDisplay = (code: string | undefined | null) => {
     return parts.join(".");
 };
 
-const ModalPDT = (props: ModalProps) => {
-    const dispatch = useAppDispatch();
+const fmtNumberIfPossible = (v: string | number | undefined) => {
+    if (v === undefined || v === null || v === "") return "";
+    const str = String(v).replace(/\s+/g, "");
+    const n = Number(str);
+    if (!Number.isFinite(n)) return String(v);
+    return n.toLocaleString();
+};
 
-    const { years: yearsStore, levels: levelsStore, secretaries, loadingReport, colorimeter } =
-        useAppSelector((store) => store.plan);
+const parseGoalCode = (code: string): (string | number)[] => {
+    const normalized = String(code).replace(/(^\.)|(\.$)/g, "");
+    return normalized.split(".").flatMap((part) => {
+        const match = part.match(/^([A-Za-z]+)?(\d+)?$/);
+        if (!match) return [part];
+        const [, letters, numbers] = match;
+        const arr: (string | number)[] = [];
+        if (letters) arr.push(letters);
+        if (numbers) arr.push(Number(numbers));
+        return arr;
+    });
+};
+
+const compareGoalCodes = (a: string, b: string) => {
+    const pa = parseGoalCode(a);
+    const pb = parseGoalCode(b);
+    const len = Math.max(pa.length, pb.length);
+    for (let i = 0; i < len; i++) {
+        const va = pa[i];
+        const vb = pb[i];
+        if (va === undefined) return -1;
+        if (vb === undefined) return 1;
+        if (typeof va === "number" && typeof vb === "number") {
+            if (va !== vb) return va - vb;
+        } else {
+            const sa = String(va);
+            const sb = String(vb);
+            if (sa !== sb) return sa.localeCompare(sb, undefined, { numeric: true });
+        }
+    }
+    return 0;
+};
+
+/* ---------------------------
+   ModalSecretary (icon + apertura)
+   --------------------------- */
+
+export const ModalSecretary: React.FC = (): JSX.Element => {
+    const dispatch = useAppDispatch();
     const { id_plan } = useAppSelector((store) => store.content);
 
-    // states
-    const [data, setData] = useState<ReportPDTInterface[]>([]);
-    const [secretary, setSecretary] = useState<string>("");
-    const [indexYear, setIndexYear] = useState<number>(0);
+    const [modalIsOpen, setModalIsOpen] = useState(false);
+    const [data, setData] = useState<ReportPDTInterface2[]>([]);
 
-    // nuevos states para niveles/nodos traídos por los thunks
+    // estados locales que llenan los thunks
     const [levelsState, setLevelsState] = useState<any[]>([]);
     const [nodesState, setNodesState] = useState<any[]>([]);
 
-    // Preferir niveles traídos por thunk si existen, sino usar store
-    const levelsPrefer = Array.isArray(levelsState) && levelsState.length > 0 ? levelsState : (Array.isArray(levelsStore) ? levelsStore : []);
-
     useEffect(() => {
-        if (!id_plan || id_plan <= 0) return;
+        if (!id_plan) return;
 
-        // fetch secretaries si no están
-        if (secretaries === undefined) {
-            dispatch(thunkGetSecretaries(id_plan));
-        }
-
-        // Pedimos niveles con el thunk proporcionado
+        // niveles
         dispatch(thunkGetLevelArrayByPlan(id_plan))
             .unwrap()
             .then((res) => {
-                console.log("✅ Niveles cargados (thunkGetLevelArrayByPlan):", res);
                 const normalized = Array.isArray(res) ? normalizeLevelsOrder(res) : [];
                 setLevelsState(normalized);
             })
-            .catch((err) => {
-                console.error("❌ Error cargando niveles:", err);
-                setLevelsState([]);
-            });
+            .catch(() => setLevelsState([]));
 
-        // Pedimos nodos con el thunk proporcionado
+        // nodos
         dispatch(thunkGetNodeArrayByPlan(id_plan))
             .unwrap()
-            .then((res) => {
-                console.log("✅ Nodos cargados (thunkGetNodeArrayByPlan):", res);
-                setNodesState(Array.isArray(res) ? res : []);
-            })
-            .catch((err) => {
-                console.error("❌ Error cargando nodos:", err);
-                setNodesState([]);
-            });
+            .then((res) => setNodesState(Array.isArray(res) ? res : []))
+            .catch(() => setNodesState([]));
 
-    }, [id_plan, secretaries, dispatch]);
+        dispatch(setZeroLevelIndex());
+    }, [id_plan, dispatch]);
 
-    useEffect(() => {
-        if (!secretaries || secretaries.length === 0) return;
-        setSecretary((prev) => prev || secretaries[0].name);
-    }, [secretaries]);
-
-    useEffect(() => {
-        if (!secretary) {
-            setData([]);
-            dispatch(setLoadingReport(false));
-            return;
-        }
-        genReport();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [secretary, indexYear, yearsStore, dispatch]);
-
-    // --- funciones previas adaptadas ---
-
-    const findRoot = (id: string) => {
-        // conserva la lógica que usabas (UnitNode en localStorage) como primera fuente
-        const root: string[] = [];
-        const pesosStr = localStorage.getItem("UnitNode");
-        const pesos: NodesWeight[] = pesosStr ? JSON.parse(pesosStr) : [];
-        const ids = id.split(".");
-        if (ids.length !== levelsPrefer.length + 1) {
-            // intentar heurística alternativa: si nodesState contiene full_path para el id (id_node)
-            if (Array.isArray(nodesState) && nodesState.length > 0) {
-                // buscar node por id
-                const node = nodesState.find((n) => String(n.id_node) === String(id) || String(n.code) === String(id));
-                if (node && node.full_path) {
-                    const parts = String(node.full_path).split(">").map((p: string) => p.trim()).filter(Boolean);
-                    return parts;
-                }
-            }
-            return root;
-        }
-
-        let ids2 = ids.reduce((acumulator: string[], currentValue: string) => {
-            if (acumulator.length === 0) {
-                return [currentValue];
-            } else {
-                const ultimoElemento = acumulator[acumulator.length - 1];
-                const concatenado = `${ultimoElemento}.${currentValue}`;
-                return [...acumulator, concatenado];
-            }
-        }, [] as string[]);
-        ids2 = ids2.slice(1);
-        ids2.forEach((idN) => {
-            const node = pesos.find((item) => item.id_node === idN);
-            if (node) root.push(node.name);
-        });
-        return root;
-    };
-
-    const fmtNumberIfPossible = (v: any) => {
-        if (v === undefined || v === null || v === "") return "";
-        const n = Number(String(v).replace(/\s+/g, ""));
-        if (!Number.isFinite(n)) return String(v);
-        return n.toLocaleString();
-    };
-
-    const genReport = () => {
-        dispatch(setLoadingReport(true));
-        const detalleStr = localStorage.getItem("YearDeta");
-        const detalle: YearDetail[] = detalleStr ? JSON.parse(detalleStr) : [];
-
-        const nodes = detalle.filter(
-            (item: YearDetail) =>
-                item.responsible === secretary &&
-                item.year === yearsStore[indexYear]
-        );
-
-        let dataLocal: ReportPDTInterface[] = [];
-
-        for (const item of nodes) {
-            const prog = Number(item.physical_programming) || 0;
-            const exec = Number(item.physical_execution) || 0;
-            let percent = 0;
-            if (prog > 0) {
-                percent = (exec / prog) * 100;
-            } else {
-                percent = exec > 0 ? 100 : 0;
-            }
-            percent = Math.round(percent * 100) / 100;
-
-            const root = findRoot(item.id_node);
-
-            const item_: ReportPDTInterface = {
-                responsible: item.responsible ?? "",
-                goalCode: item.code,
-                goalDescription: item.description,
-                percentExecuted: [percent],
-                planSpecific: root, // ahora planSpecific es array de strings (posiciones por nivel)
-                indicator: item.indicator,
-                base: item.base_line,
-                executed: [exec],
-                programed: [prog],
-            };
-            dataLocal.push(item_);
-        }
-
-        dataLocal = sortData(dataLocal);
-        setData(dataLocal);
+    const genReport = async (): Promise<ReportPDTInterface2[]> => {
+        const data_: ReportPDTInterface2[] = await generalReport(id_plan);
         dispatch(setLoadingReport(false));
+        return data_;
     };
 
-    const handleChangeSecretary = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        dispatch(setLoadingReport(true));
-        setSecretary(e.target.value);
-    };
-
-    const handleBtn = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, index: number) => {
+    const handleBtn = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         e.preventDefault();
+        setModalIsOpen(true);
         dispatch(setLoadingReport(true));
-        setIndexYear(index);
+        genReport().then((d) => setData(d));
     };
 
-    // mapear planSpecific (array) a objeto
-    const getPlanParts = (planSpecific: string[] | undefined) => {
-        const parts = planSpecific || [];
-        return {
-            metaFromPlan: parts[0] ?? "",
-            subprograma: parts[1] ?? "",
-            programa: parts[2] ?? "",
-            sector: parts[3] ?? "",
-            dimension: parts[4] ?? "",
-        };
+    return (
+        <div>
+            <ModalSecretaryModal
+                modalIsOpen={modalIsOpen}
+                callback={setModalIsOpen}
+                data={data}
+                levelsFromThunk={levelsState}
+                nodesFromThunk={nodesState}
+            />
+
+            <IconButton
+                size="large"
+                color="inherit"
+                title="Generar reporte del Plan Indicativo Total"
+                className="tw-transition tw-duration-200 hover:tw--translate-y-1 hover:tw-scale-[1.2] tw-bg-transparent tw-border-none"
+                onClick={handleBtn}
+            >
+                <div className="tw-flex tw-items-center tw-gap-2">
+                    <LibraryBooksIcon className="tw-text-[22px] tw-text-slate-700" />
+                    <span className="tw-hidden md:tw-inline tw-text-sm tw-font-medium tw-text-slate-700">
+                        Informe Secretaria
+                    </span>
+                </div>
+            </IconButton>
+        </div>
+    );
+};
+
+/* ---------------------------
+   ModalSecretaryModal (contenido del modal)
+   --------------------------- */
+
+type ModalPDTExtendedProps = ModalPDTProps & {
+    levelsFromThunk?: any[];
+    nodesFromThunk?: any[];
+};
+
+const ModalSecretaryModal: React.FC<ModalPDTExtendedProps> = (props) => {
+    const dispatch = useAppDispatch();
+
+    // planStore (puede venir en distintos formatos)
+    const planStore = useAppSelector((s) => (s as any).plan);
+
+    // years
+    const years: string[] = Array.isArray(planStore?.years) ? (planStore.years as string[]) : [];
+
+    // preferimos levels proporcionados por el thunk
+    const levels: any[] =
+        Array.isArray(props.levelsFromThunk) && props.levelsFromThunk.length > 0
+            ? props.levelsFromThunk
+            : Array.isArray(planStore?.levels)
+                ? (planStore.levels as any[])
+                : [];
+
+    const nodes: any[] = Array.isArray(props.nodesFromThunk) ? props.nodesFromThunk : [];
+
+    const loadingReport: boolean = !!planStore?.loadingReport;
+
+    const toNumberArray = (input: unknown, fallback: number[] = [30, 60, 90]): number[] => {
+        if (!Array.isArray(input)) return fallback;
+        const parsed = (input as unknown[])
+            .map((v) => {
+                if (typeof v === "number") return v;
+                if (typeof v === "string") {
+                    const cleaned = v.replace(/,/g, "").trim();
+                    const n = Number(cleaned);
+                    return Number.isFinite(n) ? n : NaN;
+                }
+                return NaN;
+            })
+            .filter((n) => Number.isFinite(n)) as number[];
+        return parsed.length > 0 ? parsed : fallback;
     };
 
-    // ---------- dynamic headers con levelIndex ----------
+    const colorimeter: number[] = toNumberArray(planStore?.colorimeter, [30, 60, 90]);
+
+    // headers fijos y dinámicos (sin cambios lógicos)
+    const staticBefore = [
+        { key: "goalCode", label: "Código de la meta producto" },
+        { key: "goalDescription", label: "Meta" },
+        { key: "responsible", label: "Responsable" },
+    ];
+    const staticAfter = [
+        { key: "indicator", label: "Indicador" },
+        { key: "base", label: "Línea base" },
+    ];
+
     const dynamicHeaders =
-        levelsPrefer.length > 0
-            ? levelsPrefer.map((level: any, idx: number) => {
-                  const rawName = String(level.name ?? `Nivel ${idx}`).trim();
-                  const safeId = rawName.replace(/\s+/g, "_").replace(/[^a-zA-Z0-9_\-]/g, "").slice(0, 40);
-                  const isMeta = rawName.trim().toLowerCase() === "meta";
-                  return {
-                      key: `dyn-${idx}-${safeId}`,
-                      label: isMeta ? "Descripción de Meta" : rawName,
-                      isMeta,
-                      levelIndex: idx,
-                      rawName,
-                  };
-              })
+        levels.length > 0
+            ? levels.map((level: any, idx: number) => {
+                const rawName = String(level?.name ?? `Nivel ${idx}`).trim();
+                const safeId = rawName
+                    .replace(/\s+/g, "_")
+                    .replace(/[^a-zA-Z0-9_\-]/g, "")
+                    .slice(0, 40);
+
+                const label = rawName.toLowerCase() === "meta" ? "Descripción de Meta" : rawName;
+
+                return { key: `dyn-${idx}-${safeId}`, label, levelIndex: idx, rawName };
+            })
             : [
-                  { key: "dyn-f-0", label: "Dimensión", levelIndex: 0 },
-                  { key: "dyn-f-1", label: "Sector", levelIndex: 1 },
-                  { key: "dyn-f-2", label: "Programa", levelIndex: 2 },
-                  { key: "dyn-f-3", label: "Subprograma", levelIndex: 3 },
-              ];
+                { key: "dyn-f-0", label: "Dimensión", levelIndex: 0, rawName: "Dimension" },
+                { key: "dyn-f-1", label: "Sector", levelIndex: 1, rawName: "Sector" },
+                { key: "dyn-f-2", label: "Programa", levelIndex: 2, rawName: "Programa" },
+                { key: "dyn-f-3", label: "Subprograma", levelIndex: 3, rawName: "Subprograma" },
+            ];
 
-    // ---------- valueForLevel robusta ----------
-    const valueForLevel = (levelIndex: number, item: ReportPDTInterface, rawName?: string) => {
+    const baseHeaders = [...staticBefore, ...dynamicHeaders, ...staticAfter];
+
+    const getPlanParts = (planSpecificRaw: string) => {
+        const parts = parseCsv(planSpecificRaw);
+        const [metaFromPlan = "", subprograma = "", programa = "", sector = "", dimension = ""] = parts;
+        return { metaFromPlan, subprograma, programa, sector, dimension };
+    };
+
+    /* valueForLevel (igual que antes, conservando heurísticas) */
+    const valueForLevel = (levelIndex: number, item: ReportPDTInterface2, rawName?: string) => {
         const normalize = (s: any) =>
-            (s ?? "").toString().toLowerCase().replace(/\s+/g, " ").replace(/[^\w\sáéíóúñüÁÉÍÓÚÑÜ-]/g, "").trim();
+            (s ?? "")
+                .toString()
+                .toLowerCase()
+                .replace(/\s+/g, " ")
+                .replace(/[^\w\sáéíóúñüÁÉÍÓÚÑÜ-]/g, "")
+                .trim();
 
-        // 1) si item.planSpecific ya es un array (tu caso principal), usarlo
-        if (Array.isArray(item.planSpecific) && item.planSpecific.length > 0) {
-            const parts = item.planSpecific.map((p) => String(p).trim());
-            if (levelIndex >= 0 && levelIndex < parts.length) return parts[levelIndex] || "";
-        }
-
-        // 2) intentar full_path en item si existiera (varias claves)
         const fpCandidates = [
             (item as any).full_path,
             (item as any).fullPath,
             (item as any).fullpath,
             (item as any).fullPathNormalized,
         ].filter(Boolean);
+
         if (fpCandidates.length > 0) {
             const fp = String(fpCandidates[0]);
-            const parts = fp.split(">").map((p: string) => p.trim()).filter(Boolean);
+            const parts = fp
+                .split(">")
+                .map((p: string) => p.trim())
+                .filter((s: string) => Boolean(s));
             if (levelIndex >= 0 && levelIndex < parts.length) return parts[levelIndex];
         }
 
-        // 3) buscar en nodesState con heurísticas si no encontramos en item
-        if (Array.isArray(nodesState) && nodesState.length > 0) {
-            const goalDesc = normalize(item.goalDescription ?? "");
-            const goalCode = String(item.goalCode ?? "").trim();
+        if (Array.isArray(nodes) && nodes.length > 0) {
+            const goalDesc = normalize(item.goalDescription ?? (item as any).plan_description ?? "");
+            const goalCode = String(item.goalCode ?? (item as any).code ?? "").trim();
 
             const nodeFullPath = (n: any) => (n?.full_path ?? n?.fullPath ?? n?.fullpath ?? "").toString();
 
-            // búsqueda 1: node.full_path termina con goalDescription
-            let nodeFound = nodesState.find((n) => {
+            let nodeFound = nodes.find((n) => {
                 const nfp = normalize(nodeFullPath(n));
                 return goalDesc && nfp.endsWith(goalDesc);
             });
 
-            // búsqueda 2: node.node_name === goalDescription
             if (!nodeFound && goalDesc) {
-                nodeFound = nodesState.find((n) => normalize(n.node_name ?? n.name ?? "") === goalDesc);
+                nodeFound = nodes.find((n) => normalize(n.node_name ?? n.name ?? "") === goalDesc);
             }
 
-            // búsqueda 3: node.plan_description === goalDescription
             if (!nodeFound && goalDesc) {
-                nodeFound = nodesState.find((n) => normalize(n.plan_description ?? "") === goalDesc);
+                nodeFound = nodes.find((n) => normalize(n.plan_description ?? "") === goalDesc);
             }
 
-            // búsqueda 4: por code o id_node (igual o sufijo)
             if (!nodeFound && goalCode) {
                 nodeFound =
-                    nodesState.find((n) => String(n.code) === goalCode) ||
-                    nodesState.find((n) => String(n.code).endsWith(goalCode)) ||
-                    nodesState.find((n) => String(n.id_node) === goalCode);
+                    nodes.find((n) => String(n.code) === goalCode) ||
+                    nodes.find((n) => String(n.code).endsWith(goalCode)) ||
+                    nodes.find((n) => String(n.id_node) === goalCode);
             }
 
-            // búsqueda 5: inclusión de tokens en full_path
             if (!nodeFound && goalDesc) {
-                nodeFound = nodesState.find((n) => normalize(nodeFullPath(n)).includes(goalDesc));
+                nodeFound = nodes.find((n) => {
+                    const nfp = normalize(nodeFullPath(n));
+                    return nfp.includes(goalDesc);
+                });
             }
 
             if (nodeFound) {
                 const fp = nodeFullPath(nodeFound);
-                const parts = fp.split(">").map((p: string) => p.trim()).filter((s: string) => s.length > 0);
+                const parts = fp
+                    .split(">")
+                    .map((p: string) => p.trim())
+                    .filter((s: string) => Boolean(s));
                 if (levelIndex >= 0 && levelIndex < parts.length) return parts[levelIndex];
             }
         }
 
-        // 4) fallback por nombre de nivel (meta)
-        const levelName = (rawName ?? levelsPrefer[levelIndex]?.name ?? "").toString().toLowerCase();
-        if (levelName.includes("meta")) {
-            const plan = getPlanParts(Array.isArray(item.planSpecific) ? item.planSpecific : []);
+        const levelName = (rawName ?? levels[levelIndex]?.name ?? "").toString().toLowerCase();
+        if (levelName === "meta" || levelName.includes("meta")) {
+            const plan = getPlanParts(item.planSpecific);
             return plan.metaFromPlan || item.goalDescription || "";
         }
 
-        // 5) fallback: devolver "" si no hay match
-        // console.log("valueForLevel: no match", { levelIndex, levelName, goalCode: item.goalCode, goalDesc: item.goalDescription, itemPlanSpecific: item.planSpecific, nodesLen: nodesState.length });
+        try {
+            const planParts = getPlanParts(item.planSpecific);
+            const possibleArr = [
+                planParts.dimension,
+                planParts.sector,
+                planParts.programa,
+                planParts.subprograma,
+                planParts.metaFromPlan,
+            ]
+                .map((x) => (x ?? "").toString())
+                .filter(Boolean);
+            if (levelIndex >= 0 && levelIndex < possibleArr.length) return possibleArr[levelIndex];
+        } catch (e) {
+            /* noop */
+        }
+
         return "";
     };
 
-    // ---------- valueForDynamic (compatibilidad con tabla original) ----------
-    const valueForDynamic = (header: { key: string; label: string; isMeta?: boolean; levelIndex?: number }, item: ReportPDTInterface) => {
-        // ahora delegamos en valueForLevel pasando header.levelIndex
-        if (header.levelIndex !== undefined && header.levelIndex !== null) {
-            return valueForLevel(header.levelIndex, item, (header as any).rawName);
-        }
-        // fallback a comportamiento previo si no hay levelIndex
-        const plan = getPlanParts(Array.isArray(item.planSpecific) ? item.planSpecific : []);
-        if (header.isMeta) return item.goalDescription || "-";
-        switch (header.label.toLowerCase()) {
-            case "dimensión":
-            case "dimension":
-                return plan.dimension || "-";
-            case "sector":
-                return plan.sector || "-";
-            case "programa":
-                return plan.programa || "-";
-            case "subprograma":
-                return plan.subprograma || "-";
-            default:
-                return plan.metaFromPlan || "-";
-        }
+    const colorClass = (item: ReportPDTInterface2, index: number) => {
+        const percentArr = parseCsv(item.percentExecuted);
+        const raw = percentArr[index];
+        const value = raw === undefined || raw === "" ? NaN : Number(raw);
+        if (Number.isNaN(value)) return "tw-bg-gray-300 tw-text-xs tw-font-medium";
+        if (value < 0) return "tw-bg-gray-300 tw-text-xs tw-font-medium";
+        if (value < colorimeter[0]) return "tw-bg-redColory tw-text-white tw-font-medium";
+        if (value < colorimeter[1]) return "tw-bg-yellowColory tw-text-black tw-font-medium";
+        if (value < colorimeter[2]) return "tw-bg-greenColory tw-text-white tw-font-medium";
+        return "tw-bg-blueColory tw-text-white tw-font-medium tw-hover:tw-ring-2";
     };
 
-    const tableBody = (item: ReportPDTInterface, rowIndex: number) => {
+    const tableBody = (item: ReportPDTInterface2) => {
+        const plan = getPlanParts(item.planSpecific);
+        const percentArr = parseCsv(item.percentExecuted);
+        const programedArr = parseCsv(item.programed);
+        const executedArr = parseCsv(item.executed);
+
         return (
-            <tr key={rowIndex}>
-                <td className="tw-border tw-p-2">
-                    {formatGoalCodeDisplay(item.goalCode)}
-                </td>
-                <td className="tw-border tw-p-2">{item.goalDescription}</td>
-                {dynamicHeaders.map((header) => (
-                    <td className="tw-border tw-p-2" key={header.key}>
-                        {valueForDynamic(header as any, item)}
-                    </td>
-                ))}
-                <td className="tw-border tw-p-2">{item.responsible}</td>
-                <td className="tw-border tw-p-2">{item.indicator}</td>
-                <td className="tw-border tw-p-2 tw-text-center">
-                    {fmtNumberIfPossible(item.base)}
-                </td>
-                {yearsStore.map((year, index) => (
-                    <td className="tw-border tw-p-2 tw-text-center" key={year}>
-                        {fmtNumberIfPossible(item.programed?.[index] || 0)}
-                    </td>
-                ))}
-                {yearsStore.map((year, index) => (
-                    <td className="tw-border tw-p-2 tw-text-center" key={year}>
-                        {fmtNumberIfPossible(item.executed?.[index] || 0)}
-                    </td>
-                ))}
-                {yearsStore.map((year, index) => {
-                    const percentVal = item?.percentExecuted?.[index];
-                    const value = typeof percentVal === "number" ? percentVal : Number(percentVal);
-                    let colorClass = "tw-bg-gray-400";
-                    if (!Number.isNaN(value) && value >= 0) {
-                        if (value < colorimeter[0]) colorClass = "tw-bg-redColory";
-                        else if (value < colorimeter[1]) colorClass = "tw-bg-yellowColory";
-                        else if (value < colorimeter[2]) colorClass = "tw-bg-greenColory";
-                        else colorClass = "tw-bg-blueColory hover:tw-ring-blue-200";
+            <tr key={item.goalCode} className="tw-align-top odd:tw-bg-white even:tw-bg-slate-50">
+                {baseHeaders.map((h: any) => {
+                    if (h.key === "goalCode")
+                        return (
+                            <td className="tw-border tw-p-2 tw-text-sm tw-font-medium" key={`${item.goalCode}-code`}>
+                                {formatGoalCodeDisplay(item.goalCode)}
+                            </td>
+                        );
+                    if (h.key === "goalDescription")
+                        return (
+                            <td className="tw-border tw-p-2 tw-text-sm" key={`${item.goalCode}-desc`}>
+                                {item.goalDescription}
+                            </td>
+                        );
+                    if (h.key === "metaFromPlan")
+                        return (
+                            <td className="tw-border tw-p-2 tw-text-sm" key={`${item.goalCode}-meta`}>
+                                {plan.metaFromPlan}
+                            </td>
+                        );
+                    if (h.key === "responsible")
+                        return (
+                            <td className="tw-border tw-p-2 tw-text-sm" key={`${item.goalCode}-resp`}>
+                                {item.responsible}
+                            </td>
+                        );
+                    if (h.key === "indicator")
+                        return (
+                            <td className="tw-border tw-p-2 tw-text-sm" key={`${item.goalCode}-ind`}>
+                                {item.indicator}
+                            </td>
+                        );
+                    if (h.key === "base")
+                        return (
+                            <td className="tw-border tw-p-2 tw-text-sm tw-text-right" key={`${item.goalCode}-base`}>
+                                {fmtNumberIfPossible(item.base)}
+                            </td>
+                        );
+                    if ((h.key as string).startsWith("dyn-")) {
+                        const li = typeof h.levelIndex === "number" ? h.levelIndex : -1;
+                        const val = li >= 0 ? valueForLevel(li, item, h.rawName) : "";
+                        return (
+                            <td className="tw-border tw-p-2 tw-text-sm" key={`${item.goalCode}-dyn-${li}`}>
+                                {val}
+                            </td>
+                        );
                     }
                     return (
-                        <td className={`tw-border tw-p-2 tw-text-center ${colorClass}`} key={year}>
-                            {typeof percentVal === "number" && !Number.isNaN(percentVal) ? percentVal : Number(percentVal) || 0}
+                        <td className="tw-border tw-p-2 tw-text-sm" key={`${item.goalCode}-other`}>
+                            -
+                        </td>
+                    );
+                })}
+
+                {years.map((_, i) => (
+                    <td className="tw-border tw-p-2 tw-text-sm tw-text-right" key={`${item.goalCode}-p-${i}`}>
+                        {fmtNumberIfPossible(programedArr[i])}
+                    </td>
+                ))}
+                {years.map((_, i) => (
+                    <td className="tw-border tw-p-2 tw-text-sm tw-text-right" key={`${item.goalCode}-e-${i}`}>
+                        {fmtNumberIfPossible(executedArr[i])}
+                    </td>
+                ))}
+                {years.map((_, i) => {
+                    const value = percentArr[i];
+                    const displayValue = value === "-1.0" || value === "-1" ? "N/A" : value ?? "";
+
+                    return (
+                        <td
+                            className={`tw-border tw-p-2 tw-text-center tw-text-sm ${colorClass(item, i)}`}
+                            key={`${item.goalCode}-%-${i}`}
+                        >
+                            {displayValue}
                         </td>
                     );
                 })}
@@ -417,88 +452,193 @@ const ModalPDT = (props: ModalProps) => {
         );
     };
 
+    const data = Array.isArray(props.data)
+        ? props.data.slice().sort((a, b) => compareGoalCodes(a.goalCode, b.goalCode))
+        : [];
+
+    // ---------------------------
+    // Filter por Responsable
+    // ---------------------------
+
+    const [responsibleFilter, setResponsibleFilter] = useState<string>("");
+
+    // lista única de responsables (orden alfabético, filtro de vacíos)
+    const uniqueResponsibles = useMemo(() => {
+        const arr = (data || [])
+            .map((d) => (d.responsible ?? "").toString().trim())
+            .filter((r) => r !== "");
+        const set = Array.from(new Set(arr));
+        return set.sort((a, b) => a.localeCompare(b));
+    }, [data]);
+
+    const filteredData = useMemo(() => {
+        if (!responsibleFilter || responsibleFilter === "") return data;
+        return data.filter((d) => {
+            const resp = (d.responsible ?? "").toString();
+            return resp === responsibleFilter;
+        });
+    }, [data, responsibleFilter]);
+
+    /* ---------------------------
+       RENDER
+       --------------------------- */
+
     return (
         <Modal
             isOpen={props.modalIsOpen}
             onRequestClose={() => props.callback(false)}
-            contentLabel="Modal de secretarias"
+            contentLabel="Modal de Plan"
+            ariaHideApp={false}
+            // overlay sigue ocupando toda la pantalla
+            overlayClassName="tw-fixed tw-inset-0 tw-bg-black tw-bg-opacity-50"
+            // el modal se centra y el contenedor interior ocupa casi toda la pantalla
+            className="tw-fixed tw-inset-0 tw-flex tw-items-center tw-justify-center tw-p-4"
         >
             {loadingReport ? (
-                <Spinner />
-            ) : (
-                <div className="tw-z-20">
-                    <div className="tw-absolute tw-top-0 tw-right-0">
-                        <button className=" tw-px-2" onClick={() => props.callback(false)}>
-                            <p className="tw-text-xl tw-text-[#626d75] tw-font-bold">X</p>
-                        </button>
+                <div className="tw-w-[95vw] tw-h-[92vh] tw-bg-white tw-rounded-xl tw-shadow-2xl tw-p-8 tw-flex tw-items-center tw-justify-center">
+                    <div className="tw-flex tw-flex-col tw-items-center tw-gap-4">
+                        <Spinner />
+                        <p className="tw-text-sm tw-text-slate-600">Generando informe... esto puede tardar unos segundos</p>
                     </div>
-                    <div className="tw-flex tw-flex-col md:tw-flex-row">
-                        <div className="tw-mb-2">
-                            <h1 className="tw-bg-slate-300 tw-rounded tw-p-1 tw-mr-3 tw-mb-2 tw-text-center">Escoger Año</h1>
-                            {yearsStore.map((year, index) => (
-                                <button
-                                    className={`${indexYear === index ? "tw-bg-gray-500 tw-text-white hover:tw-bg-gray-300 hover:tw-text-black" : "tw-bg-gray-300 hover:tw-bg-gray-500 hover:tw-text-white"} tw-border-black tw-rounded tw-border tw-p-1 tw-mx-1`}
-                                    onClick={(e) => handleBtn(e, index)}
-                                    key={year}
+                </div>
+            ) : (
+                /* contenedor interior ampliado: ocupa 95% ancho y 92% alto */
+                <div className="tw-w-[95vw] tw-h-[92vh] tw-bg-white tw-rounded-xl tw-shadow-2xl tw-p-6 tw-relative tw-flex tw-flex-col">
+                    {/* close button */}
+                    <button
+                        onClick={() => props.callback(false)}
+                        aria-label="Cerrar"
+                        className="tw-absolute tw-top-4 tw-right-4 tw-rounded-full tw-p-2 tw-border tw-border-slate-200 hover:tw-bg-slate-50"
+                    >
+                        <span className="tw-text-lg tw-text-slate-600 tw-font-bold">✕</span>
+                    </button>
+
+                    {/* header */}
+                    <div className="tw-flex tw-items-start tw-justify-between tw-gap-4 tw-mb-4">
+                        <div>
+                            <h2 className="tw-text-2xl md:tw-text-3xl tw-font-semibold tw-text-slate-800">
+                                Informe Secretaria — Plan Indicativo
+                            </h2>
+                            <p className="tw-text-sm tw-text-slate-500 tw-mt-1">
+                                Resumen por metas, niveles y ejecución por año.
+                            </p>
+
+                            {/* leyenda colorimeter */}
+                            <div className="tw-flex tw-items-center tw-gap-2 tw-mt-3 tw-flex-wrap">
+                                <span className="tw-text-xs tw-font-medium tw-text-slate-600">Leyenda:</span>
+                                <div className="tw-flex tw-items-center tw-gap-2">
+                                    <span className="tw-inline-block tw-text-[11px] tw-px-2 tw-py-1 tw-rounded tw-bg-redColory tw-text-white">
+                                        {"< "}{colorimeter[0]}%
+                                    </span>
+                                    <span className="tw-inline-block tw-text-[11px] tw-px-2 tw-py-1 tw-rounded tw-bg-yellowColory tw-text-black">
+                                        {colorimeter[0]}–{colorimeter[1]}%
+                                    </span>
+                                    <span className="tw-inline-block tw-text-[11px] tw-px-2 tw-py-1 tw-rounded tw-bg-greenColory tw-text-white">
+                                        {colorimeter[1]}–{colorimeter[2]}%
+                                    </span>
+                                    <span className="tw-inline-block tw-text-[11px] tw-px-2 tw-py-1 tw-rounded tw-bg-blueColory tw-text-white">
+                                        {"≥ "}{colorimeter[2]}%
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="tw-flex tw-items-center tw-gap-3">
+                            {/* Select para filtrar por Responsible */}
+                            <div className="tw-flex tw-items-center tw-gap-2">
+                                <label htmlFor="responsible-filter" className="tw-text-xs tw-font-medium tw-text-slate-600">
+                                    Responsable:
+                                </label>
+                                <select
+                                    id="responsible-filter"
+                                    value={responsibleFilter}
+                                    onChange={(e) => setResponsibleFilter(e.target.value)}
+                                    className="tw-border tw-border-slate-200 tw-rounded tw-px-2 tw-py-1 tw-text-sm"
                                 >
-                                    {year}
-                                </button>
-                            ))}
+                                    <option value="">Todos</option>
+                                    {uniqueResponsibles.map((r) => (
+                                        <option key={r} value={r}>
+                                            {r}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <button
+                                className="tw-flex tw-items-center tw-gap-2 tw-border tw-border-slate-200 tw-px-3 tw-py-2 tw-rounded tw-bg-slate-50 hover:tw-bg-slate-100"
+                                onClick={() => {
+                                    const yearsAsNumbers = years
+                                        .map((y: string) => Number(y))
+                                        .filter((n) => Number.isFinite(n)) as number[];
+                                    return generateExcelYears(filteredData, "InformeTotal", levels, yearsAsNumbers, colorimeter);
+                                }}
+                            >
+                                <svg className="tw-w-4 tw-h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 3v12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                    <path d="M8 11l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                    <path d="M20 21H4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg>
+                                <span className="tw-text-sm tw-font-medium">Exportar</span>
+                            </button>
                         </div>
-                        <div className="md:tw-ml-6">
-                            <h1 className="tw-bg-slate-300 tw-rounded tw-p-1 tw-mr-3 tw-mb-2 tw-text-center">Secretarias</h1>
-                            <select value={secretary} onChange={(e) => handleChangeSecretary(e)} className="tw-border-2 tw-p-1 tw-mb-2 tw-rounded">
-                                {secretaries && secretaries.map((s: any) => (
-                                    <option value={s.name} key={s.name}>{s.name}</option>
-                                ))}
-                            </select>
-                        </div>
-                        <button
-                            className=" tw-bg-gray-300 hover:tw-bg-gray-500 hover:tw-text-white tw-rounded tw-border tw-border-black tw-px-2 tw-py-1 md:tw-ml-3 tw-mr-3"
-                            onClick={() =>
-                                generateExcel(
-                                    data,
-                                    "InformeSecretarias",
-                                    levelsPrefer,
-                                    yearsStore[indexYear],
-                                    colorimeter
-                                )
-                            }
-                        >
-                            Exportar
-                        </button>
                     </div>
 
-                    <table className="tw-mt-3" id="TablaSecretarias">
-                        <thead>
-                            <tr>
-                                <th className="tw-border tw-bg-gray-400 tw-p-2">Código de la meta producto</th>
-                                <th className="tw-border tw-bg-gray-400 tw-p-2">Meta</th>
-                                {dynamicHeaders.map((header) => (
-                                    <th className="tw-border tw-bg-gray-400 tw-p-2" key={header.key}>{header.label}</th>
-                                ))}
-                                <th className="tw-border tw-bg-gray-400 tw-p-2">Responsable</th>
-                                <th className="tw-border tw-bg-gray-400 tw-p-2">Indicador</th>
-                                <th className="tw-border tw-bg-gray-400 tw-p-2">Línea base</th>
-                                {yearsStore.map((year) => (
-                                    <th className="tw-border tw-bg-gray-400 tw-p-2" key={year}>Programado {year}</th>
-                                ))}
-                                {yearsStore.map((year) => (
-                                    <th className="tw-border tw-bg-gray-400 tw-p-2" key={year}>Ejecutado {year}</th>
-                                ))}
-                                {yearsStore.map((year) => (
-                                    <th className="tw-border tw-bg-gray-400 tw-p-2" key={year}>% ejecución {year}</th>
-                                ))}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {data.map((item, index) => tableBody(item, index))}
-                        </tbody>
-                    </table>
+                    {/* table container: ocupa el espacio restante y es scrollable */}
+                    <div className="tw-flex-1 tw-overflow-auto tw-rounded tw-border tw-border-slate-100">
+                        <table id="TablaTotal" className="tw-min-w-full tw-table-auto tw-divide-y">
+                            <thead>
+                                <tr>
+                                    {baseHeaders.map((h: any) => (
+                                        <th
+                                            key={h.key}
+                                            className="tw-border-b tw-px-3 tw-py-2 tw-text-left tw-text-sm tw-font-semibold tw-sticky tw-top-0 tw-z-10 tw-bg-slate-700 tw-text-white"
+                                        >
+                                            {h.label}
+                                        </th>
+                                    ))}
+                                    {years.map((year) => (
+                                        <th
+                                            key={`p-${year}`}
+                                            className="tw-border-b tw-px-3 tw-py-2 tw-text-right tw-text-sm tw-font-semibold tw-sticky tw-top-0 tw-z-10 tw-bg-slate-700 tw-text-white"
+                                        >
+                                            Programado {year}
+                                        </th>
+                                    ))}
+                                    {years.map((year) => (
+                                        <th
+                                            key={`e-${year}`}
+                                            className="tw-border-b tw-px-3 tw-py-2 tw-text-right tw-text-sm tw-font-semibold tw-sticky tw-top-0 tw-z-10 tw-bg-slate-700 tw-text-white"
+                                        >
+                                            Ejecutado {year}
+                                        </th>
+                                    ))}
+                                    {years.map((year) => (
+                                        <th
+                                            key={`%-${year}`}
+                                            className="tw-border-b tw-px-3 tw-py-2 tw-text-center tw-text-sm tw-font-semibold tw-sticky tw-top-0 tw-z-10 tw-bg-slate-700 tw-text-white"
+                                        >
+                                            % ejecución {year}
+                                        </th>
+                                    ))}
+                                </tr>
+                            </thead>
+                            <tbody>{filteredData.map((item) => tableBody(item))}</tbody>
+                        </table>
+                    </div>
+
+                    {/* footer */}
+                    <div className="tw-flex tw-justify-between tw-items-center tw-mt-4">
+                        <p className="tw-text-xs tw-text-slate-500">
+                            {filteredData.length} metas · {years.length} años
+                        </p>
+                        <div className="tw-text-xs tw-text-slate-500">
+                            Última actualización: {/* si tienes fecha, ponla aquí */}
+                        </div>
+                    </div>
                 </div>
             )}
         </Modal>
     );
 };
 
-export default ModalPDT;
+export default ModalSecretary;

@@ -192,10 +192,11 @@ export const Content = (props: IdProps) => {
                         )
                         : <HandleRol />
                     }
-                    {/* Botón AI (según rol) */}
+                    {/* Botón AI (según rol)
                     {rol === 'admin' || ((rol === 'funcionario' || rol === 'planeacion' || rol === 'sectorialista') && id === props.id)
                         ? <ModalAi />
-                        : null}
+                        : null} */}
+                        {/*boton de ia deshabilitado*/}
                 </div>
             </h1>
 

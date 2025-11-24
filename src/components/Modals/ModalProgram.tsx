@@ -1,8 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import Modal from "react-modal";
 
 import { useAppSelector, useAppDispatch } from "@/store";
 import { setLoadingReport, setZeroLevelIndex } from "@/store/plan/planSlice";
+import {
+    thunkGetNodeArrayByPlan,
+    thunkGetLevelArrayByPlan,
+} from "@/store/plan/thunks";
 
 import LibraryBooksIcon from "@mui/icons-material/LibraryBooks";
 import IconButton from "@mui/material/IconButton";
@@ -12,92 +16,10 @@ import { ReportPDTInterface2, ModalPDTProps } from "@/interfaces";
 import { generalReport } from "@/services/api";
 import { generateExcelYears } from "@/utils";
 
-// <-- thunks ajustados a lo pedido
-import {
-    thunkGetLevelArrayByPlan,
-    thunkGetNodeArrayByPlan,
-} from "@/store/plan/thunks";
+/* ---------------------------
+   helpers (sin cambios lógicos)
+   --------------------------- */
 
-export const ModalProgram: React.FC = (): JSX.Element => {
-    const dispatch = useAppDispatch();
-    const { id_plan } = useAppSelector((store) => store.content);
-
-    const [modalIsOpen, setModalIsOpen] = useState(false);
-    const [data, setData] = useState<ReportPDTInterface2[]>([]);
-
-    // local states para niveles y nodos cargados por los thunks
-    const [levelsState, setLevelsState] = useState<any[]>([]);
-    const [nodesState, setNodesState] = useState<any[]>([]);
-
-    useEffect(() => {
-        if (!id_plan) return;
-
-        // Pedimos niveles con el thunk proporcionado
-        dispatch(thunkGetLevelArrayByPlan(id_plan))
-            .unwrap()
-            .then((res) => {
-                console.log("✅ Niveles cargados (thunkGetLevelArrayByPlan):", res);
-                const normalized = Array.isArray(res) ? normalizeLevelsOrder(res) : [];
-                setLevelsState(normalized);
-            })
-            .catch((err) => {
-                console.error("❌ Error cargando niveles:", err);
-                setLevelsState([]);
-            });
-
-        // Pedimos nodos con el thunk proporcionado
-        dispatch(thunkGetNodeArrayByPlan(id_plan))
-            .unwrap()
-            .then((res) => {
-                console.log("✅ Nodos cargados (thunkGetNodeArrayByPlan):", res);
-                setNodesState(Array.isArray(res) ? res : []);
-            })
-            .catch((err) => {
-                console.error("❌ Error cargando nodos:", err);
-                setNodesState([]);
-            });
-
-        dispatch(setZeroLevelIndex());
-    }, [id_plan, dispatch]);
-
-    const handleBtn = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        e.preventDefault();
-        setModalIsOpen(true);
-        dispatch(setLoadingReport(true));
-        genReport().then((d) => setData(d));
-    };
-
-    const genReport = async (): Promise<ReportPDTInterface2[]> => {
-        const data_: ReportPDTInterface2[] = await generalReport(id_plan);
-        dispatch(setLoadingReport(false));
-        return data_;
-    };
-
-    return (
-        <div>
-            <ModalPDT
-                modalIsOpen={modalIsOpen}
-                callback={setModalIsOpen}
-                data={data}
-                levelsFromThunk={levelsState}
-                nodesFromThunk={nodesState}
-            />
-            <IconButton
-                size="large"
-                color="inherit"
-                title="Generar reporte del Plan Indicativo Total"
-                className="tw-transition hover:tw--translate-y-1 hover:tw-scale-[1.4]"
-                onClick={handleBtn}
-            >
-                <LibraryBooksIcon />
-            </IconButton>
-        </div>
-    );
-};
-
-/* ---------- helpers compartibles ---------- */
-
-// Normaliza/ordena niveles por id_level si es posible
 const normalizeLevelsOrder = (levels: any[]): any[] => {
     if (!Array.isArray(levels) || levels.length === 0) return [];
     const hasIdLevel = levels.every((l) => l !== null && l !== undefined && "id_level" in l);
@@ -110,10 +32,19 @@ const normalizeLevelsOrder = (levels: any[]): any[] => {
     });
 };
 
-// Formatea el goalCode para mostrar: elimina el segundo segmento si es solo dígitos
+const parseCsv = (s?: string): string[] => {
+    if (!s) return [];
+    const matches = s.match(/\[([^\]]*)\]/g);
+    if (!matches) return [];
+    return matches.map((m) => m.slice(1, -1).trim());
+};
+
 const formatGoalCodeDisplay = (code: string | undefined | null) => {
     if (!code) return "";
-    const parts = String(code).split(".").map((p) => p.trim()).filter((p) => p !== "");
+    const parts = String(code)
+        .split(".")
+        .map((p: string) => p.trim())
+        .filter((p: string) => p !== "");
     if (parts.length < 3) return parts.join(".");
     const second = parts[1];
     if (/^\d+$/.test(second)) {
@@ -122,39 +53,154 @@ const formatGoalCodeDisplay = (code: string | undefined | null) => {
     return parts.join(".");
 };
 
+const fmtNumberIfPossible = (v: string | number | undefined) => {
+    if (v === undefined || v === null || v === "") return "";
+    const str = String(v).replace(/\s+/g, "");
+    const n = Number(str);
+    if (!Number.isFinite(n)) return String(v);
+    return n.toLocaleString();
+};
+
+const parseGoalCode = (code: string): (string | number)[] => {
+    const normalized = String(code).replace(/(^\.)|(\.$)/g, "");
+    return normalized.split(".").flatMap((part) => {
+        const match = part.match(/^([A-Za-z]+)?(\d+)?$/);
+        if (!match) return [part];
+        const [, letters, numbers] = match;
+        const arr: (string | number)[] = [];
+        if (letters) arr.push(letters);
+        if (numbers) arr.push(Number(numbers));
+        return arr;
+    });
+};
+
+const compareGoalCodes = (a: string, b: string) => {
+    const pa = parseGoalCode(a);
+    const pb = parseGoalCode(b);
+    const len = Math.max(pa.length, pb.length);
+    for (let i = 0; i < len; i++) {
+        const va = pa[i];
+        const vb = pb[i];
+        if (va === undefined) return -1;
+        if (vb === undefined) return 1;
+        if (typeof va === "number" && typeof vb === "number") {
+            if (va !== vb) return va - vb;
+        } else {
+            const sa = String(va);
+            const sb = String(vb);
+            if (sa !== sb) return sa.localeCompare(sb, undefined, { numeric: true });
+        }
+    }
+    return 0;
+};
+
+/* ---------------------------
+   ModalProgram (icon + apertura)
+   --------------------------- */
+
+export const ModalProgram: React.FC = (): JSX.Element => {
+    const dispatch = useAppDispatch();
+    const { id_plan } = useAppSelector((store) => store.content);
+
+    const [modalIsOpen, setModalIsOpen] = useState(false);
+    const [data, setData] = useState<ReportPDTInterface2[]>([]);
+
+    // estados locales que llenan los thunks
+    const [levelsState, setLevelsState] = useState<any[]>([]);
+    const [nodesState, setNodesState] = useState<any[]>([]);
+
+    useEffect(() => {
+        if (!id_plan) return;
+
+        // niveles
+        dispatch(thunkGetLevelArrayByPlan(id_plan))
+            .unwrap()
+            .then((res) => {
+                const normalized = Array.isArray(res) ? normalizeLevelsOrder(res) : [];
+                setLevelsState(normalized);
+            })
+            .catch(() => setLevelsState([]));
+
+        // nodos
+        dispatch(thunkGetNodeArrayByPlan(id_plan))
+            .unwrap()
+            .then((res) => setNodesState(Array.isArray(res) ? res : []))
+            .catch(() => setNodesState([]));
+
+        dispatch(setZeroLevelIndex());
+    }, [id_plan, dispatch]);
+
+    const genReport = async (): Promise<ReportPDTInterface2[]> => {
+        const data_: ReportPDTInterface2[] = await generalReport(id_plan);
+        dispatch(setLoadingReport(false));
+        return data_;
+    };
+
+    const handleBtn = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        e.preventDefault();
+        setModalIsOpen(true);
+        dispatch(setLoadingReport(true));
+        genReport().then((d) => setData(d));
+    };
+
+    return (
+        <div>
+            <ModalProgramModal
+                modalIsOpen={modalIsOpen}
+                callback={setModalIsOpen}
+                data={data}
+                levelsFromThunk={levelsState}
+                nodesFromThunk={nodesState}
+            />
+
+            <IconButton
+                size="large"
+                color="inherit"
+                title="Generar reporte del Plan Indicativo Total"
+                className="tw-transition tw-duration-200 hover:tw--translate-y-1 hover:tw-scale-[1.2] tw-bg-transparent tw-border-none"
+                onClick={handleBtn}
+            >
+                <div className="tw-flex tw-items-center tw-gap-2">
+                    <LibraryBooksIcon className="tw-text-[22px] tw-text-slate-700" />
+                    <span className="tw-hidden md:tw-inline tw-text-sm tw-font-medium tw-text-slate-700">
+                        Informe Programa
+                    </span>
+                </div>
+            </IconButton>
+        </div>
+    );
+};
+
+/* ---------------------------
+   ModalProgramModal (contenido del modal)
+   --------------------------- */
+
 type ModalPDTExtendedProps = ModalPDTProps & {
     levelsFromThunk?: any[];
     nodesFromThunk?: any[];
 };
 
-const ModalPDT: React.FC<ModalPDTExtendedProps> = (props) => {
+const ModalProgramModal: React.FC<ModalPDTExtendedProps> = (props) => {
+    const dispatch = useAppDispatch();
+
+    // planStore (puede venir en distintos formatos)
     const planStore = useAppSelector((s) => (s as any).plan);
 
-    const years: string[] = Array.isArray(planStore?.years) ? planStore.years : [];
-    const levelsFromStore: any[] = Array.isArray(planStore?.levels) ? planStore.levels : [];
-    const loadingReport: boolean = !!planStore?.loadingReport;
+    // years
+    const years: string[] = Array.isArray(planStore?.years) ? (planStore.years as string[]) : [];
 
-    // Usamos preferentemente levelsFromThunk si existen
+    // preferimos levels proporcionados por el thunk
     const levels: any[] =
         Array.isArray(props.levelsFromThunk) && props.levelsFromThunk.length > 0
             ? props.levelsFromThunk
-            : levelsFromStore;
+            : Array.isArray(planStore?.levels)
+                ? (planStore.levels as any[])
+                : [];
 
-    // nodos cargados por thunk (si vienen) - usados como fallback para obtener full_path si item no lo trae
     const nodes: any[] = Array.isArray(props.nodesFromThunk) ? props.nodesFromThunk : [];
 
-    // index_ para selects (inicializado cuando levels cambian)
-    const [index_, setIndex_] = useState<number[]>([]);
-    // programs: lista de nodos (nombres) por nivel construidos a partir de data + full_path
-    const [programs, setPrograms] = useState<any[][]>([]);
+    const loadingReport: boolean = !!planStore?.loadingReport;
 
-    // cuando cambian los niveles usados, reiniciamos índices y programs
-    useEffect(() => {
-        setIndex_(levels.map(() => -1));
-        setPrograms(levels.map(() => []));
-    }, [levels]);
-
-    // --- utilidades ---
     const toNumberArray = (input: unknown, fallback: number[] = [30, 60, 90]): number[] => {
         if (!Array.isArray(input)) return fallback;
         const parsed = (input as unknown[])
@@ -173,6 +219,7 @@ const ModalPDT: React.FC<ModalPDTExtendedProps> = (props) => {
 
     const colorimeter: number[] = toNumberArray(planStore?.colorimeter, [30, 60, 90]);
 
+    // headers fijos y dinámicos (sin cambios lógicos)
     const staticBefore = [
         { key: "goalCode", label: "Código de la meta producto" },
         { key: "goalDescription", label: "Meta" },
@@ -183,94 +230,35 @@ const ModalPDT: React.FC<ModalPDTExtendedProps> = (props) => {
         { key: "base", label: "Línea base" },
     ];
 
-    // dynamicHeaders ahora incluye levelIndex y rawName
     const dynamicHeaders =
         levels.length > 0
             ? levels.map((level: any, idx: number) => {
-                  const rawName = String(level?.name ?? `Nivel ${idx}`).trim();
-                  const safeId = rawName.replace(/\s+/g, "_").replace(/[^a-zA-Z0-9_\-]/g, "").slice(0, 40);
+                const rawName = String(level?.name ?? `Nivel ${idx}`).trim();
+                const safeId = rawName
+                    .replace(/\s+/g, "_")
+                    .replace(/[^a-zA-Z0-9_\-]/g, "")
+                    .slice(0, 40);
 
-                  const label = rawName.toLowerCase() === "meta" ? "Descripción de Meta" : rawName;
+                const label = rawName.toLowerCase() === "meta" ? "Descripción de Meta" : rawName;
 
-                  return { key: `dyn-${idx}-${safeId}`, label, levelIndex: idx, rawName };
-              })
+                return { key: `dyn-${idx}-${safeId}`, label, levelIndex: idx, rawName };
+            })
             : [
-                  { key: "dyn-f-0", label: "Dimensión", levelIndex: 0, rawName: "Dimension" },
-                  { key: "dyn-f-1", label: "Sector", levelIndex: 1, rawName: "Sector" },
-                  { key: "dyn-f-2", label: "Programa", levelIndex: 2, rawName: "Programa" },
-                  { key: "dyn-f-3", label: "Subprograma", levelIndex: 3, rawName: "Subprograma" },
-              ];
+                { key: "dyn-f-0", label: "Dimensión", levelIndex: 0, rawName: "Dimension" },
+                { key: "dyn-f-1", label: "Sector", levelIndex: 1, rawName: "Sector" },
+                { key: "dyn-f-2", label: "Programa", levelIndex: 2, rawName: "Programa" },
+                { key: "dyn-f-3", label: "Subprograma", levelIndex: 3, rawName: "Subprograma" },
+            ];
 
     const baseHeaders = [...staticBefore, ...dynamicHeaders, ...staticAfter];
 
-    const parseCsv = (s?: string): string[] => {
-        if (!s) return [];
-        const matches = s.match(/\[([^\]]*)\]/g);
-        if (!matches) return [];
-        return matches.map((m) => m.slice(1, -1).trim());
-    };
-
-    const fmtNumberIfPossible = (v: string | number | undefined) => {
-        if (v === undefined || v === null || v === "") return "";
-        const str = String(v).replace(/\s+/g, "");
-        const n = Number(str);
-        if (!Number.isFinite(n)) return String(v);
-        return n.toLocaleString();
-    };
-
     const getPlanParts = (planSpecificRaw: string) => {
         const parts = parseCsv(planSpecificRaw);
-        // orden: metaFromPlan, subprograma, programa, sector, dimension (según tu parse inicial)
         const [metaFromPlan = "", subprograma = "", programa = "", sector = "", dimension = ""] = parts;
         return { metaFromPlan, subprograma, programa, sector, dimension };
     };
 
-    const colorClass = (item: ReportPDTInterface2, index: number) => {
-        const percentArr = parseCsv(item.percentExecuted);
-        const raw = percentArr[index];
-        const value = raw === undefined || raw === "" ? NaN : Number(raw);
-        if (Number.isNaN(value)) return "tw-bg-gray-400";
-        if (value < 0) return "tw-bg-gray-400";
-        if (value < colorimeter[0]) return "tw-bg-redColory";
-        if (value < colorimeter[1]) return "tw-bg-yellowColory";
-        if (value < colorimeter[2]) return "tw-bg-greenColory";
-        return "tw-bg-blueColory hover:tw-ring-blue-200";
-    };
-
-    const parseGoalCode = (code: string): (string | number)[] => {
-        const normalized = String(code).replace(/(^\.)|(\.$)/g, "");
-        return normalized.split(".").flatMap((part) => {
-            const match = part.match(/^([A-Za-z]+)?(\d+)?$/);
-            if (!match) return [part];
-            const [, letters, numbers] = match;
-            const arr: (string | number)[] = [];
-            if (letters) arr.push(letters);
-            if (numbers) arr.push(Number(numbers));
-            return arr;
-        });
-    };
-
-    const compareGoalCodes = (a: string, b: string) => {
-        const pa = parseGoalCode(a);
-        const pb = parseGoalCode(b);
-        const len = Math.max(pa.length, pb.length);
-        for (let i = 0; i < len; i++) {
-            const va = pa[i];
-            const vb = pb[i];
-            if (va === undefined) return -1;
-            if (vb === undefined) return 1;
-            if (typeof va === "number" && typeof vb === "number") {
-                if (va !== vb) return va - vb;
-            } else {
-                const sa = String(va);
-                const sb = String(vb);
-                if (sa !== sb) return sa.localeCompare(sb, undefined, { numeric: true });
-            }
-        }
-        return 0;
-    };
-
-    // ---------------- valueForLevel robusta ----------------
+    /* valueForLevel (igual que antes, conservando heurísticas) */
     const valueForLevel = (levelIndex: number, item: ReportPDTInterface2, rawName?: string) => {
         const normalize = (s: any) =>
             (s ?? "")
@@ -280,7 +268,6 @@ const ModalPDT: React.FC<ModalPDTExtendedProps> = (props) => {
                 .replace(/[^\w\sáéíóúñüÁÉÍÓÚÑÜ-]/g, "")
                 .trim();
 
-        // 1) intentar full_path en item (varias claves)
         const fpCandidates = [
             (item as any).full_path,
             (item as any).fullPath,
@@ -290,131 +277,91 @@ const ModalPDT: React.FC<ModalPDTExtendedProps> = (props) => {
 
         if (fpCandidates.length > 0) {
             const fp = String(fpCandidates[0]);
-            const parts = fp.split(">").map((p) => p.trim()).filter(Boolean);
+            const parts = fp
+                .split(">")
+                .map((p: string) => p.trim())
+                .filter((s: string) => Boolean(s));
             if (levelIndex >= 0 && levelIndex < parts.length) return parts[levelIndex];
         }
 
-        // 2) intentar en nodes (heurísticas)
         if (Array.isArray(nodes) && nodes.length > 0) {
             const goalDesc = normalize(item.goalDescription ?? (item as any).plan_description ?? "");
             const goalCode = String(item.goalCode ?? (item as any).code ?? "").trim();
 
             const nodeFullPath = (n: any) => (n?.full_path ?? n?.fullPath ?? n?.fullpath ?? "").toString();
 
-            // búsqueda 1: node.full_path termina con goalDescription
             let nodeFound = nodes.find((n) => {
                 const nfp = normalize(nodeFullPath(n));
                 return goalDesc && nfp.endsWith(goalDesc);
             });
 
-            // búsqueda 2: node.node_name === goalDescription
             if (!nodeFound && goalDesc) {
                 nodeFound = nodes.find((n) => normalize(n.node_name ?? n.name ?? "") === goalDesc);
             }
 
-            // búsqueda 3: node.plan_description === goalDescription
             if (!nodeFound && goalDesc) {
-                nodeFound = nodes.find((n) => normalize((n as any).plan_description ?? "") === goalDesc);
+                nodeFound = nodes.find((n) => normalize(n.plan_description ?? "") === goalDesc);
             }
 
-            // búsqueda 4: por code o id_node (igual o sufijo)
             if (!nodeFound && goalCode) {
                 nodeFound =
-                    nodes.find((n) => String((n as any).code) === goalCode) ||
-                    nodes.find((n) => String((n as any).code).endsWith(goalCode)) ||
+                    nodes.find((n) => String(n.code) === goalCode) ||
+                    nodes.find((n) => String(n.code).endsWith(goalCode)) ||
                     nodes.find((n) => String(n.id_node) === goalCode);
             }
 
-            // búsqueda 5: inclusión de tokens en full_path
             if (!nodeFound && goalDesc) {
-                nodeFound = nodes.find((n) => normalize(nodeFullPath(n)).includes(goalDesc));
+                nodeFound = nodes.find((n) => {
+                    const nfp = normalize(nodeFullPath(n));
+                    return nfp.includes(goalDesc);
+                });
             }
 
             if (nodeFound) {
                 const fp = nodeFullPath(nodeFound);
-            const parts = fp.split(">").map((p: string) => p.trim()).filter(Boolean);
+                const parts = fp
+                    .split(">")
+                    .map((p: string) => p.trim())
+                    .filter((s: string) => Boolean(s));
                 if (levelIndex >= 0 && levelIndex < parts.length) return parts[levelIndex];
             }
         }
 
-        // 3) fallback por nombre de level (meta)
         const levelName = (rawName ?? levels[levelIndex]?.name ?? "").toString().toLowerCase();
-        if (levelName.includes("meta")) {
-            const plan = getPlanParts(item.planSpecific || "");
+        if (levelName === "meta" || levelName.includes("meta")) {
+            const plan = getPlanParts(item.planSpecific);
             return plan.metaFromPlan || item.goalDescription || "";
         }
 
-        // 4) fallback con planSpecific parsed (si existe)
         try {
-            const plan = getPlanParts(item.planSpecific || "");
-            // mapamos planParts al orden esperado: dimension, sector, programa, subprograma, metaFromPlan
+            const planParts = getPlanParts(item.planSpecific);
             const possibleArr = [
-                plan.dimension,
-                plan.sector,
-                plan.programa,
-                plan.subprograma,
-                plan.metaFromPlan,
-            ].map((x) => (x ?? "").toString()).filter(Boolean);
+                planParts.dimension,
+                planParts.sector,
+                planParts.programa,
+                planParts.subprograma,
+                planParts.metaFromPlan,
+            ]
+                .map((x) => (x ?? "").toString())
+                .filter(Boolean);
             if (levelIndex >= 0 && levelIndex < possibleArr.length) return possibleArr[levelIndex];
         } catch (e) {
             /* noop */
         }
 
-        // si nada existe, devolver vacío
-        // console.log("valueForLevel: no match", { levelIndex, levelName, goalCode: item.goalCode, goalDesc: item.goalDescription, itemFullPath: (item as any).full_path, nodesLen: nodes.length });
         return "";
     };
 
-    // --- construir programs (listas para selects) a partir de props.data y valueForLevel ---
-    useEffect(() => {
-        const rows = Array.isArray(props.data) ? props.data : [];
-        if (levels.length === 0) {
-            setPrograms([]);
-            return;
-        }
-
-        const levelMaps: Map<string, { id_node: string; name: string }>[] = levels.map(() => new Map());
-
-        rows.forEach((item) => {
-            levels.forEach((level, idx) => {
-                const rawName = valueForLevel(idx, item, level?.name);
-                const name = String(rawName ?? "").trim();
-                if (!name) return;
-                const m = levelMaps[idx];
-                if (!m.has(name)) {
-                    const id = `${idx}-${m.size}`;
-                    m.set(name, { id_node: id, name });
-                }
-            });
-        });
-
-        const arrays = levelMaps.map((m) => Array.from(m.values()));
-        setPrograms(arrays);
-    }, [props.data, levels, nodes]);
-
-    // filtro dinámico: usa los selects seleccionados (index_) y valueForLevel
-    const filteredData = (props.data || []).filter((item) => {
-        const plan = getPlanParts(item.planSpecific || "");
-        return levels.every((level, i) => {
-            const selIdx = index_[i];
-            const selectedNode = selIdx >= 0 ? programs[i]?.[selIdx]?.name : undefined;
-            if (!selectedNode) return true; // "Todos" o no seleccionado
-            // comparar con valueForLevel (fuente única de verdad)
-            const val = valueForLevel(i, item, level?.name);
-            return String(val) === String(selectedNode);
-        });
-    });
-
-    const handleChangePrograms = (levelIndex: number, e: React.ChangeEvent<HTMLSelectElement>) => {
-        const value = e.target.value;
-        const newIndex = [...index_];
-        if (value === "") {
-            newIndex[levelIndex] = -1;
-        } else {
-            const idx = programs[levelIndex].findIndex((p) => p.name === value);
-            newIndex[levelIndex] = idx >= 0 ? idx : -1;
-        }
-        setIndex_(newIndex);
+    const colorClass = (item: ReportPDTInterface2, index: number) => {
+        const percentArr = parseCsv(item.percentExecuted);
+        const raw = percentArr[index];
+        const value = raw === undefined || raw === "" ? NaN : Number(raw);
+        if (Number.isNaN(value)) return "tw-bg-gray-300 tw-text-xs tw-font-medium";
+        if (value < 0) return "tw-bg-gray-300 tw-text-xs tw-font-medium";
+        if (value < colorimeter[0]) return "tw-bg-redColory tw-text-white tw-font-medium";
+        if (value < colorimeter[1]) return "tw-bg-yellowColory tw-text-black tw-font-medium";
+        if (value < colorimeter[2]) return "tw-bg-greenColory tw-text-white tw-font-medium";
+        return "tw-bg-blueColory tw-text-white tw-font-medium tw-hover:tw-ring-2";
     };
 
     const tableBody = (item: ReportPDTInterface2) => {
@@ -424,127 +371,328 @@ const ModalPDT: React.FC<ModalPDTExtendedProps> = (props) => {
         const executedArr = parseCsv(item.executed);
 
         return (
-            <tr key={item.goalCode}>
+            <tr key={item.goalCode} className="tw-align-top odd:tw-bg-white even:tw-bg-slate-50">
                 {baseHeaders.map((h: any) => {
                     if (h.key === "goalCode")
                         return (
-                            <td className="tw-border tw-p-2">
+                            <td className="tw-border tw-p-2 tw-text-sm tw-font-medium" key={`${item.goalCode}-code`}>
                                 {formatGoalCodeDisplay(item.goalCode)}
                             </td>
                         );
                     if (h.key === "goalDescription")
-                        return <td className="tw-border tw-p-2">{item.goalDescription}</td>;
+                        return (
+                            <td className="tw-border tw-p-2 tw-text-sm" key={`${item.goalCode}-desc`}>
+                                {item.goalDescription}
+                            </td>
+                        );
                     if (h.key === "metaFromPlan")
-                        return <td className="tw-border tw-p-2">{plan.metaFromPlan}</td>;
+                        return (
+                            <td className="tw-border tw-p-2 tw-text-sm" key={`${item.goalCode}-meta`}>
+                                {plan.metaFromPlan}
+                            </td>
+                        );
                     if (h.key === "responsible")
-                        return <td className="tw-border tw-p-2">{item.responsible}</td>;
+                        return (
+                            <td className="tw-border tw-p-2 tw-text-sm" key={`${item.goalCode}-resp`}>
+                                {item.responsible}
+                            </td>
+                        );
                     if (h.key === "indicator")
-                        return <td className="tw-border tw-p-2">{item.indicator}</td>;
+                        return (
+                            <td className="tw-border tw-p-2 tw-text-sm" key={`${item.goalCode}-ind`}>
+                                {item.indicator}
+                            </td>
+                        );
                     if (h.key === "base")
-                        return <td className="tw-border tw-p-2">{fmtNumberIfPossible(item.base)}</td>;
+                        return (
+                            <td className="tw-border tw-p-2 tw-text-sm tw-text-right" key={`${item.goalCode}-base`}>
+                                {fmtNumberIfPossible(item.base)}
+                            </td>
+                        );
                     if ((h.key as string).startsWith("dyn-")) {
                         const li = typeof h.levelIndex === "number" ? h.levelIndex : -1;
                         const val = li >= 0 ? valueForLevel(li, item, h.rawName) : "";
-                        return <td className="tw-border tw-p-2">{val}</td>;
+                        return (
+                            <td className="tw-border tw-p-2 tw-text-sm" key={`${item.goalCode}-dyn-${li}`}>
+                                {val}
+                            </td>
+                        );
                     }
-                    return <td className="tw-border tw-p-2">-</td>;
+                    return (
+                        <td className="tw-border tw-p-2 tw-text-sm" key={`${item.goalCode}-other`}>
+                            -
+                        </td>
+                    );
                 })}
 
                 {years.map((_, i) => (
-                    <td className="tw-border tw-p-2">{fmtNumberIfPossible(programedArr[i])}</td>
-                ))}
-                {years.map((_, i) => (
-                    <td className="tw-border tw-p-2">{fmtNumberIfPossible(executedArr[i])}</td>
-                ))}
-                {years.map((_, i) => (
-                    <td className={`tw-border tw-p-2 tw-text-center ${colorClass(item, i)}`}>
-                        {percentArr[i] ?? ""}
+                    <td className="tw-border tw-p-2 tw-text-sm tw-text-right" key={`${item.goalCode}-p-${i}`}>
+                        {fmtNumberIfPossible(programedArr[i])}
                     </td>
                 ))}
+                {years.map((_, i) => (
+                    <td className="tw-border tw-p-2 tw-text-sm tw-text-right" key={`${item.goalCode}-e-${i}`}>
+                        {fmtNumberIfPossible(executedArr[i])}
+                    </td>
+                ))}
+                {years.map((_, i) => {
+                    const value = percentArr[i];
+                    const displayValue = value === "-1.0" || value === "-1" ? "N/A" : value ?? "";
+
+                    return (
+                        <td
+                            className={`tw-border tw-p-2 tw-text-center tw-text-sm ${colorClass(item, i)}`}
+                            key={`${item.goalCode}-%-${i}`}
+                        >
+                            {displayValue}
+                        </td>
+                    );
+                })}
             </tr>
         );
     };
 
-        const dataToShow = Array.isArray(filteredData)
-        ? filteredData.slice().sort((a, b) => compareGoalCodes(a.goalCode, b.goalCode))
+    const data = Array.isArray(props.data)
+        ? props.data.slice().sort((a, b) => compareGoalCodes(a.goalCode, b.goalCode))
         : [];
+
+    // ---------------------------
+    // Filtros jerárquicos por niveles (dynamicHeaders)
+    // ---------------------------
+
+    // cantidad de niveles (dynamicHeaders)
+    const levelCount = dynamicHeaders.length;
+
+    // estado con la selección por nivel; "" === "Todos"
+    const [selectedLevels, setSelectedLevels] = useState<string[]>(() =>
+        Array(levelCount).fill("")
+    );
+
+    // si cambian los dynamicHeaders (p. ej. niveles desde thunk), ajustar el estado
+    useEffect(() => {
+        setSelectedLevels(Array(dynamicHeaders.length).fill(""));
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [dynamicHeaders.length]);
+
+    // función auxiliar que comprueba si un item cumple las selecciones jerárquicas
+    const itemMatchesSelections = (item: ReportPDTInterface2, selections: string[]) => {
+        for (let idx = 0; idx < selections.length; idx++) {
+            const sel = selections[idx];
+            if (!sel || sel === "") continue; // 'Todos'
+            const val = valueForLevel(idx, item, dynamicHeaders[idx]?.rawName);
+            // comparación estricta por ahora (exact match)
+            if ((val ?? "").toString() !== sel.toString()) return false;
+        }
+        return true;
+    };
+
+    // datos filtrados según todas las selecciones activas
+    const filteredData = useMemo(() => {
+        if (!Array.isArray(data) || data.length === 0) return [];
+        return data.filter((d) => itemMatchesSelections(d, selectedLevels));
+    }, [data, selectedLevels]);
+
+    // Opciones por nivel: cada nivel muestra valores únicos que aparecen en los items que cumplan las selecciones de los padres (niveles < idx)
+    const optionsByLevel = useMemo(() => {
+        const opts: string[][] = dynamicHeaders.map(() => []);
+        // para cada nivel idx, calculamos valores únicos considerando selecciones padres
+        for (let idx = 0; idx < dynamicHeaders.length; idx++) {
+            // construir filtro de padres (selections up to idx-1)
+            const parentSelections = selectedLevels.slice(0, idx);
+            const set = new Set<string>();
+            for (const item of data) {
+                // comprobar padres
+                let ok = true;
+                for (let p = 0; p < parentSelections.length; p++) {
+                    const ps = parentSelections[p];
+                    if (!ps || ps === "") continue;
+                    const v = valueForLevel(p, item, dynamicHeaders[p]?.rawName);
+                    if ((v ?? "").toString() !== ps.toString()) {
+                        ok = false;
+                        break;
+                    }
+                }
+                if (!ok) continue;
+                const v = valueForLevel(idx, item, dynamicHeaders[idx]?.rawName);
+                if (v !== undefined && v !== null && String(v).trim() !== "") set.add(String(v));
+            }
+            opts[idx] = Array.from(set).sort((a, b) => a.localeCompare(b));
+        }
+        return opts;
+    }, [data, dynamicHeaders, selectedLevels]);
+
+    // handler cuando se cambia un select de nivel `idx`
+    const handleLevelChange = (idx: number, value: string) => {
+        setSelectedLevels((prev) => {
+            const next = prev.slice();
+            // setear valor en idx
+            next[idx] = value;
+            // resetear hijos (idx+1 .. end) a ""
+            for (let j = idx + 1; j < next.length; j++) next[j] = "";
+            return next;
+        });
+    };
+
+    /* ---------------------------
+       RENDER
+       --------------------------- */
 
     return (
         <Modal
             isOpen={props.modalIsOpen}
             onRequestClose={() => props.callback(false)}
             contentLabel="Modal de Plan"
+            ariaHideApp={false}
+            // overlay sigue ocupando toda la pantalla
+            overlayClassName="tw-fixed tw-inset-0 tw-bg-black tw-bg-opacity-50"
+            // el modal se centra y el contenedor interior ocupa casi toda la pantalla
+            className="tw-fixed tw-inset-0 tw-flex tw-items-center tw-justify-center tw-p-4"
         >
             {loadingReport ? (
-                <Spinner />
+                <div className="tw-w-[95vw] tw-h-[92vh] tw-bg-white tw-rounded-xl tw-shadow-2xl tw-p-8 tw-flex tw-items-center tw-justify-center">
+                    <div className="tw-flex tw-flex-col tw-items-center tw-gap-4">
+                        <Spinner />
+                        <p className="tw-text-sm tw-text-slate-600">Generando informe... esto puede tardar unos segundos</p>
+                    </div>
+                </div>
             ) : (
-                <div className="tw-z-20">
-                    <div className="tw-absolute tw-top-0 tw-right-0">
-                        <button className="tw-px-2" onClick={() => props.callback(false)}>
-                            <p className="tw-text-xl tw-text-[#626d75] tw-font-bold">X</p>
-                        </button>
-                    </div>
+                /* contenedor interior ampliado: ocupa 95% ancho y 92% alto */
+                <div className="tw-w-[95vw] tw-h-[92vh] tw-bg-white tw-rounded-xl tw-shadow-2xl tw-p-6 tw-relative tw-flex tw-flex-col">
+                    {/* close button */}
+                    <button
+                        onClick={() => props.callback(false)}
+                        aria-label="Cerrar"
+                        className="tw-absolute tw-top-4 tw-right-4 tw-rounded-full tw-p-2 tw-border tw-border-slate-200 hover:tw-bg-slate-50"
+                    >
+                        <span className="tw-text-lg tw-text-slate-600 tw-font-bold">✕</span>
+                    </button>
 
-                    <h1>Plan</h1>
+                    {/* header */}
+                    <div className="tw-flex tw-items-start tw-justify-between tw-gap-4 tw-mb-4">
+                        <div>
+                            <h2 className="tw-text-2xl md:tw-text-3xl tw-font-semibold tw-text-slate-800">
+                                Informe Programa — Plan Indicativo
+                            </h2>
+                            <p className="tw-text-sm tw-text-slate-500 tw-mt-1">
+                                Resumen por metas, niveles y ejecución por año.
+                            </p>
 
-                    <div className="tw-flex tw-mb-3">
-                        {programs.map((program, i) => (
-                            <div key={i} className="tw-mr-3">
-                                <h1 className="tw-bg-slate-300 tw-text-center tw-rounded tw-p-1">{levels[i]?.name}</h1>
-                                <select
-                                    value={index_[i] >= 0 ? programs[i][index_[i]]?.name ?? "" : ""}
-                                    onChange={(e) => handleChangePrograms(i, e)}
-                                    className="tw-border tw-border-gray-300 tw-rounded tw-px-2 tw-py-1"
-                                >
-                                    <option value="">Todos</option>
-                                    {program.map((node) => (
-                                        <option value={node.name} key={node.id_node}>
-                                            {node.name}
-                                        </option>
-                                    ))}
-                                </select>
+                            {/* leyenda colorimeter */}
+                            <div className="tw-flex tw-items-center tw-gap-2 tw-mt-3 tw-flex-wrap">
+                                <span className="tw-text-xs tw-font-medium tw-text-slate-600">Leyenda:</span>
+                                <div className="tw-flex tw-items-center tw-gap-2">
+                                    <span className="tw-inline-block tw-text-[11px] tw-px-2 tw-py-1 tw-rounded tw-bg-redColory tw-text-white">
+                                        {"< "}{colorimeter[0]}%
+                                    </span>
+                                    <span className="tw-inline-block tw-text-[11px] tw-px-2 tw-py-1 tw-rounded tw-bg-yellowColory tw-text-black">
+                                        {colorimeter[0]}–{colorimeter[1]}%
+                                    </span>
+                                    <span className="tw-inline-block tw-text-[11px] tw-px-2 tw-py-1 tw-rounded tw-bg-greenColory tw-text-white">
+                                        {colorimeter[1]}–{colorimeter[2]}%
+                                    </span>
+                                    <span className="tw-inline-block tw-text-[11px] tw-px-2 tw-py-1 tw-rounded tw-bg-blueColory tw-text-white">
+                                        {"≥ "}{colorimeter[2]}%
+                                    </span>
+                                </div>
                             </div>
-                        ))}
-                        <button
-                            className="tw-bg-gray-300 hover:tw-bg-gray-200 tw-rounded tw-border tw-border-black tw-px-2 tw-py-1"
-                            onClick={() =>
-                                (() => {
-                                    const yearsAsNumbers = years.map((y: string) => Number(y)).filter((n) => Number.isFinite(n)) as number[];
-                                    return generateExcelYears(filteredData, "InformeProgramas", levels, yearsAsNumbers, colorimeter);
-                                })()
-                            }
-                        >
-                            Exportar
-                        </button>
+                        </div>
+
+                        <div className="tw-flex tw-items-center tw-gap-3">
+                            {/* Selects jerárquicos por cada nivel dinámico */}
+                            <div className="tw-flex tw-items-center tw-gap-3 tw-flex-wrap tw-mr-2">
+                                {dynamicHeaders.map((dh, idx) => (
+                                    <div key={dh.key} className="tw-flex tw-items-center tw-gap-2">
+                                        <label htmlFor={`lvl-${idx}`} className="tw-text-xs tw-font-medium tw-text-slate-600">
+                                            {dh.label}:
+                                        </label>
+                                        <select
+                                            id={`lvl-${idx}`}
+                                            value={selectedLevels[idx] ?? ""}
+                                            onChange={(e) => handleLevelChange(idx, e.target.value)}
+                                            className="tw-border tw-border-slate-200 tw-rounded tw-px-2 tw-py-1 tw-text-sm"
+                                        >
+                                            <option value="">Todos</option>
+                                            {optionsByLevel[idx] && optionsByLevel[idx].map((opt) => (
+                                                <option key={opt} value={opt}>
+                                                    {opt}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <button
+                                className="tw-flex tw-items-center tw-gap-2 tw-border tw-border-slate-200 tw-px-3 tw-py-2 tw-rounded tw-bg-slate-50 hover:tw-bg-slate-100"
+                                onClick={() => {
+                                    const yearsAsNumbers = years
+                                        .map((y: string) => Number(y))
+                                        .filter((n) => Number.isFinite(n)) as number[];
+                                    return generateExcelYears(filteredData, "InformeTotal", levels, yearsAsNumbers, colorimeter);
+                                }}
+                            >
+                                <svg className="tw-w-4 tw-h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M12 3v12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                    <path d="M8 11l4 4 4-4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                    <path d="M20 21H4" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                                </svg>
+                                <span className="tw-text-sm tw-font-medium">Exportar</span>
+                            </button>
+                        </div>
                     </div>
 
-                    <table id="TablaTotal">
-                        <thead>
-                            <tr>
-                                {baseHeaders.map((h: any) => (
-                                    <th key={h.key} className="tw-border tw-bg-gray-400 tw-p-2">
-                                        {h.label}
-                                    </th>
-                                ))}
-                                {years.map((year) => (
-                                    <th key={`p-${year}`} className="tw-border tw-bg-gray-400 tw-p-2">
-                                        Programado {year}
-                                    </th>
-                                ))}
-                                {years.map((year) => (
-                                    <th key={`e-${year}`} className="tw-border tw-bg-gray-400 tw-p-2">
-                                        Ejecutado {year}
-                                    </th>
-                                ))}
-                                {years.map((year) => (
-                                    <th key={`%-${year}`} className="tw-border tw-bg-gray-400 tw-p-2">
-                                        % ejecución {year}
-                                    </th>
-                                ))}
-                            </tr>
-                        </thead>
-                        <tbody>{dataToShow.map((item) => tableBody(item))}</tbody>
-                    </table>
+                    {/* table container: ocupa el espacio restante y es scrollable */}
+                    <div className="tw-flex-1 tw-overflow-auto tw-rounded tw-border tw-border-slate-100">
+                        <table id="TablaTotal" className="tw-min-w-full tw-table-auto tw-divide-y">
+                            <thead>
+                                <tr>
+                                    {baseHeaders.map((h: any) => (
+                                        <th
+                                            key={h.key}
+                                            className="tw-border-b tw-px-3 tw-py-2 tw-text-left tw-text-sm tw-font-semibold tw-sticky tw-top-0 tw-z-10 tw-bg-slate-700 tw-text-white"
+                                        >
+                                            {h.label}
+                                        </th>
+                                    ))}
+                                    {years.map((year) => (
+                                        <th
+                                            key={`p-${year}`}
+                                            className="tw-border-b tw-px-3 tw-py-2 tw-text-right tw-text-sm tw-font-semibold tw-sticky tw-top-0 tw-z-10 tw-bg-slate-700 tw-text-white"
+                                        >
+                                            Programado {year}
+                                        </th>
+                                    ))}
+                                    {years.map((year) => (
+                                        <th
+                                            key={`e-${year}`}
+                                            className="tw-border-b tw-px-3 tw-py-2 tw-text-right tw-text-sm tw-font-semibold tw-sticky tw-top-0 tw-z-10 tw-bg-slate-700 tw-text-white"
+                                        >
+                                            Ejecutado {year}
+                                        </th>
+                                    ))}
+                                    {years.map((year) => (
+                                        <th
+                                            key={`%-${year}`}
+                                            className="tw-border-b tw-px-3 tw-py-2 tw-text-center tw-text-sm tw-font-semibold tw-sticky tw-top-0 tw-z-10 tw-bg-slate-700 tw-text-white"
+                                        >
+                                            % ejecución {year}
+                                        </th>
+                                    ))}
+                                </tr>
+                            </thead>
+                            <tbody>{filteredData.map((item) => tableBody(item))}</tbody>
+                        </table>
+                    </div>
+
+                    {/* footer */}
+                    <div className="tw-flex tw-justify-between tw-items-center tw-mt-4">
+                        <p className="tw-text-xs tw-text-slate-500">
+                            {filteredData.length} metas · {years.length} años
+                        </p>
+                        <div className="tw-text-xs tw-text-slate-500">
+                            Última actualización: {/* si tienes fecha, ponla aquí */}
+                        </div>
+                    </div>
                 </div>
             )}
         </Modal>
