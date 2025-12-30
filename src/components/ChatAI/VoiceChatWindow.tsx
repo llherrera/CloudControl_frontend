@@ -685,16 +685,24 @@ async function sendToAI(userMsg: Message, idPlanParam: number, idUserParam?: num
     const data = (action as any).payload as ChatbotResponse;
     console.log('🧩 [sendToAI] Payload recibido:', data);
 
-    // Texto visible por defecto
-    let aiText = data?.naturalLanguageResponse ?? '(Error en la consulta a la IA)';
+    // Texto visible por defecto: preferir 'naturalLanguageResponse', luego 'response'
+    let aiText =
+      (data as any)?.naturalLanguageResponse ??
+      (data as any)?.response ??
+      '(Error en la consulta a la IA)';
+
     console.log('🔤 [sendToAI] Texto inicial IA (preview):', aiText?.slice?.(0, 300));
 
     // Preferir llmResponseParsed si existe
-    let parsedContent: any = data?.llmResponseParsed ?? null;
+    let parsedContent: any = (data as any)?.llmResponseParsed ?? null;
     console.log('🔎 [sendToAI] llmResponseParsed presente?:', !!parsedContent);
 
-    // Extraer JSON embebido si no hay llmResponseParsed
-    if (!parsedContent) {
+    // Si la respuesta es corta y no tiene pinta de JSON, usarla tal cual
+    if (!parsedContent && aiText && aiText.length < 1200 && !aiText.includes('{') && !aiText.includes('[')) {
+      console.log('ℹ️ [sendToAI] Respuesta corta sin indicios de JSON, se usará tal cual.');
+      parsedContent = null;
+    } else if (!parsedContent) {
+      // Extraer JSON embebido si no hay llmResponseParsed
       console.log('🔍 [sendToAI] Intentando extraer JSON embebido...');
       const { jsonText, cleanedText } = extractJsonFromText(aiText);
       if (jsonText) {
@@ -702,7 +710,7 @@ async function sendToAI(userMsg: Message, idPlanParam: number, idUserParam?: num
         const parsed = tryParseJsonSafe(jsonText);
         if (parsed !== null) {
           parsedContent = parsed;
-          aiText = cleanedText.trim(); // limpiar el texto visible (puede quedar vacio)
+          aiText = cleanedText.trim(); // limpiar el texto visible (puede quedar vacío)
           console.log('✅ [sendToAI] JSON embebido parseado correctamente.');
         } else {
           console.warn('⚠️ [sendToAI] No se pudo parsear el JSON embebido.');
@@ -731,30 +739,41 @@ async function sendToAI(userMsg: Message, idPlanParam: number, idUserParam?: num
     let tableObject: TableObject = null;
     let structuredData: any = null;
 
-    // Caso A: parsedContent es array de primitivos -> normalizar y mostrar como lista legible (con guiones)
-    if (Array.isArray(parsedContent) && parsedContent.length > 0 && parsedContent.every(v => ['string', 'number', 'boolean'].includes(typeof v))) {
+    // Caso A: parsedContent es array de primitivos -> normalizar y mostrar como lista legible
+    if (
+      Array.isArray(parsedContent) &&
+      parsedContent.length > 0 &&
+      parsedContent.every(v => ['string', 'number', 'boolean'].includes(typeof v))
+    ) {
       console.log('🟢 [sendToAI] parsedContent es array primitivo; se procesará para mostrar lista legible.');
       const normalized = normalizeAndDedupStrings(parsedContent);
       structuredData = normalized; // array limpio para el front
-      // Mostrar en el chat como lista legible con guiones (una por línea)
-      aiText = normalized.map(s => `- ${s}`).join('\n');
+      aiText = normalized.map(s => `- ${s}`).join('\n'); // lista con guiones
       tableObject = null;
       console.log('🟢 [sendToAI] Lista normalizada (preview):', normalized.slice(0, 20));
     }
-    // Caso B: parsedContent es array de objetos -> tabla (comportamiento anterior)
-    else if (Array.isArray(parsedContent) && parsedContent.length > 0 && parsedContent.every(item => isRecord(item))) {
+    // Caso B: parsedContent es array de objetos -> tabla
+    else if (
+      Array.isArray(parsedContent) &&
+      parsedContent.length > 0 &&
+      parsedContent.every(item => isRecord(item))
+    ) {
       console.log('🟢 [sendToAI] parsedContent es array de objetos -> normalizando a tableObject.');
       const rows = parsedContent as Record<string, any>[];
       const years = detectYears({ presentationObject: { table: { rows } }, metadata: undefined });
       const flattenedRows = rows.map(r => flattenRowForTable(r, years));
       tableObject = { type: 'table', rows: flattenedRows };
       structuredData = parsedContent;
-      aiText = data?.naturalLanguageResponse ?? '';
+      aiText = (data as any)?.naturalLanguageResponse ?? (data as any)?.response ?? '';
     }
     // Caso C: parsedContent es objeto con presentationObject o similar
     else if (parsedContent && isRecord(parsedContent)) {
       console.log('🟢 [sendToAI] parsedContent es objeto -> comportamiento normal (presentationSummary/presentationObject).');
-      if (parsedContent?.presentationSummary && typeof parsedContent.presentationSummary === 'string' && parsedContent.presentationSummary.trim().length) {
+      if (
+        parsedContent?.presentationSummary &&
+        typeof parsedContent.presentationSummary === 'string' &&
+        parsedContent.presentationSummary.trim().length
+      ) {
         aiText = parsedContent.presentationSummary.trim();
       } else if (parsedContent?.presentationType && !aiText) {
         aiText = `Se presenta información en formato "${parsedContent.presentationType}".`;
@@ -770,7 +789,9 @@ async function sendToAI(userMsg: Message, idPlanParam: number, idUserParam?: num
         const explicitRows = parsedContent.presentationObject?.table?.rows;
         if (Array.isArray(explicitRows)) {
           const yearsFromMeta = detectYears(parsedContent);
-          const flattenedRows = explicitRows.map((r: Record<string, any>) => flattenRowForTable(r, yearsFromMeta));
+          const flattenedRows = explicitRows.map((r: Record<string, any>) =>
+            flattenRowForTable(r, yearsFromMeta)
+          );
           tableObject = { type: 'table', rows: flattenedRows };
         }
       }
@@ -798,12 +819,13 @@ async function sendToAI(userMsg: Message, idPlanParam: number, idUserParam?: num
     setConversations(prev => [...prev, userMsg.text, aiText || '']);
     setPlotOpts(prev => [...prev, null, tableObject]);
     console.log('🗂️ [sendToAI] Conversación y plotOpts actualizados.');
-
   } catch (err: any) {
     console.error('[sendToAI] Error capturado:', err);
     setMessages(prev =>
       prev.map(m =>
-        m.id === typingMsg.id ? { ...m, text: `Error: ${err?.message ?? String(err)}`, time: Date.now() } : m
+        m.id === typingMsg.id
+          ? { ...m, text: `Error: ${err?.message ?? String(err)}`, time: Date.now() }
+          : m
       )
     );
     setConversations(prev => [...prev, userMsg.text, `Error: ${err?.message ?? String(err)}`]);
@@ -814,7 +836,6 @@ async function sendToAI(userMsg: Message, idPlanParam: number, idUserParam?: num
     console.log('🏁 [sendToAI] Finalizado.');
   }
 }
-
 
   // --- Aquí está la función handleSend actualizada ---
   function handleSend() {

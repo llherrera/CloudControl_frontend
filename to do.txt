@@ -1,0 +1,357 @@
+1) Obtener sesiones activas (para SessionsTable)
+Thunk: thunkGetActiveSessions
+
+Llama a ruta: GET /api/sessions/active?planId={id_plan}
+
+Recibe:
+
+id_plan (number) desde el estado content o parámetro del thunk.
+
+Envía al backend:
+
+planId como query param.
+
+Devuelve al frontend:
+
+Session[] (lo que usas en sessions de UserManager).
+
+ts
+// store/pqrs/thunks.ts
+import { createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
+import { Session } from "@/interfaces";
+
+export const thunkGetActiveSessions = createAsyncThunk<
+  Session[],
+  { planId?: number; userId?: number }
+>("sessions/getActiveSessions", async (params, { rejectWithValue }) => {
+  try {
+    const res = await axios.get<Session[]>("/api/sessions/active", {
+      params: {
+        planId: params.planId,
+        userId: params.userId,
+      },
+    });
+    return res.data;
+  } catch (error: any) {
+    return rejectWithValue(error.response?.data || "Error obteniendo sesiones activas");
+  }
+});
+Uso en UserManager:
+
+ts
+const fetchSessions = useCallback(async () => {
+  try {
+    const result = await dispatch(thunkGetActiveSessions({ planId: id_plan })).unwrap();
+    setSessions(result);
+  } catch (e) {
+    console.error(e);
+  }
+}, [dispatch, id_plan]);
+2) Historial de sesiones por usuario
+Thunk: thunkGetUserSessionHistory
+
+Ruta: GET /api/sessions/history/:userId?from=&to=
+
+Recibe:
+
+userId
+
+from?, to? (opcional, si quieres filtros).
+
+Envía:
+
+userId en path.
+
+from, to como query.
+
+Devuelve:
+
+Session[] con duración, etc. (puede ser el mismo tipo Session ampliado).
+
+ts
+export const thunkGetUserSessionHistory = createAsyncThunk<
+  Session[],
+  { userId: number | string; from?: string; to?: string }
+>("sessions/getUserSessionHistory", async (params, { rejectWithValue }) => {
+  try {
+    const res = await axios.get<Session[]>(`/api/sessions/history/${params.userId}`, {
+      params: {
+        from: params.from,
+        to: params.to,
+      },
+    });
+    return res.data;
+  } catch (error: any) {
+    return rejectWithValue(error.response?.data || "Error obteniendo historial de sesiones");
+  }
+});
+Esto lo podrías usar en un modal o vista de detalle de usuario.
+
+3) Crear sesión al hacer login
+Thunk: thunkCreateSession
+
+Ruta: POST /api/sessions
+
+Recibe:
+
+userId
+
+deviceSummary
+
+browserName
+
+osName
+
+approxLocation
+
+ipTruncatedOrHash
+
+Envía (body):
+
+JSON con esos campos.
+
+Devuelve:
+
+Session creada (incluye SessionId).
+
+ts
+interface CreateSessionPayload {
+  userId: number | string;
+  deviceSummary?: string;
+  browserName?: string;
+  osName?: string;
+  approxLocation?: string;
+  ipTruncatedOrHash?: string;
+}
+
+export const thunkCreateSession = createAsyncThunk<
+  Session,
+  CreateSessionPayload
+>("sessions/createSession", async (data, { rejectWithValue }) => {
+  try {
+    const res = await axios.post<Session>("/api/sessions", data);
+    return res.data;
+  } catch (error: any) {
+    return rejectWithValue(error.response?.data || "Error creando sesión");
+  }
+});
+Lo puedes disparar justo después de login, guardar sessionId en Redux o en memory.
+
+4) Actualizar actividad de sesión (pestañas y reconexiones)
+Thunk: thunkUpdateSessionActivity
+
+Ruta: PATCH /api/sessions/:sessionId/activity
+
+Recibe:
+
+sessionId
+
+tabsCount?
+
+incrementReconnect?
+
+Envía (body):
+
+{ tabsCount, incrementReconnect }.
+
+Devuelve:
+
+Session actualizada (por si quieres reflejar datos en UI).
+
+ts
+interface UpdateSessionActivityPayload {
+  sessionId: number | string;
+  tabsCount?: number;
+  incrementReconnect?: boolean;
+}
+
+export const thunkUpdateSessionActivity = createAsyncThunk<
+  Session,
+  UpdateSessionActivityPayload
+>("sessions/updateSessionActivity", async (data, { rejectWithValue }) => {
+  try {
+    const res = await axios.patch<Session>(
+      `/api/sessions/${data.sessionId}/activity`,
+      {
+        tabsCount: data.tabsCount,
+        incrementReconnect: data.incrementReconnect,
+      }
+    );
+    return res.data;
+  } catch (error: any) {
+    return rejectWithValue(error.response?.data || "Error actualizando actividad de sesión");
+  }
+});
+Esto lo puedes usar en hooks que escuchen eventos de visibilitychange, beforeunload, etc.
+
+5) Cerrar sesión (logout o todas las pestañas cerradas)
+Thunk: thunkCloseSession
+
+Ruta: PATCH /api/sessions/:sessionId/close
+
+Recibe:
+
+sessionId
+
+Envía:
+
+Solo path param.
+
+Devuelve:
+
+Session finalizada (o la puedes ignorar).
+
+ts
+export const thunkCloseSession = createAsyncThunk<
+  Session,
+  { sessionId: number | string }
+>("sessions/closeSession", async ({ sessionId }, { rejectWithValue }) => {
+  try {
+    const res = await axios.patch<Session>(`/api/sessions/${sessionId}/close`);
+    return res.data;
+  } catch (error: any) {
+    return rejectWithValue(error.response?.data || "Error cerrando sesión");
+  }
+});
+Puedes llamarlo en logout o en beforeunload de la última pestaña (con lógica en frontend).
+
+6) Registrar evento / acción de usuario
+Thunk: thunkCreateSessionEvent
+
+Ruta: POST /api/sessions/:sessionId/events
+
+Recibe:
+
+sessionId
+
+userId
+
+eventType
+
+eventName?
+
+eventMetadata? (stringified JSON)
+
+deviceSummary?, approxLocation?
+
+Envía (body):
+
+Datos del evento.
+
+Devuelve:
+
+UserSessionEvent (si quieres tiparlo) o un any simple.
+
+ts
+interface CreateSessionEventPayload {
+  sessionId: number | string;
+  userId: number | string;
+  eventType: string;
+  eventName?: string;
+  eventMetadata?: string; // JSON.stringify(...)
+  deviceSummary?: string;
+  approxLocation?: string;
+}
+
+interface UserSessionEvent {
+  EventId: number;
+  SessionId: number;
+  UserId: number;
+  EventTimeUtc: string;
+  EventType: string;
+  EventName?: string;
+  EventMetadata?: string;
+  DeviceSummary?: string;
+  ApproxLocation?: string;
+}
+
+export const thunkCreateSessionEvent = createAsyncThunk<
+  UserSessionEvent,
+  CreateSessionEventPayload
+>("sessions/createSessionEvent", async (data, { rejectWithValue }) => {
+  try {
+    const { sessionId, ...body } = data;
+    const res = await axios.post<UserSessionEvent>(
+      `/api/sessions/${sessionId}/events`,
+      body
+    );
+    return res.data;
+  } catch (error: any) {
+    return rejectWithValue(error.response?.data || "Error registrando evento de sesión");
+  }
+});
+Esto lo puedes usar en handlers de clic, navegación interna, apertura de módulos, etc.
+
+7) Integración mínima en el slice
+Ejemplo de slice simple para sesiones:
+
+ts
+// store/pqrs/sessionsSlice.ts
+import { createSlice } from "@reduxjs/toolkit";
+import {
+  thunkGetActiveSessions,
+  thunkCreateSession,
+  thunkCloseSession,
+  thunkUpdateSessionActivity,
+} from "./thunks";
+import { Session } from "@/interfaces";
+
+interface SessionsState {
+  list: Session[];
+  loading: boolean;
+  error: string | null;
+  currentSessionId: number | null;
+}
+
+const initialState: SessionsState = {
+  list: [],
+  loading: false,
+  error: null,
+  currentSessionId: null,
+};
+
+const sessionsSlice = createSlice({
+  name: "sessions",
+  initialState,
+  reducers: {
+    setCurrentSessionId(state, action) {
+      state.currentSessionId = action.payload;
+    },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(thunkGetActiveSessions.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(thunkGetActiveSessions.fulfilled, (state, action) => {
+        state.loading = false;
+        state.list = action.payload;
+      })
+      .addCase(thunkGetActiveSessions.rejected, (state, action) => {
+        state.loading = false;
+        state.error = (action.payload as string) || "Error";
+      })
+      .addCase(thunkCreateSession.fulfilled, (state, action) => {
+        state.currentSessionId = action.payload.SessionId;
+        state.list.unshift(action.payload);
+      })
+      .addCase(thunkCloseSession.fulfilled, (state, action) => {
+        state.list = state.list.map((s) =>
+          s.SessionId === action.payload.SessionId ? action.payload : s
+        );
+        if (state.currentSessionId === action.payload.SessionId) {
+          state.currentSessionId = null;
+        }
+      })
+      .addCase(thunkUpdateSessionActivity.fulfilled, (state, action) => {
+        state.list = state.list.map((s) =>
+          s.SessionId === action.payload.SessionId ? action.payload : s
+        );
+      });
+  },
+});
+
+export const { setCurrentSessionId } = sessionsSlice.actions;
+export default sessionsSlice.reducer;

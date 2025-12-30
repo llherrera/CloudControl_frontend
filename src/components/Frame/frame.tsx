@@ -26,7 +26,8 @@ import { thunkLogout } from '@/store/auth/thunks';                        // Thu
 
 import {
     setLogo, setLogoPlan, setReload, selectOption,
-    setProjectPage, setIsFullHeight
+    setProjectPage, setIsFullHeight,
+    setIdPlan
 } from '@/store/content/contentSlice';                                    // Acciones del slice content
 
 import { AddRootTree, setCalcDone, setZeroLevelIndex } from "@/store/plan/planSlice";  // Acciones del slice plan
@@ -236,6 +237,42 @@ export const Frame = ({ children }: FrameProps) => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
 
+    const [rol, setRol] = useState("");
+    const [id, setId] = useState(0);
+    const [user, setUser] = useState("");
+    const [idPlan_token, setIdPlan_token] = useState(0); // Token value
+    const [idPlan, setIdPlan] = useState<number | null>(null); // Final resolved value
+
+    const { token_info } = useAppSelector(store => store.auth);
+
+    useEffect(() => {
+        if (token_info?.token !== undefined) {
+            const decoded = decode(token_info.token);
+            setId(decoded.id);
+            setUser(decoded.user);
+            setRol(decoded.rol);
+            setIdPlan_token(decoded.id_plan || 0);
+        }
+    }, [token_info]);
+
+    // Nuevo useEffect para resolver idPlan final (token o localStorage)
+    useEffect(() => {
+        if (typeof window === 'undefined') return; // Solo cliente
+
+        // Si token es 0, usa localStorage
+        if (idPlan_token === 0) {
+            const idPlan_string = localStorage.getItem('id_plan');
+            const fallbackId = idPlan_string ? parseInt(idPlan_string, 10) : null;
+            setIdPlan(fallbackId);
+            console.log("Usando idPlan de localStorage:", fallbackId);
+        } else {
+            // Prioridad al token
+            setIdPlan(idPlan_token);
+            console.log("Usando idPlan de token:", idPlan_token);
+        }
+    }, [idPlan_token]);
+
+
     const { plan } = useAppSelector(store => store.plan);
     const { index, isFullHeight, url_logo,
         url_logo_plan } = useAppSelector(store => store.content);
@@ -373,7 +410,7 @@ export const Frame = ({ children }: FrameProps) => {
 
     useEffect(() => {
         const fetchSolicitudes = async () => {
-            const id_plan = localStorage.getItem('id_plan');
+            const id_plan = String(idPlan);
             const office = localStorage.getItem('office');
             if (!id_plan) {
                 console.error("No se encontró id_plan en localStorage");

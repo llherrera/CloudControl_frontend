@@ -3,6 +3,8 @@ import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
 import { ErrorBasicInterface, ParamsAddPqrs, ParamsAddPqrsType,
     ParamsAddPqrsHistory } from '@/interfaces';
 
+import { Session, CreateSessionPayload, UpdateSessionActivityPayload, CreateSessionEventPayload, UserSessionEvent, User, UserSessionAlert } from '@/interfaces/session';
+
 import { parseErrorAxios } from '@/utils';
 
 import { getPQRSsByPlan, getPQRSByRadicado, getPQRSTypes, getPQRSHistoryByRadicado,
@@ -24,8 +26,16 @@ import { getPQRSsByPlan, getPQRSByRadicado, getPQRSTypes, getPQRSHistoryByRadica
     addServiciosBulk,
     fetchChatbotApi,
     buscarSolicitudesPorDocumentoApi,
-    uploadPoaiExcel, } from '@/services/pqrs_api';
-import { log } from 'node:console';
+    uploadPoaiExcel,
+    getActiveSessions,
+    getUserSessionHistory,
+    createSession,
+    updateSessionActivity,
+    closeSession,
+    createSessionEvent,
+    getUsersByPlanDetailed,
+    getUserSessionEvents,
+    getUserSessionAlerts, } from '@/services/pqrs_api';
 
 export const thunkGetPQRSs = createAsyncThunk<{}, number, { rejectValue: ErrorBasicInterface }>(
     'pdt/getPQRSByPlan',
@@ -411,3 +421,116 @@ export const thunkUploadPoaiExcel = createAsyncThunk<
     }
   }
 );
+
+
+export const thunkGetActiveSessions = createAsyncThunk<
+  Session[],
+  { planId?: number; userId?: number }
+>("sessions/getActiveSessions", async (params, { rejectWithValue }) => {
+  try {
+    const res = await getActiveSessions(params);
+    return res;
+  } catch (error: any) {
+    return rejectWithValue(error.response?.data || "Error obteniendo sesiones activas");
+  }
+});
+
+export const thunkGetUserSessionHistory = createAsyncThunk<
+  Session[],
+  { planId?: number; userId?: number }
+>("sessions/getUserSessionHistory", async (params, { rejectWithValue }) => {
+  try {
+    const res = await getUserSessionHistory(params);
+    return res;
+  } catch (error: any) {
+    return rejectWithValue(error.response?.data || "Error obteniendo historial de sesiones");
+  }
+});
+
+export const thunkCreateSession = createAsyncThunk<
+  Session,
+  CreateSessionPayload
+>("sessions/createSession", async (data, { rejectWithValue }) => {
+  try {
+    const res = await createSession(data);
+    return res;
+  } catch (error: any) {
+    return rejectWithValue(error.response?.data || "Error creando sesión");
+  }
+});
+
+export const thunkUpdateSessionActivity = createAsyncThunk<
+  Session,
+  UpdateSessionActivityPayload
+>("sessions/updateSessionActivity", async (data, { rejectWithValue }) => {
+  try {
+    const res = await updateSessionActivity(data.sessionId, {
+      tabsCount: data.tabsCount,
+      incrementReconnect: data.incrementReconnect,
+    });
+    return res;
+  } catch (error: any) {
+    return rejectWithValue(error.response?.data || "Error actualizando actividad de sesión");
+  }
+});
+
+export const thunkCloseSession = createAsyncThunk<
+  Session,
+  { sessionId: number | string }
+>("sessions/closeSession", async ({ sessionId }, { rejectWithValue }) => {
+  try {
+    const res = await closeSession(sessionId);
+    return res;
+  } catch (error: any) {
+    return rejectWithValue(error.response?.data || "Error cerrando sesión");
+  }
+});
+
+export const thunkCreateSessionEvent = createAsyncThunk<
+  UserSessionEvent,
+  CreateSessionEventPayload
+>("sessions/createSessionEvent", async (data, { rejectWithValue }) => {
+  try {
+    const { sessionId, ...body } = data;
+    const res = await createSessionEvent(sessionId, body);
+    return res;
+  } catch (error: any) {
+    return rejectWithValue(error.response?.data || "Error registrando evento de sesión");
+  }
+});
+
+export const thunkGetUsersByPlanDetailed = createAsyncThunk<
+  User[],
+  number
+>("sessions/getUsersByPlanDetailed", async (idPlan, { rejectWithValue }) => {
+  try {
+    const res = await getUsersByPlanDetailed(idPlan);
+    return res;
+  } catch (error: any) {
+    return rejectWithValue(error.response?.data || "Error obteniendo usuarios del plan");
+  }
+});
+
+export const thunkGetUserSessionEvents = createAsyncThunk<
+  UserSessionEvent[],
+  { planId?: number; userId?: number }
+>("sessions/getUserSessionEvents", async (params, { rejectWithValue }) => {
+  try {
+    const res = await getUserSessionEvents(params);
+    return res;
+  } catch (error: any) {
+    return rejectWithValue(error.response?.data || "Error obteniendo eventos de sesión");
+  }
+});
+
+export const thunkGetUserSessionAlerts = createAsyncThunk<
+  UserSessionAlert[],
+  { planId?: number; userId?: number }
+>("sessions/getUserSessionAlerts", async (params, { rejectWithValue }) => {
+  try {
+    const res = await getUserSessionAlerts(params);
+    return res;
+  } catch (error: any) {
+    return rejectWithValue(error.response?.data || "Error obteniendo alertas de sesión");
+  }
+});

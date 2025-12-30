@@ -7,7 +7,7 @@ import {  } from "../interfaces";
 import { getToken } from "@/utils";
 
 const { BASE_URL } = getEnvironment();
-const api = axios.create({
+export const api = axios.create({
     baseURL: BASE_URL,
 })
 
@@ -248,7 +248,7 @@ export const fetchChatbotApi = async (
     idPlan: number,
     idUser?: number | null
   ): Promise<ChatbotResponse> => {
-    const response = await api.get("/misc/chatbot", {
+    const response = await api.get("/chatbot/consulta-gemini", {
       params: {
         text,
         idPlan,
@@ -272,4 +272,49 @@ export const uploadPoaiExcel = async (idPlan: number, file: File) => {
   
     return response.data; // { idPlan, msg, path }
   };
-  
+
+// Funciones para sesiones
+export const getActiveSessions = async (params: { planId?: number; userId?: number }) => {
+  const response = await api.get("/sessions/active", { params });
+  return response.data;
+};
+
+export const getUserSessionHistory = async (params: { planId?: number; userId?: number }) => {
+  const response = await api.get("/sessions/history", { params });
+  return response.data;
+};
+
+export const createSession = async (data: any) => {
+  const response = await api.post("/sessions", data);
+  return response.data;
+};
+
+export const updateSessionActivity = async (sessionId: number | string, data: { tabsCount?: number; incrementReconnect?: boolean }) => {
+  const response = await api.patch(`/sessions/${sessionId}/activity`, data);
+  return response.data;
+};
+
+export const closeSession = async (sessionId: number | string) => {
+  const response = await api.patch(`/sessions/${sessionId}/close`);
+  return response.data;
+};
+
+export const createSessionEvent = async (sessionId: number | string, data: any) => {
+  const response = await api.post(`/sessions/${sessionId}/events`, data);
+  return response.data;
+};
+
+export const getUsersByPlanDetailed = async (idPlan: number) => {
+  const response = await api.get(`/misc/users-plan-detailed/${idPlan}`);
+  return response.data;
+};
+
+export const getUserSessionEvents = async (params: { planId?: number; userId?: number }) => {
+  const response = await api.get("/sessions/events", { params });
+  return response.data;
+};
+
+export const getUserSessionAlerts = async (params: { planId?: number; userId?: number }) => {
+  const response = await api.get("/sessions/alerts", { params });
+  return response.data;
+};
