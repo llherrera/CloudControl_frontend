@@ -6,7 +6,7 @@ import { resetEvidence, setEvidence } from "@/store/evidence/evidenceSlice";
 import { AddRootTree, setZeroLevelIndex } from "@/store/plan/planSlice";
 import { resetUnit } from "@/store/unit/unitSlice";
 
-import { BackBtn, DoubleBackBtn, EvidenceForm, Memory } from "@/components";
+import { BackBtn, DoubleBackBtn, EvidenceForm, Memory } from "@/components/Citizen";
 
 export const EvidencePage = () => {
     const navigate = useNavigate();

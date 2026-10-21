@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 
-import { Frame } from '@/components';
+import { Frame } from '@/components/Citizen';
 /*
 describe('Frame', () => {
   it('should render successfully', () => {

@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { PQRSForm, BackBtn } from "@/components";
+import { PQRSForm, BackBtn } from "@/components/Citizen";
 
 export const PQRSStatePage = () => {
     const navigate = useNavigate();

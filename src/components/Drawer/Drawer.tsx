@@ -22,7 +22,7 @@ export const DrawerMenu = ({children, height}: DrawerProps) => {
                     width: {xs: '100%', md:'160px'},
                     height: {md: `${height == undefined ? '70%': height}`},
                     position: 'absolute',
-                    top: { xs: '205px', sm: '205px', md: '220px', lg: '220px', xl: '102px', '2xl': '102px' },
+                    top: { xs: '205px', sm: '205px', md: '220px', lg: '220px', xl: '102px', '2xl': '117px' },
                     left: { md: '0', xl: '11rem', '2xl': '12rem' },
                     border: '',
                     maxWidth: {

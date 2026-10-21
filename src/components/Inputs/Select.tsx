@@ -92,14 +92,18 @@ export const SelectDept = ({callbackDept, callbackMuni }: SelectDetsOps) => {
         const { value } = e.target;
         if (!departamentOptions) return;
         setMunicipioOptions(null);
-        setSelectedDepartamento(departamentOptions[parseInt(value)]);
-        callbackDept(departamentOptions[parseInt(value)].NOMBRE_DEPARTAMENTO, departamentOptions[parseInt(value)].CODIGO_DEPARTAMENTO);
+        const idx = departamentOptions.findIndex(d => d.NOMBRE_DEPARTAMENTO === value);
+        if (idx === -1) return;
+        setSelectedDepartamento(departamentOptions[idx]);
+        callbackDept(departamentOptions[idx].NOMBRE_DEPARTAMENTO, departamentOptions[idx].CODIGO_DEPARTAMENTO);
     };
 
     const handleMunicipioChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const { value } = e.target;
         if (!municipioOptions) return;
-        callbackMuni(municipioOptions[parseInt(value)].NOMBRE_MUNICIPIO, municipioOptions[parseInt(value)].CODIGO_DPTO_MPIO);
+        const idx = municipioOptions.findIndex(m => m.NOMBRE_MUNICIPIO === value);
+        if (idx === -1) return;
+        callbackMuni(municipioOptions[idx].NOMBRE_MUNICIPIO, municipioOptions[idx].CODIGO_DPTO_MPIO);
     };
 
     return (

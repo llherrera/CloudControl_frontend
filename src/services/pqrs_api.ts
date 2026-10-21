@@ -7,7 +7,7 @@ import {  } from "../interfaces";
 import { getToken } from "@/utils";
 
 const { BASE_URL } = getEnvironment();
-const api = axios.create({
+export const api = axios.create({
     baseURL: BASE_URL,
 })
 
@@ -151,8 +151,9 @@ export const getServiciosByPlan = async (id_plan: number) => {
     return response.data;
 };
 
-export const addServicio = async (servicio: any) => {
-    const response = await api.post("/misc/servicios", servicio);
+export const addServicio = async (servicio: any, id_plan: number) => {
+    const payload = id_plan ? { ...servicio, id_plan } : servicio;
+    const response = await api.post("/misc/servicios", payload);
     return response.data;
 };
 
@@ -194,7 +195,126 @@ export const solveSolicitud = async (id_solicitud: string) => {
 
 export const redirectionSolicitud = async (id_solicitud: string, oficinaDestino: string) => {
     const response = await api.put(`/misc/redirection-solicitud/${id_solicitud}`, {
-        oficinaDestino
     });
     return response.data;
+};
+
+export const addServiciosBulk = async (id_plan: number, servicios: { nombre: string; tipo: 'N/A' | 'Valor' }[]) => {
+    const response = await api.post('/misc/Servicios_edit', { id_plan, servicios });
+    return response.data;
+};
+  export interface SolicitudShort {
+    id: number;
+    nombre: string;
+    tipoDocumento: string;
+    documento: string;
+    genero?: string;
+    grupo?: string;
+    poblacional?: string;
+    discapacidad?: string;
+    escolaridad?: string;
+    nacionalidad?: string;
+    telefono?: string;
+    correo?: string;
+    barrio?: string;
+    comuna?: string;
+    corregimiento?: string;
+    vereda?: string;
+  }
+  
+  export const buscarSolicitudesPorDocumentoApi = async (documento: string) => {
+    const response = await api.get('/misc/solicitudes_buscar', {
+      params: { documento },
+    });
+    return response.data as SolicitudShort[];
+  };
+  
+  export interface ChatbotResponse {
+    originalText: string;
+    idPlan: number;
+    idUser?: number | null;
+    generatedSql: string;
+    execution: {
+      executed: boolean;
+      reason: string | null;
+    };
+    rows: any[];
+    explanation: string;
+  }
+  
+// Función para llamar al backend
+export const fetchChatbotApi = async (
+    text: string,
+    idPlan: number,
+    idUser?: number | null
+  ): Promise<ChatbotResponse> => {
+    const response = await api.get("/chatbot/consulta-gemini", {
+      params: {
+        text,
+        idPlan,
+        ...(idUser ? { idUser } : {}), // incluir solo si existe
+      },
+    });
+    return response.data as ChatbotResponse;
+  };  
+
+  // función para enviar Excel al backend
+export const uploadPoaiExcel = async (idPlan: number, file: File) => {
+    const formData = new FormData();
+    formData.append("excelFile", file); // debe coincidir con multer
+    formData.append("idPlan", String(idPlan));
+  
+    const response = await api.post("/misc/uploadexcel", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    });
+  
+    return response.data; // { idPlan, msg, path }
+  };
+
+// Funciones para sesiones
+export const getActiveSessions = async (params: { planId?: number; userId?: number }) => {
+  const response = await api.get("/sessions/active", { params });
+  return response.data;
+};
+
+export const getUserSessionHistory = async (params: { planId?: number; userId?: number }) => {
+  const response = await api.get("/sessions/history", { params });
+  return response.data;
+};
+
+export const createSession = async (data: any) => {
+  const response = await api.post("/sessions", data);
+  return response.data;
+};
+
+export const updateSessionActivity = async (sessionId: number | string, data: { tabsCount?: number; incrementReconnect?: boolean }) => {
+  const response = await api.patch(`/sessions/${sessionId}/activity`, data);
+  return response.data;
+};
+
+export const closeSession = async (sessionId: number | string) => {
+  const response = await api.patch(`/sessions/${sessionId}/close`);
+  return response.data;
+};
+
+export const createSessionEvent = async (sessionId: number | string, data: any) => {
+  const response = await api.post(`/sessions/${sessionId}/events`, data);
+  return response.data;
+};
+
+export const getUsersByPlanDetailed = async (idPlan: number) => {
+  const response = await api.get(`/misc/users-plan-detailed/${idPlan}`);
+  return response.data;
+};
+
+export const getUserSessionEvents = async (params: { planId?: number; userId?: number }) => {
+  const response = await api.get("/sessions/events", { params });
+  return response.data;
+};
+
+export const getUserSessionAlerts = async (params: { planId?: number; userId?: number }) => {
+  const response = await api.get("/sessions/alerts", { params });
+  return response.data;
 };

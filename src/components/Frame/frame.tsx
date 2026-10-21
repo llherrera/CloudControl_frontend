@@ -1,37 +1,275 @@
-import { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button, IconButton } from '@mui/material';
-import LogoutIcon from '@mui/icons-material/Logout';
-import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
-import { MdSupportAgent } from 'react-icons/md';
-//import cclogo from '@/assets/images/logo-cc.png';
-//import cclogo from "@/assets/images/ControlLand.png";
-import cclogo from "@/assets/images/ControlLand2.png";
-import NotificationsIcon from '@mui/icons-material/Notifications';
+// -------------------- React y librerías base --------------------
+import { useEffect, useRef, useState } from 'react';       // Hooks de React
+import { useNavigate } from 'react-router-dom';           // Navegación entre rutas
 
-import { Menu, MenuItem, Badge } from '@mui/material';
-import { Notifications } from '@mui/icons-material';
+// -------------------- Componentes de Material UI --------------------
+import { Button, Divider, IconButton, Typography } from '@mui/material';  // Componentes UI básicos
+import { Menu, MenuItem, Badge } from '@mui/material';                    // Menú desplegable, items y badge
+import LogoutIcon from '@mui/icons-material/Logout';                      // Icono de logout
+import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';          // Icono de añadir persona
+import { Notifications } from '@mui/icons-material';                      // Icono de notificaciones
 
+// -------------------- Iconos externos --------------------
+import { MdSupportAgent } from 'react-icons/md';                          // Icono de soporte (React Icons)
 
-import { useAppDispatch, useAppSelector } from '@/store';
-import { thunkLogout } from '@/store/auth/thunks';
+// -------------------- Imágenes/Recursos --------------------
+// import cclogo from '@/assets/images/logo-cc.png';                      // Logo alternativo (comentado)
+// import cclogo from "@/assets/images/ControlLand.png";                  // Logo alternativo (comentado)
+import cclogo from "@/assets/images/ControlLand2.png";                    // Logo actual utilizado
+
+// -------------------- Utilidades --------------------
+import { decode } from '@/utils';                                         // Función utilitaria decode
+
+// -------------------- Store: Hooks y slices --------------------
+import { useAppDispatch, useAppSelector } from '@/store';                 // Hooks personalizados Redux
+import { thunkLogout } from '@/store/auth/thunks';                        // Thunk para cerrar sesión
+
 import {
     setLogo, setLogoPlan, setReload, selectOption,
-    setProjectPage, setIsFullHeight
-} from '@/store/content/contentSlice';
-import { AddRootTree, setZeroLevelIndex } from "@/store/plan/planSlice";
+    setProjectPage, setIsFullHeight,
+    setIdPlan
+} from '@/store/content/contentSlice';                                    // Acciones del slice content
 
-import { NavBar, ButtonComponent } from '@/components';
+import { AddRootTree, setCalcDone, setZeroLevelIndex } from "@/store/plan/planSlice";  // Acciones del slice plan
+
+// -------------------- Componentes propios --------------------
+import { NavBar, ButtonComponent, SettingsBtn } from '@/components/Citizen';                   // Navbar y botón reutilizable
+
+// -------------------- Iconos propios --------------------
 import {
     ProjectBankIcon, PlanIndicativoIcon, PlanAccionIcon,
     ChartIcon, MapICon
-} from '@/assets/icons';
-import { FrameProps } from '@/interfaces';
-import { thunkGetAllSolicitudes, thunkGetModulosUsuarioById } from '@/store/pqrs/thunks';
+} from '@/assets/icons';                                                  // Conjunto de iconos custom
+
+// -------------------- Interfaces --------------------
+import { FrameProps } from '@/interfaces';                                // Interface para props de Frame
+
+// -------------------- Thunks adicionales --------------------
+import {
+    thunkGetAllSolicitudes,
+    thunkGetModulosUsuarioById,
+} from '@/store/pqrs/thunks';                                             // Thunks para PQRS
+
+import { thunkGetTextFormatByPlan } from '@/store/plan/thunks';           // Thunk para formatos de texto
+
+// -------------------- Otros componentes --------------------
+import VoiceChatWindow from '@/components/ChatAI/VoiceChatWindow';        // Componente de chat de voz con IA
+
+// -------------------- Module Conversion Helpers --------------------
+
+// Interface que define la estructura de los módulos disponibles
+interface IModules {
+    indicative_plan: boolean;       // Plan indicativo
+    action_plan: boolean;           // Plan de acción
+    project_bank: boolean;          // Banco de proyectos
+    poai: boolean;                  // POAI
+    citizen_service: boolean;       // Atención al ciudadano
+    intervention_map: boolean;      // Mapa de intervención
+}
+
+// Arreglo que define el orden de los módulos (clave de IModules)
+const moduleOrder: (keyof IModules)[] = [
+    'indicative_plan',
+    'action_plan',
+    'project_bank',
+    'poai',
+    'citizen_service',
+    'intervention_map'
+];
+
+// Convierte un número decimal (máscara) en un objeto de tipo IModules
+const decimalToModules = (mask: number | undefined | null): IModules => {
+    const validMask = typeof mask === 'number' && Number.isFinite(mask) ? mask : 63;
+    const modules: any = {};
+
+    moduleOrder.forEach((key, index) => {
+        modules[key] = (validMask & (1 << index)) !== 0;
+    });
+
+    return modules;
+};
+
+export const Headerbase = () => {
+    const navigate = useNavigate();
+    const dispatch = useAppDispatch();
+
+    const { url_logo, url_logo_plan } = useAppSelector(store => store.content);
+
+    const [solicitudes, setSolicitudes] = useState<any[]>([]);
+
+    // ================== NOTIFICACIONES ==================
+    useEffect(() => {
+        const fetchSolicitudes = async () => {
+            const id_plan = localStorage.getItem('id_plan');
+            if (!id_plan) return;
+            dispatch(thunkGetAllSolicitudes({ id_plan }))
+                .unwrap()
+                .then((result: any) => setSolicitudes(result))
+                .catch(() => setSolicitudes([]));
+        };
+        fetchSolicitudes();
+    }, [dispatch]);
+
+    // ================== FORMATO DE TEXTO ==================
+    interface TextFormat {
+        text: string;
+        color: string;
+        size: string;
+        weight: 'normal' | 'bold' | 'lighter';
+        align: 'left' | 'center' | 'right' | 'justify';
+    }
+
+    const id_plan = localStorage.getItem('id_plan') ?? '';
+    const cachedFormat = localStorage.getItem('textFormat');
+    const initialTextFormat = cachedFormat ? JSON.parse(cachedFormat) as TextFormat : null;
+    const [textFormat, setTextFormat] = useState<TextFormat | null>(initialTextFormat);
+
+    useEffect(() => {
+        if (!textFormat && id_plan) {
+            dispatch(thunkGetTextFormatByPlan(Number(id_plan)))
+                .then((res) => {
+                    const payload = res.payload as TextFormat | undefined;
+                    if (payload) setTextFormat(payload);
+                });
+        }
+    }, [id_plan, dispatch, textFormat]);
+
+    const text = textFormat?.text || '';
+    const color = textFormat?.color || '#000000';
+    const size = textFormat?.size || '16px';
+    const weight = textFormat?.weight || 'normal';
+    const align = textFormat?.align || 'center';
+
+    // ================== ACCIONES ==================
+    const handleBtn = () => {
+        dispatch(thunkLogout())
+            .unwrap()
+            .then(() => {
+                dispatch(setReload(true));
+                navigate('/');
+            });
+    };
+
+    const handleAddUser = () => navigate(`/gestion-usuarios`);
+
+    return (
+        <header
+            className="
+          tw-bg-white tw-drop-shadow-xl
+          tw-flex tw-flex-col md:tw-flex-row tw-items-center
+          md:tw-justify-between
+          tw-py-2 tw-px-4
+          tw-gap-4 md:tw-gap-0
+        "
+        >
+            {/* ============================= */}
+            {/*   LOGOS                       */}
+            {/* ============================= */}
+            <div className="tw-flex tw-items-center tw-gap-4 tw-overflow-x-auto">
+                <img src={cclogo} alt="ControlLand" className="tw-h-[60px] sm:tw-h-[80px] md:tw-h-[100px]" />
+                {url_logo && <img src={url_logo} alt="Municipio" className="tw-h-[60px] sm:tw-h-[80px] md:tw-h-[100px]" />}
+                {url_logo_plan && <img src={url_logo_plan} alt="Plan" className="tw-h-[60px] sm:tw-h-[80px] md:tw-h-[100px]" />}
+            </div>
+
+            {/* ============================= */}
+            {/* TEXTO DEL PLAN + ADMIN BTN   */}
+            {/* ============================= */}
+            <div className="tw-w-[45%] tw-flex tw-justify-center">
+                <div className="tw-flex tw-flex-col tw-items-center tw-gap-4 tw-w-full tw-justify-center">
+                    <p
+                        className="tw-font-semibold tw-text-center tw-px-4 tw-py-1 tw-rounded-md tw-shadow-sm"
+                        style={{ color, fontSize: size, fontWeight: weight, textAlign: align }}
+                    >
+                        {text}
+                    </p>
+                    {localStorage.getItem('rol') === 'admin' && (
+                        <button
+                            onClick={handleAddUser}
+                            className="tw-flex tw-items-center tw-gap-2 tw-bg-green-100 hover:tw-bg-green-200
+                           tw-text-[#006400] tw-px-4 tw-py-2 tw-rounded-xl tw-shadow-md
+                           tw-transition-all tw-duration-200 tw-text-[clamp(0.9rem,2.2vw,1.3rem)]"
+                        >
+                            <PersonAddAltIcon sx={{ fontSize: 24, color: '#006400' }} />
+                            <span className="tw-font-montserrat tw-font-semibold">Gestión de usuarios</span>
+                        </button>
+                    )}
+                </div>
+            </div>
+
+            {/* ============================= */}
+            {/* DATOS USUARIO + ICONOS        */}
+            {/* ============================= */}
+            <div className="tw-flex tw-items-center tw-gap-4 tw-flex-wrap tw-justify-end tw-w-full md:tw-w-auto">
+                <div className="tw-flex tw-flex-col tw-bg-green-50 tw-p-3 tw-rounded-md tw-shadow-md">
+                    <span className="tw-text-sm sm:tw-text-base tw-text-[#006400] tw-font-semibold">
+                        Usuario: <span className="tw-font-normal">{localStorage.getItem('user')}</span>
+                    </span>
+                    <span className="tw-text-sm sm:tw-text-base tw-text-[#006400] tw-font-semibold">
+                        Rol: <span className="tw-font-normal">{localStorage.getItem('rol')}</span>
+                    </span>
+                    {localStorage.getItem('rol') === 'funcionario' && (
+                        <span className="tw-text-sm sm:tw-text-base tw-text-[#006400] tw-font-semibold">
+                            Oficina: <span className="tw-font-normal">{localStorage.getItem('office')}</span>
+                        </span>
+                    )}
+                </div>
+
+                {localStorage.getItem('rol') === 'funcionario' && (
+                    <IconButton title="Notificaciones">
+                        <Badge badgeContent={solicitudes.length} color="error">
+                            <Notifications sx={{ fontSize: 28, color: '#333' }} />
+                        </Badge>
+                    </IconButton>
+                )}
+
+                <IconButton onClick={handleBtn} title="Cerrar sesión">
+                    <LogoutIcon sx={{ color: '#006400', fontSize: 28 }} />
+                </IconButton>
+            </div>
+        </header>
+    );
+};
+
 
 export const Frame = ({ children }: FrameProps) => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
+
+    const [rol, setRol] = useState("");
+    const [id, setId] = useState(0);
+    const [user, setUser] = useState("");
+    const [idPlan_token, setIdPlan_token] = useState(0); // Token value
+    const [idPlan, setIdPlan] = useState<number | null>(null); // Final resolved value
+
+    const { token_info } = useAppSelector(store => store.auth);
+
+    useEffect(() => {
+        if (token_info?.token !== undefined) {
+            const decoded = decode(token_info.token);
+            setId(decoded.id);
+            setUser(decoded.user);
+            setRol(decoded.rol);
+            setIdPlan_token(decoded.id_plan || 0);
+        }
+    }, [token_info]);
+
+    // Nuevo useEffect para resolver idPlan final (token o localStorage)
+    useEffect(() => {
+        if (typeof window === 'undefined') return; // Solo cliente
+
+        // Si token es 0, usa localStorage
+        if (idPlan_token === 0) {
+            const idPlan_string = localStorage.getItem('id_plan');
+            const fallbackId = idPlan_string ? parseInt(idPlan_string, 10) : null;
+            setIdPlan(fallbackId);
+            console.log("Usando idPlan de localStorage:", fallbackId);
+        } else {
+            // Prioridad al token
+            setIdPlan(idPlan_token);
+            console.log("Usando idPlan de token:", idPlan_token);
+        }
+    }, [idPlan_token]);
+
 
     const { plan } = useAppSelector(store => store.plan);
     const { index, isFullHeight, url_logo,
@@ -54,31 +292,68 @@ export const Frame = ({ children }: FrameProps) => {
         const id = localStorage.getItem('id');
         const rol = localStorage.getItem('rol');
 
+        // Módulos habilitados a nivel del plan según el entero bitmap (plan.modules)
+        const planModules = decimalToModules(plan?.modules);
+
+        // Si el usuario es admin, ve los módulos habilitados por el plan
         if (rol === 'admin') {
             setModulos({
-                PlanIndicativo: true,
-                PlanDeAccion: true,
-                BancoDeProyectos: true,
-                POAI: true,
-                AtencionCiudadana: true,
-                MapaDeIntervencion: true
+                PlanIndicativo: planModules.indicative_plan,
+                PlanDeAccion: planModules.action_plan,
+                BancoDeProyectos: planModules.project_bank,
+                POAI: planModules.poai,
+                AtencionCiudadana: planModules.citizen_service,
+                MapaDeIntervencion: planModules.intervention_map
             });
             return;
         }
 
-        if (id !== null) {
+        // Para no administradores, se combinan permisos del plan y permisos individuales del usuario
+        if (plan && id) {
             dispatch(thunkGetModulosUsuarioById(parseInt(id)))
                 .unwrap()
-                .then(res => {
-                    if (Array.isArray(res) && res.length > 0) {
-                        setModulos(res[0]);
+                .then(userModulesArray => {
+                    if (Array.isArray(userModulesArray) && userModulesArray.length > 0) {
+                        const userModules = userModulesArray[0];
+
+                        const finalModules = {
+                            PlanIndicativo: planModules.indicative_plan && userModules.PlanIndicativo,
+                            PlanDeAccion: planModules.action_plan && userModules.PlanDeAccion,
+                            BancoDeProyectos: planModules.project_bank && userModules.BancoDeProyectos,
+                            POAI: planModules.poai && userModules.POAI,
+                            AtencionCiudadana: planModules.citizen_service && userModules.AtencionCiudadana,
+                            MapaDeIntervencion: planModules.intervention_map && userModules.MapaDeIntervencion,
+                        };
+
+                        if (plan.id_plan === 10044) {
+                            finalModules.AtencionCiudadana = false;
+                        }
+
+                        setModulos(finalModules);
                     }
                 })
                 .catch(err => {
-                    console.error('Error al obtener los módulos:', err);
+                    console.error('Error al obtener los módulos de usuario:', err);
+                    setModulos({
+                        PlanIndicativo: planModules.indicative_plan,
+                        PlanDeAccion: planModules.action_plan,
+                        BancoDeProyectos: planModules.project_bank,
+                        POAI: planModules.poai,
+                        AtencionCiudadana: planModules.citizen_service,
+                        MapaDeIntervencion: planModules.intervention_map
+                    });
                 });
+        } else {
+            setModulos({
+                PlanIndicativo: planModules.indicative_plan,
+                PlanDeAccion: planModules.action_plan,
+                BancoDeProyectos: planModules.project_bank,
+                POAI: planModules.poai,
+                AtencionCiudadana: planModules.citizen_service,
+                MapaDeIntervencion: planModules.intervention_map
+            });
         }
-    }, [dispatch]);
+    }, [dispatch, plan]);
 
 
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -138,7 +413,7 @@ export const Frame = ({ children }: FrameProps) => {
 
     useEffect(() => {
         const fetchSolicitudes = async () => {
-            const id_plan = localStorage.getItem('id_plan');
+            const id_plan = String(idPlan);
             const office = localStorage.getItem('office');
             if (!id_plan) {
                 console.error("No se encontró id_plan en localStorage");
@@ -198,115 +473,239 @@ export const Frame = ({ children }: FrameProps) => {
             });
     };
 
+    // Navegar a configuración
+    const handleSettings = (page: number = 0) => {
+        dispatch(setCalcDone(false));
+        navigate(`/pdt/PlanIndicativo/configuracion`, {
+            state: { pageN: page }
+        });
+    };
+
+
     const handleAddUser = () => {
         navigate(`/gestion-usuarios`);
     };
 
+    interface TextFormat {
+        text: string;
+        color: string;
+        size: string;
+        weight: 'normal' | 'bold' | 'lighter';
+        align: 'left' | 'center' | 'right' | 'justify';
+    }
+
+    const id_plan = localStorage.getItem('id_plan') ?? '';
+
+    // 🔁 Leer desde localStorage al iniciar
+    const cachedFormat = localStorage.getItem('textFormat');
+    const initialTextFormat = cachedFormat ? (JSON.parse(cachedFormat) as TextFormat) : null;
+
+    const [textFormat, setTextFormat] = useState<TextFormat | null>(initialTextFormat);
+
+    // 📦 Guardar en localStorage cada vez que cambia
+    useEffect(() => {
+        if (textFormat) {
+            localStorage.setItem('textFormat', JSON.stringify(textFormat));
+        }
+    }, [textFormat]);
+
+    useEffect(() => {
+        if (!textFormat && id_plan) {
+            console.log('[TextConfig] Solicitando configuración para el plan:', id_plan);
+
+            dispatch(thunkGetTextFormatByPlan(Number(id_plan)))
+                .then((res) => {
+                    console.log('[TextConfig] Respuesta recibida del thunk:', res);
+                    const payload = res.payload as TextFormat | undefined;
+
+                    if (payload) {
+                        console.log('[TextConfig] Payload válido:', payload);
+                        setTextFormat(payload); // Esto también actualizará localStorage gracias al otro useEffect
+                    } else {
+                        console.warn('[TextConfig] Payload inválido o vacío:', res.payload);
+                    }
+                })
+                .catch((error) => {
+                    console.error('[TextConfig] Error al obtener la configuración:', error);
+                });
+        }
+    }, [id_plan, dispatch, textFormat]);
+
+    // 👁️ Puedes seguir accediendo a los valores como antes
+    const text = textFormat?.text || '';
+    const color = textFormat?.color || '#000000';
+    const size = textFormat?.size || '16px';
+    const weight = textFormat?.weight || 'normal';
+    const align = textFormat?.align || 'center';
+
     return (
         <div className='tw-min-h-screen tw-flex tw-flex-col'>
-            <header className='tw-flex tw-justify-between tw-bg-header tw-drop-shadow-xl'>
-                <div className='tw-flex tw-items-center tw-gap-4'>
-                    {/* Logo */}
-                    <img src={cclogo} title='ControlLand' width={100} />
+            <header
+                className="
+        tw-bg-white tw-drop-shadow-xl
+        tw-flex tw-flex-col md:tw-flex-row tw-items-center
+        md:tw-justify-between
+        tw-py-2 tw-px-4
+        tw-gap-4 md:tw-gap-0
+      "
+            >
+                {/* ============================= */}
+                {/*   CONTENEDOR DE LOS 3 LOGOS   */}
+                {/* ============================= */}
+                <div
+                    className="
+          tw-flex tw-items-center tw-gap-4 tw-flex-nowrap
+          tw-overflow-x-auto
+        "
+                >
+                    {/* Logo de ControlLand */}
+                    <img
+                        src={cclogo}
+                        title="ControlLand"
+                        className="tw-h-[72px] sm:tw-h-[85px] md:tw-h-[95px] 2xl:tw-h-[110px] tw-object-contain"
+                        alt="ControlLand"
+                    />
 
-                    {/* Botón de gestión de usuarios (solo para admin) */}
-                    {localStorage.getItem('rol') === 'admin' && (
-                        <button
-                            onClick={handleAddUser}
-                            className='tw-flex tw-items-center tw-gap-2 hover:tw-bg-green-200 tw-p-2 tw-rounded-lg'
-                            title="Agregar funcionario al plan"
-                        >
-                            <PersonAddAltIcon sx={{ fontSize: 30, color: '#006400' }} />
-                            <span className='tw-text-[#006400] tw-font-montserrat tw-font-semibold tw-text-xl'>
-                                Gestión de usuarios
-                            </span>
-                        </button>
+                    {/* Logo del Municipio */}
+                    {url_logo && (
+                        <img
+                            src={url_logo}
+                            title="Municipio"
+                            className="tw-h-[72px] sm:tw-h-[85px] md:tw-h-[95px] 2xl:tw-h-[110px] tw-object-contain"
+                            alt="Municipio"
+                        />
+                    )}
+
+                    {/* Logo del Plan */}
+                    {url_logo_plan && (
+                        <img
+                            src={url_logo_plan}
+                            title="Plan"
+                            className="tw-h-[72px] sm:tw-h-[85px] md:tw-h-[95px] 2xl:tw-h-[110px] tw-object-contain"
+                            alt="Plan"
+                        />
                     )}
                 </div>
-                <div className='tw-flex tw-gap-3'>
-                    {url_logo && <img src={url_logo} title='Municipio' className='tw-h-[100px]' />}
-                    {url_logo_plan && <img src={url_logo_plan} title='Plan' className='tw-h-[100px]' />}
+
+                {/* ============================= */}
+                {/*        BOTÓN DE ADMIN         */}
+                {/* (solo visible en md+ o según rol) */}
+                {/* ============================= */}
+                <div className="tw-w-[45%] tw-flex tw-justify-center">
+                    <div className="tw-flex tw-flex-col tw-items-center tw-gap-4 tw-w-full tw-justify-center">
+                        <p
+                            className="tw-font-semibold tw-break-words tw-text-center tw-px-4 tw-py-1 tw-rounded-md tw-shadow-sm"
+                            style={{
+                                color: color,
+                                fontSize: size,
+                                fontWeight: weight,
+                                textAlign: align,
+                            }}
+                        >
+                            {text || ''}
+                        </p>
+
+                        {localStorage.getItem('rol') === 'admin' && (
+                            <button
+                                onClick={handleAddUser}
+                                className="
+                        tw-flex tw-items-center tw-justify-center tw-gap-2
+                        tw-bg-green-100 hover:tw-bg-green-200
+                        tw-text-[#006400]
+                        tw-px-4 tw-py-2
+                        tw-rounded-xl
+                        tw-shadow-md
+                        tw-transition-all tw-duration-200
+                        tw-text-[clamp(0.9rem,2.2vw,1.3rem)]
+                    "
+                                title="Agregar funcionario al plan"
+                            >
+                                <PersonAddAltIcon sx={{ fontSize: 24, color: '#006400' }} />
+                                <span className="tw-font-montserrat tw-font-semibold">
+                                    Gestión de usuarios
+                                </span>
+                            </button>
+                        )}
+                    </div>
                 </div>
-                <div className='tw-flex tw-items-center tw-gap-4'>
-                    <div className='tw-flex tw-flex-col tw-items-start tw-gap-2'>
-                        <div className="tw-flex tw-gap-6 tw-bg-green-50 tw-p-4 tw-rounded-md tw-shadow-md tw-items-center">
-                            <span className="tw-font-montserrat tw-text-base tw-text-[#006400] tw-font-semibold">
-                                Usuario: <span className="tw-font-normal">{localStorage.getItem('user')}</span>
+
+                {/* ============================= */}
+                {/*    DATOS DE USUARIO + ÍCONOS   */}
+                {/* ============================= */}
+                <div className="tw-flex tw-items-center tw-gap-4 tw-flex-wrap tw-justify-end tw-w-full md:tw-w-auto">
+                    {/* Caja con Usuario / Rol / Oficina */}
+                    <div
+                        className="
+                tw-flex tw-flex-col tw-items-start tw-gap-2
+                tw-bg-green-50 tw-p-3 tw-rounded-md tw-shadow-md
+                tw-w-full sm:tw-w-auto
+            "
+                    >
+                        <div
+                            className="
+                    tw-flex tw-flex-col sm:tw-flex-row
+                    tw-gap-2 sm:tw-gap-4
+                "
+                        >
+                            <span className="tw-font-montserrat tw-text-sm sm:tw-text-base tw-text-[#006400] tw-font-semibold">
+                                Usuario:{' '}
+                                <span className="tw-font-normal">
+                                    {localStorage.getItem('user')}
+                                </span>
                             </span>
-                            <span className="tw-font-montserrat tw-text-base tw-text-[#006400] tw-font-semibold">
-                                Rol: <span className="tw-font-normal">{localStorage.getItem('rol')}</span>
+                            <span className="tw-font-montserrat tw-text-sm sm:tw-text-base tw-text-[#006400] tw-font-semibold">
+                                Rol:{' '}
+                                <span className="tw-font-normal">
+                                    {localStorage.getItem('rol')}
+                                </span>
                             </span>
+                            {/* Oficina solo si es funcionario */}
                             {localStorage.getItem('rol') === 'funcionario' && (
-                                <span className="tw-font-montserrat tw-text-base tw-text-[#006400] tw-font-semibold">
-                                    Oficina: <span className="tw-font-normal">{localStorage.getItem('office')}</span>
+                                <span className="tw-font-montserrat tw-text-sm sm:tw-text-base tw-text-[#006400] tw-font-semibold">
+                                    Oficina:{' '}
+                                    <span className="tw-font-normal">
+                                        {localStorage.getItem('office')}
+                                    </span>
                                 </span>
                             )}
                         </div>
                     </div>
 
-                    {/* Ícono de notificación solo visible para rol 'funcionario' */}
+                    {/* Ícono de notificaciones (solo funcionario) */}
                     {localStorage.getItem('rol') === 'funcionario' && (
-                        <div className='tw-px-4'>
-                            <IconButton
-                                onClick={handleClickNotifications}
-                                className='tw-relative'
-                                title="Notificaciones"
-                            >
-                                <Badge badgeContent={solicitudes.length} color="error">
-                                    <Notifications sx={{ fontSize: 28, color: '#333' }} />
-                                </Badge>
-                            </IconButton>
-                            <Menu
-                                anchorEl={anchorEl}
-                                open={open}
-                                onClose={handleCloseNotifications}
-                                PaperProps={{
-                                    sx: {
-                                        mt: 1,
-                                        minWidth: 250,
-                                        maxHeight: 300,
-                                    },
-                                }}
-                            >
-                                {solicitudes.length > 0 ? (
-                                    solicitudes.map(solicitud => (
-                                        <MenuItem
-                                            key={solicitud.documento}
-                                            onClick={handleCloseNotifications}
-                                            title={solicitud.nombre}
-                                        >
-                                            {`Solicitud ${solicitud.documento}: ${solicitud.nombre}`}
-                                        </MenuItem>
-                                    ))
-                                ) : (
-                                    <MenuItem disabled>No hay solicitudes pendientes</MenuItem>
-                                )}
-
-                                <MenuItem
-                                    onClick={() => {
-                                        handleCloseNotifications();
-                                        navigate('/AtencionCiudadana'); // <-- Redirecciona aquí
-                                    }}
-                                    sx={{ justifyContent: 'center', fontWeight: 'bold' }}
-                                >
-                                    <Button variant="contained" color="primary" fullWidth>
-                                        Ver todas las solicitudes
-                                    </Button>
-                                </MenuItem>
-                            </Menu>
-                        </div>
+                        <IconButton
+                            onClick={handleClickNotifications}
+                            className="tw-relative"
+                            title="Notificaciones"
+                        >
+                            <Badge badgeContent={solicitudes.length} color="error">
+                                <Notifications sx={{ fontSize: 28, color: '#333' }} />
+                            </Badge>
+                        </IconButton>
                     )}
 
-                    <div className='tw-px-4'>
-                        <IconButton onClick={handleBtn}
-                            title='Cerrar sesión'
-                            type='button'
-                            className='tw-self-center'>
-                            <LogoutIcon sx={{ color: '#006400' }} />
+                    {/* Ícono de configuración + cerrar sesión */}
+                    <div className="tw-flex tw-items-center tw-gap-2">
+                        {/* Botón de configuración (accesible para ver secretarías y localidades) */}
+                        {(() => {
+                            return (
+                                <SettingsBtn handle={() => handleSettings(1)} color="green" id={plan?.id_plan ?? 0} />
+                            );
+                        })()}
+
+                        {/* Botón de cerrar sesión */}
+                        <IconButton
+                            onClick={handleBtn}
+                            title="Cerrar sesión"
+                            className="tw-self-center"
+                        >
+                            <LogoutIcon sx={{ color: '#006400', fontSize: 28 }} />
                         </IconButton>
                     </div>
+
                 </div>
             </header>
+
             <div className='tw-flex tw-flex-col xl:tw-flex-row tw-flex-grow'>
                 <NavBar>
                     <>
@@ -320,26 +719,9 @@ export const Frame = ({ children }: FrameProps) => {
                                     dispatch(setZeroLevelIndex());
                                     navigate('/pdt/PlanIndicativo', { replace: true });
                                 }}
-                                icon={<PlanIndicativoIcon color={index === 0 ? logocolor : textcolor} />}
-                                bgColor={0 === index ? `tw-bg-${textcolor}` : `tw-bg-${bgcolor}`}
-                                textColor={0 === index ? `tw-text-${bgcolor}` : `tw-text-${textcolor}`}
-                            />
-                        )}
-                    </>
-                    <>
-                        {modulos.PlanDeAccion && (
-                            <ButtonComponent
-                                text='Plan de acción'
-                                inside={true}
-                                onClick={() => {
-                                    dispatch(selectOption(1));
-                                    dispatch(AddRootTree([]));
-                                    dispatch(setZeroLevelIndex());
-                                    navigate('/PlanIndicativo/Plan-accion', { replace: true });
-                                }}
-                                icon={<PlanAccionIcon color={index === 1 ? logocolor : textcolor} />}
-                                bgColor={1 === index ? `tw-bg-${textcolor}` : `tw-bg-${bgcolor}`}
-                                textColor={1 === index ? `tw-text-${bgcolor}` : `tw-text-${textcolor}`}
+                                icon={<PlanIndicativoIcon color={index === 0 ? "#41a95b" : "#ffffff"} />}
+                                bgColor={index === 0 ? "tw-bg-gray-200" : "tw-bg-[#143955]"}
+                                textColor={index === 0 ? "tw-text-[#143955]" : "tw-text-white"}
                             />
                         )}
                     </>
@@ -355,9 +737,26 @@ export const Frame = ({ children }: FrameProps) => {
                                     dispatch(setZeroLevelIndex());
                                     navigate('/PlanIndicativo/Banco-proyectos', { replace: true });
                                 }}
-                                icon={<ProjectBankIcon color={index === 2 ? logocolor : textcolor} />}
-                                bgColor={2 === index ? `tw-bg-${textcolor}` : `tw-bg-${bgcolor}`}
-                                textColor={2 === index ? `tw-text-${bgcolor}` : `tw-text-${textcolor}`}
+                                icon={<ProjectBankIcon color={index === 2 ? "#41a95b" : "#ffffff"} />}
+                                bgColor={index === 2 ? "tw-bg-gray-200" : "tw-bg-[#143955]"}
+                                textColor={index === 2 ? "tw-text-[#143955]" : "tw-text-white"}
+                            />
+                        )}
+                    </>
+                    <>
+                        {modulos.PlanDeAccion && (
+                            <ButtonComponent
+                                text='Plan de acción'
+                                inside={true}
+                                onClick={() => {
+                                    dispatch(selectOption(1));
+                                    dispatch(AddRootTree([]));
+                                    dispatch(setZeroLevelIndex());
+                                    navigate('/PlanIndicativo/Plan-accion', { replace: true });
+                                }}
+                                icon={<PlanAccionIcon color={index === 1 ? "#41a95b" : "#ffffff"} />}
+                                bgColor={index === 1 ? "tw-bg-gray-200" : "tw-bg-[#143955]"}
+                                textColor={index === 1 ? "tw-text-[#143955]" : "tw-text-white"}
                             />
                         )}
                     </>
@@ -372,9 +771,9 @@ export const Frame = ({ children }: FrameProps) => {
                                     dispatch(setZeroLevelIndex());
                                     navigate('/PlanIndicativo/POAI', { replace: true });
                                 }}
-                                icon={<ChartIcon color={index === 3 ? logocolor : textcolor} />}
-                                bgColor={3 === index ? `tw-bg-${textcolor}` : `tw-bg-${bgcolor}`}
-                                textColor={3 === index ? `tw-text-${bgcolor}` : `tw-text-${textcolor}`}
+                                icon={<ChartIcon color={index === 3 ? "#41a95b" : "#ffffff"} />}
+                                bgColor={index === 3 ? "tw-bg-gray-200" : "tw-bg-[#143955]"}
+                                textColor={index === 3 ? "tw-text-[#143955]" : "tw-text-white"}
                             />
                         )}
                     </>
@@ -387,9 +786,9 @@ export const Frame = ({ children }: FrameProps) => {
                                     dispatch(selectOption(4));
                                     navigate("/AtencionCiudadana");
                                 }}
-                                icon={<MdSupportAgent color={index === 4 ? logocolor : textcolor} size={64} />}
-                                bgColor={4 === index ? `tw-bg-${textcolor}` : `tw-bg-${bgcolor}`}
-                                textColor={4 === index ? `tw-text-${bgcolor}` : `tw-text-${textcolor}`}
+                                icon={<MdSupportAgent color={index === 4 ? "#41a95b" : "#ffffff"} size={80} />}
+                                bgColor={index === 4 ? "tw-bg-gray-200" : "tw-bg-[#143955]"}
+                                textColor={index === 4 ? "tw-text-[#143955]" : "tw-text-white"}
                             />
                         )}
                     </>
@@ -404,30 +803,25 @@ export const Frame = ({ children }: FrameProps) => {
                                     dispatch(setZeroLevelIndex());
                                     navigate('/PlanIndicativo/Mapa', { replace: true });
                                 }}
-                                icon={<MapICon color={index === 5 ? logocolor : textcolor} />}
-                                bgColor={5 === index ? `tw-bg-${textcolor}` : `tw-bg-${bgcolor}`}
-                                textColor={5 === index ? `tw-text-${bgcolor}` : `tw-text-${textcolor}`}
+                                icon={<MapICon color={index === 5 ? "#41a95b" : "#ffffff"} />}
+                                bgColor={index === 5 ? "tw-bg-gray-200" : "tw-bg-[#143955]"}
+                                textColor={index === 5 ? "tw-text-[#143955]" : "tw-text-white"}
                             />
                         )}
                     </>
-
-                    {/*<ButtonComponent
-                        inside={false}
-                        text='PQRS'
-                        onClick={() => {
-                            dispatch(selectOption(5));
-                            navigate('/PQRS', {replace: true});
-                        }}
-                        bgColor="tw-bg-greenBtn"
-                        icon={<PQRSIcon color='white'/>}/>*/}
                 </NavBar>
-                <div ref={contentRef}
-                    className={`${isFullHeight ? 'tw-h-[calc(100vh-100px)]' : ''} 
-                                tw-w-full tw-border
-                                tw-bg-[url('/src/assets/images/bg-pi-1.png')]
-                                tw-bg-cover
-                                tw-opacity-80`}>
+                <div
+                    ref={contentRef}
+                    className={`${isFullHeight ? 'tw-min-h-[calc(100vh-100px)]' : ''} 
+              tw-overflow-y-auto
+              tw-w-full tw-border
+              tw-bg-gradient-to-b 
+              tw-from-[#06283b] 
+              tw-via-[#1f4f63] 
+              tw-to-[#dbeff6]`}
+                >
                     <div>
+                        <VoiceChatWindow />
                         {children}
                     </div>
                 </div>

@@ -1,14 +1,19 @@
+// Importaciones necesarias de React y librerías
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MdSupportAgent } from 'react-icons/md';
+import cclogo from "@/assets/images/ControlLand2.png";
 
+// Importación de íconos personalizados
 import {
     ProjectBankIcon, PlanIndicativoIcon, ChartIcon,
     MapICon, PlanAccionIcon
 } from '@/assets/icons';
 
-import { Header, ButtonComponent } from '@/components';
+// Importación de componentes comunes
+import { Header, ButtonComponent, BackBtn } from '@/components/Citizen';
 
+// Importación de hooks y acciones de Redux
 import { useAppDispatch, useAppSelector } from '@/store';
 import { selectOption, setProjectPage } from '@/store/content/contentSlice';
 import {
@@ -23,13 +28,40 @@ import {
 import { getCoords } from '@/services/map_api';
 import { thunkGetModulosUsuarioById } from '@/store/pqrs/thunks';
 
+// --- Interfaces y helpers para conversión de permisos ---
+interface IModules {
+    indicative_plan: boolean;
+    action_plan: boolean;
+    project_bank: boolean;
+    poai: boolean;
+    citizen_service: boolean;
+    intervention_map: boolean;
+}
+
+const moduleOrder: (keyof IModules)[] = [
+    'indicative_plan', 'action_plan', 'project_bank', 'poai', 'citizen_service', 'intervention_map'
+];
+
+// Función que convierte un número en permisos de módulos
+const decimalToModules = (mask: number | undefined | null): IModules => {
+    const validMask = typeof mask === 'number' && Number.isFinite(mask) ? mask : 63;
+    const modules: any = {};
+    moduleOrder.forEach((key, index) => {
+        modules[key] = (validMask & (1 << index)) !== 0;
+    });
+    return modules;
+};
+
+// --- Componente principal ---
 export const LobbyPage = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
 
+    // Estados globales de Redux
     const { id_plan } = useAppSelector(store => store.content);
     const { plan, secretaries, locations } = useAppSelector(store => store.plan);
 
+    // Estado local de módulos habilitados
     const [modulos, setModulos] = useState({
         PlanIndicativo: false,
         PlanDeAccion: false,
@@ -39,6 +71,21 @@ export const LobbyPage = () => {
         MapaDeIntervencion: false
     });
 
+    // Estado de módulo seleccionado para mostrar descripción
+    const [selectedModuleInfo, setSelectedModuleInfo] = useState<string>('');
+    const [isAnimating, setIsAnimating] = useState(false);
+
+    // Descripciones de cada módulo
+    const moduleExplanations: Record<string, string> = {
+        PlanIndicativo: 'Permite consultar, crear y hacer seguimiento al Plan Indicativo institucional, definiendo objetivos estratégicos, metas de mediano plazo y sus indicadores de cumplimiento. Facilita la articulación con el Plan de Desarrollo y el monitoreo del avance de los compromisos establecidos por cada dependencia.',
+        PlanDeAccion: 'Brinda acceso a la gestión detallada del Plan de Acción anual. En este módulo se pueden registrar actividades, responsables, cronogramas, recursos asignados y niveles de avance, asegurando el cumplimiento de las metas institucionales y el control de los resultados operativos.',
+        BancoDeProyectos: 'Facilita la consulta, formulación, evaluación y seguimiento de los proyectos que integran el Banco de Proyectos institucional. Permite gestionar las fichas técnicas, los estudios de viabilidad, las fuentes de financiación y el estado de ejecución de cada iniciativa.',
+        POAI: 'Permite acceder al Programa Anual de Inversiones (POAI), donde se consolidan los proyectos priorizados y su respectiva asignación presupuestal. Este módulo apoya la planeación financiera y el seguimiento de la ejecución de recursos, garantizando la coherencia con el Plan de Desarrollo.',
+        AtencionCiudadana: 'Módulo orientado a la gestión de peticiones, quejas, reclamos, sugerencias y denuncias (PQRSD). Facilita el registro, seguimiento y respuesta oportuna a los requerimientos ciudadanos, fortaleciendo la transparencia institucional y la participación ciudadana.',
+        MapaDeIntervencion: 'Ofrece una visualización geográfica de las intervenciones, proyectos y actividades ejecutadas por la entidad. A través de mapas interactivos, permite identificar las zonas de cobertura, los avances físicos y las áreas de impacto, optimizando la toma de decisiones territoriales.'
+    };
+
+    // --- Efectos de inicialización ---
     useEffect(() => {
         if (plan == undefined) dispatch(thunkGetPDTid(id_plan));
     }, []);
@@ -54,36 +101,66 @@ export const LobbyPage = () => {
         if (locations == undefined) dispatch(thunkGetLocations(id_plan));
     }, [id_plan]);
 
+    // Control de permisos de módulos
     useEffect(() => {
         const id = localStorage.getItem('id');
         const rol = localStorage.getItem('rol');
-    
+        const planModules = decimalToModules(plan?.modules);
+
         if (rol === 'admin') {
             setModulos({
-                PlanIndicativo: true,
-                PlanDeAccion: true,
-                BancoDeProyectos: true,
-                POAI: true,
-                AtencionCiudadana: true,
-                MapaDeIntervencion: true
+                PlanIndicativo: planModules.indicative_plan,
+                PlanDeAccion: planModules.action_plan,
+                BancoDeProyectos: planModules.project_bank,
+                POAI: planModules.poai,
+                AtencionCiudadana: planModules.citizen_service,
+                MapaDeIntervencion: planModules.intervention_map
             });
-            return; // No necesitas llamar al thunk si es admin
+            return;
         }
-    
-        if (id !== null) {
+
+        if (plan && id) {
             dispatch(thunkGetModulosUsuarioById(parseInt(id)))
                 .unwrap()
-                .then(res => {
-                    if (Array.isArray(res) && res.length > 0) {
-                        setModulos(res[0]);
+                .then(userModulesArray => {
+                    if (Array.isArray(userModulesArray) && userModulesArray.length > 0) {
+                        const userModules = userModulesArray[0];
+
+                        const finalModules = {
+                            PlanIndicativo: planModules.indicative_plan && userModules.PlanIndicativo,
+                            PlanDeAccion: planModules.action_plan && userModules.PlanDeAccion,
+                            BancoDeProyectos: planModules.project_bank && userModules.BancoDeProyectos,
+                            POAI: planModules.poai && userModules.POAI,
+                            AtencionCiudadana: planModules.citizen_service && userModules.AtencionCiudadana,
+                            MapaDeIntervencion: planModules.intervention_map && userModules.MapaDeIntervencion,
+                        };
+
+                        setModulos(finalModules);
                     }
                 })
-                .catch(err => {
-                    console.error('Error al obtener los módulos:', err);
+                .catch(() => {
+                    setModulos({
+                        PlanIndicativo: planModules.indicative_plan,
+                        PlanDeAccion: planModules.action_plan,
+                        BancoDeProyectos: planModules.project_bank,
+                        POAI: planModules.poai,
+                        AtencionCiudadana: planModules.citizen_service,
+                        MapaDeIntervencion: planModules.intervention_map
+                    });
                 });
+        } else {
+            setModulos({
+                PlanIndicativo: planModules.indicative_plan,
+                PlanDeAccion: planModules.action_plan,
+                BancoDeProyectos: planModules.project_bank,
+                POAI: planModules.poai,
+                AtencionCiudadana: planModules.citizen_service,
+                MapaDeIntervencion: planModules.intervention_map
+            });
         }
-    }, [dispatch]);    
+    }, [dispatch, id_plan, plan]);
 
+    // Cargar coordenadas de ubicación
     useEffect(() => {
         const fetchLocation = async () => {
             if (plan === undefined) return;
@@ -103,107 +180,199 @@ export const LobbyPage = () => {
         fetchLocation();
     }, [plan]);
 
+    // Control de animación al mostrar descripción
+    useEffect(() => {
+        setIsAnimating(!!selectedModuleInfo);
+    }, [selectedModuleInfo]);
+
     return (
-        <Header>
-            <>
-                {modulos.PlanIndicativo && (
-                    <ButtonComponent
-                        inside={false}
-                        text='Plan indicativo'
-                        icon={<PlanIndicativoIcon color='white' />}
-                        onClick={() => {
-                            dispatch(AddRootTree([]));
-                            dispatch(selectOption(0));
-                            navigate(`/pdt/PlanIndicativo`);
-                        }}
-                        bgColor="tw-bg-greenBtn"
-                    />
-                )}
-            </>
-            <>
-                {modulos.PlanDeAccion && (
+        <div className="tw-min-h-screen tw-w-full tw-flex tw-flex-col tw-items-center tw-justify-center 
+                tw-bg-gradient-to-b tw-from-[#06283b] tw-via-[#1f4f63] tw-to-[#dbeff6] 
+                tw-overflow-y-auto tw-py-6">
 
-                    <ButtonComponent
-                        inside={false}
-                        text='Plan de acción'
-                        icon={<PlanAccionIcon color='white' />}
-                        onClick={() => {
-                            dispatch(selectOption(1));
-                            navigate('/PlanIndicativo/Plan-accion');
-                        }}
-                        bgColor="tw-bg-greenBtn"
-                    />
+            {/* Card principal Blanca*/}
+            <div className="tw-w-[95%] tw-min-h-[80%] tw-mx-2 tw-my-auto tw-p-4 tw-bg-white tw-rounded-2xl tw-shadow-lg 
+                    tw-flex tw-flex-col tw-justify-start tw-items-between 
+                    md:tw-w-[70%] md:tw-p-8">
 
-                )}
-            </>
-            <>
-                {modulos.BancoDeProyectos && (
+                {/* ======================================================= */}
+                {/* ROW 1: Botón Volver */}
+                {/* ======================================================= */}
+                <div className="tw-flex tw-flex-col  tw-items-start  md:tw-mb-20">
+                    <div>
+                        <BackBtn handle={() => navigate(-1)} id={0} />
+                    </div>
+                </div>
 
-                    <ButtonComponent
-                        inside={false}
-                        text='Banco de proyectos'
-                        icon={<ProjectBankIcon color='white' />}
-                        onClick={() => {
-                            dispatch(selectOption(2));
-                            dispatch(setProjectPage(5));
-                            navigate('/PlanIndicativo/Banco-proyectos');
-                        }}
-                        bgColor="tw-bg-greenBtn"
-                    />
-                )}
-            </>
-            <>
-                {modulos.POAI && (
-                    <ButtonComponent
-                        inside={false}
-                        text='POAI'
-                        icon={<ChartIcon color='white' />}
-                        onClick={() => {
-                            dispatch(selectOption(3));
-                            navigate('/PlanIndicativo/POAI');
-                        }}
-                        bgColor="tw-bg-greenBtn"
-                    />
-                )}
-            </>
-            <>
-                {modulos.AtencionCiudadana && (
-                    <ButtonComponent
-                        inside={false}
-                        text="Atención Ciudadana"
-                        icon={<MdSupportAgent color="white" size={64} />}
-                        onClick={() => {
-                            dispatch(selectOption(4));
-                            navigate("/AtencionCiudadana");
-                        }}
-                        bgColor="tw-bg-greenBtn"
-                    />
-                )}
-            </>
-            <>
-                {modulos.MapaDeIntervencion && (
+                {/* ======================================================= */}
+                {/* ROW 2: Logo y Módulos */}
+                {/* ======================================================= */}
+                <div className="tw-w-full tw-grid tw-grid-cols-1 tw-gap-2  tw-justify-center tw-items-center md:tw-grid-cols-3 sm:tw-mb-20">
 
-                    <ButtonComponent
-                        inside={false}
-                        text='Mapa de intervención'
-                        icon={<MapICon color='white' />}
-                        onClick={() => {
-                            dispatch(selectOption(5));
-                            navigate('/PlanIndicativo/Mapa');
+                    {/* Columna 1 (Logo - Centrado Verticalmente) */}
+                    <div className="tw-flex tw-border-r md:tw-border-black tw-flex-col tw-justify-center tw-items-center">
+                        <img src={cclogo} className="tw-w-28 md:tw-w-[220px]" />
+                    </div>
+
+                    {/* Columna 2 (Grid de Módulos - Ocupa 2 de 3 columnas en MD+) */}
+                    <div className="tw-col-span-1 tw-ml-12 md:tw-col-span-2 tw-flex tw-flex-col tw-justify-center">
+                        <div className="tw-grid tw-grid-cols-1 sm:tw-grid-cols-2 tw-gap-6">
+                            {Object.values(modulos).every(v => !v) ? (
+                                <div className="tw-col-span-2 tw-text-center tw-text-red-600 tw-font-semibold tw-p-8">
+                                    No tienes módulos disponibles para este plan.
+                                </div>
+                            ) : (
+                                <>
+                                    {/* ... Botones de Módulos (PlanIndicativo, PlanDeAccion, etc.) ... */}
+                                    {/* Plan Indicativo */}
+                                    {modulos.PlanIndicativo && (
+                                        <div key="PlanIndicativo"
+                                            onMouseEnter={() => setSelectedModuleInfo(moduleExplanations.PlanIndicativo)}
+                                            onMouseLeave={() => setSelectedModuleInfo("")}>
+                                            <ButtonComponent
+                                                inside={false}
+                                                text='Plan indicativo'
+                                                icon={<PlanIndicativoIcon color='white' />}
+                                                onClick={() => {
+                                                    dispatch(AddRootTree([]));
+                                                    dispatch(selectOption(0));
+                                                    navigate(`/pdt/PlanIndicativo`);
+                                                }}
+                                                bgColor="tw-bg-[#012947]"
+                                                className="tw-w-16 tw-h-16 tw-text-[24px] tw-font-bold "
+                                            />
+                                        </div>
+                                    )}
+                                    {/* Banco de Proyectos */}
+                                    {modulos.BancoDeProyectos && (
+                                        <div key="BancoDeProyectos"
+                                            onMouseEnter={() => setSelectedModuleInfo(moduleExplanations.BancoDeProyectos)}
+                                            onMouseLeave={() => setSelectedModuleInfo("")}>
+                                            <ButtonComponent
+                                                inside={false}
+                                                text='Banco de proyectos'
+                                                icon={<ProjectBankIcon color='white' />}
+                                                onClick={() => {
+                                                    dispatch(selectOption(2));
+                                                    dispatch(setProjectPage(5));
+                                                    navigate('/PlanIndicativo/Banco-proyectos');
+                                                }}
+                                                bgColor="tw-bg-[#012947]"
+                                                className="tw-w-16 tw-h-16 tw-text-[8px] tw-font-bold"
+                                            />
+                                        </div>
+                                    )}
+                                    {/* Plan de Acción */}
+                                    {modulos.PlanDeAccion && (
+                                        <div key="PlanDeAccion"
+                                            onMouseEnter={() => setSelectedModuleInfo(moduleExplanations.PlanDeAccion)}
+                                            onMouseLeave={() => setSelectedModuleInfo("")}>
+                                            <ButtonComponent
+                                                inside={false}
+                                                text='Plan de acción'
+                                                icon={<PlanAccionIcon color='white' />}
+                                                onClick={() => {
+                                                    dispatch(selectOption(1));
+                                                    navigate('/PlanIndicativo/Plan-accion');
+                                                }}
+                                                bgColor="tw-bg-[#012947]"
+                                                className="tw-w-16 tw-h-16 tw-text-[8px] tw-font-bold"
+                                            />
+                                        </div>
+                                    )}
+                                    {/* POAI */}
+                                    {modulos.POAI && (
+                                        <div key="POAI"
+                                            onMouseEnter={() => setSelectedModuleInfo(moduleExplanations.POAI)}
+                                            onMouseLeave={() => setSelectedModuleInfo("")}>
+                                            <ButtonComponent
+                                                inside={false}
+                                                text='POAI'
+                                                icon={<ChartIcon color='white' />}
+                                                onClick={() => {
+                                                    dispatch(selectOption(3));
+                                                    navigate('/PlanIndicativo/POAI');
+                                                }}
+                                                bgColor="tw-bg-[#012947]"
+                                                className="tw-w-16 tw-h-16 tw-text-[8px] tw-font-bold"
+                                            />
+                                        </div>
+                                    )}
+                                    {/* Atención Ciudadana */}
+                                    {modulos.AtencionCiudadana && (
+                                        <div key="AtencionCiudadana"
+                                            onMouseEnter={() => setSelectedModuleInfo(moduleExplanations.AtencionCiudadana)}
+                                            onMouseLeave={() => setSelectedModuleInfo("")}>
+                                            <ButtonComponent
+                                                inside={false}
+                                                text="Atención Ciudadana"
+                                                icon={<MdSupportAgent color="white" size={64} />}
+                                                onClick={() => {
+                                                    dispatch(selectOption(4));
+                                                    navigate("/AtencionCiudadana");
+                                                }}
+                                                bgColor="tw-bg-[#012947]"
+                                                className="tw-w-16 tw-h-16 tw-text-[8px] tw-font-bold"
+                                            />
+                                        </div>
+                                    )}
+                                    {/* Mapa de Intervención */}
+                                    {modulos.MapaDeIntervencion && (
+                                        <div key="MapaDeIntervencion"
+                                            onMouseEnter={() => setSelectedModuleInfo(moduleExplanations.MapaDeIntervencion)}
+                                            onMouseLeave={() => setSelectedModuleInfo("")}>
+                                            <ButtonComponent
+                                                inside={false}
+                                                text='Mapa de intervención'
+                                                icon={<MapICon color='white' />}
+                                                onClick={() => {
+                                                    dispatch(selectOption(5));
+                                                    navigate('/PlanIndicativo/Mapa');
+                                                }}
+                                                bgColor="tw-bg-[#012947]"
+                                                className="tw-w-16 tw-h-16 tw-text-[8px] tw-font-bold"
+                                            />
+                                        </div>
+                                    )}
+                                </>
+                            )}
+                        </div>
+                    </div>
+                </div>
+
+                {/* ======================================================= */}
+                {/* ROW 3: Descripción */}
+                {/* ======================================================= */}
+                <div className="tw-w-[550px] tw-h-full tw-flex tw-justify-center tw-pt-4 tw-mx-auto tw-items-center
+                tw-hidden sm:tw-block">
+                    <div>
+                    </div>
+                    <div
+                        className="tw-p-3 tw-mx-auto tw-my-auto
+    tw-text-base tw-text-black tw-text-center tw-break-words
+    tw-bg-gray-100 tw-rounded-xl tw-shadow-md
+    tw-transition-all tw-duration-500 tw-ease-in-out
+                           "
+                        style={{
+                            opacity: 1,
+                            transition: 'opacity 0.5s, transform 0.5s',
+                            transform: selectedModuleInfo ? 'translateY(0)' : 'translateY(10px)'
                         }}
-                        bgColor="tw-bg-greenBtn"
-                    />
-                )}
-            </>
-            {/*<ButtonComponent
-                inside={false}
-                text='PQRS'
-                onClick={() => {
-                    dispatch(selectOption(5));
-                    navigate('/PQRS');
-                }}
-                bgColor="tw-bg-greenBtn"
-                icon={<PQRSIcon color='white'/>}/>*/}
-        </Header>
+                    >
+                        {selectedModuleInfo ? (
+                            <h3 className="tw-font-bold tw-text-lg tw-mb-2">{selectedModuleInfo}</h3>
+                        ) : (
+                            <span className="tw-text-black tw-opacity-60">
+                                Selecciona un módulo para ver su descripción.
+                            </span>
+                        )}
+                    </div>
+                    <div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
     );
 }

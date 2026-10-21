@@ -47,19 +47,43 @@ export const LocationPopover = (props: PopoverProps) => {
 }
 
 export const UbicationsPopover = () => {
-    const [poLocationIsOpen, setPoLocationIsOpen] = useState(false);
-    const toggleOpen = () => setPoLocationIsOpen(!poLocationIsOpen);
-    let red = '#EF4444';
-
+    const [modalOpen, setModalOpen] = useState(false);
+    // Elimina hasLocation y su lógica
+    // const [hasLocation, setHasLocation] = useState(false);
+    // const { list_points } = useAppSelector(store => store.evidence);
+    // useEffect(() => {
+    //     setHasLocation(list_points && list_points.length > 0);
+    // }, [list_points]);
+    const openModal = () => setModalOpen(true);
+    const closeModal = () => setModalOpen(false);
     return (
-        <Popover
-            isOpen={poLocationIsOpen}
-            positions={['right', 'left', 'top', 'bottom']}
-            content={MapContainerUbi()}>
-            <button type="button" onClick={toggleOpen}>
-                <LocationIcon color={red}/>
+        <div className="tw-flex tw-flex-col tw-items-center">
+            <button
+                type="button"
+                onClick={openModal}
+                className="tw-px-4 tw-py-2 tw-rounded tw-font-bold tw-transition-colors tw-bg-blue-500 hover:tw-bg-blue-600 tw-text-white"
+            >
+                Asignar ubicación
             </button>
-        </Popover>
+            {modalOpen && (
+                <div className="tw-fixed tw-inset-0 tw-z-50 tw-flex tw-items-center tw-justify-center">
+                    {/* Fondo semitransparente */}
+                    <div className="tw-fixed tw-inset-0 tw-bg-black tw-bg-opacity-40" onClick={closeModal}></div>
+                    {/* Modal */}
+                    <div className="tw-relative tw-z-10 tw-bg-white tw-rounded-lg tw-shadow-2xl tw-border-2 tw-border-blue-300 tw-p-4 tw-max-w-lg tw-w-full tw-mx-4">
+                        <button
+                            className="tw-absolute tw-top-2 tw-right-2 tw-text-gray-500 hover:tw-text-red-500 tw-text-xl tw-font-bold tw-z-20"
+                            onClick={closeModal}
+                            aria-label="Cerrar"
+                        >
+                            ×
+                        </button>
+                        <div className="tw-mb-2 tw-text-lg tw-font-semibold tw-text-blue-700 tw-text-center">Selecciona la ubicación en el mapa</div>
+                        <MapContainerUbi />
+                    </div>
+                </div>
+            )}
+        </div>
     );
 }
 

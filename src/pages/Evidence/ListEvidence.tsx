@@ -5,7 +5,7 @@ import { useAppSelector, useAppDispatch } from "@/store";
 import { thunkGetEvidenceCount, thunkGetExecutionsToApro } from "@/store/evidence/thunks";
 import { resetEvidence } from "@/store/evidence/evidenceSlice";
 
-import { Frame, BackBtn, Execution } from "@/components";
+import { Frame, BackBtn, Execution } from "@/components/Citizen";
 import { decode } from "@/utils";
 
 export const ListEvidence = () => {
@@ -84,6 +84,12 @@ const Evidence = () => {
                         </th>
                         <th className="tw-bg-black tw-border">
                             <p className="tw-text-white">Ejecución modificada</p>
+                        </th>
+                        <th className="tw-bg-black tw-border">
+                            <p className="tw-text-white">Valor Finaciero</p>
+                        </th>
+                        <th className="tw-bg-black tw-border">
+                            <p className="tw-text-white">Valor modificado</p>
                         </th>
                         <th className="tw-bg-black tw-border">
                             <p className="tw-text-white">Fecha de modificación</p>

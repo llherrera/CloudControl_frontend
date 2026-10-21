@@ -1,13 +1,13 @@
-import { Frame, Header, ChangePassword } from '@/components';
+import { Frame, Header, ChangePassword } from '@/components/Citizen';
 import { useAppSelector } from "@/store";
 
 export const ChangePasswordPage = () => {
     const { logged } = useAppSelector(store => store.auth);
     return(
         logged ? 
-        <Frame>
             <ChangePassword/>
-        </Frame> : <Header>
+        :
+        <Header>
             <ChangePassword/>
         </Header>
     );

@@ -4,3 +4,4 @@ export * from './functions';
 export * from './environment';
 export * from './toast';
 export * from './constant';
+export * from './logger';

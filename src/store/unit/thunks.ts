@@ -103,7 +103,7 @@ export const thunkUpdateExecution = createAsyncThunk<void, PropsExecution, { rej
     'unit/updateExecution',
     async (props: PropsExecution, { rejectWithValue }) => {
         try {
-            const res = await updateExecution(props.date, props.value, props.code, props.user_id, props.plan_id, props.reason);
+            const res = await updateExecution(props.date, props.value1, props.value2, props.code, props.user_id, props.plan_id, props.reason);
             return res;
         } catch (err) {
             const result = parseErrorAxios(err);
@@ -116,7 +116,7 @@ export const thunkDenegateExecution = createAsyncThunk<void, PropsExecution, { r
     'unit/denegateExecution',
     async (props: PropsExecution, { rejectWithValue }) => {
         try {
-            const res = await updateExecution(props.date, props.value, props.code, props.user_id, props.plan_id, props.reason);
+            const res = await updateExecution(props.date, props.value1, props.value2, props.code, props.user_id, props.plan_id, props.reason);
             return res;
         } catch (err) {
             const result = parseErrorAxios(err);

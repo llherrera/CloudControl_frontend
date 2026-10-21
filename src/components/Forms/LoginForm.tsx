@@ -37,7 +37,7 @@ export const LoginForm = () => {
     };
 
     const validateRol = (info: Token) => (
-        (info.rol === "funcionario" || info.rol === 'planeacion' || info.rol === 'sectorialista') ?
+        (info.rol === "funcionario" || info.rol === 'planeacion' || info.rol === 'ciudadano' || info.rol === 'sectorialista') ?
             (dispatch(setIdPlan(info.id_plan)),
                 navigate('/lobby')
             ) : navigate('/')
@@ -53,16 +53,21 @@ export const LoginForm = () => {
                 const info = decode(res.token);
                 //signInWithEmailAndPassword(auth, info.email, user.password)
                 //.then(() => {
+                localStorage.removeItem('id_plan');
+                localStorage.removeItem('textFormat');
+                localStorage.removeItem('titleText');
+                localStorage.removeItem('textColor');
+                localStorage.removeItem('fontSize');
+                localStorage.removeItem('fontWeight');
+                localStorage.removeItem('textAlign');
 
                 // Agregar datos a localStorage
                 localStorage.removeItem('id');
-                localStorage.removeItem('id_plan');
                 localStorage.removeItem('rol');
                 localStorage.removeItem('user');
                 localStorage.removeItem('office');
 
                 localStorage.setItem('id', (info.id).toString());
-                localStorage.setItem('id_plan', (info.id_plan).toString());
                 localStorage.setItem('rol', info.rol);
                 localStorage.setItem('user', info.user);
 
@@ -87,10 +92,9 @@ export const LoginForm = () => {
 
     return (
         <form className='   tw-rounded
+                            tw-pt-8
                             tw-flex tw-flex-col
-                            tw-px-10 tw-mx-6
-                            tw-bg-[#FCFCFE]
-                            tw-shadow-2xl'
+                            tw-px-10 tw-mx-6'
             onSubmit={handleSubmit}>
             <p className='tw-font-montserrat'>Usuario</p>
             <input type="text"
@@ -104,13 +108,17 @@ export const LoginForm = () => {
                 onChange={handleChange}
                 className='tw-border tw-rounded'
                 required /><br />
-            <button className='tw-bg-greenBtn hover:tw-opacity-50
-                                tw-text-white tw-font-montserrat
-                                tw-rounded tw-h-10'>
-                {authenticating ?
-                    <div className='tw-h-10 tw-flex'><Spinner /></div> :
-                    <p className='tw-font-bold'>Iniciar sesión</p>}
-            </button><br />
+            <button
+                className="tw-bg-[#f59e0b] hover:tw-opacity-75 tw-text-white tw-font-montserrat tw-rounded tw-h-10"
+                aria-disabled={authenticating}
+            >
+                {authenticating ? (
+                    <div className="tw-h-10 tw-flex"><Spinner /></div>
+                ) : (
+                    <p className="tw-font-bold">Iniciar sesión</p>
+                )}
+            </button>
+            <br />
             <div className='tw-mb-10 tw-flex tw-justify-center'>
                 <button type="button"
                     onClick={() => navigate('/contrasena')}

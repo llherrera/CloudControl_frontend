@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAppSelector, useAppDispatch } from "@/store";
 import { selectYear, setCalcDone } from '@/store/plan/planSlice';
 
-import { NodesWeight } from '@/interfaces';
+import { NodesWeight, Percentages } from '@/interfaces';
 import { decode } from "@/utils";
 
 export const TimeLine = () => {
@@ -43,28 +43,50 @@ export const TimeLine = () => {
         if (pesosStr == undefined) pesosStr = '[]';
 
         let pesosNodo = JSON.parse(pesosStr);
+        const padre = parent ? pesosNodo.find((item: NodesWeight) => item.id_node === parent) : undefined;
         let progreso = [] as number[];
-        const nodoss = pesosNodo.filter((item: NodesWeight) => item.parent === parent);
 
-        if (nodoss.length === 0) {
-            setYearsProgress(-1);
-            setYearProgress([-1,-1,-1,-1]);
-            return;
-        }
-        for (let i = 0; i < years.length; i++) {
-            let temp = 0;
-            nodoss.forEach((item: NodesWeight) => {
-                const { percents } = item;
-                if (percents) {
-                    percents.sort((a,b)=>a.year - b.year);
-                    temp += (percents[i].progress > 0 ? percents[i].progress : 0)*(item.weight/100);
+        if (padre && padre.percents) {
+            for (let i = 0; i < years.length; i++) {
+                const p = padre.percents.find((p: Percentages) => p.year === years[i]);
+                if (p && p.progress >= 0) {
+                    const val = Math.ceil(p.progress * 100) / 100;
+                    progreso.push(val);
+                } else {
+                    progreso.push(-1);
                 }
-            });
-            temp = Math.round(temp*100)/100;
-            progreso.push(temp);
+            }
+        } else {
+            // No hay padre: calcular con los nodos actuales
+            // Encuentra los nodos actuales (los que tienen parent === parent actual)
+            const nodoss = pesosNodo.filter((item: NodesWeight) => nodes.some(n => n.id_node === item.id_node));
+            for (let i = 0; i < years.length; i++) {
+                let temp = 0;
+                let totalPeso = 0;
+                let hayProgramadas = false;
+                nodoss.forEach((item: NodesWeight) => {
+                    const { percents, weight } = item;
+                    if (percents) {
+                        const p = percents.find(p => p.year === years[i]);
+                        if (p && p.progress >= 0 && p.physical_programming > 0) {
+                            temp += p.progress * (weight / 100);
+                            totalPeso += weight;
+                            hayProgramadas = true;
+                        }
+                    }
+                });
+                if (!hayProgramadas) {
+                    progreso.push(-1);
+                } else {
+                    const val = Math.ceil(temp * 100) / 100;
+                    progreso.push(val);
+                }
+            }
         }
-        let temp = progreso.reduce((a, b) => a + b, 0);
-        temp = Math.round(temp*100/years.length);
+        // Calcular el promedio de los años (solo los válidos)
+        const validos = progreso.filter(p => p >= 0);
+        let temp = validos.length > 0 ? validos.reduce((a, b) => a + b, 0) / validos.length : -1;
+        temp = temp >= 0 ? Math.ceil(temp * 100) / 100 : -1;
         setYearsProgress(temp);
         setYearProgress(progreso);
     };
@@ -136,7 +158,7 @@ export const TimeLine = () => {
         {years.map((year: number, index: number) =>
             <li className="tw-grid tw-grid-rows-3 tw-w-full tw-justify-items-center"
                 key={year}>
-                <button className={`${plan.shape === 'radial' ? 'tw-rounded' : 'tw-rounded-full tw-overflow-hidden'} tw-border-4
+                <button className={`${plan.shape === 'radial' ? 'tw-rounded-full tw-overflow-hidden' : 'tw-rounded'} tw-border-4
                                     tw-flex tw-justify-center tw-items-center
                                     tw-transition hover:tw-scale-110
                                     ${colorClass(index)}
@@ -149,11 +171,6 @@ export const TimeLine = () => {
                                     tw-relative`}
                         onClick={event => handleYears(event, year)}
                         title={`Dar click para ver los porcentajes de ejecucion del año ${year}`}>
-                    <div className='tw-absolute tw-inset-0 tw-z-20
-                                    tw-rounded-full tw-bg-transparent tw-text-black
-                                    tw-flex tw-justify-center tw-items-center'>
-                        { parseInt ( ((yearProgress[index] === undefined || yearProgress[index] < 0 ? 0 : yearProgress[index])*100).toString())}%
-                    </div>
                     {plan.fill === 'vertical' ?
                         <div className={`tw-absolute tw-bottom-0 tw-left-0 tw-w-full tw-transition-all ${colorYearCla(index)}`}
                             style={{
@@ -163,7 +180,7 @@ export const TimeLine = () => {
                     plan.fill === 'radial' ?
                         <div className={`tw-absolute tw-inset-0
                                         ${colorYearCla(index)}
-                                        tw-text-black tw-z-10`}
+                                        tw-text-black`}
                             style={{
                                 maskImage: `conic-gradient(from 0deg at 50% 50%, blue 0deg,
                                             blue ${parseInt(((yearProgress[index] === undefined || yearProgress[index] < 0 ? 0 : yearProgress[index])*100).toString())/100*360}deg,
@@ -174,6 +191,11 @@ export const TimeLine = () => {
                         <div className={`tw-absolute tw-bottom-0 tw-left-0 tw-w-full tw-h-full tw-transition-all ${colorYearCla(index)}`}/>
                     : null
                     }
+                    <div className='tw-absolute tw-inset-0
+                                    tw-rounded-full tw-bg-transparent tw-text-black
+                                    tw-flex tw-justify-center tw-items-center'>
+                        { parseInt ( ((yearProgress[index] === undefined || yearProgress[index] < 0 ? 0 : yearProgress[index])*100).toString())}%
+                    </div>
                 </button>
                 <div className="tw-flex tw-items-center tw-w-full tw-relative tw-row-start-2">
                     <button className={`tw-w-full tw-h-2 tw-px-3
@@ -182,6 +204,7 @@ export const TimeLine = () => {
                                         ${index%2 === 1 ? 'hover:tw-translate-y-1' : 'hover:tw--translate-y-1'}
                                         ${colorClass(index)}
                                         ${colorYearCla(index)}`}>
+                        <p className='tw-hidden'>a</p>
                     </button>
                     <div className={`tw-h-full tw-grow
                                     tw-flex tw-flex-col`}>
@@ -190,6 +213,7 @@ export const TimeLine = () => {
                                                 tw-h-1/4 tw-w-2
                                                 ${colorYearCla(index)}`}
                                     onClick={event => handleYears(event, year)}>
+                                <p className='tw-hidden'>a</p>
                             </button>
                         : null}
                         <button className={`tw-self-center
@@ -209,13 +233,14 @@ export const TimeLine = () => {
                                                 tw-h-1/4 tw-w-2
                                                 ${colorYearCla(index)}`}
                                     onClick={event => handleYears(event, year)}>
+                                <p className='tw-hidden'>a</p>
                             </button>
                         : null}
                     </div>
                 </div>
             </li>
         )}
-        <button className={`${plan.shape === 'radial' ? 'tw-rounded' : 'tw-rounded-full tw-overflow-hidden tw-w-[6vw]'} tw-border-4
+        <button className={`${plan.shape === 'radial' ? 'tw-rounded-full tw-overflow-hidden tw-w-[6vw]' : 'tw-rounded'} tw-border-4
                             tw-flex tw-justify-center tw-items-center
                             tw-self-center
                             tw-w-12 tw-h-12
@@ -226,9 +251,6 @@ export const TimeLine = () => {
                             tw-relative`}
                 title='Dar click para ver las evidencias del plan indicativo'
                 onClick={handleBtnEvidence}>
-            <p className="tw-break-words tw-font-bold tw-z-20">
-                {yearsProgress == undefined || yearsProgress < 0 ? 0 : yearsProgress}%
-            </p>
             {plan.fill === 'vertical' ?
                 <div className={`tw-absolute tw-bottom-0 tw-left-0 tw-w-full tw-transition-all ${colorYearsCla_()}`}
                     style={{
@@ -238,7 +260,7 @@ export const TimeLine = () => {
             plan.fill === 'radial' ?
                 <div className={`tw-absolute tw-inset-0
                                 ${colorYearsCla_()}
-                                tw-text-black tw-z-10`}
+                                tw-text-black`}
                     style={{
                         maskImage: `conic-gradient(from 0deg at 50% 50%, blue 0deg,
                                     blue ${yearsProgress/100*360}deg,
@@ -249,6 +271,9 @@ export const TimeLine = () => {
                 <div className={`tw-absolute tw-bottom-0 tw-left-0 tw-w-full tw-h-full tw-transition-all ${colorYearsCla_()}`}/>
             : null
             }
+            <p className="tw-break-words tw-font-bold">
+                {yearsProgress == undefined || yearsProgress < 0 ? 0 : Math.round(yearsProgress * 100)}%
+            </p>
         </button>
         </ol>
     );

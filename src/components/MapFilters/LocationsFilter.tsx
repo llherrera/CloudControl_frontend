@@ -24,7 +24,7 @@ export const LocationSelect = () => {
     }, []);
 
     useEffect(() => {
-        getLatLngs(node_code, secretary, location)
+        getLatLngs(id_plan, node_code, secretary, location)
         .then(res => {
             dispatch(setLocs(res));
         });

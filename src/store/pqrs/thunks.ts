@@ -3,6 +3,8 @@ import { createAction, createAsyncThunk } from '@reduxjs/toolkit';
 import { ErrorBasicInterface, ParamsAddPqrs, ParamsAddPqrsType,
     ParamsAddPqrsHistory } from '@/interfaces';
 
+import { Session, CreateSessionPayload, UpdateSessionActivityPayload, CreateSessionEventPayload, UserSessionEvent, User, UserSessionAlert } from '@/interfaces/session';
+
 import { parseErrorAxios } from '@/utils';
 
 import { getPQRSsByPlan, getPQRSByRadicado, getPQRSTypes, getPQRSHistoryByRadicado,
@@ -20,8 +22,20 @@ import { getPQRSsByPlan, getPQRSByRadicado, getPQRSTypes, getPQRSHistoryByRadica
     updateRolUserOffice,
     getUserOfficeById,
     redirectionSolicitud,
-    solveSolicitud} from '@/services/pqrs_api';
-import { log } from 'node:console';
+    solveSolicitud,
+    addServiciosBulk,
+    fetchChatbotApi,
+    buscarSolicitudesPorDocumentoApi,
+    uploadPoaiExcel,
+    getActiveSessions,
+    getUserSessionHistory,
+    createSession,
+    updateSessionActivity,
+    closeSession,
+    createSessionEvent,
+    getUsersByPlanDetailed,
+    getUserSessionEvents,
+    getUserSessionAlerts, } from '@/services/pqrs_api';
 
 export const thunkGetPQRSs = createAsyncThunk<{}, number, { rejectValue: ErrorBasicInterface }>(
     'pdt/getPQRSByPlan',
@@ -195,21 +209,24 @@ export const thunkGetAllSolicitudes = createAsyncThunk<{}, { id_plan: string}, {
 export const thunkGetServiciosByPlan = createAsyncThunk<{}, number, { rejectValue: ErrorBasicInterface }>(
     'misc/getServiciosByPlan',
     async (idPlan: number, { rejectWithValue }) => {
+        console.log('[thunkGetServiciosByPlan] idPlan recibido:', idPlan);
         try {
             const res = await getServiciosByPlan(idPlan);
+            console.log('[thunkGetServiciosByPlan] Respuesta exitosa:', res);
             return res;
         } catch (err) {
+            console.error('[thunkGetServiciosByPlan] Error:', err);
             const result = parseErrorAxios(err);
             return rejectWithValue(result);
         }
     }
 );
 
-export const thunkAddServicio = createAsyncThunk<{}, any, { rejectValue: ErrorBasicInterface }>(
+export const thunkAddServicio = createAsyncThunk<{}, { SERVICIO: string, id_plan: number, tipo: 'N/A' | 'Valor' }, { rejectValue: ErrorBasicInterface }>(
     'misc/addServicio',
-    async (servicio, { rejectWithValue }) => {
+    async ({ SERVICIO, id_plan, tipo }, { rejectWithValue }) => {
         try {
-            const res = await addServicio(servicio);
+            const res = await addServicio({ SERVICIO, tipo }, id_plan);
             return res;
         } catch (err) {
             const result = parseErrorAxios(err);
@@ -229,6 +246,23 @@ export const thunkGetOficinasByPlan = createAsyncThunk<{}, number, { rejectValue
             return rejectWithValue(result);
         }
     }
+);
+
+export const thunkAddServiciosBulk = createAsyncThunk<
+  any,
+  { id_plan: number; servicios: { nombre: string; tipo: 'N/A' | 'Valor' }[] },
+  { rejectValue: ErrorBasicInterface }
+>(
+  'misc/addServiciosBulk',
+  async ({ id_plan, servicios }, { rejectWithValue }) => {
+    try {
+      const res = await addServiciosBulk(id_plan, servicios);
+      return res;
+    } catch (err) {
+      const result = parseErrorAxios(err);
+      return rejectWithValue(result);
+    }
+  }
 );
 
 
@@ -303,3 +337,200 @@ export const thunkRedirectionSolicitud = createAsyncThunk<{}, { id_solicitud: st
         }
     }
 );
+
+export interface SolicitudShort {
+    id: number;
+    nombre: string;
+    tipoDocumento: string;
+    documento: string;
+    genero?: string;
+    grupo?: string;
+    poblacional?: string;
+    discapacidad?: string;
+    escolaridad?: string;
+    nacionalidad?: string;
+    telefono?: string;
+    correo?: string;
+    barrio?: string;
+    comuna?: string;
+    corregimiento?: string;
+    vereda?: string;
+  }
+
+  export const thunkBuscarSolicitudesPorDocumento = createAsyncThunk<
+  SolicitudShort[],           // retorno exitoso
+  string,                     // argumento: documento (string)
+  { rejectValue: ErrorBasicInterface }
+>(
+  'solicitud/buscarPorDocumento',
+  async (documento: string, { rejectWithValue }) => {
+    try {
+      const res = await buscarSolicitudesPorDocumentoApi(documento);
+      return res;
+    } catch (err) {
+      const result = parseErrorAxios(err);
+      return rejectWithValue(result);
+    }
+  }
+);
+
+export interface ChatbotResponse {
+    originalText: string;
+    idPlan: number;
+    idUser?: number | null;
+    generatedSql: string;
+    execution: {
+      executed: boolean;
+      reason: string | null;
+    };
+    rows: any[];
+    explanation: string;
+  }
+  
+
+export const thunkFetchChatbot = createAsyncThunk<
+  ChatbotResponse, // retorno exitoso
+  { text: string; idPlan: number; idUser?: number | null }, // argumento
+  { rejectValue: ErrorBasicInterface }
+>(
+  "chatbot/fetch",
+  async ({ text, idPlan, idUser }, { rejectWithValue }) => {
+    try {
+      const res = await fetchChatbotApi(text, idPlan, idUser);
+      return res;
+    } catch (err) {
+      const result = parseErrorAxios(err);
+      return rejectWithValue(result);
+    }
+  }
+);
+
+export const thunkUploadPoaiExcel = createAsyncThunk<
+  { idPlan: number; msg: string; path: string },
+  { idPlan: number; file: File },
+  { rejectValue: ErrorBasicInterface }
+>(
+  "poai/uploadExcel",
+  async ({ idPlan, file }, { rejectWithValue }) => {
+    try {
+      const res = await uploadPoaiExcel(idPlan, file);
+      return res;
+    } catch (err) {
+      const result = parseErrorAxios(err);
+      return rejectWithValue(result);
+    }
+  }
+);
+
+
+export const thunkGetActiveSessions = createAsyncThunk<
+  Session[],
+  { planId?: number; userId?: number }
+>("sessions/getActiveSessions", async (params, { rejectWithValue }) => {
+  try {
+    const res = await getActiveSessions(params);
+    return res;
+  } catch (error: any) {
+    return rejectWithValue(error.response?.data || "Error obteniendo sesiones activas");
+  }
+});
+
+export const thunkGetUserSessionHistory = createAsyncThunk<
+  Session[],
+  { planId?: number; userId?: number }
+>("sessions/getUserSessionHistory", async (params, { rejectWithValue }) => {
+  try {
+    const res = await getUserSessionHistory(params);
+    return res;
+  } catch (error: any) {
+    return rejectWithValue(error.response?.data || "Error obteniendo historial de sesiones");
+  }
+});
+
+export const thunkCreateSession = createAsyncThunk<
+  Session,
+  CreateSessionPayload
+>("sessions/createSession", async (data, { rejectWithValue }) => {
+  try {
+    const res = await createSession(data);
+    return res;
+  } catch (error: any) {
+    return rejectWithValue(error.response?.data || "Error creando sesión");
+  }
+});
+
+export const thunkUpdateSessionActivity = createAsyncThunk<
+  Session,
+  UpdateSessionActivityPayload
+>("sessions/updateSessionActivity", async (data, { rejectWithValue }) => {
+  try {
+    const res = await updateSessionActivity(data.sessionId, {
+      tabsCount: data.tabsCount,
+      incrementReconnect: data.incrementReconnect,
+    });
+    return res;
+  } catch (error: any) {
+    return rejectWithValue(error.response?.data || "Error actualizando actividad de sesión");
+  }
+});
+
+export const thunkCloseSession = createAsyncThunk<
+  Session,
+  { sessionId: number | string }
+>("sessions/closeSession", async ({ sessionId }, { rejectWithValue }) => {
+  try {
+    const res = await closeSession(sessionId);
+    return res;
+  } catch (error: any) {
+    return rejectWithValue(error.response?.data || "Error cerrando sesión");
+  }
+});
+
+export const thunkCreateSessionEvent = createAsyncThunk<
+  UserSessionEvent,
+  CreateSessionEventPayload
+>("sessions/createSessionEvent", async (data, { rejectWithValue }) => {
+  try {
+    const { sessionId, ...body } = data;
+    const res = await createSessionEvent(sessionId, body);
+    return res;
+  } catch (error: any) {
+    return rejectWithValue(error.response?.data || "Error registrando evento de sesión");
+  }
+});
+
+export const thunkGetUsersByPlanDetailed = createAsyncThunk<
+  User[],
+  number
+>("sessions/getUsersByPlanDetailed", async (idPlan, { rejectWithValue }) => {
+  try {
+    const res = await getUsersByPlanDetailed(idPlan);
+    return res;
+  } catch (error: any) {
+    return rejectWithValue(error.response?.data || "Error obteniendo usuarios del plan");
+  }
+});
+
+export const thunkGetUserSessionEvents = createAsyncThunk<
+  UserSessionEvent[],
+  { planId?: number; userId?: number }
+>("sessions/getUserSessionEvents", async (params, { rejectWithValue }) => {
+  try {
+    const res = await getUserSessionEvents(params);
+    return res;
+  } catch (error: any) {
+    return rejectWithValue(error.response?.data || "Error obteniendo eventos de sesión");
+  }
+});
+
+export const thunkGetUserSessionAlerts = createAsyncThunk<
+  UserSessionAlert[],
+  { planId?: number; userId?: number }
+>("sessions/getUserSessionAlerts", async (params, { rejectWithValue }) => {
+  try {
+    const res = await getUserSessionAlerts(params);
+    return res;
+  } catch (error: any) {
+    return rejectWithValue(error.response?.data || "Error obteniendo alertas de sesión");
+  }
+});

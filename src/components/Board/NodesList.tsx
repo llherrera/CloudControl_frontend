@@ -3,15 +3,23 @@ import { useNavigate } from "react-router-dom";
 
 import { useAppSelector, useAppDispatch } from "@/store";
 import { thunkGetNodes, thunkUpdateWeight } from '@/store/plan/thunks';
-import { incrementLevelIndex, setParent, setProgressNodes, setCalcDone,
-        setFinancial, AddRootTree } from '@/store/plan/planSlice';
+import {
+    incrementLevelIndex, setParent, setProgressNodes, setCalcDone,
+    setFinancial, AddRootTree
+} from '@/store/plan/planSlice';
 import { setNode } from "@/store/content/contentSlice";
 
 import { NodeInterface, NodesWeight, Percentages, IdProps } from '@/interfaces';
 import { Spinner } from '@/assets/icons';
 import { decode, notify } from "@/utils";
 
-export const NodesList = ( props : IdProps ) => {
+declare global {
+    interface Window {
+        _hasProgramming?: boolean[];
+    }
+}
+
+export const NodesList = (props: IdProps) => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
 
@@ -19,7 +27,7 @@ export const NodesList = ( props : IdProps ) => {
     const { nodes, yearSelect, levels, indexLevel, progressNodes, calcDone,
         colorimeter, loadingNodes, rootTree, plan } = useAppSelector(store => store.plan);
     const { mode } = useAppSelector(store => store.content);
-    const [ pesos, setPesos ] = useState<number[]>(nodes.map((item: NodeInterface) => item.weight));
+    const [pesos, setPesos] = useState<number[]>(nodes.map((item: NodeInterface) => item.weight));
 
     const [rol, setRol] = useState("");
     const [id, setId] = useState(0);
@@ -40,6 +48,12 @@ export const NodesList = ( props : IdProps ) => {
     }, [yearSelect, nodes, calcDone]);
 
     const getProgress = () => {
+        if (window.debugNodeOpen) {
+            console.log('📊 Calculando progreso para nodos actuales...');
+            console.log('📋 Nodos a procesar:', nodes.map(n => ({ id: n.id_node, name: n.name })));
+            console.log('📅 Año seleccionado:', yearSelect);
+        }
+
         const pesosStr = localStorage.getItem('UnitNode');
         if (pesosStr == undefined) return 0;
         let pesosNodo = [];
@@ -48,54 +62,115 @@ export const NodesList = ( props : IdProps ) => {
         } catch (error) {
             pesosNodo = [];
         }
+
+        if (window.debugNodeOpen) {
+            console.log('📥 Datos de pesos cargados:', pesosNodo);
+        }
+
         let progreso = [] as number[];
         let programacion = [] as number[];
         let financiacion = [] as number[];
-        let nodes_s: NodesWeight[] = pesosNodo.filter((itemFull: NodesWeight) =>
-            nodes.some(itemFilter => itemFilter.id_node === itemFull.id_node));
+        let hasProgramming = [] as boolean[];
 
-        nodes_s.sort((a,b) => a.id_node < b.id_node ? -1 : 1);
-        nodes_s.sort((a,b) => a.id_node.length - b.id_node.length);
+        if (window.debugNodeOpen) {
+            console.log('🔍 Usando nodos de la UI:', nodes.map(n => ({ id: n.id_node, name: n.name })));
+        }
 
-        nodes_s.forEach((item: NodesWeight) => {
-            const { percents } = item;
-            if (percents) {
-                percents.forEach((percentages: Percentages) => {
-                    if (percentages.year === yearSelect) {
-                        progreso.push(percentages.progress);
-                        programacion.push(percentages.physical_programming);
-                        financiacion.push(percentages.financial_execution);
-                    }
-                });
-            }else {
+        nodes.forEach((item: NodeInterface) => {
+            const nodoConDatos = pesosNodo.find((n: NodesWeight) => n.id_node === item.id_node);
+            let datosAnio: Percentages | undefined = undefined;
+            if (nodoConDatos && nodoConDatos.percents) {
+                datosAnio = nodoConDatos.percents.find((p: Percentages) => p.year === yearSelect);
+            }
+            // Si no hay datos o no hay metas programadas para el año, progreso -1
+            if (!datosAnio || datosAnio.physical_programming === 0) {
                 progreso.push(-1);
                 programacion.push(-1);
                 financiacion.push(-1);
+                hasProgramming.push(false);
+                if (window.debugNodeOpen) {
+                    console.log(`⚠️ Nodo ${item.id_node} (${item.name || 'Sin nombre'}): Sin metas programadas para el año ${yearSelect}`);
+                }
+            } else {
+                progreso.push(datosAnio.progress);
+                programacion.push(datosAnio.physical_programming);
+                financiacion.push(datosAnio.financial_execution);
+                hasProgramming.push(true);
+                if (window.debugNodeOpen) {
+                    console.log(`📈 Nodo ${item.id_node} (${item.name || 'Sin nombre'}):`, {
+                        year: datosAnio.year,
+                        progress: datosAnio.progress,
+                        physical_programming: datosAnio.physical_programming,
+                        financial_execution: datosAnio.financial_execution
+                    });
+                }
             }
         });
-        const weights = nodes_s.map((item: NodesWeight) => item.weight);
+
+        const weights = nodes.map((item: NodeInterface) => item.weight);
         dispatch(setProgressNodes(progreso));
         dispatch(setFinancial(financiacion));
         setPesos(weights);
+        // Guardar info de programación para el año en window para usar en colorClass
+        window._hasProgramming = hasProgramming;
+
+        if (window.debugNodeOpen) {
+            console.log('✅ Progreso calculado:', {
+                progreso: progreso,
+                programacion: programacion,
+                financiacion: financiacion,
+                weights: weights,
+                hasProgramming: hasProgramming
+            });
+        }
     };
 
-    const handleButton = ( index: number ) => {
+    const handleButton = (index: number) => {
+        if (window.debugNodeOpen) {
+            console.log('🚪 Abriendo nodo:', {
+                index: index,
+                nodeId: nodes[index].id_node,
+                nodeName: nodes[index].name,
+                nodeDescription: nodes[index].description,
+                currentLevel: levels[indexLevel].name,
+                currentLevelIndex: indexLevel,
+                isLastLevel: indexLevel === levels.length - 1
+            });
+        }
+
         let name = [nodes[index].name, levels[indexLevel].name];
         let newRoot = [...rootTree];
         newRoot.push(name);
         dispatch(AddRootTree(newRoot));
-        if ( indexLevel !== levels.length-1 ) {
+        if (indexLevel !== levels.length - 1) {
             dispatch(setParent(nodes[index].id_node));
-            dispatch(incrementLevelIndex(indexLevel+1));
-            dispatch(thunkGetNodes({id_level: nodes[index].id_level+1, parent:nodes[index].id_node}));
+            dispatch(incrementLevelIndex(indexLevel + 1));
+            dispatch(thunkGetNodes({ id_level: nodes[index].id_level + 1, parent: nodes[index].id_node }));
+
+            if (window.debugNodeOpen) {
+                console.log('📂 Navegando a subnivel:', {
+                    newParent: nodes[index].id_node,
+                    newLevel: nodes[index].id_level + 1,
+                    newLevelIndex: indexLevel + 1,
+                    breadcrumb: newRoot
+                });
+            }
         } else {
             dispatch(setCalcDone(false));
             dispatch(setNode(nodes[index]));
-            navigate(`/pdt/PlanIndicativo/Meta`, {state: {idPDT: props.id, idNodo: nodes[index].id_node}});
+            navigate(`/pdt/PlanIndicativo/Meta`, { state: { idPDT: props.id, idNodo: nodes[index].id_node } });
+
+            if (window.debugNodeOpen) {
+                console.log('🎯 Navegando a meta específica:', {
+                    targetNode: nodes[index].id_node,
+                    targetName: nodes[index].name,
+                    navigationState: { idPDT: props.id, idNodo: nodes[index].id_node }
+                });
+            }
         }
     };
 
-    const handleUpdateWeight = ( index: number, e: React.ChangeEvent<HTMLInputElement> ) => {
+    const handleUpdateWeight = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
         const value = parseInt(e.target.value);
         const newNodes = [...pesos];
         newNodes[index] = value;
@@ -106,32 +181,53 @@ export const NodesList = ( props : IdProps ) => {
         const acmu = pesos.reduce((a, b) => a + b, 0);
         if (acmu !== 100) return notify('La suma de los pesos debe ser 100', 'warning');
         const ids = nodes.map((item) => item.id_node);
-        dispatch(thunkUpdateWeight({ids: ids, weights: pesos}));
+        dispatch(thunkUpdateWeight({ ids: ids, weights: pesos }));
     };
 
-    const colorClass = (index: number) => (
-        parseInt( ((progressNodes[index]??0)*100).toString()) < 0 ?
-        'tw-border-gray-400 group-hover:tw-border-gray-200' :
-        parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[0] ?
-        'tw-border-redColory group-hover:tw-border-red-200' :
-        parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[1] ?
-        'tw-border-yellowColory group-hover:tw-border-yellow-200':
-        parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[2] ?
-        'tw-border-greenColory group-hover:tw-border-green-200':
-        'tw-border-blueColory group-hover:tw-border-blue-200'
-    );
+    // Modificar colorClass y colorClass_ para usar hasProgramming
+    const colorClass = (index: number) => {
+        const progress = progressNodes[index] ?? -1;
+        const progressPercent = parseInt((progress * 100).toString());
+        const hasProg = window._hasProgramming ? window._hasProgramming[index] : false;
 
-    const colorClass_ = (index: number) => (
-        parseInt( ((progressNodes[index]??0)*100).toString()) < 0 ?
-        'tw-bg-gray-400 group-hover:tw-bg-gray-200' :
-        parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[0] ?
-        'tw-bg-redColory group-hover:tw-bg-red-200' :
-        parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[1] ?
-        'tw-bg-yellowColory group-hover:tw-bg-yellow-200' :
-        parseInt( ((progressNodes[index]??0)*100).toString()) < colorimeter[2] ?
-        'tw-bg-greenColory group-hover:tw-bg-green-200' :
-        'tw-bg-blueColory group-hover:tw-bg-blue-200'
-    );
+        if (progress < 0) {
+            return 'tw-border-gray-400 group-hover:tw-border-gray-200'; // Sin datos o sin metas programadas
+        } else if (!hasProg) {
+            return 'tw-border-gray-400 group-hover:tw-border-gray-200'; // No hay metas programadas para el año
+        } else if (progressPercent === 0 && hasProg) {
+            return 'tw-border-redColory group-hover:tw-border-red-200'; // Programado pero 0%
+        } else if (progressPercent < colorimeter[0]) {
+            return 'tw-border-redColory group-hover:tw-border-red-200';
+        } else if (progressPercent < colorimeter[1]) {
+            return 'tw-border-yellowColory group-hover:tw-border-yellow-200';
+        } else if (progressPercent < colorimeter[2]) {
+            return 'tw-border-greenColory group-hover:tw-border-green-200';
+        } else {
+            return 'tw-border-blueColory group-hover:tw-border-blue-200';
+        }
+    };
+
+    const colorClass_ = (index: number) => {
+        const progress = progressNodes[index] ?? -1;
+        const progressPercent = parseInt((progress * 100).toString());
+        const hasProg = window._hasProgramming ? window._hasProgramming[index] : false;
+
+        if (progress < 0) {
+            return 'tw-bg-gray-400 group-hover:tw-bg-gray-200'; // Sin datos o sin metas programadas
+        } else if (!hasProg) {
+            return 'tw-bg-gray-400 group-hover:tw-bg-gray-200'; // No hay metas programadas para el año
+        } else if (progressPercent === 0 && hasProg) {
+            return 'tw-bg-redColory group-hover:tw-bg-red-200'; // Programado pero 0%
+        } else if (progressPercent < colorimeter[0]) {
+            return 'tw-bg-redColory group-hover:tw-bg-red-200';
+        } else if (progressPercent < colorimeter[1]) {
+            return 'tw-bg-yellowColory group-hover:tw-bg-yellow-200';
+        } else if (progressPercent < colorimeter[2]) {
+            return 'tw-bg-greenColory group-hover:tw-bg-green-200';
+        } else {
+            return 'tw-bg-blueColory group-hover:tw-bg-blue-200';
+        }
+    };
 
     const handleClickResult = () => {
         dispatch(setCalcDone(false));
@@ -141,71 +237,71 @@ export const NodesList = ( props : IdProps ) => {
     const HandleShowList = () => loadingNodes ?
         <Spinner />
         : <>
-        <ul className={`${indexLevel === levels.length-1 ?
-                        'tw-flex tw-flex-row tw-flex-wrap':
-                        'tw-flex-col tw-flex-wrap'} tw-overflow-hidden tw-mt-4`} >
-            {nodes.map((item: NodeInterface, index: number) =>
-                <div className="tw-my-2 tw-ml-12 tw-py-1 tw-flex tw-transition hover:tw-scale-110 tw-group"
-                    key={item.id_node}>
-                    <button className={`${plan.shape === 'radial' ? 'tw-rounded' : 'tw-rounded-full tw-overflow-hidden tw-scale-[1.2]'} tw-border-4 tw-bg-transparent
+            <ul className={`${indexLevel === levels.length - 1 ?
+                'tw-flex tw-flex-row tw-flex-wrap' :
+                'tw-flex-col tw-flex-wrap'} tw-overflow-hidden tw-mt-4`} >
+                {nodes.map((item: NodeInterface, index: number) =>
+                    <div className="tw-my-2 tw-ml-12 tw-py-1 tw-flex tw-transition hover:tw-scale-110 tw-group"
+                        key={item.id_node}>
+                        <button className={`${plan.shape === 'radial' ? 'tw-rounded-full tw-overflow-hidden tw-scale-[1.2]' : 'tw-rounded'} tw-border-4 tw-bg-transparent
                                         ${colorClass(index)}
-                                        tw-ml-3 tw-z-10
+                                        tw-ml-3
                                         tw-w-12 tw-h-12
                                         tw-font-bold tw-overflow-hidden
                                         tw-relative`}
-                            onClick={ () => handleButton(index)}
-                            title={`${item.description} ${indexLevel !== levels.length-1 ? '' : `\n${item.code.replace(/(\.\d+)(?=\.)/, '')}\n${item.responsible}`}`}>
-                        <div className='tw-absolute tw-inset-0 tw-z-20
+                            onClick={() => handleButton(index)}
+                            title={`${item.description} ${(indexLevel !== levels.length - 1 || item.code == null) ? '' : `\n${item.code.replace(/(\.\d+)(?=\.)/, '')}\n${item.responsible}`}`}>
+                            {plan.fill === 'vertical' ?
+                                <div className={`tw-absolute tw-bottom-0 tw-left-0 tw-w-full tw-transition-all ${colorClass_(index)}`}
+                                    style={{
+                                        height: `${parseInt(((progressNodes[index] === undefined || progressNodes[index] < 0 ? 0 : progressNodes[index]) * 100).toString())}%`,
+                                    }}
+                                /> :
+                                plan.fill === 'radial' ?
+                                    <div className={`tw-absolute tw-inset-0
+                                            ${colorClass_(index)}
+                                            tw-text-black`}
+                                        style={{
+                                            maskImage: `conic-gradient(from 0deg at 50% 50%, blue 0deg,
+                                                blue ${parseInt(((progressNodes[index] === undefined || progressNodes[index] < 0 ? 0 : progressNodes[index]) * 100).toString()) / 100 * 360}deg,
+                                                transparent 0deg)`,
+                                        }}
+                                    /> :
+                                    plan.fill === 'completo' ?
+                                        <div className={`tw-absolute tw-bottom-0 tw-left-0 tw-w-full tw-h-full tw-transition-all ${colorClass_(index)}`} />
+                                        : null
+                            }
+                            <div className='tw-absolute tw-inset-0
                                         tw-rounded-full tw-bg-transparent tw-text-black
                                         tw-flex tw-justify-center tw-items-center'>
-                            { Math.round( ((progressNodes[index] === undefined || progressNodes[index] < 0 ? 0 : progressNodes[index])*100))}%
-                        </div>
-                        {plan.fill === 'vertical' ?
-                            <div className={`tw-absolute tw-bottom-0 tw-left-0 tw-w-full tw-transition-all ${colorClass_(index)}`}
-                                style={{
-                                    height: `${ parseInt( ((progressNodes[index] === undefined || progressNodes[index] < 0 ? 0 : progressNodes[index])*100).toString())}%`,
-                                }}
-                            /> :
-                        plan.fill === 'radial' ?
-                            <div className={`tw-absolute tw-inset-0
-                                            ${colorClass_(index)}
-                                            tw-text-black tw-z-10`}
-                                style={{
-                                    maskImage: `conic-gradient(from 0deg at 50% 50%, blue 0deg,
-                                                blue ${parseInt( ((progressNodes[index] === undefined || progressNodes[index] < 0 ? 0 : progressNodes[index])*100).toString())/100*360}deg,
-                                                transparent 0deg)`,
-                                }}
-                            /> :
-                            plan.fill === 'completo' ?
-                                <div className={`tw-absolute tw-bottom-0 tw-left-0 tw-w-full tw-h-full tw-transition-all ${colorClass_(index)}`}/>
-                            : null
-                        }
-                    </button>
-                    {indexLevel !== levels.length-1 ?
-                    <button className={`${colorClass_(index)}
+                                {Math.round(((progressNodes[index] === undefined || progressNodes[index] < 0 ? 0 : progressNodes[index]) * 100))}%
+                            </div>
+                        </button>
+                        {indexLevel !== levels.length - 1 ?
+                            <button className={`${colorClass_(index)}
                                         tw-h-8 tw-my-2 tw-w-2/3
                                         tw-rounded-r-lg
                                         tw-text-white tw-font-bold tw-text-center
                                         tw-font-montserrat`}
-                            onClick={ () => handleButton(index)}
-                            title={item.description}>
-                        <p className='tw-truncate group-hover:tw-text-black'>
-                            {item.name}
-                        </p>
-                    </button>
-                    :null}
-                    {rol === 'admin' || (rol === 'funcionario' && id === props.id) ?
-                        <input  className={`tw-px-2 tw-mx-2 tw-w-16
+                                onClick={() => handleButton(index)}
+                                title={item.description}>
+                                <p className="tw-truncate tw-text-black tw-text-left tw-pl-2">
+                                    {item.name}
+                                </p>
+                            </button>
+                            : null}
+                        {rol === 'admin' || (rol === 'funcionario' && id === props.id) ?
+                            <input className={`tw-px-2 tw-mx-2 tw-w-16
                                             tw-border tw-rounded
                                             ${mode ? '' : 'tw-hidden'}`}
                                 type='number'
                                 placeholder='peso'
-                                value={ isNaN(pesos[index]) ? 0 : pesos[index]}
-                                onChange={e => handleUpdateWeight(index, e)}/>
-                    :null}
-                </div>
-            )}
-            {/*mode && (rol === 'admin' || (rol === 'funcionario' && id === props.id)) ?
+                                value={isNaN(pesos[index]) ? 0 : pesos[index]}
+                                onChange={e => handleUpdateWeight(index, e)} />
+                            : null}
+                    </div>
+                )}
+                {/*mode && (rol === 'admin' || (rol === 'funcionario' && id === props.id)) ?
             <div className='tw-flex tw-justify-center'>
                 <button className='tw-px-2 tw-mx-2
                                     tw-bg-greenBtn tw-text-white
@@ -216,25 +312,25 @@ export const NodesList = ( props : IdProps ) => {
                 </button>
             </div>
             : null*/}
-        </ul>
-        {indexLevel === levels.length-1 ?
-        <div className='tw-flex tw-justify-center tw-mx-3
+            </ul>
+            {indexLevel === levels.length - 1 ?
+                <div className='tw-flex tw-justify-center tw-mx-3
                         tw-border-t tw-border-slate-500'>
-            <button
-                title="Metas de resultado"
-                className=' tw-mx-2 tw-p-2 tw-mt-2
+                    <button
+                        title="Metas de resultado"
+                        className=' tw-mx-2 tw-p-2 tw-mt-2
                             tw-bg-redBtn hover:tw-bg-red-200
                             tw-rounded-full
                             tw-font-bold tw-text-white'
-                onClick={() => handleClickResult()}>
-                Metas de resultado
-            </button>
-        </div>
-        :null}
+                        onClick={() => handleClickResult()}>
+                        Metas de resultado
+                    </button>
+                </div>
+                : null}
         </>
-    ;
+        ;
 
     return <div>
-        {nodes.length === 0 ? null : <HandleShowList/>}
+        {nodes.length === 0 ? null : <HandleShowList />}
     </div>
 }

@@ -9,6 +9,8 @@ import chartReducer from './chart/chartSlice';
 import unitReducer from './unit/unitSlice';
 import evidenceReducer from './evidence/evidenceSlice';
 import pqrsReducer from './pqrs/pqrsSlice';
+import sessionsReducer from './pqrs/sessionsSlice';
+
 
 export const reducers = {
   auth: authReducer,
@@ -17,7 +19,10 @@ export const reducers = {
   chart: chartReducer,
   unit: unitReducer,
   evidence: evidenceReducer,
+  pqrs: pqrsReducer,
+  sessions: sessionsReducer
 };
+
 
 const rootReducer = combineReducers(reducers);
 

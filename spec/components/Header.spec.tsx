@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 
-import { Header } from '@/components';
+import { Header } from '@/components/Citizen';
 /*
 describe('Header', () => {
   it('should render successfully', () => {

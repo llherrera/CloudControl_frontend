@@ -9,7 +9,7 @@ import {
     NodeForm,
     PDTForm,
     RegisterForm,
-    SecretaryForm } from '@/components';
+    SecretaryForm } from '@/components/Citizen';
 /*
 describe('ColorForm', () => {
     it('should render successfully', () => {

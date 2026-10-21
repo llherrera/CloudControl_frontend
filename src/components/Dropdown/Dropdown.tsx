@@ -6,7 +6,7 @@ export const DropdownC = ({title, children, m, bg, textColor}: DropdownProps) =>
     const handlerClick = () => setShow(!show);
 
     return (
-        <div className={`tw-${m} tw-px-36`}>
+        <div className={`tw-${m} tw-px-4 md:tw-px-36`}>
             <div 
                 className={`tw-flex tw-justify-between tw-items-center
                             tw-cursor-pointer tw-py-4

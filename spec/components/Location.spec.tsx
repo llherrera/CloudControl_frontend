@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 
-import { LocationPopover } from '@/components';
+import { LocationPopover } from '@/components/Citizen';
 /*
 describe('LocationPopover', () => {
   it('should render successfully', () => {

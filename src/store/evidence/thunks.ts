@@ -21,7 +21,8 @@ import {
     addEvicenceGoal,
     updateEvicenceGoal,
     getUbiEvidences,
-    getExecutionsToApro } from "@/services/api";
+    getExecutionsToApro, 
+    deleteEvidence} from "@/services/api";
 
 export const thunkGetEvidence = createAsyncThunk<EvidenceInterface[], GetEvidenceProps, { rejectValue: ErrorBasicInterface}>(
     "evidence/getEvidence", 
@@ -123,6 +124,25 @@ export const thunkGetUbiEvidence = createAsyncThunk<Coordinates[], number, { rej
                 return {lat: item.lat, lng: item.lng};
             });
             return result;
+        } catch (err) {
+            const result = parseErrorAxios(err);
+            return rejectWithValue(result);
+        }
+    }
+);
+
+export const thunkDeleteEvidence = createAsyncThunk<
+    number,
+    number,
+    { rejectValue: ErrorBasicInterface }
+>(
+    "evidence/deleteEvidence",
+    async (id: number, { rejectWithValue }) => {
+        try {
+            console.log("nyaw");
+            
+            const res = await deleteEvidence(id);
+            return res; // el id eliminado
         } catch (err) {
             const result = parseErrorAxios(err);
             return rejectWithValue(result);

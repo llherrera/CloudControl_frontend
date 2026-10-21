@@ -6,7 +6,7 @@ import { Link } from '@mui/icons-material';
 
 import { useAppSelector } from "@/store";
 
-import { ShareBtn } from "@/components";
+import { ShareBtn } from "@/components/Citizen";
 import { ModalProps, ModalShareProps } from "@/interfaces";
 import { notify } from "@/utils";
 

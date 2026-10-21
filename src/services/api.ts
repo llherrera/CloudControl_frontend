@@ -491,14 +491,20 @@ export const getEvidences = async (id_plan: number, page: number) => {
 }
 
 export const getExecutionsToApro = async (id_plan: number, page: number) => {
+    console.log(`[getExecutionsToApro] Solicitando ejecuciones para aprobar`, { id_plan, page });
+
     const response = await api.get("/nodo/ejecucion", {
         params: {
             id_plan: id_plan,
             page: page
         }
     });
+
+    console.log(`[getExecutionsToApro] Respuesta recibida`, response.data);
+
     return response.data;
-}
+};
+
 
 export const getEvidenceCount = async (id_plan: number) => {
     const response = await api.get("/nodo/evidencia-contar", {
@@ -648,6 +654,12 @@ export const updateLocations = async (id_plan: number, locations: LocationInterf
     return response.data;
 }
 
+export const deleteLocation = async (id_location: number) => {
+    const response = await api.delete(`/plan-territorial/localidades/${id_location}`);
+    return response.data;
+}
+
+
 export const loadFinancialExcel =async () => {
     const response = await api.put('/plan-territorial/');
     return response;
@@ -703,11 +715,12 @@ export const updateDeadline = async (id_plan: number, date: string) => {
     return response.data;
 }
 
-export const updateExecution = async (date: Date, value: number, code: string, user_id: number, plan_id: number, reason?: string) => {
+export const updateExecution = async (date: Date, value1: number, value2: number, code: string, user_id: number, plan_id: number, reason?: string) => {
     let dateForm = date.getFullYear() + '-' + (date.getMonth() + 1).toString().padStart(2, '0') + '-' + date.getDate().toString().padStart(2, '0');
     const response = await api.put('/nodo/ejecucion', {
         date: dateForm,
-        value,
+        value1,
+        value2,
         code,
         user_id,
         plan_id,
@@ -984,5 +997,94 @@ export const loadActivityExcel = async (id_plan: number, data: any[]) => {
     });
     return response.data;
 }
+
+export const generalReport = async (id_plan: number) => {
+    const response = await api.get('/plan-territorial/generalReport', {
+        params: {
+            id_plan,
+        }
+    });
+    return response.data;
+}
+
+export const updatePlanModulesMask = async (id: number, modules_mask: number) => {
+    const response = await api.put(`/plan-territorial/modules/${id}`, { modules_mask });
+    return response.data;
+}
+
+// Obtener el slogan de un plan
+export const getSloganByPlan = async (id_plan: number) => {
+    const response = await api.get('/plan-territorial/slogan/value', {
+        params: {
+            id_plan,
+        }
+    });
+    return response.data;
+}
+
+
+// Actualizar el slogan de un plan
+export const updateSloganByPlan = async (id_plan: number, slogan: string) => {
+    const response = await api.put(`/plan-territorial/slogan/value`, {
+        id_plan,
+        slogan
+    });
+    return response.data;
+}
+
+// Obtener el mapZoom de un plan
+export const getMapZoomByPlan = async (id_plan: number) => {
+    const response = await api.get('/plan-territorial/map-zoom/value', {
+        params: {
+            id_plan,
+        }
+    });
+    return response.data;
+};
+
+// Actualizar el mapZoom de un plan
+export const updateMapZoomByPlan = async (id_plan: number, mapZoom: string) => {
+    const response = await api.put('/plan-territorial/map-zoom/value', {
+        id_plan,
+        mapZoom
+    });
+    return response.data;
+};
+
+// Obtener configuración de texto de un plan
+export const getTextFormatByPlan = async (id_plan: number) => {
+    const response = await api.get('/plan-territorial/text-format/value', {
+        params: {
+            id_plan,
+        }
+    });
+    return response.data; // devuelve: { format: { ... } }
+};
+
+// Obtener arreglo de nodos de un plan
+export const getNodeArrayByPlan = async (id_plan: number) => {
+    const response = await api.get('/misc/nodearray', {
+        params: { idPlan: id_plan },
+    });
+    return response.data; // devuelve: { nodes: [...] } o directamente [...]
+};
+
+// Obtener arreglo de niveles de un plan
+export const getLevelArrayByPlan = async (id_plan: number) => {
+    const response = await api.get('/misc/levelarray', {
+        params: { idPlan: id_plan },
+    });
+    return response.data; // devuelve: { levels: [...] } o directamente [...]
+};
+
+// Actualizar configuración de texto de un plan
+export const updateTextFormatByPlan = async (id_plan: number, format: Record<string, any>) => {
+    const response = await api.put('/plan-territorial/text-format/value', {
+        id_plan,
+        format
+    });
+    return response.data;
+};
+
 
 export default api;

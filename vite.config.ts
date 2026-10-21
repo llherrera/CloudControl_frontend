@@ -1,3 +1,5 @@
+//Vite configuration file
+
 import legacy from '@vitejs/plugin-legacy'
 import react from '@vitejs/plugin-react'
 import { fileURLToPath } from 'url'

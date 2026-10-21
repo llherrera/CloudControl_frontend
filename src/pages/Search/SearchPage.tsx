@@ -8,7 +8,7 @@ import { thunkGetEvidence } from '@/store/evidence/thunks';
 import { thunkGetUnit } from "@/store/unit/thunks";
 import { setIdPlan } from "@/store/content/contentSlice";
 
-import { Header, UnitFrame, HvBtn, ShowEvidence, UnitResultInfo } from "@/components";
+import { Header, UnitFrame, HvBtn, ShowEvidence, UnitResultInfo } from "@/components/Citizen";
 import { validateUUID, notify, getYears } from "@/utils";
 import { UnitNodeResultInterface } from "@/interfaces";
 import { getUnitNodeResult } from "@/services/api";
@@ -338,7 +338,12 @@ export const SearchUnitPage = () => {
                 </thead>
                 <tbody>
                     {evidences.map((evi, index) => (
-                        <ShowEvidence evi={evi} index={index} key={evi.id_evidence}/>
+                        <ShowEvidence
+                        evi={evi}
+                        index={index}
+                        key={index}
+                        handleEvidence={handleEvidence} // esta función debe estar definida
+                      />                      
                     ))}
                 </tbody>
             </table>

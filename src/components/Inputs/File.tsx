@@ -57,6 +57,7 @@ export const FileInput = () => {
                 name: reg??'',
                 email: '',
                 phone: 0,
+                color: '',
             }
             return secretary;
         });

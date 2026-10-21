@@ -1,3 +1,5 @@
+import internal from "stream";
+
 export interface RegisterInterface {
     readonly id_user: number;
     username: string;
@@ -31,6 +33,7 @@ export interface PDTInterface {
     uuid: string;
     fill: string;
     shape: string;
+    modules?: number;
 }
 
 export interface LevelInterface {
@@ -117,6 +120,8 @@ export interface ExecutionInterface {
     readonly id_node: string;
     physical_execution: number;
     modified_execution: number;
+    financial_value: number;
+    financial_execution: number;
     modified_date: Date;
     id_user: number;
 }
@@ -144,6 +149,7 @@ export interface LocationInterface {
     lat?: number;
     lng?: number;
     belongs?: string;
+    id_location?: number;
 }
 
 export interface PQRSInform {
@@ -182,4 +188,48 @@ export interface UnitNodeResultInterface {
     responsible: string;
     unitMeter: string;
     unitNodes: string[]
+}
+
+export interface FormData {
+    id?: string;
+    fecha?: string;
+    nombre: string;
+    tipoDocumento: string;
+    documento: string;
+    genero: string;
+    grupo: string;
+    poblacional: string;
+    otroPoblacional?: string;
+    discapacidad: string;
+    otraDiscapacidad?: string;
+    escolaridad: string;
+    otraEscolaridad?: string;
+    nacionalidad: string;
+    telefono?: string;
+    correo?: string;
+    area: string;
+    barrio?: string;
+    comuna?: string;
+    corregimiento?: string;
+    vereda?: string;
+    servicio: string;
+    otroServicio?: string;
+    prioridad: string;
+    tipoAtencion: string;
+    modoAtencion?: string;
+    duracion?: string;
+    exclusividad?: string;
+    tipoUsuario?: string;
+    redireccionar: boolean;
+    oficinaDestino?: string;
+    dependencia?: string;
+    funcionario: string;
+    estado: 'pendiente' | 'en proceso' | 'resuelto';
+    fechaResolucion?: string | null;
+    solicitudPadre?: string;
+    usuarioId?: string;
+    razonRedireccionamiento?: string;
+    cantidadServicio?: number;
+    tipo?: 'N/A' | 'Valor';
+    Ticket_ID?: string | number;
 }

@@ -22,7 +22,7 @@ export const ColorForm = ( {id} : IdProps ) => {
         colorimeter.map((item: number, index) => [index === 0 ? 0 : colorimeter[index-1]+1, item])
     );
     const [radioBtn, setRadioBtn] = useState<string>(plan == undefined ? 'vacio' : plan.fill == null ? 'vacio' : plan.fill);
-    const [shapeBtn, setShapeBtn] = useState<'radial' | 'square'>('radial');
+    const [shapeBtn, setShapeBtn] = useState<string>(plan == undefined ? 'vacio' : plan.shape == null ? 'vacio' : plan.shape);
 
     useEffect(() => {
         if (colorimeter.length === 0) {
@@ -64,7 +64,8 @@ export const ColorForm = ( {id} : IdProps ) => {
     };
     
     const handleShape = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setShapeBtn(event.target.value as 'radial' | 'square');
+        const { value } = event.target;
+        setShapeBtn(value);
     };
 
 
@@ -177,28 +178,19 @@ export const ColorForm = ( {id} : IdProps ) => {
                 <div>
                     <p className='tw-font-bold tw-text-xl tw-text-center'>Forma</p>
                     <ul className='tw-flex tw-gap-4'>
-                        <div>
-                            <input
-                                type="radio"
-                                id='forma-radial'
-                                value='radial'
-                                className='tw-mr-2'
-                                onChange={handleShape}
-                                checked={shapeBtn === 'radial'}
-                            />
-                            <label htmlFor="forma-radial">Radial</label>
-                        </div>
-                        <div>
-                            <input
-                                type="radio"
-                                id='forma-cubo'
-                                value='square'
-                                className='tw-mr-2'
-                                onChange={handleShape}
-                                checked={shapeBtn === 'square'}
-                            />
-                            <label htmlFor="forma-cubo">Cubo</label>
-                        </div>
+                        {[{id: 'forma-radial', value: 'radial', label: 'Radial'}, {id: 'forma-cubo', value: 'square', label: 'Cubo'}].map((item) => (
+                            <div key={item.value}>
+                                <input
+                                    type="radio"
+                                    id={item.id}
+                                    value={item.value}
+                                    className='tw-mr-2'
+                                    onChange={handleShape}
+                                    checked={shapeBtn === item.value}
+                                />
+                                <label htmlFor={item.id}>{item.label}</label>
+                            </div>
+                        ))}
                     </ul>
                 </div>
                 <button className='tw-bg-greenColory hover:tw-bg-green-400

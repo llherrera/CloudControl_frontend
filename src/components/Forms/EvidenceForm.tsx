@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { notify, convertLocations } from '@/utils';
 import { EvidenceInterface, LocationInterface } from "@/interfaces";
-import { UbicationsPopover, ModalSpinner, BackBtn } from "@/components";
+import { UbicationsPopover, ModalSpinner, BackBtn } from "@/components/Citizen";
 
 import { useAppSelector, useAppDispatch } from "@/store";
 import {
@@ -28,29 +28,29 @@ export const EvidenceForm = () => {
 
     const [loading, setLoading] = useState(false);
     const [showOther, setShowOther] = useState(false);
-    const [data, setData] = useState<EvidenceInterface>(evi_selected??
-        {
+    const blankData = {
         id_evidence: 0,
         code: unit.code,
-        date: plan ? new Date(`${yearRegister-1}-02-1`).toISOString() : new Date().toISOString(),
+        date: new Date().toISOString(),
         activitiesDesc: "",
-        unit: "num",
+        unit: "M",
         amount: 0,
-        commune: "Tubara",
-        neighborhood: "Soledad",
-        corregimiento: "Carrizal",
-        vereda: "Eden",
+        commune: "Todas",
+        neighborhood: "Todas",
+        corregimiento: "",
+        vereda: "",
         benefited_population: "AdultoMayor",
         benefited_population_number: 0,
         executed_resources: 0,
-        resources_font: "Privado",
+        resources_font: "Otros",
         name_file: "",
         place: "",
         date_file: "",
         file_link: "",
         locations: [],
         state: 0,
-    });
+    };
+    const [data, setData] = useState<EvidenceInterface>(evi_selected??blankData);
     const [documento, setDocumento] = useState<FileList | null>(null);
 
     const [locationsMap, setLocationsMap] = useState<Map<LocationInterface, LocationInterface[]>>();
@@ -134,7 +134,7 @@ export const EvidenceForm = () => {
         if (data.neighborhood === "") return notify('No se ha seleccionado un barrio', 'warning');
         if (data.amount <= 0) return notify('No se ha seleccionado una cantidad', 'warning');
         if (data.commune === "") return notify('No se ha seleccionado una comuna', 'warning');
-        if (data.corregimiento === "") return notify('No se ha seleccionado un correguimiento', 'warning');
+        //if (data.corregimiento === "") return notify('No se ha seleccionado un correguimiento', 'warning');
         if (data.activitiesDesc === "") return notify('No se ha seleccionado una descripcion de actividades', 'warning');
         if (data.date === "") return notify('No se ha seleccionado una fecha', 'warning');
         if (data.date_file === "") return notify('No se ha seleccionado una fecha de archivo', 'warning');
@@ -145,8 +145,8 @@ export const EvidenceForm = () => {
         if (data.benefited_population === "") return notify('No se ha seleccionado una poblacion beneficiada', 'warning');
         //if (data.executed_resources <= 0) return notify('No se ha seleccionado un recurso ejecutado', 'warning');
         if (data.unit === "") return notify('No se ha seleccionado una unidad', 'warning');
-        if (data.vereda === "") return notify('No se ha seleccionado una vereda', 'warning');
-        if (list_points.length === 0) return notify('No se ha seleccionado una ubicacion', 'warning');
+        //if (data.vereda === "") return notify('No se ha seleccionado una vereda', 'warning');
+        //if (list_points.length === 0) return notify('No se ha seleccionado una ubicacion', 'warning');
         setLoading(true);
 
         if (evi_selected === undefined) {
@@ -157,14 +157,11 @@ export const EvidenceForm = () => {
                 file: documento[0],
                 list_points: list_points
             }))
-            .unwrap()
-            .then(() => {
+            .then((res) => {
                 setLoading(false);
-                notify('Evidencia añadida con exito', 'success');
-            })
-            .catch(()=> {
-                setLoading(false);
-                notify('Error al añadir evidencia', 'error');
+                if (res && !res.type.includes('rejected')) {
+                    setData(blankData);
+                }
             });
         } else { 
             dispatch(thunkUpdateEvidence({
@@ -173,14 +170,9 @@ export const EvidenceForm = () => {
                 file: documento[0],
                 list_points: list_points
             }))
-            .unwrap()
-            .then(()=> {
+            .then(() => {
                 setLoading(false);
-                notify('Evidencia actualizada con exito', 'success');
-            })
-            .catch(()=> {
-                setLoading(false);
-                notify('Error al actualizar evidencia', 'error');
+                setData(blankData);
             });
         }
     };
@@ -193,9 +185,7 @@ export const EvidenceForm = () => {
             <h1>404</h1>
             <h2>No se ha seleccionado un plan</h2>
             <BackBtn handle={handleBack} id={1}/>
-        </div> :
-        loading ? <ModalSpinner isOpen={loading}/> :
-        <form
+        </div> : <form
             id="formEvidencia"
             encType="multipart/form-data"
             className=" tw-flex tw-flex-col
@@ -235,6 +225,7 @@ export const EvidenceForm = () => {
             </div>
             <p className="tw-mt-4">Descripcion Actividades:</p>
             <textarea
+                title="Descripcion Actividades"
                 name="activitiesDesc"
                 id="activitiesDesc"
                 required
@@ -251,6 +242,7 @@ export const EvidenceForm = () => {
                 <div className="tw-flex tw-flex-col">
                     <p>Unidad</p>
                     <select
+                        title="Unidad"
                         name="unit"
                         id="unit"
                         className=" tw-p-2 tw-rounded
@@ -271,6 +263,7 @@ export const EvidenceForm = () => {
                 <div className="tw-flex tw-ml-3 tw-flex-col">
                     <p>Cantidad</p>
                     <input
+                        title="Cantidad"
                         type="number"
                         name="amount"
                         id="amount"
@@ -285,11 +278,13 @@ export const EvidenceForm = () => {
 
             <p className="tw-mt-4">Ubicacion</p>
             <div className="tw-flex tw-flex-wrap
-                            tw-rounded tw-p-2
-                            tw-border-2 tw-border-gray-400">
+                            tw-rounded tw-p-4 tw-mb-2
+                            tw-border-4 tw-border-blue-400 tw-bg-blue-50 tw-items-center">
                 <div className="tw-flex tw-flex-col">
                     <p>Localidad/Comuna/Corregimiento</p>
                     <select
+                        value={data.commune}
+                        title="Localidad"
                         name="commune"
                         id="commune"
                         className=" tw-p-2 tw-rounded
@@ -311,6 +306,8 @@ export const EvidenceForm = () => {
                 <div className="tw-flex tw-flex-col tw-ml-3">
                     <p>Barrio/Vereda/Centro poblado</p>
                     <select
+                        value={data.neighborhood}
+                        title="Barrio"
                         name="neighborhood"
                         id="neighborhood"
                         className=" tw-p-2 tw-rounded
@@ -326,8 +323,14 @@ export const EvidenceForm = () => {
                         <option value="Todas">Todas</option>
                     </select>
                 </div>
-                <div className="tw-flex tw-ml-5">
+                <div className="tw-flex tw-flex-col tw-ml-5 tw-items-center">
                     <UbicationsPopover/>
+                    {/* Estado de la ubicación */}
+                    {list_points && list_points.length > 0 ? (
+                        <span className="tw-text-green-600 tw-font-semibold tw-mt-2">Ubicación asignada</span>
+                    ) : (
+                        <span className="tw-text-red-600 tw-font-semibold tw-mt-2">Ubicación no asignada</span>
+                    )}
                 </div>
             </div>
 
@@ -337,6 +340,7 @@ export const EvidenceForm = () => {
                 <div className="tw-flex tw-flex-col">
                     <p>Poblacion beneficiada</p>
                     <select
+                        title="Poblacion beneficiada"
                         name="benefited_population"
                         id="benefited_population"
                         value={data.benefited_population}
@@ -397,6 +401,7 @@ export const EvidenceForm = () => {
                     <div className="tw-flex tw-flex-col tw-ml-3">
                         <p>Fuente de recursos</p>
                         <select
+                            title="Fuente de recursos"
                             name="resources_font"
                             id="resources_font"
                             value={data.resources_font}
@@ -425,8 +430,9 @@ export const EvidenceForm = () => {
                     </div>
                     {showOther ?
                         <input
+                            title="Otra fuente de recursos"
                             name="resources_font"
-                            id="resources_font"
+                            id="other_resources_font"
                             type="text"
                             className=" tw-p-2 tw-ml-3 tw-mt-6 tw-rounded
                                         tw-border-2 tw-border-gray-400
@@ -443,7 +449,8 @@ export const EvidenceForm = () => {
                             tw-border-2 tw-border-gray-400">
                 <div className="tw-flex tw-flex-col">
                     <p>Archivo de meta</p>
-                    <input  
+                    <input
+                        title="Archivo de meta"
                         type="file"
                         name="documento"
                         id="documento"
@@ -484,6 +491,7 @@ export const EvidenceForm = () => {
                 <div className="tw-flex tw-flex-col tw-ml-3">
                     <p>Fecha del archivo</p>
                     <input
+                        title="Fecha del archivo"
                         type="date"
                         name="date_file"
                         id="date_file"
@@ -503,9 +511,10 @@ export const EvidenceForm = () => {
                                     tw-text-white hover:tw-text-black
                                     tw-font-bold"
                         onClick={handleSubmitEvidence}>
-                    {evi_selected === undefined ?
-                        "Añadir evidencia" :
-                        "Actualizar evidencia"
+                    {loading ? <ModalSpinner isOpen={loading}/> :
+                        evi_selected === undefined ?
+                            "Añadir evidencia" :
+                            "Actualizar evidencia"
                     }
                 </button>
             </div>

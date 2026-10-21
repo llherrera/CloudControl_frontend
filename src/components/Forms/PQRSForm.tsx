@@ -6,7 +6,7 @@ import { useAppSelector } from "@/store";
 
 import { PQRSInform } from '@/interfaces';
 import { Solicitante, peticion, Identificacion, getEnumKeys } from '@/utils';
-import { Input, Select, DropdownC } from '@/components';
+import { Input, Select, DropdownC } from '@/components/Citizen';
 
 export const PQRSForm = () => {
     const { id_plan } = useAppSelector(store => store.content);

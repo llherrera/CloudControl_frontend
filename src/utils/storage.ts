@@ -3,7 +3,8 @@ import {AuthInterface,
 		InitialStateContentInterface,
 		InitialStateUnitInterface,
 		InitialStateEvidenceInterface,
-		InitialStateChartInterface
+		InitialStateChartInterface,
+		InitialStatePQRSInterface
 } from '@/interfaces';
 
 export const setToken = (tokenInfo: AuthInterface) => {
@@ -24,7 +25,8 @@ export const setGenericState = (
 					InitialStateContentInterface |
 					InitialStateEvidenceInterface |
 					InitialStatePlanInterface |
-					InitialStateUnitInterface
+					InitialStateUnitInterface |
+					InitialStatePQRSInterface
 	) => {
 	localStorage.setItem(name, JSON.stringify(genericState));
 };

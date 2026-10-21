@@ -1,3 +1,5 @@
+// tailwind.config.js
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
@@ -13,6 +15,7 @@ export default {
         'garamond': ['Garamond']
       },
       colors: {
+        'base2': '#143955',
         'greenBtn': '#008432',
         'redBtn': '#FE1700',
         'navBar': '#D9D9D9',

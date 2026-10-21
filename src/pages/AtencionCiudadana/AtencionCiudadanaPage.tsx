@@ -1,12 +1,13 @@
 import React from 'react';
-import { Frame } from '@/components';
-import ManagerCitizenAttention from '@/components/ManagerCitizenAttention'; // Import the new component
+import { Frame } from '@/components/Citizen';
+import ManagerCitizenAttention from '@/components/Citizen/ManagerCitizenAttention'; // Import the new component
 
 export const AtencionCiudadanaPage: React.FC = () => {
     return (
         <Frame>
-            <div style={{ margin: '5% 20%' }}>
-                <ManagerCitizenAttention /> {/* Use the new component */}
+            <h2 className="tw-text-xl tw-font-bold tw-mx-[5%] tw-text-white tw-my-7">Atención Ciudadana</h2>
+            <div className="tw-w-[90%] tw-mx-[5%]">
+                <ManagerCitizenAttention />
             </div>
         </Frame>
     );

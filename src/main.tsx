@@ -7,8 +7,11 @@ import { Provider } from 'react-redux';
 import { setupStore } from './store';
 import Modal from 'react-modal';
 import App from './App';
+import { initDebugLogs } from './utils/logger';
 
-import { createTheme } from '@mui/material';
+initDebugLogs();
+
+import { createTheme } from '@mui/material/styles';
 import { ThemeProvider } from '@emotion/react';
 
 declare module '@mui/material/styles' {

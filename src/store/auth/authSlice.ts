@@ -4,6 +4,7 @@ import { InitialStateAuthInterface } from '../../interfaces';
 import { getToken, removeToken, setToken } from '../../utils';
 
 import { logout, thunkLogin, thunkLogout, thunkRefreshToken } from './thunks';
+import { thunkCreateSession, thunkCloseSession } from '../pqrs/thunks';
 
 const getInitialState = (): InitialStateAuthInterface => {
   const token_info = getToken()

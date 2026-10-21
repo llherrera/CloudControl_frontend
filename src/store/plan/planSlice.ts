@@ -745,10 +745,15 @@ export const planSlice = createSlice({
         });
         builder.addCase(thunkupdatePDTFill.fulfilled, (state, action) => {
             state.loadingPlan = false;
-            state.plan!.fill = action.payload;
+            console.log(action.payload);
+
+            state.plan!.fill = action.payload.fill;
+            state.plan!.shape = action.payload.shape;
+        
             notify('Actualizado', 'success');
             setGenericState('plan', state);
         });
+        
         builder.addCase(thunkupdatePDTFill.rejected, (state, action) => {
             state.loadingPlan = false;
             state.errorLoadingPlan = action.payload;

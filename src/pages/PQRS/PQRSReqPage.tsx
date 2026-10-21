@@ -1,4 +1,4 @@
-import { BackBtn } from "@/components";
+import { BackBtn } from "@/components/Citizen";
 import { useNavigate } from "react-router-dom";
 
 export const PQRSReqPage = () => {

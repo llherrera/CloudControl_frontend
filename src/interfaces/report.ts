@@ -7,6 +7,7 @@ export interface InitialStateReportInterface {
 }
 
 export interface ReportPDTInterface {
+    years?: string[];
     responsible: string;
     goalCode: string;
     goalDescription: string;
@@ -18,6 +19,20 @@ export interface ReportPDTInterface {
     programed: number[];
 }
 
+export interface ReportPDTInterface2 {
+    full_path?: string;
+    responsible: string;
+    goalCode: string;
+    goalDescription: string;
+    percentExecuted: string;
+    planSpecific: string;
+    years?: string[];
+    indicator: string;
+    base: number;
+    executed: string;
+    programed: string;
+}
+
 export interface PropsGetReport {
     id_plan: number;
     type: number;
@@ -27,7 +42,7 @@ export interface ModalPDTProps {
     modalIsOpen: boolean,
     callback: React.Dispatch<React.SetStateAction<boolean>>,
     callback2?: ()=>void,
-    data: ReportPDTInterface[]
+    data: ReportPDTInterface2[]
 }
 
 export interface ModalProps {

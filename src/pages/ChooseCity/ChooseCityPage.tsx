@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from "@/store";
 import { setIdPlan } from "@/store/content/contentSlice";
 import { thunkGetPDTByDept, thunkGetPDTid } from "@/store/plan/thunks";
 
-import { Header, SelectDept, BackBtn } from '@/components';
+import { Header, SelectDept, BackBtn } from '@/components/Citizen';
 import { Coordinates } from '@/interfaces';
 import { getReverseGeocode } from "@/services/map_api";
 import { notify } from '@/utils';

@@ -4,6 +4,7 @@ export interface Secretary {
     name: string;
     email: string;
     phone: number;
+    color: string;
 }
 
 export interface PropsSecretary {

@@ -1,15 +1,26 @@
+// Importaciones de React
 import { useEffect } from "react";
 
+// Importaciones de hooks personalizados de Redux Toolkit
 import { useAppDispatch, useAppSelector } from "@/store";
+
+// Importación de funciones asíncronas (thunks) y acciones del slice "plan"
 import { thunkUpdateYears, thunkGetLevelsById, thunkGetColors } from "@/store/plan/thunks";
 import { incrementLevelIndex } from "@/store/plan/planSlice";
 
-import { LevelForm, Board, Frame } from "@/components";
+// Importación de componentes reutilizables
+import { Board, Frame } from "@/components/Citizen";
+import { LevelForm } from "@/components/Forms";
+
+// Utilidad que calcula los años a partir de una fecha
 import { getYears } from "@/utils";
 
+// Importamos el componente que descarga automáticamente el Excel
+import AutoDownloadPDTReport from "@/components/AutoReport/AutoDownloadPDTReport";
+
+// Definición del componente principal PDTid
 export const PDTid = () => {
     const dispatch = useAppDispatch();
-
     const { levels, indexLevel, plan } = useAppSelector(store => store.plan);
     const { id_plan } = useAppSelector(store => store.content);
 
@@ -32,7 +43,7 @@ export const PDTid = () => {
 
     return (
         <Frame>
-            {levels.length === 0 ? <LevelForm id={id_plan.toString()} /> : <Board/>}
+            {levels.length === 0 ? <LevelForm id={id_plan.toString()} /> : <Board />}
         </Frame>
     );
-}
+};
