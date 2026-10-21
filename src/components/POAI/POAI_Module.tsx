@@ -29,6 +29,18 @@ const formatGoalCodeDisplay = (code: string | undefined | null) => {
   return parts.join(".");
 };
 
+export type FuenteFinanciacion = "Recursos propios" | "SGP" | "Regalías" | "Crédito" | "Otros" | string;
+
+export interface ProyectoPOAI {
+  id: string;
+  nombre: string;
+  descripcion: string;
+  prioridad: "Alta" | "Media" | "Baja";
+  vigencia: number;
+  presupuesto: number;
+  fuenteFinanciacion: FuenteFinanciacion;
+}
+
 const getSegmentFromFullPath = (node: any, idx: number) => {
   const fp =
     (node?.full_path ??
@@ -40,7 +52,7 @@ const getSegmentFromFullPath = (node: any, idx: number) => {
   if (!fp) return "";
   const parts = fp
     .split(">")
-    .map((p) => p.trim())
+    .map((p: string) => p.trim())
     .filter(Boolean);
   return parts[idx] ?? "";
 };
@@ -62,8 +74,8 @@ const POAINodesTable: React.FC = (): JSX.Element => {
 
     dispatch(thunkGetLevelArrayByPlan(id_plan))
       .unwrap()
-      .then((res) => {
-        setLevelsState(res.levels ?? []);
+      .then((res: any) => {
+        setLevelsState(res?.levels ?? (Array.isArray(res) ? res : []));
       })
       .catch((err) =>
         console.error("❌ Error cargando niveles:", err)
@@ -71,8 +83,8 @@ const POAINodesTable: React.FC = (): JSX.Element => {
 
     dispatch(thunkGetNodeArrayByPlan(id_plan))
       .unwrap()
-      .then((res) => {
-        setNodesState(res.nodes ?? []);
+      .then((res: any) => {
+        setNodesState(res?.nodes ?? (Array.isArray(res) ? res : []));
       })
       .catch((err) =>
         console.error("❌ Error cargando nodos:", err)

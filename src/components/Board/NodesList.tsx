@@ -56,7 +56,7 @@ export const NodesList = (props: IdProps) => {
 
         const pesosStr = localStorage.getItem('UnitNode');
         if (pesosStr == undefined) return 0;
-        let pesosNodo = [];
+        let pesosNodo: any[] = [];
         try {
             pesosNodo = JSON.parse(pesosStr);
         } catch (error) {
