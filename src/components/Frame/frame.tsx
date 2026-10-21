@@ -79,16 +79,14 @@ const moduleOrder: (keyof IModules)[] = [
 
 // Convierte un número decimal (máscara) en un objeto de tipo IModules
 const decimalToModules = (mask: number | undefined | null): IModules => {
-    const validMask = mask || 0;                                    // Si mask es null/undefined, usar 0
-    const binaryString = validMask.toString(2).padStart(moduleOrder.length, '0'); // Convertir a binario con padding
-    const modules: any = {};                                        // Objeto temporal para almacenar módulos
+    const validMask = typeof mask === 'number' && Number.isFinite(mask) ? mask : 63;
+    const modules: any = {};
 
-    // Asigna a cada módulo un valor booleano en función del binario
     moduleOrder.forEach((key, index) => {
-        modules[key] = binaryString[index] === '1';
+        modules[key] = (validMask & (1 << index)) !== 0;
     });
 
-    return modules;                                                 // Devuelve el objeto con los módulos activos
+    return modules;
 };
 
 export const Headerbase = () => {
@@ -294,32 +292,30 @@ export const Frame = ({ children }: FrameProps) => {
         const id = localStorage.getItem('id');
         const rol = localStorage.getItem('rol');
 
-        // Priority 1: Admin has access to everything
+        // Módulos habilitados a nivel del plan según el entero bitmap (plan.modules)
+        const planModules = decimalToModules(plan?.modules);
+
+        // Si el usuario es admin, ve los módulos habilitados por el plan
         if (rol === 'admin') {
             setModulos({
-                PlanIndicativo: true,
-                PlanDeAccion: true,
-                BancoDeProyectos: true,
-                POAI: true,
-                AtencionCiudadana: true,
-                MapaDeIntervencion: true
+                PlanIndicativo: planModules.indicative_plan,
+                PlanDeAccion: planModules.action_plan,
+                BancoDeProyectos: planModules.project_bank,
+                POAI: planModules.poai,
+                AtencionCiudadana: planModules.citizen_service,
+                MapaDeIntervencion: planModules.intervention_map
             });
             return;
         }
 
-        // For non-admins, access depends on plan and user permissions
+        // Para no administradores, se combinan permisos del plan y permisos individuales del usuario
         if (plan && id) {
-            // Priority 2: Plan-level permissions from bitmask
-            const planModules = decimalToModules(plan.modules);
-
-            // Priority 3: User-level permissions from API
             dispatch(thunkGetModulosUsuarioById(parseInt(id)))
                 .unwrap()
                 .then(userModulesArray => {
                     if (Array.isArray(userModulesArray) && userModulesArray.length > 0) {
                         const userModules = userModulesArray[0];
 
-                        // Combine permissions: a module is active only if allowed by BOTH plan and user
                         const finalModules = {
                             PlanIndicativo: planModules.indicative_plan && userModules.PlanIndicativo,
                             PlanDeAccion: planModules.action_plan && userModules.PlanDeAccion,
@@ -329,7 +325,6 @@ export const Frame = ({ children }: FrameProps) => {
                             MapaDeIntervencion: planModules.intervention_map && userModules.MapaDeIntervencion,
                         };
 
-                        // Apply specific business logic/overrides
                         if (plan.id_plan === 10044) {
                             finalModules.AtencionCiudadana = false;
                         }
@@ -339,16 +334,24 @@ export const Frame = ({ children }: FrameProps) => {
                 })
                 .catch(err => {
                     console.error('Error al obtener los módulos de usuario:', err);
-                    // Fallback to all modules disabled if user permissions fail
                     setModulos({
-                        PlanIndicativo: false,
-                        PlanDeAccion: false,
-                        BancoDeProyectos: false,
-                        POAI: false,
-                        AtencionCiudadana: false,
-                        MapaDeIntervencion: false
+                        PlanIndicativo: planModules.indicative_plan,
+                        PlanDeAccion: planModules.action_plan,
+                        BancoDeProyectos: planModules.project_bank,
+                        POAI: planModules.poai,
+                        AtencionCiudadana: planModules.citizen_service,
+                        MapaDeIntervencion: planModules.intervention_map
                     });
                 });
+        } else {
+            setModulos({
+                PlanIndicativo: planModules.indicative_plan,
+                PlanDeAccion: planModules.action_plan,
+                BancoDeProyectos: planModules.project_bank,
+                POAI: planModules.poai,
+                AtencionCiudadana: planModules.citizen_service,
+                MapaDeIntervencion: planModules.intervention_map
+            });
         }
     }, [dispatch, plan]);
 
@@ -559,7 +562,7 @@ export const Frame = ({ children }: FrameProps) => {
                     <img
                         src={cclogo}
                         title="ControlLand"
-                        className="tw-h-[60px] sm:tw-h-[80px] md:tw-h-[100px]"
+                        className="tw-h-[72px] sm:tw-h-[85px] md:tw-h-[95px] 2xl:tw-h-[110px] tw-object-contain"
                         alt="ControlLand"
                     />
 
@@ -568,7 +571,7 @@ export const Frame = ({ children }: FrameProps) => {
                         <img
                             src={url_logo}
                             title="Municipio"
-                            className="tw-h-[60px] sm:tw-h-[80px] md:tw-h-[100px]"
+                            className="tw-h-[72px] sm:tw-h-[85px] md:tw-h-[95px] 2xl:tw-h-[110px] tw-object-contain"
                             alt="Municipio"
                         />
                     )}
@@ -578,7 +581,7 @@ export const Frame = ({ children }: FrameProps) => {
                         <img
                             src={url_logo_plan}
                             title="Plan"
-                            className="tw-h-[60px] sm:tw-h-[80px] md:tw-h-[100px]"
+                            className="tw-h-[72px] sm:tw-h-[85px] md:tw-h-[95px] 2xl:tw-h-[110px] tw-object-contain"
                             alt="Plan"
                         />
                     )}
@@ -683,17 +686,10 @@ export const Frame = ({ children }: FrameProps) => {
 
                     {/* Ícono de configuración + cerrar sesión */}
                     <div className="tw-flex tw-items-center tw-gap-2">
-                        {/* Botón de configuración (condicional como en Content) */}
+                        {/* Botón de configuración (accesible para ver secretarías y localidades) */}
                         {(() => {
-                            const rol = localStorage.getItem('rol');
-                            const idPlanStorage = Number(localStorage.getItem('id_plan'));
-                            const idPlanProp = plan?.id_plan;
-
                             return (
-                                rol === 'admin' ||
-                                    ((rol === 'funcionario' || rol === 'planeacion') && idPlanStorage === idPlanProp) ? (
-                                    <SettingsBtn handle={() => handleSettings(1)} color="green" id={plan?.id_plan ?? 0} />
-                                ) : null
+                                <SettingsBtn handle={() => handleSettings(1)} color="green" id={plan?.id_plan ?? 0} />
                             );
                         })()}
 
@@ -730,23 +726,6 @@ export const Frame = ({ children }: FrameProps) => {
                         )}
                     </>
                     <>
-                        {modulos.PlanDeAccion && (
-                            <ButtonComponent
-                                text='Plan de acción'
-                                inside={true}
-                                onClick={() => {
-                                    dispatch(selectOption(1));
-                                    dispatch(AddRootTree([]));
-                                    dispatch(setZeroLevelIndex());
-                                    navigate('/PlanIndicativo/Plan-accion', { replace: true });
-                                }}
-                                icon={<PlanAccionIcon color={index === 1 ? "#41a95b" : "#ffffff"} />}
-                                bgColor={index === 1 ? "tw-bg-gray-200" : "tw-bg-[#143955]"}
-                                textColor={index === 1 ? "tw-text-[#143955]" : "tw-text-white"}
-                            />
-                        )}
-                    </>
-                    <>
                         {modulos.BancoDeProyectos && (
                             <ButtonComponent
                                 text={`Banco de proyectos`}
@@ -761,6 +740,23 @@ export const Frame = ({ children }: FrameProps) => {
                                 icon={<ProjectBankIcon color={index === 2 ? "#41a95b" : "#ffffff"} />}
                                 bgColor={index === 2 ? "tw-bg-gray-200" : "tw-bg-[#143955]"}
                                 textColor={index === 2 ? "tw-text-[#143955]" : "tw-text-white"}
+                            />
+                        )}
+                    </>
+                    <>
+                        {modulos.PlanDeAccion && (
+                            <ButtonComponent
+                                text='Plan de acción'
+                                inside={true}
+                                onClick={() => {
+                                    dispatch(selectOption(1));
+                                    dispatch(AddRootTree([]));
+                                    dispatch(setZeroLevelIndex());
+                                    navigate('/PlanIndicativo/Plan-accion', { replace: true });
+                                }}
+                                icon={<PlanAccionIcon color={index === 1 ? "#41a95b" : "#ffffff"} />}
+                                bgColor={index === 1 ? "tw-bg-gray-200" : "tw-bg-[#143955]"}
+                                textColor={index === 1 ? "tw-text-[#143955]" : "tw-text-white"}
                             />
                         )}
                     </>
@@ -816,7 +812,8 @@ export const Frame = ({ children }: FrameProps) => {
                 </NavBar>
                 <div
                     ref={contentRef}
-                    className={`${isFullHeight ? 'tw-h-[calc(100vh-100px)]' : ''} 
+                    className={`${isFullHeight ? 'tw-min-h-[calc(100vh-100px)]' : ''} 
+              tw-overflow-y-auto
               tw-w-full tw-border
               tw-bg-gradient-to-b 
               tw-from-[#06283b] 

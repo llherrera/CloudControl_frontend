@@ -154,6 +154,78 @@ export const generateExcel = (
 
 }
 
+export const formatPercentageDisplay = (val: number | null | undefined): string => {
+  if (val === null || val === undefined || isNaN(val)) return '-';
+  const num = Number(val);
+  if (num > 100) {
+    const surplus = num - 100;
+    const surplusStr = Number(surplus.toFixed(1));
+    return `100% + ${surplusStr}%`;
+  }
+  return `${num.toFixed(1)}%`;
+};
+
+export interface YearGoalCalculation {
+  yearIndex: number;
+  programming: number;
+  execution: number;
+  percentageVsProgramming: number | null;
+  percentageVsGoal: number | null;
+  isNotProgrammed: boolean;
+  formattedDisplay: string;
+}
+
+export const calculateItemYearGoalPercentages = (
+  programedArr: (string | number)[],
+  executedArr: (string | number)[],
+  totalYearsCount: number
+): YearGoalCalculation[] => {
+  const rawYears = Array.from({ length: totalYearsCount }, (_, i) => {
+    const pRaw = programedArr[i];
+    const eRaw = executedArr[i];
+    const programming = pRaw !== undefined && pRaw !== null && pRaw !== '' ? Number(pRaw) || 0 : 0;
+    const execution = eRaw !== undefined && eRaw !== null && eRaw !== '' ? Number(eRaw) || 0 : 0;
+    return { yearIndex: i, programming, execution };
+  });
+
+  const programmedYearsCount = rawYears.filter((y) => y.programming > 0).length;
+  const totalEvaluatedYears = programmedYearsCount > 0
+    ? programmedYearsCount
+    : (rawYears.filter((y) => y.execution > 0).length || totalYearsCount || 4);
+  const weightPerYear = 100 / totalEvaluatedYears;
+
+  return rawYears.map(({ yearIndex, programming, execution }) => {
+    const isNotProgrammed = programming === 0 && execution === 0;
+
+    let percentageVsProgCalc: number | null = null;
+    if (programming > 0) {
+      percentageVsProgCalc = (execution / programming) * 100;
+    } else if (execution > 0) {
+      const totalProg = rawYears.reduce((sum, y) => sum + y.programming, 0);
+      percentageVsProgCalc = totalProg > 0 ? (execution / totalProg) * 100 : 100;
+    }
+
+    let percentageVsGoalCalc: number | null = null;
+    if (percentageVsProgCalc !== null) {
+      percentageVsGoalCalc = (percentageVsProgCalc * weightPerYear) / 100;
+    }
+
+    const formattedDisplay = isNotProgrammed
+      ? "N/A"
+      : formatPercentageDisplay(percentageVsGoalCalc);
+
+    return {
+      yearIndex,
+      programming,
+      execution,
+      percentageVsProgramming: percentageVsProgCalc,
+      percentageVsGoal: percentageVsGoalCalc,
+      isNotProgrammed,
+      formattedDisplay,
+    };
+  });
+};
+
 export const generateExcelYears = async (
   data: ReportPDTInterface2[],
   name: string,
@@ -211,19 +283,17 @@ export const generateExcelYears = async (
   headerRow.border = { top: { style: "thin" }, left: { style: "thin" }, bottom: { style: "thin" }, right: { style: "thin" } };
 
   data.forEach(d => {
-    const percentArrRaw = Array.isArray(d.percentExecuted)
-      ? d.percentExecuted.map(String)
-      : typeof d.percentExecuted === "string"
-      ? parseListLike(d.percentExecuted)
-      : [];
-
     const programedArrRaw = Array.isArray(d.programed) ? d.programed.map(String) : parseListLike(d.programed);
     const executedArrRaw = Array.isArray(d.executed) ? d.executed.map(String) : parseListLike(d.executed);
+    const yearCalculations = calculateItemYearGoalPercentages(programedArrRaw, executedArrRaw, years.length);
 
     const levelsParsed = parseListLike(d.planSpecific);
 
-    const ejecPorObj = years.reduce<Record<string, number>>((acc, y, i) => {
-      acc[`ejecucion_${y}`] = Math.max(0, toNumberSafe(percentArrRaw[i] ?? ""));
+    const ejecPorObj = years.reduce<Record<string, string | number>>((acc, y, i) => {
+      const calc = yearCalculations[i];
+      acc[`ejecucion_${y}`] = calc?.isNotProgrammed || calc?.percentageVsGoal === null
+        ? "N/A"
+        : calc?.formattedDisplay ?? "N/A";
       return acc;
     }, {});
 
@@ -256,19 +326,25 @@ export const generateExcelYears = async (
       const col = worksheet.getColumn(key);
       if (!col || !col.number) return;
       const cell = row.getCell(col.number);
-      const value = toNumberSafe(percentArrRaw[i] ?? "");
+      const calc = yearCalculations[i];
 
-      const fg =
-        value < (color[0] ?? Number.NEGATIVE_INFINITY)
-          ? "FFFE1700"
-          : value < (color[1] ?? Number.NEGATIVE_INFINITY)
-          ? "FFFCC623"
-          : value < (color[2] ?? Number.NEGATIVE_INFINITY)
-          ? "FF119432"
-          : "FF008DCC";
+      if (!calc || calc.isNotProgrammed || calc.percentageVsGoal === null) {
+        cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFD9D9D9" } };
+        cell.value = "N/A";
+      } else {
+        const val = calc.percentageVsGoal;
+        const fg =
+          val < (color[0] ?? Number.NEGATIVE_INFINITY)
+            ? "FFFE1700"
+            : val < (color[1] ?? Number.NEGATIVE_INFINITY)
+            ? "FFFCC623"
+            : val < (color[2] ?? Number.NEGATIVE_INFINITY)
+            ? "FF119432"
+            : "FF008DCC";
 
-      cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: fg } };
-      cell.value = value;
+        cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: fg } };
+        cell.value = calc.formattedDisplay;
+      }
     });
   });
 

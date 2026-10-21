@@ -1,6 +1,7 @@
 import jsPDF from "jspdf";
 import "jspdf-autotable"; // Importante: extiende jsPDF
 import { ReportPDTInterface2 } from "@/interfaces";
+import { calculateItemYearGoalPercentages } from "./functions";
 
 export const generatePdfReportBlob = (
     data: ReportPDTInterface2[],
@@ -45,11 +46,11 @@ export const generatePdfReportBlob = (
 
         const programedArr = safeParse(item.programed);
         const executedArr = safeParse(item.executed);
-        const percentArr = safeParse(item.percentExecuted);
+        const yearCalculations = calculateItemYearGoalPercentages(programedArr, executedArr, years.length);
 
         years.forEach((_, i) => row.push(programedArr[i] ?? ""));
         years.forEach((_, i) => row.push(executedArr[i] ?? ""));
-        years.forEach((_, i) => row.push(percentArr[i] ?? ""));
+        years.forEach((_, i) => row.push(yearCalculations[i]?.formattedDisplay ?? "N/A"));
 
         return row;
     });

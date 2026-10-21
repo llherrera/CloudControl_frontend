@@ -44,11 +44,10 @@ const moduleOrder: (keyof IModules)[] = [
 
 // Función que convierte un número en permisos de módulos
 const decimalToModules = (mask: number | undefined | null): IModules => {
-    const validMask = mask || 0;
-    const binaryString = validMask.toString(2).padStart(moduleOrder.length, '0');
+    const validMask = typeof mask === 'number' && Number.isFinite(mask) ? mask : 63;
     const modules: any = {};
     moduleOrder.forEach((key, index) => {
-        modules[key] = binaryString[index] === '1';
+        modules[key] = (validMask & (1 << index)) !== 0;
     });
     return modules;
 };
@@ -106,22 +105,21 @@ export const LobbyPage = () => {
     useEffect(() => {
         const id = localStorage.getItem('id');
         const rol = localStorage.getItem('rol');
+        const planModules = decimalToModules(plan?.modules);
 
         if (rol === 'admin') {
             setModulos({
-                PlanIndicativo: true,
-                PlanDeAccion: true,
-                BancoDeProyectos: true,
-                POAI: true,
-                AtencionCiudadana: true,
-                MapaDeIntervencion: true
+                PlanIndicativo: planModules.indicative_plan,
+                PlanDeAccion: planModules.action_plan,
+                BancoDeProyectos: planModules.project_bank,
+                POAI: planModules.poai,
+                AtencionCiudadana: planModules.citizen_service,
+                MapaDeIntervencion: planModules.intervention_map
             });
             return;
         }
 
         if (plan && id) {
-            const planModules = decimalToModules(plan.modules);
-
             dispatch(thunkGetModulosUsuarioById(parseInt(id)))
                 .unwrap()
                 .then(userModulesArray => {
@@ -142,14 +140,23 @@ export const LobbyPage = () => {
                 })
                 .catch(() => {
                     setModulos({
-                        PlanIndicativo: false,
-                        PlanDeAccion: false,
-                        BancoDeProyectos: false,
-                        POAI: false,
-                        AtencionCiudadana: false,
-                        MapaDeIntervencion: false
+                        PlanIndicativo: planModules.indicative_plan,
+                        PlanDeAccion: planModules.action_plan,
+                        BancoDeProyectos: planModules.project_bank,
+                        POAI: planModules.poai,
+                        AtencionCiudadana: planModules.citizen_service,
+                        MapaDeIntervencion: planModules.intervention_map
                     });
                 });
+        } else {
+            setModulos({
+                PlanIndicativo: planModules.indicative_plan,
+                PlanDeAccion: planModules.action_plan,
+                BancoDeProyectos: planModules.project_bank,
+                POAI: planModules.poai,
+                AtencionCiudadana: planModules.citizen_service,
+                MapaDeIntervencion: planModules.intervention_map
+            });
         }
     }, [dispatch, id_plan, plan]);
 
@@ -179,15 +186,14 @@ export const LobbyPage = () => {
     }, [selectedModuleInfo]);
 
     return (
-        // Contenedor full-screen con el degradado solicitado
-        <div className="tw-h-[100svh] tw-w-screen tw-flex tw-flex-col tw-items-center tw-justify-center 
+        <div className="tw-min-h-screen tw-w-full tw-flex tw-flex-col tw-items-center tw-justify-center 
                 tw-bg-gradient-to-b tw-from-[#06283b] tw-via-[#1f4f63] tw-to-[#dbeff6] 
-                tw-overflow-hidden">
+                tw-overflow-y-auto tw-py-6">
 
             {/* Card principal Blanca*/}
-            <div className="tw-w-[95%] tw-h-[80%] tw-mx-2 tw-my-4 tw-p-4 tw-bg-white tw-rounded-2xl tw-shadow-lg 
+            <div className="tw-w-[95%] tw-min-h-[80%] tw-mx-2 tw-my-auto tw-p-4 tw-bg-white tw-rounded-2xl tw-shadow-lg 
                     tw-flex tw-flex-col tw-justify-start tw-items-between 
-                    md:tw-w-[70%] xl:tw-h-[90%] lg:tw-h-[80%] md:tw-mx-4 md:tw-my-auto md:tw-p-8 ">
+                    md:tw-w-[70%] md:tw-p-8">
 
                 {/* ======================================================= */}
                 {/* ROW 1: Botón Volver */}
@@ -237,24 +243,6 @@ export const LobbyPage = () => {
                                             />
                                         </div>
                                     )}
-                                    {/* Plan de Acción */}
-                                    {modulos.PlanDeAccion && (
-                                        <div key="PlanDeAccion"
-                                            onMouseEnter={() => setSelectedModuleInfo(moduleExplanations.PlanDeAccion)}
-                                            onMouseLeave={() => setSelectedModuleInfo("")}>
-                                            <ButtonComponent
-                                                inside={false}
-                                                text='Plan de acción'
-                                                icon={<PlanAccionIcon color='white' />}
-                                                onClick={() => {
-                                                    dispatch(selectOption(1));
-                                                    navigate('/PlanIndicativo/Plan-accion');
-                                                }}
-                                                bgColor="tw-bg-[#012947]"
-                                                className="tw-w-16 tw-h-16 tw-text-[8px] tw-font-bold"
-                                            />
-                                        </div>
-                                    )}
                                     {/* Banco de Proyectos */}
                                     {modulos.BancoDeProyectos && (
                                         <div key="BancoDeProyectos"
@@ -268,6 +256,24 @@ export const LobbyPage = () => {
                                                     dispatch(selectOption(2));
                                                     dispatch(setProjectPage(5));
                                                     navigate('/PlanIndicativo/Banco-proyectos');
+                                                }}
+                                                bgColor="tw-bg-[#012947]"
+                                                className="tw-w-16 tw-h-16 tw-text-[8px] tw-font-bold"
+                                            />
+                                        </div>
+                                    )}
+                                    {/* Plan de Acción */}
+                                    {modulos.PlanDeAccion && (
+                                        <div key="PlanDeAccion"
+                                            onMouseEnter={() => setSelectedModuleInfo(moduleExplanations.PlanDeAccion)}
+                                            onMouseLeave={() => setSelectedModuleInfo("")}>
+                                            <ButtonComponent
+                                                inside={false}
+                                                text='Plan de acción'
+                                                icon={<PlanAccionIcon color='white' />}
+                                                onClick={() => {
+                                                    dispatch(selectOption(1));
+                                                    navigate('/PlanIndicativo/Plan-accion');
                                                 }}
                                                 bgColor="tw-bg-[#012947]"
                                                 className="tw-w-16 tw-h-16 tw-text-[8px] tw-font-bold"

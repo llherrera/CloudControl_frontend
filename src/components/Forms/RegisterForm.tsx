@@ -52,11 +52,30 @@ export const UpdateUserForm = () => {
 
     useEffect(() => {
         const fetch = async () => {
-            const res = await getUser();
-            setOldser(res);
-            setUser(res);
-        }
-        fetch()
+            try {
+                const res = await getUser();
+                const currentId = Number(localStorage.getItem('id') || 0);
+                const currentUsername = localStorage.getItem('user') || localStorage.getItem('username') || '';
+
+                if (Array.isArray(res)) {
+                    const match = res.find((u: any) => u.id_user === currentId || u.username === currentUsername || u.email === currentUsername);
+                    if (match) {
+                        setOldser(match);
+                        setUser(match);
+                        if (match.email) localStorage.setItem('email', match.email);
+                        if (match.name) localStorage.setItem('name', match.name);
+                        if (match.lastname) localStorage.setItem('lastname', match.lastname);
+                        return;
+                    }
+                } else if (res && typeof res === 'object') {
+                    setOldser(res);
+                    setUser(res);
+                }
+            } catch (err) {
+                console.error('Error cargando usuario de la BD:', err);
+            }
+        };
+        fetch();
     }, []);
 
     const handleInputChangeUser = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {

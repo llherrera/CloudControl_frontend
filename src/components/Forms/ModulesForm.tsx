@@ -29,7 +29,7 @@ interface IPlan {
 }
 
 const moduleOrder: (keyof IModules)[] = [
-    'indicative_plan', 'action_plan', 'project_bank', 'poai', 'citizen_service', 'intervention_map'
+    'indicative_plan', 'project_bank', 'action_plan', 'poai', 'citizen_service', 'intervention_map'
 ];
 
 const modulesName: { [key in keyof IModules]: string } = {
@@ -119,7 +119,7 @@ export const ModulesForm = () => {
             <div className="tw-mb-6">
                 <input
                     type="text"
-                    placeholder="Buscar por nombre, departamento o municipio..."
+                    placeholder="Buscar por nombre de plan, departamento (ej. Cundinamarca) o municipio (ej. Bogotá)..."
                     value={searchQuery}
                     onChange={e => setSearchQuery(e.target.value)}
                     className="tw-w-full tw-p-3 tw-border tw-border-gray-300 tw-rounded-lg focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-blue-500 tw-transition-shadow"

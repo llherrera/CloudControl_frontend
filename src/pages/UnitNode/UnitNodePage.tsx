@@ -1,16 +1,19 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import UpgradeIcon from '@mui/icons-material/Upgrade';
+import EditIcon from '@mui/icons-material/Edit';
 import IconButton from "@mui/material/IconButton";
 
 import { Headerbase } from "@/components/Frame/frame";
 
 import { useAppSelector, useAppDispatch } from "@/store";
-import { thunkGetUnit, thunkUpdateIndicator } from "@/store/unit/thunks";
+import { thunkGetUnit, thunkUpdateIndicator, thunkUpdateUnit } from "@/store/unit/thunks";
 import { resetUnit } from "@/store/unit/unitSlice";
 import { thunkGetEvidence } from '@/store/evidence/thunks';
 import { resetEvidence, setPoints } from "@/store/evidence/evidenceSlice";
 import { AddRootTree, setZeroLevelIndex } from "@/store/plan/planSlice";
+import { thunkGetSecretaries } from "@/store/plan/thunks";
+import { UnitInterface } from "@/interfaces";
 
 import { decode, notify } from "@/utils";
 import {
@@ -24,7 +27,7 @@ export const UnitNodePage = () => {
     const navigate = useNavigate();
 
     const { token_info } = useAppSelector(store => store.auth);
-    const { rootTree, years } = useAppSelector(store => store.plan);
+    const { rootTree, years, secretaries } = useAppSelector(store => store.plan);
     const { unit, loadingUnit } = useAppSelector(store => store.unit);
     const { evidences } = useAppSelector(store => store.evidence);
     const { id_plan, node } = useAppSelector(store => store.content);
@@ -37,6 +40,11 @@ export const UnitNodePage = () => {
 
     const [rol, setRol] = useState("");
     const [id, setId] = useState(0);
+
+    const [isEditingResponsible, setIsEditingResponsible] = useState(false);
+    const [selectedResponsible, setSelectedResponsible] = useState("");
+    const [customResponsible, setCustomResponsible] = useState("");
+    const [savingResponsible, setSavingResponsible] = useState(false);
 
     useEffect(() => {
         if (token_info?.token !== undefined) {
@@ -52,6 +60,15 @@ export const UnitNodePage = () => {
     }, []);
 
     useEffect(() => {
+        if (id_plan) {
+            const planIdNum = typeof id_plan === 'string' ? parseInt(id_plan) : id_plan;
+            if (planIdNum > 0 && (!secretaries || secretaries.length === 0)) {
+                dispatch(thunkGetSecretaries(planIdNum));
+            }
+        }
+    }, [id_plan, secretaries]);
+
+    useEffect(() => {
         if (unit === undefined || unit === null) return;
         let acumProgramed = 0;
         let acumPhisical = 0;
@@ -65,6 +82,55 @@ export const UnitNodePage = () => {
         setAcumFinan(acumFinalcial);
     }, [unit]);
 
+    const isAdminOrPlanner = rol === 'admin' || (rol === 'planeacion' && (Number(id) === Number(id_plan) || !id));
+
+    const responsibleOptions = useMemo(() => {
+        const set = new Set<string>();
+        if (secretaries) {
+            secretaries.forEach(s => {
+                if (s.name?.trim()) set.add(s.name.trim());
+            });
+        }
+        if (unit?.responsible?.trim()) {
+            set.add(unit.responsible.trim());
+        }
+        return Array.from(set);
+    }, [secretaries, unit?.responsible]);
+
+    const handleSaveResponsible = async () => {
+        if (!unit || !node || !id_plan) return;
+        const finalResponsible = selectedResponsible === "__custom__"
+            ? customResponsible.trim()
+            : selectedResponsible.trim();
+
+        if (!finalResponsible) {
+            return notify("Debe seleccionar o ingresar un responsable", "error");
+        }
+
+        try {
+            setSavingResponsible(true);
+            const updatedUnit: UnitInterface = {
+                ...unit,
+                responsible: finalResponsible
+            };
+
+            const planIdStr = id_plan.toString();
+            await dispatch(thunkUpdateUnit({
+                id_plan: planIdStr,
+                id_node: node.id_node,
+                unit: updatedUnit,
+                years: unit.years || []
+            })).unwrap();
+
+            dispatch(thunkGetUnit({ id_plan: planIdStr, id_node: node.id_node }));
+            setIsEditingResponsible(false);
+            setCustomResponsible("");
+        } catch (err: any) {
+            notify(err?.msg || err?.message || "Error al actualizar responsable", "error");
+        } finally {
+            setSavingResponsible(false);
+        }
+    };
 
     const handleChangeFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files;
@@ -103,7 +169,6 @@ export const UnitNodePage = () => {
         dispatch(setZeroLevelIndex());
         navigate(-1);
     };
-
 
     const UploadBtn = () => (
         <div>
@@ -169,6 +234,79 @@ export const UnitNodePage = () => {
               <span className="tw-font-bold">Indicador:</span>{" "}
               <span className="tw-font-semibold">{unit.indicator}</span>
             </p>
+
+            <div className="tw-text-2xl tw-my-1">
+              <span className="tw-font-bold">Responsable:</span>{" "}
+              {!isEditingResponsible ? (
+                <span className="tw-inline-flex tw-items-center tw-gap-2">
+                  <span className="tw-font-semibold">{unit.responsible || "No asignado"}</span>
+                  {isAdminOrPlanner && (
+                    <IconButton
+                      size="small"
+                      color="primary"
+                      title="Modificar responsable"
+                      onClick={() => {
+                        setSelectedResponsible(unit.responsible || "");
+                        setIsEditingResponsible(true);
+                      }}
+                      className="tw-ml-2 hover:tw-bg-blue-50"
+                    >
+                      <EditIcon fontSize="small" />
+                    </IconButton>
+                  )}
+                </span>
+              ) : (
+                <div className="tw-mt-3 tw-p-4 tw-bg-blue-50 tw-border tw-border-blue-300 tw-rounded-lg tw-flex tw-flex-col tw-gap-3">
+                  <div className="tw-flex tw-flex-col sm:tw-flex-row sm:tw-items-center tw-gap-3">
+                    <select
+                      value={selectedResponsible}
+                      onChange={(e) => setSelectedResponsible(e.target.value)}
+                      className="tw-border tw-border-gray-400 tw-rounded tw-p-2 tw-text-base tw-bg-white tw-text-black focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-blue-500 tw-flex-1"
+                    >
+                      <option value="">-- Seleccionar Secretaría / Responsable --</option>
+                      {responsibleOptions.map((opt) => (
+                        <option key={opt} value={opt}>
+                          {opt}
+                        </option>
+                      ))}
+                      <option value="__custom__">✏️ Escribir otro responsable manualmente...</option>
+                    </select>
+
+                    {selectedResponsible === "__custom__" && (
+                      <input
+                        type="text"
+                        placeholder="Escriba el nombre del responsable"
+                        value={customResponsible}
+                        onChange={(e) => setCustomResponsible(e.target.value)}
+                        className="tw-border tw-border-gray-400 tw-rounded tw-p-2 tw-text-base tw-bg-white tw-text-black focus:tw-outline-none focus:tw-ring-2 focus:tw-ring-blue-500 tw-flex-1"
+                      />
+                    )}
+                  </div>
+
+                  <div className="tw-flex tw-gap-2">
+                    <button
+                      type="button"
+                      disabled={savingResponsible}
+                      onClick={handleSaveResponsible}
+                      className="tw-bg-green-600 hover:tw-bg-green-700 disabled:tw-opacity-50 tw-text-white tw-font-bold tw-py-1.5 tw-px-4 tw-rounded tw-text-sm tw-transition-colors"
+                    >
+                      {savingResponsible ? "Guardando..." : "Guardar"}
+                    </button>
+                    <button
+                      type="button"
+                      disabled={savingResponsible}
+                      onClick={() => {
+                        setIsEditingResponsible(false);
+                        setCustomResponsible("");
+                      }}
+                      className="tw-bg-gray-400 hover:tw-bg-gray-500 tw-text-white tw-font-bold tw-py-1.5 tw-px-4 tw-rounded tw-text-sm tw-transition-colors"
+                    >
+                      Cancelar
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
       
             <div className="tw-text-2xl tw-text-justify">
               <span className="tw-font-bold">Hoja de Vida Indicador:</span>{" "}
@@ -360,7 +498,7 @@ export const UnitNodePage = () => {
 
                     <div className="tw-flex tw-w-full tw-m-4 tw-pl-8">
                         <DoubleBackBtn handle={handleStartReturn} id={id_plan} />
-                        {rol === 'admin' || (rol === 'funcionario' && id === id_plan) ?
+                        {rol === 'admin' || ((rol === 'funcionario' || rol === 'planeacion') && id === id_plan) ?
                             <SettingsBtn handle={handleSettings} id={id_plan} />
                             : null
                         }

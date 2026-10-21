@@ -154,9 +154,7 @@ export const Content = (props: IdProps) => {
                     Plan indicativo
 
                     {/* Botón de configuración */}
-                    {rol === 'admin' || ((rol === 'funcionario' || rol === 'planeacion') && id === props.id)
-                        ? <SettingsBtn handle={() => handleSettings(1)} id={props.id} />
-                        : null}
+                    <SettingsBtn handle={() => handleSettings(1)} id={props.id} />
 
                     {/* Botón para compartir */}
                     {rol === 'admin' || ((rol === 'funcionario' || rol === 'planeacion') && id === props.id)

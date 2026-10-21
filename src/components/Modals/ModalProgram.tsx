@@ -14,7 +14,7 @@ import { Spinner } from "@/assets/icons";
 
 import { ReportPDTInterface2, ModalPDTProps } from "@/interfaces";
 import { generalReport } from "@/services/api";
-import { generateExcelYears } from "@/utils";
+import { generateExcelYears, calculateItemYearGoalPercentages, formatPercentageDisplay } from "@/utils";
 
 /* ---------------------------
    helpers (sin cambios lógicos)
@@ -352,12 +352,10 @@ const ModalProgramModal: React.FC<ModalPDTExtendedProps> = (props) => {
         return "";
     };
 
-    const colorClass = (item: ReportPDTInterface2, index: number) => {
-        const percentArr = parseCsv(item.percentExecuted);
-        const raw = percentArr[index];
-        const value = raw === undefined || raw === "" ? NaN : Number(raw);
-        if (Number.isNaN(value)) return "tw-bg-gray-300 tw-text-xs tw-font-medium";
-        if (value < 0) return "tw-bg-gray-300 tw-text-xs tw-font-medium";
+    const colorClass = (value: number | null, isNotProgrammed?: boolean) => {
+        if (isNotProgrammed || value === null || Number.isNaN(value) || value < 0) {
+            return "tw-bg-gray-300 tw-text-xs tw-font-medium";
+        }
         if (value < colorimeter[0]) return "tw-bg-redColory tw-text-white tw-font-medium";
         if (value < colorimeter[1]) return "tw-bg-yellowColory tw-text-black tw-font-medium";
         if (value < colorimeter[2]) return "tw-bg-greenColory tw-text-white tw-font-medium";
@@ -366,9 +364,13 @@ const ModalProgramModal: React.FC<ModalPDTExtendedProps> = (props) => {
 
     const tableBody = (item: ReportPDTInterface2) => {
         const plan = getPlanParts(item.planSpecific);
-        const percentArr = parseCsv(item.percentExecuted);
         const programedArr = parseCsv(item.programed);
         const executedArr = parseCsv(item.executed);
+        const yearCalculations = calculateItemYearGoalPercentages(
+            programedArr,
+            executedArr,
+            years.length
+        );
 
         return (
             <tr key={item.goalCode} className="tw-align-top odd:tw-bg-white even:tw-bg-slate-50">
@@ -436,15 +438,16 @@ const ModalProgramModal: React.FC<ModalPDTExtendedProps> = (props) => {
                     </td>
                 ))}
                 {years.map((_, i) => {
-                    const value = percentArr[i];
-                    const displayValue = value === "-1.0" || value === "-1" ? "N/A" : value ?? "";
-
+                    const calc = yearCalculations[i];
                     return (
                         <td
-                            className={`tw-border tw-p-2 tw-text-center tw-text-sm ${colorClass(item, i)}`}
+                            className={`tw-border tw-p-2 tw-text-center tw-text-sm tw-whitespace-nowrap tw-min-w-[130px] ${colorClass(
+                                calc?.percentageVsGoal ?? null,
+                                calc?.isNotProgrammed ?? true
+                            )}`}
                             key={`${item.goalCode}-%-${i}`}
                         >
-                            {displayValue}
+                            {calc?.formattedDisplay ?? "N/A"}
                         </td>
                     );
                 })}
@@ -673,7 +676,7 @@ const ModalProgramModal: React.FC<ModalPDTExtendedProps> = (props) => {
                                     {years.map((year) => (
                                         <th
                                             key={`%-${year}`}
-                                            className="tw-border-b tw-px-3 tw-py-2 tw-text-center tw-text-sm tw-font-semibold tw-sticky tw-top-0 tw-z-10 tw-bg-slate-700 tw-text-white"
+                                            className="tw-border-b tw-px-3 tw-py-2 tw-text-center tw-text-sm tw-font-semibold tw-sticky tw-top-0 tw-z-10 tw-bg-slate-700 tw-text-white tw-whitespace-nowrap tw-min-w-[130px]"
                                         >
                                             % ejecución {year}
                                         </th>

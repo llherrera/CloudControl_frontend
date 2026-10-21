@@ -13,10 +13,10 @@ export const ButtonComponent = (props: BtnProps) => {
                 onClick={props.onClick}  /* #012947 Evento que se ejecuta al hacer clic */
                 className={`hover:tw-bg-navBar ${props.bgColor ?? "tw-bg-[#f59e0b]"}
                             tw-border tw-border-[#f59e0b] tw-rounded-2xl
-                            tw-w-16 tw-h-16 tw-p-4
-                            md:tw-w-20 md:tw-h-20
-                            xl:tw-w-24 xl:tw-h-24
-                            2xl:tw-w-28 2xl:tw-h-28
+                            tw-w-14 tw-h-14 tw-p-2
+                            md:tw-w-16 md:tw-h-16 md:tw-p-3
+                            xl:tw-w-20 xl:tw-h-20 xl:tw-p-3.5
+                            2xl:tw-w-24 2xl:tw-h-24 2xl:tw-p-4
                             tw-flex tw-flex-col
                             tw-justify-center tw-items-center
                             tw-font-bold

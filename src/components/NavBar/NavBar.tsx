@@ -8,10 +8,10 @@ export const NavBar = ({ children }: NavBarProps) => {
                 tw-flex tw-flex-row
                 tw-justify-around
                 tw-w-auto
-                tw-top-0 tw-z-20
                 xl:tw-sticky
                 xl:tw-flex-col
-                xl:tw-px-10
+                xl:tw-px-6
+                2xl:tw-px-10
                 xl:tw-h-screen
                 xl:tw-left-0
                 tw-z-auto
