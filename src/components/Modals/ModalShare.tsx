@@ -31,7 +31,8 @@ export const ModalShare = (props: ModalShareProps) => {
             }
             <ShareBtn
                 id={-2}
-                handle={()=>setIsOpen(true)}
+                disabled={props.disabled}
+                handle={() => !props.disabled && setIsOpen(true)}
             />
         </div>
     )

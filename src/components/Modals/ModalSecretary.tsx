@@ -442,7 +442,7 @@ const ModalSecretaryModal: React.FC<ModalPDTExtendedProps> = (props) => {
                     return (
                         <td
                             className={`tw-border tw-p-2 tw-text-center tw-text-sm tw-whitespace-nowrap tw-min-w-[130px] ${colorClass(
-                                calc?.percentageVsGoal ?? null,
+                                calc?.percentageVsProgramming ?? null,
                                 calc?.isNotProgrammed ?? true
                             )}`}
                             key={`${item.goalCode}-%-${i}`}

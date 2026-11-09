@@ -34,6 +34,7 @@ export const PrivateRouter = () => {
             <Route path='/meta/:uuid' element={<pages.SearchUnitPage/>} />
             <Route path='/resultado/:uuid' element={<pages.SearchUnitResultPage/>} />
             <Route path='/AtencionCiudadana' element={<pages.AtencionCiudadanaPage/>} /> 
+            <Route path='/manual' element={<pages.ManualPage/>} />
             <Route path='*' element={<pages.NotFoundPage/>} />
         </Routes>
     )

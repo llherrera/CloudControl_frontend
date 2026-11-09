@@ -7,7 +7,7 @@ import { Button, Divider, IconButton, Typography } from '@mui/material';  // Com
 import { Menu, MenuItem, Badge } from '@mui/material';                    // Menú desplegable, items y badge
 import LogoutIcon from '@mui/icons-material/Logout';                      // Icono de logout
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';          // Icono de añadir persona
-import { Notifications } from '@mui/icons-material';                      // Icono de notificaciones
+import { Notifications, HelpOutline as HelpOutlineIcon } from '@mui/icons-material';  // Iconos de notificaciones y ayuda
 
 // -------------------- Iconos externos --------------------
 import { MdSupportAgent } from 'react-icons/md';                          // Icono de soporte (React Icons)
@@ -18,7 +18,7 @@ import { MdSupportAgent } from 'react-icons/md';                          // Ico
 import cclogo from "@/assets/images/ControlLand2.png";                    // Logo actual utilizado
 
 // -------------------- Utilidades --------------------
-import { decode } from '@/utils';                                         // Función utilitaria decode
+import { decode, isSectorialistRole } from '@/utils';
 
 // -------------------- Store: Hooks y slices --------------------
 import { useAppDispatch, useAppSelector } from '@/store';                 // Hooks personalizados Redux
@@ -222,6 +222,10 @@ export const Headerbase = () => {
                     </IconButton>
                 )}
 
+                <IconButton onClick={() => navigate('/manual')} title="Manual de usuario">
+                    <HelpOutlineIcon sx={{ color: '#006400', fontSize: 28 }} />
+                </IconButton>
+
                 <IconButton onClick={handleBtn} title="Cerrar sesión">
                     <LogoutIcon sx={{ color: '#006400', fontSize: 28 }} />
                 </IconButton>
@@ -235,7 +239,7 @@ export const Frame = ({ children }: FrameProps) => {
     const navigate = useNavigate();
     const dispatch = useAppDispatch();
 
-    const [rol, setRol] = useState("");
+    const [rol, setRol] = useState(localStorage.getItem('rol') || "");
     const [id, setId] = useState(0);
     const [user, setUser] = useState("");
     const [idPlan_token, setIdPlan_token] = useState(0); // Token value
@@ -686,12 +690,19 @@ export const Frame = ({ children }: FrameProps) => {
 
                     {/* Ícono de configuración + cerrar sesión */}
                     <div className="tw-flex tw-items-center tw-gap-2">
-                        {/* Botón de configuración (accesible para ver secretarías y localidades) */}
-                        {(() => {
-                            return (
-                                <SettingsBtn handle={() => handleSettings(1)} color="green" id={plan?.id_plan ?? 0} />
-                            );
-                        })()}
+                        {/* Botón de configuración (accesible para ver secretarías y localidades, no visible para sectorialista) */}
+                        {!isSectorialistRole(rol) && !isSectorialistRole(localStorage.getItem('rol')) && (
+                            <SettingsBtn handle={() => handleSettings(1)} color="green" id={plan?.id_plan ?? 0} />
+                        )}
+
+                        {/* Botón de manual de usuario */}
+                        <IconButton
+                            onClick={() => navigate('/manual')}
+                            title="Manual de usuario"
+                            className="tw-self-center"
+                        >
+                            <HelpOutlineIcon sx={{ color: '#006400', fontSize: 28 }} />
+                        </IconButton>
 
                         {/* Botón de cerrar sesión */}
                         <IconButton

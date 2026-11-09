@@ -57,7 +57,8 @@ export interface ModalProps2 extends ModalProps {
 
 type Keys = 'plan' | 'meta' | 'result';
 export interface ModalShareProps {
-    [key: string]: boolean;
+    [key: string]: boolean | undefined;
+    disabled?: boolean;
 }
 
 export interface ProntProps {

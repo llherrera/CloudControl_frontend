@@ -17,6 +17,7 @@ export interface BackBtnProps {
     handle: (param?: any) => void; // opcional porque no todos los botones envían param
     id?: number;                   // opcional, solo CloseBtn lo usa de verdad
     color?: string;                // nuevo parámetro opcional para el color del icono
+    disabled?: boolean;
 }
 
 

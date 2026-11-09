@@ -63,15 +63,16 @@ export const HvBtn = ({link}:{link:string}) => {
     );
 }
 
-export const ShareBtn = ({ handle, id, className }: BackBtnProps) => {
+export const ShareBtn = ({ handle, id, className, disabled }: BackBtnProps) => {
     return (
       <IconButton
         aria-label="share"
         size="small"
         onClick={handle}
+        disabled={disabled}
         title="Compartir"
         key={id}
-        className={`tw-bg-white tw-border tw-border-white tw-rounded hover:tw-bg-gray-100 ${className}`}
+        className={`tw-bg-white tw-border tw-border-white tw-rounded hover:tw-bg-gray-100 disabled:tw-opacity-50 disabled:tw-cursor-not-allowed ${className}`}
       >
         <Share className="tw-text-white" />
       </IconButton>

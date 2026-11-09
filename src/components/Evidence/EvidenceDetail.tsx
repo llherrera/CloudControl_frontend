@@ -7,7 +7,7 @@ import { removeEvidence } from "@/store/evidence/evidenceSlice";
 import { approveEvidence } from "@/services/api";
 import { EvidenceDetailProps } from '@/interfaces';
 
-export const EvidenceDetail = ( {evi, index}: EvidenceDetailProps ) => {
+export const EvidenceDetail = ({ evi, index }: EvidenceDetailProps) => {
     const dispatch = useAppDispatch();
 
     const [modalIsOpen, setModalIsOpen] = useState(false);
@@ -42,35 +42,72 @@ export const EvidenceDetail = ( {evi, index}: EvidenceDetailProps ) => {
 
     return (
         <tr>
-            <th  className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
-                {new Date(evi.date).getDate()}/{new Date(evi.date).getMonth()+1}/{new Date(evi.date).getFullYear()}
+            <th className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
+                {new Date(evi.date).getDate()}/{new Date(evi.date).getMonth() + 1}/{new Date(evi.date).getFullYear()}
             </th>
-            <th  className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
+            <th className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
                 {evi.activitiesDesc}
             </th>
-            <th  className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
+            <th className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
                 {evi.commune}
             </th>
-            <th  className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
+            <th className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
                 {evi.neighborhood}
             </th>
-            <th  className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
+            <th className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
                 {evi.unit}
             </th>
-            <th  className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
+            <th className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
                 {evi.amount}
             </th>
-            <th  className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
+            <th className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
                 {evi.benefited_population}
             </th>
-            <th  className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
+            <th className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
                 {evi.benefited_population_number}
             </th>
-            <th  className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
-                {new Date(evi.date_file).getDate()}/{new Date(evi.date_file).getMonth()+1}/{new Date(evi.date_file).getFullYear()}
+            <th className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
+                {new Date(evi.date_file).getDate()}/{new Date(evi.date_file).getMonth() + 1}/{new Date(evi.date_file).getFullYear()}
             </th>
-            <th  className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
-                <a href={evi.file_link} target="_blank">Visitar</a>
+                <th className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black tw-p-2">
+                    {(() => {
+                        if (!evi.file_link) return <span className="tw-text-xs">-</span>;
+                        if (evi.file_link.startsWith('[')) {
+                            try {
+                                const list = JSON.parse(evi.file_link);
+                                    if (Array.isArray(list) && list.length > 0) {
+                                        return (
+                                            <div className="tw-flex tw-flex-col tw-gap-1 tw-py-1">
+                                                {list.map((item: any, idx: number) => {
+                                                    const href = item.link || item.url;
+                                                    const isPdf = item.type === 'file' || (href && href.includes('.pdf'));
+                                                    const label = item.name || (isPdf ? `PDF #${idx + 1}` : `Link #${idx + 1}`);
+                                                    if (!href) return null;
+                                                    return (
+                                                        <a
+                                                            key={idx}
+                                                            href={href}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="tw-inline-flex tw-items-center tw-gap-1 tw-text-xs tw-px-2 tw-py-0.5 tw-rounded tw-bg-white hover:tw-bg-blue-50 tw-text-blue-800 tw-border tw-border-blue-300"
+                                                            title={label}
+                                                        >
+                                                            <span>{isPdf ? '📄' : '🔗'}</span>
+                                                            <span className="tw-truncate tw-max-w-[120px]">{label}</span>
+                                                        </a>
+                                                    );
+                                                })}
+                                            </div>
+                                        );
+                                    }
+                                } catch { }
+                            }
+                    return (
+                        <a href={evi.file_link} target="_blank" rel="noopener noreferrer" className="tw-underline tw-text-blue-900 tw-font-semibold">
+                            Visitar
+                        </a>
+                    );
+                })()}
             </th>
             <th  className="tw-bg-blue-200 tw-rounded tw-my-1 tw-border tw-border-black">
                 <button className="tw-bg-greenBtn hover:tw-bg-green-400 
@@ -110,5 +147,5 @@ export const EvidenceDetail = ( {evi, index}: EvidenceDetailProps ) => {
                 </Modal>
             </th>
         </tr>
-    );
+                );
 }

@@ -28,8 +28,9 @@ export const OfficerRouter = () => {
             <Route path='/PQRS/peticiones' element={<pages.PQRSReqPage/>} />
             <Route path='/plan/:uuid' element={<pages.SearchPage/>} />
             <Route path='/meta/:uuid' element={<pages.SearchUnitPage/>} />
-            <Route path='*' element={<pages.NotFoundPage/>} />
             <Route path='/AtencionCiudadana' element={<pages.AtencionCiudadanaPage/>} /> 
+            <Route path='/manual' element={<pages.ManualPage/>} />
+            <Route path='*' element={<pages.NotFoundPage/>} /> 
         </Routes>
     )
 }

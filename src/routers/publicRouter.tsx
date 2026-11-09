@@ -21,6 +21,7 @@ export const PublicRouter = () => {
             <Route path='/PQRS/consultar' element={<pages.PQRSStatePage/>} />
             <Route path='/plan/:uuid' element={<pages.SearchPage/>} />
             <Route path='/meta/:uuid' element={<pages.SearchUnitPage/>} />
+            <Route path='/manual' element={<pages.ManualPage/>} />
             <Route path='*' element={<pages.NotFoundPage/>} />
         </Routes>
     )

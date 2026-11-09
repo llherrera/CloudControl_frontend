@@ -24,7 +24,7 @@ import {
 import IconButton from "@mui/material/IconButton";
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 import { ModalBoard, ModalAi, ModalShare } from "../Modals";
-import { decode } from "@/utils";
+import { decode, isSectorialistRole } from "@/utils";
 
 // Definición del componente principal
 export const Content = (props: IdProps) => {
@@ -40,9 +40,9 @@ export const Content = (props: IdProps) => {
     const { mode } = useAppSelector(store => store.content);
 
     // Estados locales
-    const [rol, setRol] = useState("");
-    const [user, setUser] = useState("");
-    const [id, setId] = useState(0);
+    const [rol, setRol] = useState(localStorage.getItem('rol') || "");
+    const [user, setUser] = useState(localStorage.getItem('user') || "");
+    const [id, setId] = useState(Number(localStorage.getItem('id')) || 0);
     const [slogan, setSlogan] = useState<string>('default');
 
     // Decodifica el token y guarda datos del usuario
@@ -153,13 +153,15 @@ export const Content = (props: IdProps) => {
                 <div className="tw-flex tw-items-center tw-text-white">
                     Plan indicativo
 
-                    {/* Botón de configuración */}
-                    <SettingsBtn handle={() => handleSettings(1)} id={props.id} />
+                    {/* Botón de configuración (no visible para sectorialista) */}
+                    {!isSectorialistRole(rol) && !isSectorialistRole(localStorage.getItem('rol')) && (
+                        <SettingsBtn handle={() => handleSettings(1)} id={props.id} />
+                    )}
 
-                    {/* Botón para compartir */}
+                    {/* Botón para compartir (desactivado: actualmente no cuenta con funciones)
                     {rol === 'admin' || ((rol === 'funcionario' || rol === 'planeacion') && id === props.id)
                         ? <ModalShare plan />
-                        : null}
+                        : null} */}
 
                     {/* Usuario visible solo para ciertos roles */}
                     {rol === 'admin' || ((rol === 'funcionario' || rol === 'planeacion' || rol === 'sectorialista') && id === props.id)

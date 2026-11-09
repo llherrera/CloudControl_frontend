@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Manual de Usuario - Controland (Versión Vite)</title>
+<style>
+  @page {
+    size: A4;
+    margin: 20mm 15mm 20mm 15mm;
+    @bottom-right {
+      content: counter(page);
+    }
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    color: #1e293b;
+    line-height: 1.55;
+    font-size: 10pt;
+    margin: 0;
+    padding: 0;
+  }
+
+  .cover {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    page-break-after: always;
+    border: 2px solid #012947;
+    padding: 40px;
+    box-sizing: border-box;
+    background: linear-gradient(180deg, #ffffff 0%, #f1f5f9 100%);
+    border-radius: 12px;
+  }
+
+  .cover-badge {
+    background-color: #FD8E19;
+    color: white;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 11pt;
+    letter-spacing: 2px;
+    padding: 6px 16px;
+    border-radius: 9999px;
+    margin-bottom: 25px;
+    display: inline-block;
+  }
+
+  .cover h1 {
+    font-size: 32pt;
+    color: #012947;
+    margin: 0 0 10px 0;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+
+  .cover h2 {
+    font-size: 16pt;
+    color: #475569;
+    font-weight: 500;
+    margin: 0 0 30px 0;
+  }
+
+  .cover-meta {
+    margin-top: 50px;
+    border-top: 1px solid #cbd5e1;
+    padding-top: 25px;
+    width: 80%;
+    display: flex;
+    justify-content: space-around;
+    font-size: 10pt;
+    color: #334155;
+  }
+
+  .page-break {
+    page-break-after: always;
+  }
+
+  h1.section-title {
+    color: #012947;
+    font-size: 18pt;
+    border-bottom: 2.5px solid #012947;
+    padding-bottom: 6px;
+    margin-top: 25px;
+    margin-bottom: 15px;
+    page-break-after: avoid;
+  }
+
+  h2 {
+    color: #0f172a;
+    font-size: 13pt;
+    margin-top: 20px;
+    margin-bottom: 8px;
+    page-break-after: avoid;
+    border-left: 4px solid #FD8E19;
+    padding-left: 8px;
+  }
+
+  h3 {
+    color: #334155;
+    font-size: 11pt;
+    margin-top: 14px;
+    margin-bottom: 6px;
+    page-break-after: avoid;
+  }
+
+  p {
+    margin: 0 0 8px 0;
+    text-align: justify;
+  }
+
+  ul, ol {
+    margin: 4px 0 12px 20px;
+    padding: 0;
+  }
+
+  li {
+    margin-bottom: 4px;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 12px 0 18px 0;
+    font-size: 8.8pt;
+    page-break-inside: avoid;
+  }
+
+  th, td {
+    border: 1px solid #cbd5e1;
+    padding: 6px 10px;
+    text-align: left;
+    vertical-align: top;
+  }
+
+  th {
+    background-color: #012947;
+    color: white;
+    font-weight: 600;
+  }
+
+  tr:nth-child(even) td {
+    background-color: #f8fafc;
+  }
+
+  .callout {
+    padding: 10px 14px;
+    border-radius: 8px;
+    margin: 12px 0;
+    font-size: 9pt;
+    page-break-inside: avoid;
+  }
+
+  .callout-info {
+    background-color: #eff6ff;
+    border-left: 4px solid #3b82f6;
+    color: #1e40af;
+  }
+
+  .callout-warning {
+    background-color: #fffbeb;
+    border-left: 4px solid #f59e0b;
+    color: #92400e;
+  }
+
+  .callout-tip {
+    background-color: #f0fdf4;
+    border-left: 4px solid #10b981;
+    color: #065f46;
+  }
+
+  .step-box {
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    page-break-inside: avoid;
+  }
+
+  .step-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+
+  .step-number {
+    background-color: #012947;
+    color: white;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8.5pt;
+    font-weight: 700;
+  }
+
+  .step-title {
+    font-weight: 700;
+    font-size: 10pt;
+    color: #012947;
+  }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 4px;
+    font-size: 7.5pt;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .badge-admin { background-color: #fee2e2; color: #991b1b; }
+  .badge-planeacion { background-color: #fef3c7; color: #92400e; }
+  .badge-funcionario { background-color: #dbeafe; color: #1e40af; }
+  .badge-public { background-color: #e2e8f0; color: #334155; }
+
+  .toc {
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 15px 20px;
+    border-radius: 8px;
+    margin: 15px 0 25px 0;
+  }
+
+  .toc ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .toc li {
+    margin-bottom: 6px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 9.5pt;
+    border-bottom: 1px dotted #cbd5e1;
+    padding-bottom: 3px;
+  }
+
+  .toc li a {
+    text-decoration: none;
+    color: #012947;
+    font-weight: 600;
+  }
+
+  .workflow-diagram {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin: 15px 0;
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    padding: 10px;
+  }
+
+  .wf-node {
+    background: white;
+    border: 1.5px solid #012947;
+    border-radius: 6px;
+    padding: 6px 8px;
+    text-align: center;
+    font-size: 8pt;
+    font-weight: 600;
+    color: #012947;
+    width: 18%;
+  }
+
+  .wf-arrow {
+    color: #FD8E19;
+    font-size: 14pt;
+    font-weight: bold;
+  }
+
+  /* ESPACIOS DE IMÁGENES / GUÍAS VISUALES */
+  .screenshot-placeholder {
+    border: 2px dashed #94a3b8;
+    background-color: #f8fafc;
+    border-radius: 8px;
+    padding: 15px 12px;
+    text-align: center;
+    margin: 12px 0 16px 0;
+    page-break-inside: avoid;
+    box-sizing: border-box;
+  }
+
+  .screenshot-placeholder .img-icon {
+    font-size: 20pt;
+    display: block;
+    margin-bottom: 4px;
+    color: #012947;
+  }
+
+  .screenshot-title {
+    font-size: 8.5pt;
+    font-weight: 700;
+    color: #012947;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: block;
+  }
+
+  .screenshot-desc {
+    font-size: 8pt;
+    color: #64748b;
+    font-style: italic;
+    margin-top: 2px;
+    display: block;
+  }
+</style>
+</head>
+<body>
+
+<!-- PORTADA -->
+<div class="cover">
+  <div class="cover-badge">SISTEMA INTEGRAL DE GESTIÓN PÚBLICA</div>
+  <h1>CONTROLAND</h1>
+  <h2>Manual Oficial de Usuario y Procedimientos Operativos</h2>
+  <p style="text-align: center; max-width: 500px; color: #64748b; font-size: 10pt;">
+    Guía completa orientada a roles y tareas para la administración, seguimiento, reporte de evidencias y auditoría del Plan Indicativo Municipal.
+  </p>
+  
+  <div class="cover-meta">
+    <div><strong>Plataforma:</strong> Vite SPA</div>
+    <div><strong>Versión:</strong> 1.0 (Producción)</div>
+    <div><strong>Fecha:</strong> Febrero 2026</div>
+    <div><strong>Entidad:</strong> Alcaldía / Ente Territorial</div>
+  </div>
+</div>
+
+<!-- ÍNDICE GENERAL -->
+<h1 class="section-title">Contenido General</h1>
+<div class="toc">
+  <ul>
+    <li><span>1. Introducción y Arquitectura Funcional</span><span>Pág. 2</span></li>
+    <li><span>2. Modelo de Roles y Matriz de Permisos</span><span>Pág. 3</span></li>
+    <li><span>3. Ciclo de Vida del Reporte de Metas (Flujo de Proceso)</span><span>Pág. 4</span></li>
+    <li><span>4. Acceso y Navegación Principal (Lobby del Plan)</span><span>Pág. 5</span></li>
+    <li><span>5. Guía de Tareas: Secretarías y Reportantes (Funcionario)</span><span>Pág. 6</span></li>
+    <li><span>6. Guía de Tareas: Planeación y Supervisión (Auditoría)</span><span>Pág. 9</span></li>
+    <li><span>7. Guía de Tareas: Administrador del Sistema</span><span>Pág. 11</span></li>
+    <li><span>8. Módulos Estratégicos: Mapa, POAI, Banco y PQRS</span><span>Pág. 12</span></li>
+    <li><span>9. Manual de Referencia de Catálogos (Unidades, Población, Fuentes)</span><span>Pág. 14</span></li>
+    <li><span>10. Solución de Problemas Frecuentes (Troubleshooting)</span><span>Pág. 15</span></li>
+  </ul>
+</div>
+
+<div class="page-break"></div>
+
+<!-- SECCIÓN 1: INTRODUCCIÓN -->
+<h1 class="section-title">1. Introducción y Arquitectura Funcional</h1>
+<p>
+  <strong>Controland</strong> es una plataforma de software diseñada para transformar la gestión del Plan de Desarrollo Municipal y Departamental en un proceso transparente, medible y auditable en tiempo real. La versión de Vite opera como una aplicación web de una sola página (SPA), permitiendo a los distintos organismos de la administración pública cargar avances cuantitativos, anexar soportes documentales y georreferenciar cada intervención en el territorio.
+</p>
+
+<h2>1.1 Objetivos de la Plataforma</h2>
+<ul>
+  <li><strong>Seguimiento Físico y Financiero:</strong> Monitorear el grado de cumplimiento de metas de producto y metas de resultado durante los cuatro años de gobierno.</li>
+  <li><strong>Soporte Probatorio Centralizado:</strong> Custodiar actas, informes, contratos y enlaces digitales que acrediten fehacientemente cada cifra reportada.</li>
+  <li><strong>Transparencia y Control Social:</strong> Poner a disposición de la ciudadanía y los órganos de control el mapa territorial de inversiones y el estado de cumplimiento del plan.</li>
+</ul>
+
+<h2>1.2 Estructura del Plan Indicativo en el Sistema</h2>
+<p>
+  El sistema estructura la planeación municipal de manera jerárquica a través de un árbol multinivel con 5 jerarquías estándar:
+</p>
+<table>
+  <thead>
+    <tr>
+      <th style="width: 25%;">Nivel Jerárquico</th>
+      <th style="width: 45%;">Descripción en Controland</th>
+      <th style="width: 30%;">Ejemplo Práctico</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Línea Estratégica / Eje</strong></td>
+      <td>Eje temático superior del Plan de Desarrollo. Agrupa las grandes prioridades de gobierno.</td>
+      <td>Línea 1: Desarrollo Social e Inclusivo</td>
+    </tr>
+    <tr>
+      <td><strong>Sector</strong></td>
+      <td>División funcional y sectorial de la administración pública.</td>
+      <td>Sector 01: Educación y Convivencia</td>
+    </tr>
+    <tr>
+      <td><strong>Programa</strong></td>
+      <td>Conjunto articulado de iniciativas para atender las necesidades del sector.</td>
+      <td>Programa 01: Cobertura Escolar Total</td>
+    </tr>
+    <tr>
+      <td><strong>Meta de Resultado</strong></td>
+      <td>Impacto global o efecto macro alcanzado sobre la población o territorio.</td>
+      <td>Tasa de cobertura neta en educación media</td>
+    </tr>
+    <tr>
+      <td><strong>Meta de Producto (Hoja)</strong></td>
+      <td>Entrega concreta de bienes o servicios. <em>Sobre este nivel se reportan avances y evidencias.</em></td>
+      <td>1.1.1. Construir 3 nuevas sedes educativas</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="page-break"></div>
+
+<!-- SECCIÓN 2: ROLES Y PERMISOS -->
+<h1 class="section-title">2. Modelo de Roles y Matriz de Permisos</h1>
+<p>
+  Controland implementa un esquema de seguridad basado en roles (RBAC). El acceso a cada módulo se encuentra restringido de acuerdo con el perfil del usuario autenticado:
+</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Rol</th>
+      <th>Módulos Visibles</th>
+      <th>Permisos Principales</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><span class="badge badge-funcionario">Funcionario / Secretaría</span></td>
+      <td>
+        • Plan Indicativo<br>
+        • Metas asignadas<br>
+        • Formulario de Evidencias<br>
+        • Mapa de Intervención<br>
+        • PQRS
+      </td>
+      <td>
+        • Carga de avance físico y financiero anual.<br>
+        • Registro de evidencias y soportes (PDF / Enlaces).<br>
+        • Georreferenciación de puntos en el mapa.<br>
+        • No puede alterar metas de otras secretarías ni configurar la estructura del plan.
+      </td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-planeacion">Planeación / Supervisor</span></td>
+      <td>
+        • Árbol de Ejecución completo<br>
+        • Semaforización global<br>
+        • Bandeja de Evidencias<br>
+        • Mapa Territorial<br>
+        • POAI y Banco de Proyectos
+      </td>
+      <td>
+        • Auditoría y revisión de soportes documentales.<br>
+        • Aprobación o rechazo de evidencias con observaciones.<br>
+        • Descarga de informes consolidados en Excel y PDF.<br>
+        • Ajuste de fechas de corte y vigencias de reporte.
+      </td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-admin">Administrador TI</span></td>
+      <td>
+        • Acceso total a todos los módulos<br>
+        • Gestión de Usuarios<br>
+        • Configuración de PDT y Metas<br>
+        • Registro de Entidades
+      </td>
+      <td>
+        • Creación, bloqueo y reseteo de claves de usuarios.<br>
+        • Carga masiva de la estructura del Plan Indicativo.<br>
+        • Configuración del colorímetro (umbrales de semáforo).<br>
+        • Auditoría y mantenimiento de datos.
+      </td>
+    </tr>
+    <tr>
+      <td><span class="badge badge-public">Ciudadano / Público</span></td>
+      <td>
+        • Portal de Transparencia<br>
+        • Búsqueda por código UUID<br>
+        • Consulta de PQRS y Radicación<br>
+        • Mapa Ciudadano
+      </td>
+      <td>
+        • Consulta visual de avances sin acceso de modificación.<br>
+        • Radicación y verificación de derechos de petición.<br>
+        • Descarga de fichas públicas de metas.
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="page-break"></div>
+
+<!-- SECCIÓN 3: CICLO DE VIDA DEL REPORTE -->
+<h1 class="section-title">3. Ciclo de Vida del Reporte de Metas</h1>
+<p>
+  El flujo operativo de Controland garantiza la trazabilidad entre lo planificado, lo contratado y lo reportado en campo:
+</p>
+
+<div class="workflow-diagram">
+  <div class="wf-node">1. Asignación<br><small>Secretaría asignada a la meta de producto</small></div>
+  <div class="wf-arrow">➔</div>
+  <div class="wf-node">2. Reporte<br><small>Registro de cantidad, valor y soportes PDF/web</small></div>
+  <div class="wf-arrow">➔</div>
+  <div class="wf-node">3. Auditoría<br><small>Secretaría de Planeación examina soportes</small></div>
+  <div class="wf-arrow">➔</div>
+  <div class="wf-node">4. Aprobación<br><small>Se valida avance o se solicita corrección</small></div>
+  <div class="wf-arrow">➔</div>
+  <div class="wf-node">5. Semáforo<br><small>Cálculo automático de cumplimiento</small></div>
+</div>
+
+<h2>3.1 Reglas del Colorímetro (Semaforización)</h2>
+<p>
+  El sistema calcula de manera continua el porcentaje de cumplimiento de cada meta comparando el avance real reportado frente a la programación anual de la vigencia:
+</p>
+<table>
+  <thead>
+    <tr>
+      <th>Rango Porcentual</th>
+      <th>Estado Semáforo</th>
+      <th>Color Representativo</th>
+      <th>Acción Requerida</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>0% a 39%</strong></td>
+      <td>Crítico</td>
+      <td>Rojo (#FE1700)</td>
+      <td>Alerta alta. Requiere plan de mejora inmediato y justificación formal.</td>
+    </tr>
+    <tr>
+      <td><strong>40% a 69%</strong></td>
+      <td>Alerta / Bajo</td>
+      <td>Naranja (#F97316)</td>
+      <td>Ritmo de ejecución bajo lo previsto. Ajustar cronograma de contratación.</td>
+    </tr>
+    <tr>
+      <td><strong>70% a 89%</strong></td>
+      <td>Aceptable</td>
+      <td>Amarillo (#FCC623)</td>
+      <td>Avance adecuado con observaciones menores de cumplimiento.</td>
+    </tr>
+    <tr>
+      <td><strong>90% a 100%</strong></td>
+      <td>Exitoso</td>
+      <td>Verde (#119432)</td>
+      <td>Meta cumplida a cabalidad conforme al cronograma programado.</td>
+    </tr>
+    <tr>
+      <td><strong>&gt; 100%</strong></td>
+      <td>Destacado / Sobrecumplido</td>
+      <td>Azul (#008DCC)</td>
+      <td>Ejecución que supera la programación establecida para el periodo.</td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="page-break"></div>
+
+<!-- SECCIÓN 4: ACCESO Y LOBBY -->
+<h1 class="section-title">4. Acceso y Navegación Principal</h1>
+
+<div class="step-box">
+  <div class="step-header">
+    <span class="step-number">1</span>
+    <span class="step-title">Inicio de Sesión (Login)</span>
+  </div>
+  <p>Ingrese al portal institucional de Controland desde cualquier navegador moderno (Chrome, Edge, Firefox). En la pantalla de bienvenida:</p>
+  <ul>
+    <li>Ingrese su <strong>Correo Electrónico Institucional</strong> y su <strong>Contraseña</strong>.</li>
+    <li>Haga clic en el botón <strong>"Iniciar Sesión"</strong>.</li>
+    <li><em>Vinculación Directa:</em> Al ingresar, el sistema reconoce automáticamente la entidad territorial y el Plan de Desarrollo asignado a su perfil, dando acceso inmediato al entorno operativo sin pasos intermedios.</li>
+    <li><em>Recuperación de contraseña:</em> Si olvidó su clave, haga clic en "¿Olvidó su contraseña?", ingrese su correo y recibirá las instrucciones de reseteo.</li>
+  </ul>
+</div>
+
+<div class="screenshot-placeholder">
+  <span class="img-icon">🖼️</span>
+  <span class="screenshot-title">Figura 1: Pantalla de Autenticación e Inicio de Sesión</span>
+  <span class="screenshot-desc">[Espacio reservado para captura de pantalla del formulario de Login con campos de correo institucional y contraseña]</span>
+</div>
+
+<div class="step-box">
+  <div class="step-header">
+    <span class="step-number">2</span>
+    <span class="step-title">Panel de Control Principal (Lobby del Plan)</span>
+  </div>
+  <p>Tras la autenticación exitosa, el sistema carga de forma directa el <strong>Lobby de su Plan</strong>, presentando las tarjetas de acceso rápido a los módulos disponibles según su rol:</p>
+  <ul>
+    <li><strong>Plan Indicativo:</strong> Consulta de la estructura de metas, avance físico/financiero y registro de reportes.</li>
+    <li><strong>Mapa de Intervención:</strong> Visor geográfico de obras y acciones ejecutadas.</li>
+    <li><strong>POAI y Banco de Proyectos:</strong> Vinculación de proyectos de inversión y presupuesto.</li>
+    <li><strong>PQRS:</strong> Gestión de quejas, reclamos y solicitudes ciudadanas.</li>
+  </ul>
+</div>
+
+<div class="screenshot-placeholder">
+  <span class="img-icon">🖼️</span>
+  <span class="screenshot-title">Figura 2: Lobby Principal de Controland (Tarjetas de Módulos)</span>
+  <span class="screenshot-desc">[Espacio reservado para captura de la vista del Lobby con accesos directos al Plan Indicativo, Mapa, POAI y PQRS]</span>
+</div>
+
+<div class="page-break"></div>
+
+<!-- SECCIÓN 5: GUÍA PARA SECRETARÍAS (REPORTE DE EVIDENCIAS) -->
+<h1 class="section-title">5. Guía de Tareas: Secretarías y Reportantes</h1>
+<p>
+  Esta sección describe detalladamente el procedimiento que debe seguir el enlace sectorial o secretario de despacho para reportar los avances periódicos y anexar las evidencias que respaldan el cumplimiento de cada meta.
+</p>
+
+<h2>Tarea 5.1: Localizar la Meta en el Plan Indicativo</h2>
+<div class="step-box">
+  <ol>
+    <li>Desde el Lobby, haga clic en <strong>"Plan Indicativo"</strong>.</li>
+    <li>Navegue a través del árbol temático haciendo clic en la <strong>Línea Estratégica</strong>, luego en el <strong>Sector</strong> y posteriormente en el <strong>Programa</strong> correspondiente.</li>
+    <li>Localice la <strong>Meta de Producto</strong> que pertenece a su dependencia (por ejemplo: <em>1.2.3 Construcción de placa huella</em>).</li>
+    <li>Haga clic sobre el nombre o código de la meta para ingresar a la pantalla de detalle (<code>UnitNodePage</code>).</li>
+  </ol>
+</div>
+
+<div class="screenshot-placeholder">
+  <span class="img-icon">🖼️</span>
+  <span class="screenshot-title">Figura 3: Árbol Jerárquico del Plan Indicativo y Semaforización</span>
+  <span class="screenshot-desc">[Espacio reservado para captura de pantalla de la estructura multinivel: Línea > Sector > Programa > Meta con colores del colorímetro]</span>
+</div>
+
+<h2>Tarea 5.2: Apertura del Formulario de Evidencias</h2>
+<div class="step-box">
+  <p>Dentro del detalle de la meta:</p>
+  <ul>
+    <li>Verifique la información básica: Indicador, Unidad de Medida, Línea Base y Meta Cuatrienio.</li>
+    <li>Revise la programación del año vigente y el acumulado reportado a la fecha.</li>
+    <li>Haga clic en el botón superior <strong>"Adicionar Reporte / Evidencias"</strong>. El sistema abrirá la pantalla del formulario (<code>/pdt/PlanIndicativo/Meta/evidencia</code>).</li>
+  </ul>
+</div>
+
+<div class="screenshot-placeholder">
+  <span class="img-icon">🖼️</span>
+  <span class="screenshot-title">Figura 4: Ficha Técnica de Detalle de la Meta de Producto (UnitNodePage)</span>
+  <span class="screenshot-desc">[Espacio reservado para captura de la ficha con programación anual, porcentaje acumulado y botón 'Adicionar Reporte / Evidencias']</span>
+</div>
+
+<h2>Tarea 5.3: Diligenciamiento de Campos Obligatorios</h2>
+<p>Complete cada bloque de información con exactitud conforme a los documentos de soporte:</p>
+
+<div class="step-box">
+  <div class="step-header"><span class="step-number">A</span><span class="step-title">Vigencia y Descripción de Actividades</span></div>
+  <ul>
+    <li><strong>Selección de Año:</strong> Seleccione si va a registrar avance para la vigencia en curso o para la vigencia anterior (si la fecha de corte lo autoriza).</li>
+    <li><strong>Descripción Actividades (Obligatorio):</strong> Redacte de manera precisa las acciones realizadas durante el periodo de reporte (contrato ejecutado, actas de entrega, talleres dictados, compras efectuadas).</li>
+  </ul>
+</div>
+
+<div class="screenshot-placeholder">
+  <span class="img-icon">🖼️</span>
+  <span class="screenshot-title">Figura 5: Formulario de Reporte - Datos de Actividad y Cantidad</span>
+  <span class="screenshot-desc">[Espacio reservado para captura de pantalla del formulario con descripción de actividades, unidad de medida y cantidad física]</span>
+</div>
+
+<div class="step-box">
+  <div class="step-header"><span class="step-number">B</span><span class="step-title">Avance Cuantitativo</span></div>
+  <ul>
+    <li><strong>Unidad:</strong> Seleccione la unidad correspondiente (M, M2, M3, KM, HA, Num, %, Otro).</li>
+    <li><strong>Cantidad:</strong> Ingrese el número físico ejecutado a sumar (ejemplo: <code>150</code> metros, <code>2</code> escuelas, etc.). Debe ser un valor mayor a cero.</li>
+  </ul>
+</div>
+
+<div class="step-box">
+  <div class="step-header"><span class="step-number">C</span><span class="step-title">Ubicación Territorial y Mapa</span></div>
+  <ul>
+    <li><strong>Localidad / Comuna / Corregimiento:</strong> Seleccione la comuna donde se ejecutó la acción o marque <code>Todas</code> si aplica para todo el municipio.</li>
+    <li><strong>Barrio / Vereda / Centro Poblado:</strong> Seleccione el barrio específico correspondiente a la comuna elegida o <code>Todas</code>.</li>
+    <li><strong>Georreferenciación en Mapa (UbicationsPopover):</strong> Haga clic en el botón de ubicación geográfica. Se abrirá la ventana de mapa interactivo; ubique el cursor sobre el punto exacto de la obra y haga clic para fijar la coordenada GPS (latitud y longitud). El sistema confirmará con la etiqueta verde <em>"Ubicación asignada"</em>.</li>
+  </ul>
+</div>
+
+<div class="screenshot-placeholder">
+  <span class="img-icon">🖼️</span>
+  <span class="screenshot-title">Figura 6: Selector Geográfico Interactivo en Mapa (UbicationsPopover)</span>
+  <span class="screenshot-desc">[Espacio reservado para captura de la ventana emergente de mapa y el indicador de confirmación 'Ubicación asignada' en color verde]</span>
+</div>
+
+<div class="step-box">
+  <div class="step-header"><span class="step-number">D</span><span class="step-title">Población Beneficiada y Recursos Financieros</span></div>
+  <ul>
+    <li><strong>Población Beneficiada:</strong> Elija el grupo poblacional específico del catálogo (Adulto Mayor, Infancia, Mujeres, Víctimas, Indígenas, etc.).</li>
+    <li><strong>Número de Beneficiados:</strong> Digite la cantidad estimada o censada de personas favorecidas.</li>
+    <li><strong>Recursos Ejecutados ($ COP):</strong> Digite el valor financiero ejecutado durante el reporte (ej. <code>25000000</code>).</li>
+    <li><strong>Fuente de Recursos:</strong> Seleccione el origen presupuestal (Recursos Propios ICLD, SGP Educación, Regalías, Crédito, etc.). Si selecciona <code>Otros</code>, aparecerá un campo adicional de texto para especificar.</li>
+  </ul>
+</div>
+
+<div class="step-box">
+  <div class="step-header"><span class="step-number">E</span><span class="step-title">Carga de Soportes (Archivos PDF y Enlaces Web)</span></div>
+  <p>El sistema exige que cada reporte cuente como mínimo con un soporte probatorio:</p>
+  <ol>
+    <li>Haga clic en <strong>"+ Agregar Soporte"</strong> para añadir los soportes requeridos.</li>
+    <li><strong>Para Archivos Físicos:</strong>
+      <ul>
+        <li>Seleccione <strong>Tipo: Archivo PDF</strong>.</li>
+        <li>Haga clic en el selector de archivo y elija el documento digital (<em>debe ser estrictamente formato PDF</em>).</li>
+        <li>Ingrese el <strong>Nombre del Documento</strong> (ej: <em>Acta_Entrega_Obra_Final.pdf</em>).</li>
+        <li>Indique el <strong>Lugar</strong> (ej: <em>Archivo Central de la Secretaría de Infraestructura</em>).</li>
+        <li>Indique la <strong>Fecha del Archivo</strong> (fecha de expedición del acta o documento).</li>
+      </ul>
+    </li>
+    <li><strong>Para Enlaces Digitales:</strong>
+      <ul>
+        <li>Seleccione <strong>Tipo: Enlace Web (URL)</strong>.</li>
+        <li>Pegue el enlace público en la casilla correspondiente (debe iniciar obligatoriamente con <code>http://</code> o <code>https://</code>; ej. enlace a carpeta compartida de Google Drive, OneDrive o SECOP II).</li>
+        <li>Indique el <strong>Nombre del Documento</strong> y la <strong>Fecha</strong>.</li>
+      </ul>
+    </li>
+  </ol>
+</div>
+
+<div class="screenshot-placeholder">
+  <span class="img-icon">🖼️</span>
+  <span class="screenshot-title">Figura 7: Carga Dinámica de Soportes Probatorios (PDF y Enlaces Web)</span>
+  <span class="screenshot-desc">[Espacio reservado para captura de las filas dinámicas de soportes adjuntos con botones de adjuntar PDF, URL y fecha]</span>
+</div>
+
+<div class="callout callout-tip">
+  <strong>Consejo de Buenas Prácticas:</strong> Para agilizar la auditoría de Planeación, adjunte en un solo PDF el acta de recibo a satisfacción junto con el registro fotográfico antes y después de la intervención.
+</div>
+
+<div class="step-box">
+  <div class="step-header"><span class="step-number">F</span><span class="step-title">Envío y Confirmación</span></div>
+  <p>Una vez verificados todos los campos, haga clic en el botón inferior <strong>"Guardar Evidencia"</strong>. El sistema procesará el archivo en el servidor, registrará los metadatos y emitirá la notificación: <em>"Evidencia registrada exitosamente"</em>.</p>
+</div>
+
+<div class="page-break"></div>
+
+<!-- SECCIÓN 6: GUÍA PARA SUPERVISORES Y PLANEACIÓN -->
+<h1 class="section-title">6. Guía de Tareas: Planeación y Supervisión</h1>
+<p>
+  El rol de <strong>Planeación / Supervisor</strong> tiene la responsabilidad de custodiar la veracidad de la información del Plan de Desarrollo y auditar las evidencias remitidas por los despachos sectoriales.
+</p>
+
+<h2>Tarea 6.1: Monitoreo Global del Colorímetro</h2>
+<div class="step-box">
+  <ul>
+    <li>Acceda a <strong>Plan Indicativo</strong>. Observe el color asignado a cada programa y meta.</li>
+    <li>Identifique visualmente los nodos en color <strong>Rojo</strong> o <strong>Naranja</strong> para priorizar las revisiones.</li>
+    <li>Filtre la visualización por año de vigencia (Año 1, Año 2, Año 3, Año 4 o Cuatrienio) para evaluar el rezago de cada secretaría.</li>
+  </ul>
+</div>
+
+<h2>Tarea 6.2: Auditoría de Evidencias</h2>
+<div class="step-box">
+  <ol>
+    <li>Dentro de la meta a auditar, haga clic en el botón <strong>"Ver Evidencias"</strong>.</li>
+    <li>El sistema desplegará el listado cronológico de reportes con la siguiente información:
+      <ul>
+        <li>Fecha del reporte y usuario reportante.</li>
+        <li>Descripción de actividades y cantidad ejecutada.</li>
+        <li>Recursos financieros informados y fuente.</li>
+        <li>Población y comuna beneficiada.</li>
+      </ul>
+    </li>
+    <li><strong>Examen de soportes:</strong> Haga clic sobre el icono de documento PDF para abrir el archivo en una nueva pestaña y verificar firmas y actas. Si el reporte contiene enlaces web, haga clic en el enlace para validar el contenido en nube.</li>
+    <li><strong>Verificación geográfica:</strong> Verifique si las coordenadas coinciden con el sector beneficiario declarado.</li>
+  </ol>
+</div>
+
+<div class="screenshot-placeholder">
+  <span class="img-icon">🖼️</span>
+  <span class="screenshot-title">Figura 8: Bandeja de Auditoría y Verificación de Evidencias</span>
+  <span class="screenshot-desc">[Espacio reservado para captura de pantalla del listado de evidencias reportadas con enlaces de descarga de PDF y botones de validación]</span>
+</div>
+
+<h2>Tarea 6.3: Aprobación o Devolución de Evidencias</h2>
+<div class="step-box">
+  <ul>
+    <li><strong>Aprobar (Estado 1):</strong> Si los documentos cumplen los requisitos normativos y contractuales, proceda a validar la evidencia. El valor cuantitativo sumará inmediatamente al avance físico y financiero oficial.</li>
+    <li><strong>Rechazar o Devolver (Estado 2):</strong> Si el documento carece de firma, el valor no concuerda o el enlace está inaccesible, marque la evidencia como rechazada y registre la observación correspondiente para que la secretaría efectúe la corrección.</li>
+  </ul>
+</div>
+
+<h2>Tarea 6.4: Exportación de Informes Oficiales</h2>
+<div class="step-box">
+  <p>Planeación puede generar en cualquier momento el reporte consolidado de seguimiento:</p>
+  <ul>
+    <li>Haga clic en el botón <strong>"Exportar a Excel"</strong> en la cabecera del Plan Indicativo.</li>
+    <li>El sistema generará una hoja de cálculo con la matriz completa: Código, Ponderación, Programación por año, Ejecución física, Ejecución financiera y Porcentaje de avance ponderado.</li>
+  </ul>
+</div>
+
+<div class="page-break"></div>
+
+<!-- SECCIÓN 7: GUÍA ADMINISTRADOR TI -->
+<h1 class="section-title">7. Guía de Tareas: Administrador del Sistema</h1>
+
+<h2>Tarea 7.1: Gestión de Usuarios y Roles</h2>
+<div class="step-box">
+  <p>Ruta: <code>/gestion-usuarios</code> o <code>/register</code></p>
+  <ul>
+    <li><strong>Crear Nuevo Usuario:</strong> Ingrese nombre completo, correo institucional, contraseña provisional, rol asignado (Funcionario, Planeación, Sectorialista, Administrador) y asocie la Secretaría a la que pertenece.</li>
+    <li><strong>Desactivación:</strong> En caso de desvinculación laboral, cambie el estado del usuario a inactivo para revocar el acceso inmediatamente.</li>
+  </ul>
+</div>
+
+<h2>Tarea 7.2: Configuración del PDT y Fechas de Corte</h2>
+<div class="step-box">
+  <p>Ruta: <code>/pdt/PlanIndicativo/configuracion</code></p>
+  <ul>
+    <li><strong>Fecha de Corte (Deadline):</strong> Establezca el límite temporal tras el cual el sistema bloquea automáticamente la carga de reportes para una vigencia (ejemplo: corte al 31 de diciembre o 15 de enero).</li>
+    <li><strong>Configuración del Colorímetro:</strong> Modifique si es necesario los porcentajes que delimitan el cambio de color entre crítico, alerta, aceptable y exitoso.</li>
+  </ul>
+</div>
+
+<div class="page-break"></div>
+
+<!-- SECCIÓN 8: MÓDULOS ESTRATÉGICOS -->
+<h1 class="section-title">8. Módulos Estratégicos Complementarios</h1>
+
+<h2>8.1 Mapa de Intervenciones Territoriales</h2>
+<p>
+  El módulo de Mapa (<code>/PlanIndicativo/Mapa</code>) consolida geográficamente todas las evidencias que tienen puntos GPS asignados. Permite a los directivos y a la ciudadanía visualizar la cobertura de la inversión pública por comunas y veredas, filtrando por sector o secretaría responsable.
+</p>
+
+<div class="screenshot-placeholder">
+  <span class="img-icon">🖼️</span>
+  <span class="screenshot-title">Figura 9: Visor Geográfico Territorial de Obras y Evidencias</span>
+  <span class="screenshot-desc">[Espacio reservado para captura del mapa municipal con marcadores georreferenciados y panel de filtros por dependencia]</span>
+</div>
+
+<h2>8.2 POAI (Plan Operativo Anual de Inversiones)</h2>
+<p>
+  Permite vincular los techos presupuestales anuales y las fuentes de financiación con las metas de producto correspondientes, garantizando que ninguna meta quede desfinanciada durante la vigencia fiscal.
+</p>
+
+<h2>8.3 Banco de Proyectos</h2>
+<p>
+  Módulo de articulación con los proyectos de inversión pública radicados (códigos BPIN / MGA). Permite asociar uno o más proyectos de inversión a una meta de producto para rastrear su ejecución contractual.
+</p>
+
+<h2>8.4 Módulo de Atención Ciudadana (PQRS)</h2>
+<p>
+  Sistema integrado para la radicación y resolución de Peticiones, Quejas, Reclamos y Sugerencias:
+</p>
+<ul>
+  <li><strong>Radicación Ciudadana:</strong> El ciudadano diligencia el formulario web y obtiene un código único de radicado.</li>
+  <li><strong>Gestión de Peticiones (<code>/PQRS/peticiones</code>):</strong> Los funcionarios asignados reciben la alerta, elaboran la respuesta oficial, anexan archivos y cierran la solicitud dentro de los términos de ley.</li>
+  <li><strong>Consulta de Estado (<code>/PQRS/consultar</code>):</strong> El ciudadano verifica en línea con su radicado si su solicitud está en trámite o resuelta.</li>
+</ul>
+
+<div class="screenshot-placeholder">
+  <span class="img-icon">🖼️</span>
+  <span class="screenshot-title">Figura 10: Bandeja de Gestión y Seguimiento de PQRS</span>
+  <span class="screenshot-desc">[Espacio reservado para captura de pantalla de la bandeja de solicitudes ciudadanas con semáforo de términos de ley y estado de radicado]</span>
+</div>
+
+<div class="page-break"></div>
+
+<!-- SECCIÓN 9: CATÁLOGO DE REFERENCIA -->
+<h1 class="section-title">9. Manual de Referencia de Catálogos</h1>
+
+<h2>9.1 Catálogo de Población Beneficiada</h2>
+<table>
+  <thead>
+    <tr><th>Código de Sistema</th><th>Nombre Oficial</th><th>Criterio de Aplicación</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>AdultoMayor</code></td><td>Adulto Mayor</td><td>Programas dirigidos a personas mayores de 60 años.</td></tr>
+    <tr><td><code>Afrodescendientes</code></td><td>Comunidades Negras / Afrodescendientes</td><td>Acciones concertadas con consejos comunitarios afro.</td></tr>
+    <tr><td><code>Adolescentes</code></td><td>Niños, Niñas y Adolescentes</td><td>Programas de primera infancia, infancia y adolescencia.</td></tr>
+    <tr><td><code>Discapacitados</code></td><td>Personas con Discapacidad</td><td>Iniciativas de inclusión física, laboral o educativa.</td></tr>
+    <tr><td><code>Indigenas</code></td><td>Pueblos y Comunidades Indígenas</td><td>Inversión diferencial en resguardos y cabildos.</td></tr>
+    <tr><td><code>Jovenes</code></td><td>Juventud</td><td>Capacitación, emprendimiento y empleo juvenil.</td></tr>
+    <tr><td><code>LGBTI</code></td><td>Sectores Sociales LGBTIQ+</td><td>Acciones afirmativas de diversidad y derechos humanos.</td></tr>
+    <tr><td><code>Mujeres</code></td><td>Mujeres y Equidad de Género</td><td>Empoderamiento, prevención de violencias y economía del cuidado.</td></tr>
+    <tr><td><code>PobrezaExtrema</code></td><td>Población en Pobreza Extrema</td><td>Atención alimentaria básica y subsidios focales.</td></tr>
+    <tr><td><code>Victimas</code></td><td>Víctimas del Conflicto Armado</td><td>Reparación integral, retornos y estabilización socioeconómica.</td></tr>
+    <tr><td><code>Todos</code></td><td>Población General</td><td>Obras de infraestructura vial, alumbrado o parques de uso común.</td></tr>
+  </tbody>
+</table>
+
+<h2>9.2 Catálogo de Fuentes de Financiación</h2>
+<table>
+  <thead>
+    <tr><th>Código de Sistema</th><th>Denominación Presupuestal</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><code>RecursosPropiosICLD</code></td><td>Ingresos Corrientes de Libre Destinación (ICLD)</td></tr>
+    <tr><td><code>RecursosPropiosICDE</code></td><td>Ingresos Corrientes de Destinación Específica (ICDE)</td></tr>
+    <tr><td><code>SGP</code> / <code>SGP Educacion</code> / <code>SGP Salud</code></td><td>Sistema General de Participaciones (Sectorializado)</td></tr>
+    <tr><td><code>Regalias</code></td><td>Sistema General de Regalías (SGR - OCAD Paz, Asignaciones Directas)</td></tr>
+    <tr><td><code>Credito</code></td><td>Recursos de Crédito Interno / Empréstitos</td></tr>
+    <tr><td><code>Cofinanciacion Departamento / Nacion</code></td><td>Recursos cofinanciados con la Gobernación o Ministerios del Gobierno Nacional</td></tr>
+  </tbody>
+</table>
+
+<div class="page-break"></div>
+
+<!-- SECCIÓN 10: SOLUCIÓN DE PROBLEMAS -->
+<h1 class="section-title">10. Solución de Problemas Frecuentes (Troubleshooting)</h1>
+
+<table>
+  <thead>
+    <tr>
+      <th style="width: 30%;">Incidencia / Mensaje de Error</th>
+      <th style="width: 30%;">Causa Común</th>
+      <th style="width: 40%;">Acción de Solución Recomendada</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>"El archivo debe ser PDF"</strong></td>
+      <td>Se intentó subir una imagen (JPG/PNG), archivo de Word (DOCX) o Excel.</td>
+      <td>Convierta o guarde el documento en formato <code>.pdf</code> antes de seleccionarlo en el formulario.</td>
+    </tr>
+    <tr>
+      <td><strong>"El enlace del soporte debe iniciar con http:// o https://"</strong></td>
+      <td>La URL se ingresó sin el protocolo (ejemplo: <code>drive.google.com/...</code>).</td>
+      <td>Agregue <code>https://</code> al principio del enlace en la casilla de URL.</td>
+    </tr>
+    <tr>
+      <td><strong>"No se ha seleccionado una meta"</strong></td>
+      <td>Se perdió la referencia de la meta al refrescar la página del formulario directamente.</td>
+      <td>Regrese al Plan Indicativo, ingrese nuevamente al detalle de la meta y haga clic en "Adicionar Reporte".</td>
+    </tr>
+    <tr>
+      <td><strong>"Falta ingresar el lugar / nombre del documento"</strong></td>
+      <td>Se agregó una fila de soporte pero se dejaron casillas de texto vacías.</td>
+      <td>Diligencie el nombre representativo del acta y el archivo físico de procedencia. Si la fila no es necesaria, elimínela con el botón de borrar soporte.</td>
+    </tr>
+    <tr>
+      <td><strong>"Ubicación no asignada" en rojo</strong></td>
+      <td>No se ha fijado el punto geográfico en el mapa interactivo.</td>
+      <td>Haga clic en el botón del mapa y pulse sobre el punto del territorio donde se localiza la obra para que cambie a verde.</td>
+    </tr>
+    <tr>
+      <td><strong>Botón de reporte inactivo o bloqueado</strong></td>
+      <td>La fecha de corte de la vigencia (deadline) fue cerrada por Planeación.</td>
+      <td>Comuníquese con el Administrador o con la Secretaría de Planeación para solicitar apertura extemporánea justificada.</td>
+    </tr>
+  </tbody>
+</table>
+
+<div style="margin-top: 40px; text-align: center; border-top: 1px solid #cbd5e1; padding-top: 20px; color: #94a3b8; font-size: 8pt;">
+  Controland © 2026 • Sistema de Gestión y Control del Plan de Desarrollo Municipal • Todos los derechos reservados.
+</div>
+
+</body>
+</html>

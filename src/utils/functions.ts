@@ -77,6 +77,12 @@ export const handleUser = (rol: string) => {
   }
 }
 
+export const isSectorialistRole = (rol?: string | null): boolean => {
+  if (!rol) return false;
+  const clean = rol.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  return clean.includes('sector');
+};
+
 export const getLetter = (year: number) => {
   const num = parseInt(((year - 2016) / 4).toString());
   return String.fromCharCode(num + 'A'.charCodeAt(0));
@@ -212,7 +218,7 @@ export const calculateItemYearGoalPercentages = (
 
     const formattedDisplay = isNotProgrammed
       ? "N/A"
-      : formatPercentageDisplay(percentageVsGoalCalc);
+      : formatPercentageDisplay(percentageVsProgCalc);
 
     return {
       yearIndex,
@@ -291,7 +297,7 @@ export const generateExcelYears = async (
 
     const ejecPorObj = years.reduce<Record<string, string | number>>((acc, y, i) => {
       const calc = yearCalculations[i];
-      acc[`ejecucion_${y}`] = calc?.isNotProgrammed || calc?.percentageVsGoal === null
+      acc[`ejecucion_${y}`] = calc?.isNotProgrammed || calc?.percentageVsProgramming === null
         ? "N/A"
         : calc?.formattedDisplay ?? "N/A";
       return acc;
@@ -328,11 +334,11 @@ export const generateExcelYears = async (
       const cell = row.getCell(col.number);
       const calc = yearCalculations[i];
 
-      if (!calc || calc.isNotProgrammed || calc.percentageVsGoal === null) {
+      if (!calc || calc.isNotProgrammed || calc.percentageVsProgramming === null) {
         cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: "FFD9D9D9" } };
         cell.value = "N/A";
       } else {
-        const val = calc.percentageVsGoal;
+        const val = calc.percentageVsProgramming;
         const fg =
           val < (color[0] ?? Number.NEGATIVE_INFINITY)
             ? "FFFE1700"

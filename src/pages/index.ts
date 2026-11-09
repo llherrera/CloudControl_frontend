@@ -16,3 +16,4 @@ export * from './PQRS';
 export * from './NotFound';
 export * from './ActionPlan';
 export * from './AtencionCiudadana';
+export * from './Manual';
