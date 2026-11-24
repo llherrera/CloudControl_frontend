@@ -276,12 +276,14 @@ export const generateExcelYears = async (
     { header: "Responsable", key: "responsable", width: 30 },
     { header: "Codigo de la meta producto", key: "codigo_meta", width: 20 },
     { header: "Descripción Meta producto", key: "descripcion_meta", width: 40 },
-    ...years.map(y => ({ header: `% ejecución ${y}`, key: `ejecucion_${y}`, width: 18 })),
     ...levels.map((l, i) => ({ header: l.name, key: `nivel_${i}`, width: 30 })),
     { header: "Indicador", key: "indicador", width: 30 },
     { header: "Linea base", key: "linea_base", width: 18 },
-    ...years.map(y => ({ header: `Programado ${y}`, key: `programado_${y}`, width: 18 })),
-    ...years.map(y => ({ header: `Ejecutado ${y}`, key: `ejecutado_${y}`, width: 18 })),
+    ...years.flatMap(y => [
+      { header: `Programado ${y}`, key: `programado_${y}`, width: 18 },
+      { header: `Ejecutado ${y}`, key: `ejecutado_${y}`, width: 18 },
+      { header: `% Ejecución ${y}`, key: `ejecucion_${y}`, width: 18 },
+    ]),
   ];
 
   const headerRow = worksheet.getRow(1);
@@ -343,10 +345,10 @@ export const generateExcelYears = async (
           val < (color[0] ?? Number.NEGATIVE_INFINITY)
             ? "FFFE1700"
             : val < (color[1] ?? Number.NEGATIVE_INFINITY)
-            ? "FFFCC623"
-            : val < (color[2] ?? Number.NEGATIVE_INFINITY)
-            ? "FF119432"
-            : "FF008DCC";
+              ? "FFFCC623"
+              : val < (color[2] ?? Number.NEGATIVE_INFINITY)
+                ? "FF119432"
+                : "FF008DCC";
 
         cell.fill = { type: "pattern", pattern: "solid", fgColor: { argb: fg } };
         cell.value = calc.formattedDisplay;
@@ -742,11 +744,11 @@ export const generateActionPlanExcel = (actionPlan: ActionPlan) => {
       ''
     ]);
     const cell = 14 + rubros.length + 3 + (index * 2);
-    sheet.mergeCells(`B${cell}:B${cell+1}`);
-    sheet.mergeCells(`D${cell}:D${cell+1}`);
-    sheet.mergeCells(`N${cell}:N${cell+1}`);
-    sheet.mergeCells(`O${cell}:O${cell+1}`);
-    sheet.mergeCells(`P${cell}:P${cell+1}`);
+    sheet.mergeCells(`B${cell}:B${cell + 1}`);
+    sheet.mergeCells(`D${cell}:D${cell + 1}`);
+    sheet.mergeCells(`N${cell}:N${cell + 1}`);
+    sheet.mergeCells(`O${cell}:O${cell + 1}`);
+    sheet.mergeCells(`P${cell}:P${cell + 1}`);
 
     sheet.getCell(`B${cell}`).style = { font: { bold: false, size: 11 }, alignment: { wrapText: true, vertical: 'top', horizontal: 'left' }, border: { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } } };
     sheet.getCell(`C${cell}`).style = { font: { bold: false, size: 11 }, alignment: { wrapText: true, vertical: 'middle', horizontal: 'center' }, border: { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } } };
@@ -781,11 +783,11 @@ export const generateActionPlanExcel = (actionPlan: ActionPlan) => {
   let cellsP = '';
   let cellsE = '';
   for (let i = 0; i < actionPlan.actions.length; i++) {
-    cellsP+=`E${14 + rubros.length + 3 + (i * 2)}`;
-    cellsE+=`E${15 + rubros.length + 3 + (i * 2)}`;
+    cellsP += `E${14 + rubros.length + 3 + (i * 2)}`;
+    cellsE += `E${15 + rubros.length + 3 + (i * 2)}`;
     if (i < actionPlan.actions.length - 1) {
-      cellsP+='+';
-      cellsE+='+';
+      cellsP += '+';
+      cellsE += '+';
     }
   }
 
@@ -842,27 +844,27 @@ export const generateActionPlanExcel = (actionPlan: ActionPlan) => {
   ]);
 
   sheet.getCell(`E${cell}`).value = { formula: cellsP };
-  sheet.getCell(`E${cell+1}`).value = { formula: cellsE };
+  sheet.getCell(`E${cell + 1}`).value = { formula: cellsE };
   cellsP = cellsP.replace(/E/g, 'G');
   cellsE = cellsE.replace(/E/g, 'G');
   sheet.getCell(`G${cell}`).value = { formula: cellsP };
-  sheet.getCell(`G${cell+1}`).value = { formula: cellsE };
+  sheet.getCell(`G${cell + 1}`).value = { formula: cellsE };
   cellsP = cellsP.replace(/G/g, 'H');
   cellsE = cellsE.replace(/G/g, 'H');
   sheet.getCell(`H${cell}`).value = { formula: cellsP };
-  sheet.getCell(`H${cell+1}`).value = { formula: cellsE };
+  sheet.getCell(`H${cell + 1}`).value = { formula: cellsE };
   cellsP = cellsP.replace(/H/g, 'I');
   cellsE = cellsE.replace(/H/g, 'I');
   sheet.getCell(`I${cell}`).value = { formula: cellsP };
-  sheet.getCell(`I${cell+1}`).value = { formula: cellsE };
+  sheet.getCell(`I${cell + 1}`).value = { formula: cellsE };
   cellsP = cellsP.replace(/I/g, 'J');
   cellsE = cellsE.replace(/I/g, 'J');
   sheet.getCell(`J${cell}`).value = { formula: cellsP };
-  sheet.getCell(`J${cell+1}`).value = { formula: cellsE };
+  sheet.getCell(`J${cell + 1}`).value = { formula: cellsE };
   cellsP = cellsP.replace(/J/g, 'K');
   cellsE = cellsE.replace(/J/g, 'K');
   sheet.getCell(`K${cell}`).value = { formula: cellsP };
-  sheet.getCell(`K${cell+1}`).value = { formula: cellsE };
+  sheet.getCell(`K${cell + 1}`).value = { formula: cellsE };
   cellsP = cellsP.replace(/K/g, 'N');
   sheet.getCell(`N${cell}`).value = { formula: `(${cellsP})/${actionPlan.actions.length}` };
   cellsP = cellsP.replace(/N/g, 'O');
@@ -870,12 +872,12 @@ export const generateActionPlanExcel = (actionPlan: ActionPlan) => {
   cellsP = cellsP.replace(/O/g, 'P');
   sheet.getCell(`P${cell}`).value = { formula: `(${cellsP})/${actionPlan.actions.length}` };
 
-  sheet.mergeCells(`A${cell}:A${cell+1}`);
-  sheet.mergeCells(`B${cell}:B${cell+1}`);
-  sheet.mergeCells(`D${cell}:D${cell+1}`);
-  sheet.mergeCells(`N${cell}:N${cell+1}`);
-  sheet.mergeCells(`O${cell}:O${cell+1}`);
-  sheet.mergeCells(`P${cell}:P${cell+1}`);
+  sheet.mergeCells(`A${cell}:A${cell + 1}`);
+  sheet.mergeCells(`B${cell}:B${cell + 1}`);
+  sheet.mergeCells(`D${cell}:D${cell + 1}`);
+  sheet.mergeCells(`N${cell}:N${cell + 1}`);
+  sheet.mergeCells(`O${cell}:O${cell + 1}`);
+  sheet.mergeCells(`P${cell}:P${cell + 1}`);
 
   sheet.getCell(`A${cell}`).style = { border: { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } } };
   sheet.getCell(`B${cell}`).style = { font: { bold: true, size: 11 }, alignment: { wrapText: true, vertical: 'top', horizontal: 'left' }, border: { top: { style: 'thin' }, left: { style: 'thin' }, bottom: { style: 'thin' }, right: { style: 'thin' } } };
@@ -1218,16 +1220,16 @@ export const readActivityFile = (file: File, id_plan: number) => {
 
       let prevRowValues: string[] = ['0', '', ''];
       ws.eachRow((row, rowNumber) => {
-//        let values: string[] = ['0', '', ''];
+        //        let values: string[] = ['0', '', ''];
         if (rowNumber > rowHeader) {
           if (row.getCell(4).value != null || row.getCell(4).value != undefined) {
-            prevRowValues[0] = row.getCell(4).value?.toString()?? '';
+            prevRowValues[0] = row.getCell(4).value?.toString() ?? '';
           }
           if (row.getCell(6).value != null || row.getCell(6).value != undefined) {
-            prevRowValues[1] = row.getCell(6).value?.toString()?? '';
+            prevRowValues[1] = row.getCell(6).value?.toString() ?? '';
           }
           if (row.getCell(7).value != null || row.getCell(7).value != undefined) {
-            prevRowValues[2] = row.getCell(7).value?.toString()?? '';
+            prevRowValues[2] = row.getCell(7).value?.toString() ?? '';
           }
           if (row.getCell(8).value != null) {
             const cell = row.getCell(13) as any;
@@ -1253,7 +1255,7 @@ export const readActivityFile = (file: File, id_plan: number) => {
     };
   });
 
-  promise.then( async (d) => {
+  promise.then(async (d) => {
     const data = d as any[];
     const parts_plans = dividirArreglo(data[0], 50);
     const parts_activities = dividirArreglo(data[1], 50);
@@ -1275,8 +1277,8 @@ export const readActivityFile = (file: File, id_plan: number) => {
         throw console.error(`Error al enviar la parte ${i + 1}:`, error);
       }
     }
-//    await loadActionPlansExcel(id_plan, data[0])
-//    await loadActivityExcel(id_plan, data[1])
+    //    await loadActionPlansExcel(id_plan, data[0])
+    //    await loadActivityExcel(id_plan, data[1])
 
   });
 }

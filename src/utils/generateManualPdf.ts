@@ -835,6 +835,75 @@ export const generateManualPdf = ({ plan, levels = [], colorimeter = [35, 70, 85
         ]
     });
 
+    currentY = ((doc as any).lastAutoTable?.finalY ?? currentY + 30) + 8;
+
+    // ========================================================
+    // CAPÍTULO 8B: CAMBIO DE RESPONSABLE DE META Y USUARIOS
+    // ========================================================
+    checkPageBreak(55);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(11);
+    doc.setTextColor(1, 41, 71);
+    doc.text("9. Edición de Responsable de Meta y Gestión de Usuarios", 15, currentY);
+    currentY += 5;
+
+    autoTable(doc, {
+        startY: currentY,
+        theme: "grid",
+        margin: { left: 15, right: 15 },
+        styles: { fontSize: 8, cellPadding: 2.8, font: "helvetica" },
+        headStyles: { fillColor: [253, 142, 25], textColor: 255, fontStyle: "bold" },
+        head: [["Proceso", "Pasos en la Interfaz"]],
+        body: [
+            [
+                "Editar Responsable de Meta\n(Opción rápida en Ficha)",
+                "1. Abrir la meta en el Plan Indicativo.\n2. Junto a 'Responsable:', pulsar el ícono azul 'Modificar responsable'.\n3. Elegir la dependencia del listado (o escribir manualmente) y pulsar 'Guardar'."
+            ],
+            [
+                "Editar Responsable de Meta\n(Configuración de Meta)",
+                "1. Dentro de la meta, pulsar el botón de configuración (engranaje).\n2. Cambiar el selector 'Secretaría' en 'Información de la meta'.\n3. Pulsar 'Guardar Cambios de la meta'."
+            ],
+            [
+                "Añadir / Eliminar Usuarios\n(Exclusivo Administrador)",
+                "1. Ingresar a Gestión de Usuarios.\n2. Para añadir: completar datos, rol y módulos y guardar.\n3. Para eliminar: localizar la cuenta, pulsar 'Eliminar' y confirmar para revocar el acceso."
+            ]
+        ]
+    });
+
+    currentY = ((doc as any).lastAutoTable?.finalY ?? currentY + 35) + 8;
+
+    // ========================================================
+    // BLOQUE FINAL: MESA DE AYUDA Y CORREO DE SOPORTE
+    // ========================================================
+    const supportEmail =
+        (import.meta as unknown as { env?: Record<string, string> }).env?.VITE_SUPPORT_EMAIL ||
+        "soporte@controland.gov.co";
+
+    checkPageBreak(28);
+    doc.setFillColor(1, 41, 71);
+    doc.roundedRect(15, currentY, 180, 22, 3, 3, "F");
+    doc.setFillColor(253, 142, 25);
+    doc.rect(15, currentY, 4, 22, "F");
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(9.5);
+    doc.setTextColor(255, 255, 255);
+    doc.text("Mesa de Ayuda y Soporte Técnico - Atención a Dudas", 23, currentY + 7);
+
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8);
+    doc.setTextColor(226, 232, 240);
+    doc.text(
+        `Para dudas técnicas, gestión de permisos o soporte escriba a: ${supportEmail}`,
+        23,
+        currentY + 13
+    );
+    doc.text(
+        "Horario de atención sugerido: Lunes a Viernes de 8:00 a. m. a 5:00 p. m.",
+        23,
+        currentY + 18.5
+    );
+
     // ========================================================
     // PIE DE PÁGINA Y ENCABEZADOS DE PÁGINA (PAGINACIÓN)
     // ========================================================
@@ -861,7 +930,7 @@ export const generateManualPdf = ({ plan, levels = [], colorimeter = [35, 70, 85
         doc.setFont("helvetica", "normal");
         doc.setFontSize(7.5);
         doc.setTextColor(100, 116, 139);
-        doc.text("Sistema de Seguimiento, Monitoreo y Evaluación de Planes de Desarrollo Territorial | Controland", 15, 292);
+        doc.text(`Controland | Soporte: ${supportEmail}`, 15, 292);
         doc.text(`Página ${i} de ${totalPages}`, 195, 292, { align: "right" });
     }
 

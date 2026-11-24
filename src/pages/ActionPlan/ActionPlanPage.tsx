@@ -17,8 +17,9 @@ export const ActionPlanPage = () => {
 
     const { secretaries, plan } = useAppSelector(store => store.plan);
     const { id_plan } = useAppSelector(store => store.content);
+    const { logged: isAuthLogged } = useAppSelector(store => store.auth);
 
-    const [logged, setLogged] = useState(false);
+    const [logged, setLogged] = useState(!isAuthLogged);
     const [user, setUser] = useState({
         username: "",
         password: ""
@@ -29,7 +30,13 @@ export const ActionPlanPage = () => {
         if (secretaries == undefined) dispatch(thunkGetSecretaries(id_plan));
     }, [id_plan]);
 
-    const logout = () => setLogged(false);
+    const logout = () => {
+        if (!isAuthLogged) {
+            navigate(-1);
+        } else {
+            setLogged(false);
+        }
+    };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;

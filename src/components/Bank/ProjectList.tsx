@@ -115,7 +115,9 @@ export const ProjectList = () => {
                         </p>
                         <div className='tw-basis-1/2 tw-p-1 tw-flex tw-justify-between'>
                             {p.name}
-                            <ModalSettingPro index={i} id={p.id_project}/>
+                            {(rol === "admin" || ((rol === 'funcionario' || rol === 'planeacion') && id === id_plan)) && (
+                                <ModalSettingPro index={i} id={p.id_project}/>
+                            )}
                         </div>
                     </li>
                     )}

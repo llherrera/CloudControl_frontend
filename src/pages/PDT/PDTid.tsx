@@ -23,6 +23,7 @@ export const PDTid = () => {
     const dispatch = useAppDispatch();
     const { levels, indexLevel, plan } = useAppSelector(store => store.plan);
     const { id_plan } = useAppSelector(store => store.content);
+    const { logged } = useAppSelector(store => store.auth);
 
     useEffect(() => {
         dispatch(thunkGetLevelsById(id_plan));
@@ -43,7 +44,19 @@ export const PDTid = () => {
 
     return (
         <Frame>
-            {levels.length === 0 ? <LevelForm id={id_plan.toString()} /> : <Board />}
+            {levels.length === 0 ? (
+                logged ? (
+                    <LevelForm id={id_plan.toString()} />
+                ) : (
+                    <div className="tw-flex tw-justify-center tw-items-center tw-h-[60vh]">
+                        <div className="tw-bg-white tw-shadow-lg tw-rounded-xl tw-p-8 tw-text-center">
+                            <p className="tw-text-lg tw-font-semibold tw-text-gray-700">
+                                Este Plan de Desarrollo aún no tiene estructura pública disponible.
+                            </p>
+                        </div>
+                    </div>
+                )
+            ) : <Board />}
         </Frame>
     );
 };

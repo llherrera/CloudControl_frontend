@@ -38,8 +38,18 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 
-import { generateManualPdf, notify } from '@/utils';
+import { generateManualPdf, notify, decode } from '@/utils';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import MailOutlineIcon from '@mui/icons-material/MailOutline';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import cclogo from '@/assets/images/ControlLand2.png';
+
+const SUPPORT_EMAIL =
+    (import.meta as unknown as { env?: Record<string, string> }).env?.VITE_SUPPORT_EMAIL ||
+    'soporte@controland.gov.co';
 
 export const ManualPage = () => {
     const navigate = useNavigate();
@@ -47,11 +57,41 @@ export const ManualPage = () => {
 
     const { plan, levels, colorimeter } = useAppSelector(store => store.plan);
     const { id_plan, url_logo, url_logo_plan } = useAppSelector(store => store.content);
+    const { logged, token_info } = useAppSelector(store => store.auth);
 
-    const [activeTab, setActiveTab] = useState<number>(0);
+    const detectedRole = React.useMemo<'admin' | 'planeacion' | 'sectorialista' | 'funcionario' | 'ciudadano'>(() => {
+        if (!logged || !token_info?.token) return 'ciudadano';
+        try {
+            const decoded = decode(token_info.token) as { rol?: string };
+            const r = (decoded?.rol || '').trim().toLowerCase();
+            if (r === 'admin' || r === 'administrador' || r === 'superadmin') return 'admin';
+            if (r === 'planeacion' || r === 'planeación') return 'planeacion';
+            if (r === 'sectorialista') return 'sectorialista';
+            if (r === 'funcionario') return 'funcionario';
+            return 'ciudadano';
+        } catch {
+            return 'ciudadano';
+        }
+    }, [logged, token_info]);
+
+    const [previewRole, setPreviewRole] = useState<'admin' | 'planeacion' | 'sectorialista' | 'funcionario' | 'ciudadano' | null>(null);
+    const activeRole = detectedRole === 'admin' && previewRole ? previewRole : detectedRole;
+    const isCitizenManual = activeRole === 'ciudadano';
+    const canEditResponsibleRole = activeRole === 'admin' || activeRole === 'planeacion';
+
+    const [activeTab, setActiveTab] = useState<number>(isCitizenManual ? 2 : 0);
     const [viewMode, setViewMode] = useState<'tabs' | 'all'>('tabs');
     const [tabsWrap, setTabsWrap] = useState<boolean>(false);
     const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+    const [emailCopied, setEmailCopied] = useState(false);
+
+    const handleCopySupportEmail = () => {
+        if (typeof navigator !== 'undefined' && navigator.clipboard) {
+            navigator.clipboard.writeText(SUPPORT_EMAIL).catch(() => {});
+        }
+        setEmailCopied(true);
+        setTimeout(() => setEmailCopied(false), 2500);
+    };
 
     const tabsNavRef = useRef<HTMLDivElement>(null);
 
@@ -118,15 +158,27 @@ export const ManualPage = () => {
         }
     };
 
-    const tabsList = [
-        { id: 0, label: '1. Cómo Subir Evidencias', icon: <UploadFileIcon fontSize="small" /> },
-        { id: 1, label: '2. Revisión y Validación', icon: <HowToRegIcon fontSize="small" /> },
-        { id: 2, label: '3. Interpretación y Semáforo', icon: <CalculateIcon fontSize="small" /> },
-        { id: 3, label: '4. Uso del Asistente IA', icon: <SmartToyIcon fontSize="small" /> },
-        { id: 4, label: '5. Módulos del Sistema', icon: <AppsIcon fontSize="small" /> },
-        { id: 5, label: '6. Estructura y Roles', icon: <AccountTreeIcon fontSize="small" /> },
-        { id: 6, label: '7. Preguntas Frecuentes', icon: <HelpOutlineIcon fontSize="small" /> },
+    const allTabsList = [
+        { id: 0, label: '1. Cómo Subir Evidencias', icon: <UploadFileIcon fontSize="small" />, roles: ['admin', 'planeacion', 'sectorialista', 'funcionario'] },
+        { id: 1, label: '2. Revisión y Validación', icon: <HowToRegIcon fontSize="small" />, roles: ['admin', 'planeacion'] },
+        { id: 2, label: '3. Interpretación y Semáforo', icon: <CalculateIcon fontSize="small" />, roles: ['admin', 'planeacion', 'sectorialista', 'funcionario', 'ciudadano'] },
+        { id: 3, label: '4. Uso del Asistente IA', icon: <SmartToyIcon fontSize="small" />, roles: ['admin', 'planeacion', 'sectorialista', 'funcionario'] },
+        { id: 4, label: '5. Módulos del Sistema', icon: <AppsIcon fontSize="small" />, roles: ['admin', 'planeacion', 'sectorialista', 'funcionario', 'ciudadano'] },
+        { id: 5, label: '6. Estructura, Responsables y Usuarios', icon: <AccountTreeIcon fontSize="small" />, roles: ['admin', 'planeacion', 'sectorialista', 'funcionario', 'ciudadano'] },
+        { id: 6, label: '7. Preguntas Frecuentes', icon: <HelpOutlineIcon fontSize="small" />, roles: ['admin', 'planeacion', 'sectorialista', 'funcionario', 'ciudadano'] },
     ];
+
+    const tabsList = allTabsList.filter((t) => t.roles.includes(activeRole));
+    const effectiveActiveTab = tabsList.some((t) => t.id === activeTab) ? activeTab : tabsList[0].id;
+    const isTabAllowed = (id: number) => tabsList.some((t) => t.id === id);
+
+    const roleLabelMap: Record<typeof activeRole, string> = {
+        admin: 'Administrador',
+        planeacion: 'Planeación',
+        sectorialista: 'Sectorialista',
+        funcionario: 'Funcionario',
+        ciudadano: 'Consulta Ciudadana (Solo Lectura)',
+    };
 
     return (
         <div className="tw-min-h-screen tw-bg-gray-100 tw-font-montserrat print-manual-wrapper">
@@ -174,25 +226,30 @@ export const ManualPage = () => {
             {/* ======================================================== */}
             {/* BARRA SUPERIOR PROPIA DE LA PÁGINA (SIN NAVBARS DEL FRAME)*/}
             {/* ======================================================== */}
-            <div className="tw-bg-[#143955] tw-text-white tw-shadow-lg tw-sticky tw-top-0 tw-z-50 no-print">
+            <div className="tw-bg-[#012947] tw-text-white tw-shadow-lg tw-sticky tw-top-0 tw-z-50 no-print">
                 <div className="tw-max-w-7xl tw-mx-auto tw-px-4 sm:tw-px-6 tw-py-3 tw-flex tw-flex-col sm:tw-flex-row tw-justify-between tw-items-center tw-gap-4">
                     <div className="tw-flex tw-items-center tw-gap-3">
+                        <img
+                            src={cclogo}
+                            alt="Controland"
+                            className="tw-h-11 tw-w-11 tw-object-contain tw-rounded-xl tw-bg-white tw-p-1 tw-shadow-sm"
+                        />
                         {url_logo_plan ? (
                             <img
                                 src={url_logo_plan}
                                 alt="Logo Plan"
-                                className="tw-h-11 tw-object-contain tw-rounded bg-white tw-p-1"
+                                className="tw-h-11 tw-object-contain tw-rounded-xl tw-bg-white tw-p-1"
                             />
                         ) : url_logo ? (
                             <img
                                 src={url_logo}
                                 alt="Logo Institución"
-                                className="tw-h-11 tw-object-contain tw-rounded bg-white tw-p-1"
+                                className="tw-h-11 tw-object-contain tw-rounded-xl tw-bg-white tw-p-1"
                             />
                         ) : null}
                         <div>
-                            <span className="tw-text-xs tw-text-green-300 tw-font-bold tw-uppercase tw-tracking-wide">
-                                Guía Práctica y Operativa Oficial
+                            <span className="tw-text-xs tw-text-[#FD8E19] tw-font-bold tw-uppercase tw-tracking-wide">
+                                Guía Práctica y Operativa Oficial · {roleLabelMap[activeRole]}
                             </span>
                             <h1 className="tw-text-base sm:tw-text-lg tw-font-bold tw-leading-tight">
                                 {plan?.name || 'Manual de Usuario - Controland'}
@@ -200,7 +257,21 @@ export const ManualPage = () => {
                         </div>
                     </div>
 
-                    <div className="tw-flex tw-items-center tw-gap-2.5">
+                    <div className="tw-flex tw-flex-wrap tw-items-center tw-gap-2.5">
+                        {detectedRole === 'admin' && (
+                            <select
+                                value={activeRole}
+                                onChange={(e) => setPreviewRole(e.target.value as typeof activeRole)}
+                                className="tw-rounded-xl tw-bg-white/10 tw-border tw-border-white/25 tw-text-white tw-px-3 tw-py-2 tw-text-xs tw-font-semibold focus:tw-outline-none"
+                                title="Previsualizar manual por perfil"
+                            >
+                                <option value="admin" className="tw-text-slate-900">Perfil: Administrador</option>
+                                <option value="planeacion" className="tw-text-slate-900">Perfil: Planeación</option>
+                                <option value="sectorialista" className="tw-text-slate-900">Perfil: Sectorialista</option>
+                                <option value="funcionario" className="tw-text-slate-900">Perfil: Funcionario</option>
+                                <option value="ciudadano" className="tw-text-slate-900">Perfil: Ciudadano</option>
+                            </select>
+                        )}
                         <button
                             onClick={() => navigate(-1)}
                             className="tw-flex tw-items-center tw-gap-1.5 tw-bg-white/10 hover:tw-bg-white/20 tw-text-white tw-px-3.5 tw-py-2 tw-rounded-xl tw-font-semibold tw-transition-all tw-text-xs sm:tw-text-sm"
@@ -212,7 +283,7 @@ export const ManualPage = () => {
                         <button
                             onClick={handleDownloadPdf}
                             disabled={isGeneratingPdf}
-                            className="tw-flex tw-items-center tw-gap-1.5 tw-bg-[#008432] hover:tw-bg-green-700 disabled:tw-opacity-60 tw-text-white tw-px-4 tw-py-2 tw-rounded-xl tw-font-semibold tw-shadow-md hover:tw-shadow-lg tw-transition-all tw-text-xs sm:tw-text-sm"
+                            className="tw-flex tw-items-center tw-gap-1.5 tw-bg-[#FD8E19] hover:tw-bg-[#e07d12] disabled:tw-opacity-60 tw-text-white tw-px-4 tw-py-2 tw-rounded-xl tw-font-semibold tw-shadow-md hover:tw-shadow-lg tw-transition-all tw-text-xs sm:tw-text-sm"
                             title="Descargar archivo PDF generado directamente por el aplicativo"
                         >
                             <FileDownloadIcon fontSize="small" />
@@ -385,7 +456,7 @@ export const ManualPage = () => {
                                     key={tab.id}
                                     onClick={() => setActiveTab(tab.id)}
                                     className={`tw-flex tw-items-center tw-gap-2 tw-px-4 tw-py-2.5 tw-rounded-xl tw-font-semibold tw-text-xs md:tw-text-sm tw-whitespace-nowrap tw-transition-all ${
-                                        activeTab === tab.id
+                                        effectiveActiveTab === tab.id
                                             ? 'tw-bg-[#008432] tw-text-white tw-shadow-sm'
                                             : 'tw-text-gray-600 hover:tw-bg-gray-100 hover:tw-text-gray-900'
                                     }`}
@@ -406,7 +477,7 @@ export const ManualPage = () => {
                     {/* ---------------------------------------------------- */}
                     {/* FLUJO 1: CÓMO SUBIR Y CARGAR EVIDENCIAS              */}
                     {/* ---------------------------------------------------- */}
-                    {(viewMode === 'all' || activeTab === 0) && (
+                    {(viewMode === 'all' || effectiveActiveTab === 0) && isTabAllowed(0) && (
                         <section className="tw-bg-white tw-rounded-2xl tw-shadow-md tw-p-6 md:tw-p-8 tw-border tw-border-gray-200 card-print avoid-break print-full-content">
                             <div className="tw-flex tw-items-center tw-gap-3 tw-border-b tw-border-gray-200 tw-pb-4 tw-mb-6">
                                 <div className="tw-p-2.5 tw-bg-green-100 tw-text-[#008432] tw-rounded-xl">
@@ -619,7 +690,7 @@ export const ManualPage = () => {
                     {/* ---------------------------------------------------- */}
                     {/* FLUJO 2: REVISIÓN Y VALIDACIÓN DE METAS (PLANEACIÓN) */}
                     {/* ---------------------------------------------------- */}
-                    {(viewMode === 'all' || activeTab === 1) && (
+                    {(viewMode === 'all' || effectiveActiveTab === 1) && isTabAllowed(1) && (
                         <section className="tw-bg-white tw-rounded-2xl tw-shadow-md tw-p-6 md:tw-p-8 tw-border tw-border-gray-200 card-print avoid-break print-full-content">
                             <div className="tw-flex tw-items-center tw-gap-3 tw-border-b tw-border-gray-200 tw-pb-4 tw-mb-6">
                                 <div className="tw-p-2.5 tw-bg-blue-100 tw-text-blue-800 tw-rounded-xl">
@@ -735,7 +806,7 @@ export const ManualPage = () => {
                     {/* ---------------------------------------------------- */}
                     {/* FLUJO 3: INTERPRETACIÓN DE DATOS Y SEMÁFORO          */}
                     {/* ---------------------------------------------------- */}
-                    {(viewMode === 'all' || activeTab === 2) && (
+                    {(viewMode === 'all' || effectiveActiveTab === 2) && isTabAllowed(2) && (
                         <section className="tw-bg-white tw-rounded-2xl tw-shadow-md tw-p-6 md:tw-p-8 tw-border tw-border-gray-200 card-print avoid-break print-full-content">
                             <div className="tw-flex tw-items-center tw-gap-3 tw-border-b tw-border-gray-200 tw-pb-4 tw-mb-6">
                                 <div className="tw-p-2.5 tw-bg-amber-100 tw-text-amber-700 tw-rounded-xl">
@@ -877,7 +948,7 @@ export const ManualPage = () => {
                     {/* ---------------------------------------------------- */}
                     {/* FLUJO 4: USO DEL ASISTENTE DE INTELIGENCIA ARTIFICIAL*/}
                     {/* ---------------------------------------------------- */}
-                    {(viewMode === 'all' || activeTab === 3) && (
+                    {(viewMode === 'all' || effectiveActiveTab === 3) && isTabAllowed(3) && (
                         <section className="tw-bg-white tw-rounded-2xl tw-shadow-md tw-p-6 md:tw-p-8 tw-border tw-border-gray-200 card-print avoid-break print-full-content">
                             <div className="tw-flex tw-items-center tw-gap-3 tw-border-b tw-border-gray-200 tw-pb-4 tw-mb-6">
                                 <div className="tw-p-2.5 tw-bg-indigo-100 tw-text-indigo-700 tw-rounded-xl">
@@ -986,7 +1057,7 @@ export const ManualPage = () => {
                     {/* ---------------------------------------------------- */}
                     {/* FLUJO 5: EXPLICACIÓN DE CADA MÓDULO DEL SISTEMA      */}
                     {/* ---------------------------------------------------- */}
-                    {(viewMode === 'all' || activeTab === 4) && (
+                    {(viewMode === 'all' || effectiveActiveTab === 4) && isTabAllowed(4) && (
                         <section className="tw-bg-white tw-rounded-2xl tw-shadow-md tw-p-6 md:tw-p-8 tw-border tw-border-gray-200 card-print avoid-break print-full-content">
                             <div className="tw-flex tw-items-center tw-gap-3 tw-border-b tw-border-gray-200 tw-pb-4 tw-mb-6">
                                 <div className="tw-p-2.5 tw-bg-teal-100 tw-text-teal-800 tw-rounded-xl">
@@ -1169,20 +1240,20 @@ export const ManualPage = () => {
                     )}
 
                     {/* ---------------------------------------------------- */}
-                    {/* FLUJO 6: ESTRUCTURA DINÁMICA Y ROLES                 */}
+                    {/* FLUJO 6: ESTRUCTURA DINÁMICA, RESPONSABLES Y USUARIOS */}
                     {/* ---------------------------------------------------- */}
-                    {(viewMode === 'all' || activeTab === 5) && (
+                    {(viewMode === 'all' || effectiveActiveTab === 5) && isTabAllowed(5) && (
                         <section className="tw-bg-white tw-rounded-2xl tw-shadow-md tw-p-6 md:tw-p-8 tw-border tw-border-gray-200 card-print avoid-break print-full-content">
                             <div className="tw-flex tw-items-center tw-gap-3 tw-border-b tw-border-gray-200 tw-pb-4 tw-mb-6">
-                                <div className="tw-p-2.5 tw-bg-purple-100 tw-text-purple-800 tw-rounded-xl">
+                                <div className="tw-p-2.5 tw-bg-orange-50 tw-border tw-border-orange-200 tw-text-[#FD8E19] tw-rounded-xl">
                                     <AccountTreeIcon />
                                 </div>
                                 <div>
-                                    <h3 className="tw-text-xl md:tw-text-2xl tw-font-bold tw-text-gray-900">
-                                        6. Estructura Jerárquica del Plan Activo y Perfiles
+                                    <h3 className="tw-text-xl md:tw-text-2xl tw-font-bold tw-text-[#012947]">
+                                        6. Estructura Jerárquica, Responsables de Meta y Gestión de Usuarios
                                     </h3>
                                     <p className="tw-text-xs md:tw-text-sm tw-text-gray-600">
-                                        Niveles configurados en la base de datos para este plan institucional y matriz de responsabilidades por rol.
+                                        Niveles del plan, cambio de secretaría responsable y administración de usuarios según rol.
                                     </p>
                                 </div>
                             </div>
@@ -1233,30 +1304,122 @@ export const ManualPage = () => {
                             ) : null}
 
                             {/* Resumen de Perfiles */}
-                            <div className="tw-grid tw-grid-cols-1 sm:tw-grid-cols-3 tw-gap-3 tw-mt-4">
-                                <div className="tw-border tw-border-gray-200 tw-p-3 tw-rounded-lg tw-bg-gray-50 avoid-break">
-                                    <span className="tw-bg-purple-600 tw-text-white tw-text-[10px] tw-font-bold tw-px-2 tw-py-0.5 tw-rounded">ADMIN</span>
-                                    <h5 className="tw-font-bold tw-text-xs tw-text-gray-900 tw-mt-1">Administrador</h5>
-                                    <p className="tw-text-[11px] tw-text-gray-600 tw-mt-0.5">Gestión de usuarios, definición de niveles, umbrales de semáforo y fechas de corte.</p>
+                            <div className="tw-grid tw-grid-cols-1 sm:tw-grid-cols-2 lg:tw-grid-cols-4 tw-gap-3 tw-mt-4">
+                                <div className="tw-border tw-border-slate-200 tw-p-3 tw-rounded-xl tw-bg-slate-50 avoid-break">
+                                    <span className="tw-bg-[#FD8E19] tw-text-white tw-text-[10px] tw-font-bold tw-px-2 tw-py-0.5 tw-rounded">ADMIN</span>
+                                    <h5 className="tw-font-bold tw-text-xs tw-text-[#012947] tw-mt-1">Administrador</h5>
+                                    <p className="tw-text-[11px] tw-text-slate-600 tw-mt-0.5">Gestión de usuarios (añadir/editar/eliminar), niveles, localidades, umbrales y fechas de corte.</p>
                                 </div>
-                                <div className="tw-border tw-border-gray-200 tw-p-3 tw-rounded-lg tw-bg-gray-50 avoid-break">
-                                    <span className="tw-bg-blue-700 tw-text-white tw-text-[10px] tw-font-bold tw-px-2 tw-py-0.5 tw-rounded">PLANEACIÓN</span>
-                                    <h5 className="tw-font-bold tw-text-xs tw-text-gray-900 tw-mt-1">Planeación / Revisor</h5>
-                                    <p className="tw-text-[11px] tw-text-gray-600 tw-mt-0.5">Auditoría de evidencias, aprobación, devolución con observaciones e informes institucionales.</p>
+                                <div className="tw-border tw-border-slate-200 tw-p-3 tw-rounded-xl tw-bg-slate-50 avoid-break">
+                                    <span className="tw-bg-[#012947] tw-text-white tw-text-[10px] tw-font-bold tw-px-2 tw-py-0.5 tw-rounded">PLANEACIÓN</span>
+                                    <h5 className="tw-font-bold tw-text-xs tw-text-[#012947] tw-mt-1">Planeación / Revisor</h5>
+                                    <p className="tw-text-[11px] tw-text-slate-600 tw-mt-0.5">Auditoría de evidencias, edición de responsables de metas, aprobación, devolución e informes.</p>
                                 </div>
-                                <div className="tw-border tw-border-gray-200 tw-p-3 tw-rounded-lg tw-bg-gray-50 avoid-break">
-                                    <span className="tw-bg-[#008432] tw-text-white tw-text-[10px] tw-font-bold tw-px-2 tw-py-0.5 tw-rounded">FUNCIONARIO</span>
-                                    <h5 className="tw-font-bold tw-text-xs tw-text-gray-900 tw-mt-1">Enlace de Secretaría</h5>
-                                    <p className="tw-text-[11px] tw-text-gray-600 tw-mt-0.5">Diligenciamiento de los 5 bloques de evidencia, cargue de actas/soportes y subsanación de observaciones.</p>
+                                <div className="tw-border tw-border-slate-200 tw-p-3 tw-rounded-xl tw-bg-slate-50 avoid-break">
+                                    <span className="tw-bg-emerald-700 tw-text-white tw-text-[10px] tw-font-bold tw-px-2 tw-py-0.5 tw-rounded">FUNCIONARIO</span>
+                                    <h5 className="tw-font-bold tw-text-xs tw-text-[#012947] tw-mt-1">Enlace / Sectorialista</h5>
+                                    <p className="tw-text-[11px] tw-text-slate-600 tw-mt-0.5">Diligenciamiento de evidencias, cargue de soportes documentales y subsanación de observaciones.</p>
+                                </div>
+                                <div className="tw-border tw-border-slate-200 tw-p-3 tw-rounded-xl tw-bg-slate-50 avoid-break">
+                                    <span className="tw-bg-teal-700 tw-text-white tw-text-[10px] tw-font-bold tw-px-2 tw-py-0.5 tw-rounded">CIUDADANO</span>
+                                    <h5 className="tw-font-bold tw-text-xs tw-text-[#012947] tw-mt-1">Consulta Pública</h5>
+                                    <p className="tw-text-[11px] tw-text-slate-600 tw-mt-0.5">Acceso estrictamente en modo solo lectura a metas, informes y mapa (sin edición ni configuración).</p>
                                 </div>
                             </div>
+
+                            {/* FLUJO PASO A PASO: CÓMO EDITAR EL RESPONSABLE DE META */}
+                            {canEditResponsibleRole && (
+                                <div className="tw-mt-6 tw-rounded-2xl tw-border tw-border-[#012947]/20 tw-bg-slate-50 tw-p-5 avoid-break">
+                                    <div className="tw-flex tw-flex-wrap tw-items-center tw-justify-between tw-gap-2 tw-mb-3">
+                                        <h4 className="tw-text-sm md:tw-text-base tw-font-bold tw-text-[#012947] tw-flex tw-items-center tw-gap-2">
+                                            <EditIcon fontSize="small" className="tw-text-[#FD8E19]" />
+                                            Cómo Editar el Responsable de una Meta
+                                        </h4>
+                                        <span className="tw-text-[11px] tw-font-bold tw-bg-[#012947] tw-text-white tw-px-3 tw-py-0.5 tw-rounded-full">
+                                            Administrador y Planeación
+                                        </span>
+                                    </div>
+                                    <div className="tw-grid tw-grid-cols-1 lg:tw-grid-cols-2 tw-gap-4 tw-text-xs">
+                                        <div className="tw-bg-white tw-p-4 tw-rounded-xl tw-border tw-border-slate-200 tw-space-y-2">
+                                            <p className="tw-font-bold tw-text-[#012947]">Opción A — Edición rápida en la ficha de la Meta:</p>
+                                            <ol className="tw-list-decimal tw-list-inside tw-space-y-1.5 tw-text-slate-700">
+                                                <li>Navegue por el árbol del <strong>Plan Indicativo</strong> hasta abrir la meta deseada.</li>
+                                                <li>Junto a <strong>Responsable:</strong>, haga clic en el ícono azul de lápiz (<strong>Modificar responsable</strong>).</li>
+                                                <li>Seleccione la nueva dependencia en el desplegable o elija <em>Escribir otro responsable manualmente...</em>.</li>
+                                                <li>Presione el botón verde <strong>Guardar</strong> para actualizar la meta inmediatamente.</li>
+                                            </ol>
+                                            <div className="tw-pt-2 tw-flex tw-flex-wrap tw-items-center tw-gap-2 tw-border-t tw-border-slate-100">
+                                                <span className="tw-inline-flex tw-items-center tw-gap-1 tw-px-2.5 tw-py-1 tw-rounded tw-bg-blue-50 tw-text-blue-700 tw-font-bold tw-border tw-border-blue-200">
+                                                    <EditIcon style={{ fontSize: 14 }} /> Modificar responsable
+                                                </span>
+                                                <span className="tw-px-3 tw-py-1 tw-rounded tw-bg-green-600 tw-text-white tw-font-bold">
+                                                    Guardar
+                                                </span>
+                                                <span className="tw-px-3 tw-py-1 tw-rounded tw-bg-gray-400 tw-text-white tw-font-bold">
+                                                    Cancelar
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div className="tw-bg-white tw-p-4 tw-rounded-xl tw-border tw-border-slate-200 tw-space-y-2">
+                                            <p className="tw-font-bold tw-text-[#012947]">Opción B — Desde la Configuración de la Meta:</p>
+                                            <ol className="tw-list-decimal tw-list-inside tw-space-y-1.5 tw-text-slate-700">
+                                                <li>Dentro de la meta, pulse el botón de configuración (engranaje) en la barra superior.</li>
+                                                <li>En el formulario <strong>Información de la meta</strong>, seleccione la nueva dependencia en el campo <strong>Secretaría</strong>.</li>
+                                                <li>Verifique programación anual y pulse <strong>Guardar Cambios de la meta</strong>.</li>
+                                            </ol>
+                                            <div className="tw-pt-2 tw-flex tw-flex-wrap tw-items-center tw-gap-2 tw-border-t tw-border-slate-100">
+                                                <span className="tw-px-3 tw-py-1.5 tw-rounded tw-bg-blue-500 tw-text-white tw-font-bold">
+                                                    Guardar Cambios de la meta
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* GESTIÓN DE USUARIOS (AÑADIR Y ELIMINAR) PARA ADMINISTRADOR */}
+                            {activeRole === 'admin' && (
+                                <div className="tw-mt-5 tw-rounded-2xl tw-border tw-border-orange-200 tw-bg-orange-50/40 tw-p-5 avoid-break">
+                                    <h4 className="tw-text-sm md:tw-text-base tw-font-bold tw-text-[#012947] tw-flex tw-items-center tw-gap-2 tw-mb-3">
+                                        <PersonAddIcon fontSize="small" className="tw-text-[#FD8E19]" />
+                                        Gestión de Usuarios: Cómo Añadir y Eliminar Cuentas
+                                    </h4>
+                                    <div className="tw-grid tw-grid-cols-1 md:tw-grid-cols-2 tw-gap-4 tw-text-xs">
+                                        <div className="tw-bg-white tw-p-4 tw-rounded-xl tw-border tw-border-slate-200 tw-space-y-1.5">
+                                            <p className="tw-font-bold tw-text-[#012947]">Añadir Usuario:</p>
+                                            <ol className="tw-list-decimal tw-list-inside tw-space-y-1 tw-text-slate-700">
+                                                <li>Ingrese a <strong>Gestión de Usuarios</strong> desde el menú administrativo.</li>
+                                                <li>Diligencie nombre, correo institucional, usuario, contraseña y seleccione el rol (<code>admin</code>, <code>planeacion</code>, <code>sectorialista</code> o <code>funcionario</code>).</li>
+                                                <li>Asigne los módulos habilitados y confirme el registro.</li>
+                                            </ol>
+                                        </div>
+                                        <div className="tw-bg-white tw-p-4 tw-rounded-xl tw-border tw-border-slate-200 tw-space-y-2">
+                                            <p className="tw-font-bold tw-text-[#012947]">Editar Rol o Eliminar Usuario:</p>
+                                            <ol className="tw-list-decimal tw-list-inside tw-space-y-1 tw-text-slate-700">
+                                                <li>Busque la cuenta en el listado de usuarios del plan.</li>
+                                                <li>Use el control de edición para actualizar datos o cambiar su rol.</li>
+                                                <li>Para desactivar o eliminar un usuario, pulse el botón de eliminación y confirme la acción para revocar inmediatamente su acceso.</li>
+                                            </ol>
+                                            <div className="tw-flex tw-items-center tw-gap-2 tw-pt-1">
+                                                <span className="tw-inline-flex tw-items-center tw-gap-1 tw-px-2.5 tw-py-1 tw-rounded tw-bg-[#012947] tw-text-white tw-font-bold">
+                                                    <PersonAddIcon style={{ fontSize: 13 }} /> Añadir Usuario
+                                                </span>
+                                                <span className="tw-inline-flex tw-items-center tw-gap-1 tw-px-2.5 tw-py-1 tw-rounded tw-bg-red-50 tw-border tw-border-red-200 tw-text-red-700 tw-font-bold">
+                                                    <DeleteOutlineIcon style={{ fontSize: 13 }} /> Eliminar
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                         </section>
                     )}
 
                     {/* ---------------------------------------------------- */}
                     {/* FLUJO 7: PREGUNTAS FRECUENTES Y PROBLEMAS HABITUALES */}
                     {/* ---------------------------------------------------- */}
-                    {(viewMode === 'all' || activeTab === 6) && (
+                    {(viewMode === 'all' || effectiveActiveTab === 6) && isTabAllowed(6) && (
                         <section className="tw-bg-white tw-rounded-2xl tw-shadow-md tw-p-6 md:tw-p-8 tw-border tw-border-gray-200 card-print avoid-break print-full-content">
                             <div className="tw-flex tw-items-center tw-gap-3 tw-border-b tw-border-gray-200 tw-pb-4 tw-mb-6">
                                 <div className="tw-p-2.5 tw-bg-amber-100 tw-text-amber-800 tw-rounded-xl">
@@ -1314,9 +1477,54 @@ export const ManualPage = () => {
 
                 </div>
 
+                {/* MESA DE AYUDA Y CORREO DE SOPORTE (PLACEHOLDER PARA RESOLVER DUDAS) */}
+                <section className="tw-mt-8 tw-rounded-2xl tw-bg-[#012947] tw-text-white tw-p-6 tw-shadow-lg tw-border tw-border-[#012947] card-print avoid-break">
+                    <div className="tw-flex tw-flex-col md:tw-flex-row md:tw-items-center tw-justify-between tw-gap-4">
+                        <div className="tw-flex tw-items-start tw-gap-3.5">
+                            <div className="tw-p-3 tw-rounded-xl tw-bg-[#FD8E19] tw-text-white tw-shrink-0">
+                                <MailOutlineIcon />
+                            </div>
+                            <div>
+                                <span className="tw-text-[10px] tw-font-bold tw-uppercase tw-tracking-wider tw-text-amber-300">
+                                    Canal Oficial de Atención y Dudas
+                                </span>
+                                <h4 className="tw-text-base md:tw-text-lg tw-font-bold tw-text-white tw-mt-0.5">
+                                    ¿Tienes dudas o necesitas soporte técnico?
+                                </h4>
+                                <p className="tw-text-xs tw-text-slate-200 tw-mt-1 tw-max-w-xl">
+                                    Para resolver inquietudes sobre el funcionamiento del aplicativo, permisos de usuario o reporte de evidencias, escríbenos a nuestro correo de soporte institucional (lunes a viernes de 8:00 a. m. a 5:00 p. m.).
+                                </p>
+                            </div>
+                        </div>
+
+                        <div className="tw-flex tw-flex-col sm:tw-flex-row md:tw-flex-col tw-items-stretch sm:tw-items-center md:tw-items-end tw-gap-2 tw-shrink-0">
+                            <div className="tw-rounded-xl tw-bg-white/10 tw-border tw-border-white/25 tw-px-4 tw-py-2 tw-text-xs tw-font-mono tw-font-bold tw-text-center">
+                                {SUPPORT_EMAIL}
+                            </div>
+                            <div className="tw-flex tw-items-center tw-gap-2 no-print">
+                                <a
+                                    href={`mailto:${SUPPORT_EMAIL}?subject=${encodeURIComponent(`Consulta Manual de Usuario - ${plan?.name || 'Controland'}`)}`}
+                                    className="tw-inline-flex tw-items-center tw-gap-1.5 tw-rounded-xl tw-bg-[#FD8E19] hover:tw-bg-[#e07d12] tw-px-4 tw-py-2 tw-text-xs tw-font-bold tw-text-white tw-transition"
+                                >
+                                    <MailOutlineIcon style={{ fontSize: 15 }} />
+                                    <span>Enviar Correo</span>
+                                </a>
+                                <button
+                                    type="button"
+                                    onClick={handleCopySupportEmail}
+                                    className="tw-inline-flex tw-items-center tw-gap-1.5 tw-rounded-xl tw-border tw-border-white/30 tw-bg-white/10 hover:tw-bg-white/20 tw-px-3.5 tw-py-2 tw-text-xs tw-font-semibold tw-text-white tw-transition"
+                                >
+                                    <ContentCopyIcon style={{ fontSize: 14 }} />
+                                    <span>{emailCopied ? 'Copiado' : 'Copiar correo'}</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
                 {/* Pie de página institucional */}
-                <div className="tw-text-center tw-text-xs tw-text-gray-500 tw-mt-8 tw-pb-6 tw-pt-4 tw-border-t tw-border-gray-200 avoid-break">
-                    Sistema de Seguimiento y Evaluación de Planes de Desarrollo Territorial | Controland
+                <div className="tw-text-center tw-text-xs tw-text-gray-500 tw-mt-6 tw-pb-6 tw-pt-4 tw-border-t tw-border-gray-200 avoid-break">
+                    Sistema de Seguimiento y Evaluación de Planes de Desarrollo Territorial | Controland | Soporte: {SUPPORT_EMAIL}
                 </div>
             </div>
         </div>

@@ -64,12 +64,13 @@ export const HomePage = () => {
       lo dejo por si lo necesitas activar). Realiza logout y navega a /escoger.
     */
     const handleBtnCiudadano = async () => {
-        setLoading(true); // bloqueo visual si es necesario
+        setLoading(true);
         try {
-            await dispatch(thunkLogout()); // thunk para cerrar sesión
-            navigate('/escoger'); // ruta para escoger tipo ciudadano
+            await dispatch(thunkLogout());
+            localStorage.removeItem('rol');
+            localStorage.setItem('citizen_mode', 'true');
+            navigate('/escoger');
         } catch (error) {
-            // logging simple y alerta; en producción manejar mejor errores
             console.log(error);
             alert('Algo salió mal');
         } finally {
@@ -109,38 +110,65 @@ export const HomePage = () => {
                   Dentro colocamos el contenido estilo: logo izquierdo | separador | bloque funcionario.
                 */}
                 <Header>
-
-                    {/* ------------------ BLOQUE FUNCIONARIO ------------------ */}
-                    <div className="tw-flex-1 tw-flex tw-items-center tw-justify-center">
-                        {/* elemento clickable que navega a /login al hacer click o Enter */}
+                    {/* ------------------ BLOQUE FUNCIONARIO Y CIUDADANO ------------------ */}
+                    <div className="tw-flex-1 tw-flex tw-flex-col tw-items-center tw-justify-center tw-gap-4">
+                        {/* Botón Funcionario */}
                         <div
-                            onClick={() => navigate('/login')}
+                            onClick={() => {
+                                localStorage.removeItem('citizen_mode');
+                                navigate('/login');
+                            }}
                             role="button"
                             tabIndex={0}
-                            onKeyDown={(e) => { if (e.key === 'Enter') navigate('/login'); }}
-                            className="tw-cursor-pointer tw-flex tw-items-center tw-gap-4 tw-px-2"
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    localStorage.removeItem('citizen_mode');
+                                    navigate('/login');
+                                }
+                            }}
+                            className="tw-cursor-pointer tw-flex tw-items-center tw-gap-4 tw-px-2 tw-w-full tw-justify-center"
                             aria-label="Ingresar como funcionario"
                         >
-                            {/*
-                                  Recuadro naranja (más pequeño que versiones anteriores):
-                                  - tamaño 80x80 (se ve compacto en la tarjeta reducida)
-                                  - sombra pronunciada para simular elevación
-                                */}
                             <div
-                                className="tw-flex tw-items-center tw-justify-center tw-rounded-md tw-shadow-lg"
+                                className="tw-flex tw-items-center tw-justify-center tw-rounded-md tw-shadow-lg tw-transition-transform hover:tw--translate-y-0.5"
                                 style={{ width: 80, height: 80, background: "#f59e0b" }}
                             >
-                                {/* icono dentro del recuadro */}
                                 <img src={funcLogo} alt="Funcionario" style={{ width: 36, height: 'auto' }} />
                             </div>
 
-                            {/* Texto del bloque ("Funcionario") */}
-                            <div className="tw-text-lg md:tw-text-xl tw-font-semibold tw-text-gray-700">
+                            <div className="tw-w-32 tw-text-lg md:tw-text-xl tw-font-semibold tw-text-gray-700">
                                 Funcionario
                             </div>
                         </div>
-                    </div>
 
+                        {/* Botón Ciudadano (Modo Consulta - Solo Lectura) */}
+                        <div
+                            onClick={() => !loading && handleBtnCiudadano()}
+                            role="button"
+                            tabIndex={0}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' && !loading) handleBtnCiudadano();
+                            }}
+                            className={`tw-cursor-pointer tw-flex tw-items-center tw-gap-4 tw-px-2 tw-w-full tw-justify-center ${loading ? 'tw-opacity-60 tw-pointer-events-none' : ''}`}
+                            aria-label="Ingresar como ciudadano (solo lectura)"
+                        >
+                            <div
+                                className="tw-flex tw-items-center tw-justify-center tw-rounded-md tw-shadow-lg tw-border-2 tw-border-[#072b3a] tw-bg-white tw-transition-transform hover:tw--translate-y-0.5"
+                                style={{ width: 80, height: 80 }}
+                            >
+                                <img src={citiLogo} alt="Ciudadano" style={{ width: 36, height: 'auto' }} />
+                            </div>
+
+                            <div className="tw-w-32">
+                                <div className="tw-text-lg md:tw-text-xl tw-font-semibold tw-text-gray-700">
+                                    {loading ? 'Cargando...' : 'Ciudadano'}
+                                </div>
+                                <span className="tw-text-[11px] tw-font-semibold tw-text-emerald-700">
+                                    Solo lectura
+                                </span>
+                            </div>
+                        </div>
+                    </div>
                 </Header>
 
                 {/*

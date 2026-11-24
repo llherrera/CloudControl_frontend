@@ -33,7 +33,7 @@ export const Content = (props: IdProps) => {
     const dispatch = useAppDispatch();
 
     // Extracción de estados del store
-    const { token_info } = useAppSelector(store => store.auth);
+    const { logged, token_info } = useAppSelector(store => store.auth);
     const { plan, years, indexLevel, levels, parent, progressNodes,
         financial, radioBtn, nodes, colorimeter, rootTree
     } = useAppSelector(store => store.plan);
@@ -153,8 +153,8 @@ export const Content = (props: IdProps) => {
                 <div className="tw-flex tw-items-center tw-text-white">
                     Plan indicativo
 
-                    {/* Botón de configuración (no visible para sectorialista) */}
-                    {!isSectorialistRole(rol) && !isSectorialistRole(localStorage.getItem('rol')) && (
+                    {/* Botón de configuración (solo para roles internos autorizados; nunca para Ciudadano ni Sectorialista) */}
+                    {logged && (rol === 'admin' || ((rol === 'funcionario' || rol === 'planeacion') && id === props.id)) && !isSectorialistRole(rol) && (
                         <SettingsBtn handle={() => handleSettings(1)} id={props.id} />
                     )}
 

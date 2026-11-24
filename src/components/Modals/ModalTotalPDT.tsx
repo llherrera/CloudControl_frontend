@@ -427,28 +427,25 @@ const ModalPDT: React.FC<ModalPDTExtendedProps> = (props) => {
                     );
                 })}
 
-                {years.map((_, i) => (
-                    <td className="tw-border tw-p-2 tw-text-sm tw-text-right" key={`${item.goalCode}-p-${i}`}>
-                        {fmtNumberIfPossible(programedArr[i])}
-                    </td>
-                ))}
-                {years.map((_, i) => (
-                    <td className="tw-border tw-p-2 tw-text-sm tw-text-right" key={`${item.goalCode}-e-${i}`}>
-                        {fmtNumberIfPossible(executedArr[i])}
-                    </td>
-                ))}
                 {years.map((_, i) => {
                     const calc = yearCalculations[i];
                     return (
-                        <td
-                            className={`tw-border tw-p-2 tw-text-center tw-text-sm tw-whitespace-nowrap tw-min-w-[130px] ${colorClass(
-                                calc?.percentageVsProgramming ?? null,
-                                calc?.isNotProgrammed ?? true
-                            )}`}
-                            key={`${item.goalCode}-%-${i}`}
-                        >
-                            {calc?.formattedDisplay ?? "N/A"}
-                        </td>
+                        <React.Fragment key={`${item.goalCode}-yr-${i}`}>
+                            <td className="tw-border tw-p-2 tw-text-sm tw-text-right">
+                                {fmtNumberIfPossible(programedArr[i])}
+                            </td>
+                            <td className="tw-border tw-p-2 tw-text-sm tw-text-right">
+                                {fmtNumberIfPossible(executedArr[i])}
+                            </td>
+                            <td
+                                className={`tw-border tw-p-2 tw-text-center tw-text-sm tw-whitespace-nowrap tw-min-w-[130px] ${colorClass(
+                                    calc?.percentageVsProgramming ?? null,
+                                    calc?.isNotProgrammed ?? true
+                                )}`}
+                            >
+                                {calc?.formattedDisplay ?? "N/A"}
+                            </td>
+                        </React.Fragment>
                     );
                 })}
             </tr>
@@ -557,28 +554,17 @@ const ModalPDT: React.FC<ModalPDTExtendedProps> = (props) => {
                                         </th>
                                     ))}
                                     {years.map((year) => (
-                                        <th
-                                            key={`p-${year}`}
-                                            className="tw-border-b tw-px-3 tw-py-2 tw-text-right tw-text-sm tw-font-semibold tw-sticky tw-top-0 tw-z-10 tw-bg-slate-700 tw-text-white"
-                                        >
-                                            Programado {year}
-                                        </th>
-                                    ))}
-                                    {years.map((year) => (
-                                        <th
-                                            key={`e-${year}`}
-                                            className="tw-border-b tw-px-3 tw-py-2 tw-text-right tw-text-sm tw-font-semibold tw-sticky tw-top-0 tw-z-10 tw-bg-slate-700 tw-text-white"
-                                        >
-                                            Ejecutado {year}
-                                        </th>
-                                    ))}
-                                    {years.map((year) => (
-                                        <th
-                                            key={`%-${year}`}
-                                            className="tw-border-b tw-px-3 tw-py-2 tw-text-center tw-text-sm tw-font-semibold tw-sticky tw-top-0 tw-z-10 tw-bg-slate-700 tw-text-white tw-whitespace-nowrap tw-min-w-[130px]"
-                                        >
-                                            % ejecución {year}
-                                        </th>
+                                        <React.Fragment key={`yr-h-${year}`}>
+                                            <th className="tw-border-b tw-px-3 tw-py-2 tw-text-right tw-text-sm tw-font-semibold tw-sticky tw-top-0 tw-z-10 tw-bg-slate-700 tw-text-white tw-whitespace-nowrap">
+                                                Programado {year}
+                                            </th>
+                                            <th className="tw-border-b tw-px-3 tw-py-2 tw-text-right tw-text-sm tw-font-semibold tw-sticky tw-top-0 tw-z-10 tw-bg-slate-700 tw-text-white tw-whitespace-nowrap">
+                                                Ejecutado {year}
+                                            </th>
+                                            <th className="tw-border-b tw-px-3 tw-py-2 tw-text-center tw-text-sm tw-font-semibold tw-sticky tw-top-0 tw-z-10 tw-bg-slate-700 tw-text-white tw-whitespace-nowrap tw-min-w-[130px]">
+                                                % Ejecución {year}
+                                            </th>
+                                        </React.Fragment>
                                     ))}
                                 </tr>
                             </thead>
